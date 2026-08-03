@@ -12,8 +12,8 @@ const httpLink = createHttpLink({
 });
 
 /**
- * Inyecta el idToken de Cognito en cada peticion. El token se guarda en
- * localStorage tras el login (ver lib/auth.ts).
+ * Inyecta el idToken en cada peticion. El token se guarda en
+ * localStorage tras el login via backend (ver lib/auth.ts).
  */
 const authLink = setContext((_, { headers }) => {
   const token =
