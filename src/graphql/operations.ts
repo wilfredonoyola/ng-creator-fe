@@ -110,3 +110,82 @@ export const LICENSES = gql`
     }
   }
 `;
+
+// ---- Crear Creator y License ----
+
+export const CREAR_CREATOR = gql`
+  mutation CrearCreator($input: CrearCreatorInput!) {
+    crearCreator(input: $input) {
+      _id
+      nombre
+      handle
+      esPropio
+    }
+  }
+`;
+
+export const CREAR_LICENSE = gql`
+  mutation CrearLicense($input: CrearLicenseInput!) {
+    crearLicense(input: $input) {
+      _id
+      scope
+      status
+      creatorId
+    }
+  }
+`;
+
+export const REVOCAR_LICENSE = gql`
+  mutation RevocarLicense($id: ID!) {
+    revocarLicense(id: $id) {
+      _id
+      status
+    }
+  }
+`;
+
+// ---- Expediente individual ----
+
+export const EXPEDIENTE = gql`
+  query Expediente($id: ID!) {
+    expediente(id: $id) {
+      _id
+      numero
+      pagina
+      tipoDeValor
+      estado
+      videoFinalUrl
+      regeneraciones
+      notaVozTexto
+      error
+      guion {
+        apertura
+        detalle
+        pregunta
+        evidencia
+        revelacion
+        reconocimiento
+        cierre
+      }
+      validacion {
+        aprobado
+        checksPasados
+        fallas
+      }
+    }
+  }
+`;
+
+// ---- Publications ----
+
+export const PUBLICATIONS = gql`
+  query Publications {
+    publications {
+      _id
+      expedienteId
+      expedienteNum
+      pagina
+      publicadoEn
+    }
+  }
+`;

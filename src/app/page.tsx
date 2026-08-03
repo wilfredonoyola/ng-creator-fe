@@ -7,6 +7,7 @@ import { COLA_DE_REVISION } from "@/graphql/operations";
 import { haySesion } from "@/lib/auth";
 import { TopBar } from "@/components/TopBar";
 import { TarjetaRevision, Expediente } from "@/components/TarjetaRevision";
+import { SubirClip } from "@/components/SubirClip";
 
 export default function ColaPage() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function ColaPage() {
     if (!haySesion()) router.push("/login");
   }, [router]);
 
-  const { data, loading, error } = useQuery(COLA_DE_REVISION, {
+  const { data, loading, error, refetch } = useQuery(COLA_DE_REVISION, {
     variables: { pagina: null },
     pollInterval: 15000, // refresca la cola cada 15s
   });
@@ -28,12 +29,15 @@ export default function ColaPage() {
       <main className="mx-auto max-w-4xl px-6 py-8">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-lg font-medium">Cola de revisión</h1>
-          <span
-            className="rounded px-2 py-0.5 text-xs"
-            style={{ background: "rgba(15,237,157,0.15)", color: "#0FED9D" }}
-          >
-            {cola.length} pendientes
-          </span>
+          <div className="flex items-center gap-4">
+            <span
+              className="rounded px-2 py-0.5 text-xs"
+              style={{ background: "rgba(15,237,157,0.15)", color: "#0FED9D" }}
+            >
+              {cola.length} pendientes
+            </span>
+            <SubirClip onSuccess={() => refetch()} />
+          </div>
         </div>
 
         {loading && (

@@ -1,0 +1,153 @@
+"use client";
+
+/**
+ * Utilidades para subir archivos al backend.
+ */
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_GRAPHQL_URL?.replace(/\/graphql\/?$/, "") ??
+  "http://localhost:4000";
+
+export type UploadResult = {
+  url: string;
+  path: string;
+  storagePath: string;
+};
+
+function getAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("idToken");
+}
+
+/**
+ * Sube un clip de video al backend.
+ * El clip se guarda en Bunny CDN y se devuelve la URL pública.
+ */
+export async function uploadClip(file: File): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Sesión requerida para subir clips");
+  }
+
+  // Validar tipo de archivo
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const validExtensions = ["mp4", "mov", "webm", "m4v"];
+  const isVideoMimetype =
+    file.type.startsWith("video/") || file.type === "application/octet-stream";
+  const isVideoExtension = validExtensions.includes(ext);
+
+  if (!isVideoMimetype && !isVideoExtension) {
+    throw new Error("Solo se permiten archivos de video (mp4, mov, webm)");
+  }
+
+  // Validar tamaño (500MB max)
+  if (file.size > 500 * 1024 * 1024) {
+    throw new Error("El archivo debe pesar menos de 500MB");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/clip`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let errorMsg = `Error al subir clip (${response.status})`;
+    try {
+      const json = await response.json();
+      errorMsg = json.message || errorMsg;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+
+  const json = await response.json();
+
+  if (!json.url) {
+    throw new Error("El servidor no devolvió la URL del clip");
+  }
+
+  return {
+    url: json.url,
+    path: json.path,
+    storagePath: json.storagePath || json.path,
+  };
+}
+
+/**
+ * Sube una nota de voz al backend.
+ */
+export async function uploadVoiceNote(file: File): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Sesión requerida para subir notas de voz");
+  }
+
+  // Validar tipo de archivo
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const validExtensions = ["mp3", "wav", "ogg", "m4a", "webm"];
+  const isAudioMimetype =
+    file.type.startsWith("audio/") || file.type === "application/octet-stream";
+  const isAudioExtension = validExtensions.includes(ext);
+
+  if (!isAudioMimetype && !isAudioExtension) {
+    throw new Error("Solo se permiten archivos de audio");
+  }
+
+  // Validar tamaño (50MB max)
+  if (file.size > 50 * 1024 * 1024) {
+    throw new Error("El archivo debe pesar menos de 50MB");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/voice-note`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let errorMsg = `Error al subir nota de voz (${response.status})`;
+    try {
+      const json = await response.json();
+      errorMsg = json.message || errorMsg;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+
+  const json = await response.json();
+
+  if (!json.url) {
+    throw new Error("El servidor no devolvió la URL de la nota de voz");
+  }
+
+  return {
+    url: json.url,
+    path: json.path,
+    storagePath: json.storagePath || json.path,
+  };
+}
+
+/**
+ * Lee un archivo como Data URL para preview local.
+ */
+export function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
+    reader.readAsDataURL(file);
+  });
+}
