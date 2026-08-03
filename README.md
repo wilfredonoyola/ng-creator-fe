@@ -21,11 +21,12 @@ npm run dev             # arranca en http://localhost:3000
 ## Configuración (.env)
 
 - `NEXT_PUBLIC_GRAPHQL_URL` — URL del backend (default http://localhost:4000/graphql)
-- `NEXT_PUBLIC_COGNITO_USER_POOL_ID` y `NEXT_PUBLIC_COGNITO_CLIENT_ID` — auth
+
+La autenticación pasa por el backend, no se necesitan credenciales de Cognito en el frontend.
 
 ## Pantallas
 
-- **/login** — inicio de sesión por correo con Cognito.
+- **/login** — inicio de sesión por correo (via backend).
 - **/** — la cola de revisión. Cada expediente muestra el video reproduciéndose, el guion, el checklist del validador ya marcado, y los botones: aprobar y publicar, regenerar con nota, o descartar. Se refresca sola cada 15s.
 
 ## Tipos generados (codegen)

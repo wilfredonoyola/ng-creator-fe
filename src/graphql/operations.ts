@@ -1,5 +1,25 @@
 import { gql } from "@apollo/client";
 
+// ---- Auth ----
+
+export const LOGIN = gql`
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      idToken
+      accessToken
+      expiresIn
+    }
+  }
+`;
+
+export const LOGOUT = gql`
+  mutation Logout($accessToken: String!) {
+    logout(accessToken: $accessToken)
+  }
+`;
+
+// ---- Cola de revision ----
+
 /** La cola de revision: videos listos para aprobar. */
 export const COLA_DE_REVISION = gql`
   query ColaDeRevision($pagina: Pagina) {

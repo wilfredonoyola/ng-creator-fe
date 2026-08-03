@@ -1,57 +1,84 @@
 "use client";
 
-import {
-  CognitoUserPool,
-  CognitoUser,
-  AuthenticationDetails,
-} from "amazon-cognito-identity-js";
-
 /**
- * Autenticacion basica por correo con AWS Cognito.
- * Guarda el idToken en localStorage para que Apollo lo mande en cada peticion.
+ * Autenticacion via backend GraphQL.
+ * El backend habla con Cognito; el frontend solo guarda los tokens.
  */
 
-let poolCache: CognitoUserPool | null = null;
+const GRAPHQL_URL =
+  process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "http://localhost:4000/graphql";
 
-/**
- * Crea el pool de forma perezosa: solo cuando de verdad se usa en el navegador.
- * Asi el build de Next (sin env vars, en el servidor) no revienta al importar.
- */
-function getPool(): CognitoUserPool {
-  if (!poolCache) {
-    poolCache = new CognitoUserPool({
-      UserPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID ?? "",
-      ClientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? "",
-    });
-  }
-  return poolCache;
+interface AuthResult {
+  idToken: string;
+  accessToken: string;
+  expiresIn: number;
 }
 
-export function iniciarSesion(
-  correo: string,
-  password: string,
+/**
+ * Inicia sesion llamando al backend.
+ * Guarda el idToken en localStorage para requests autenticados.
+ */
+export async function iniciarSesion(
+  email: string,
+  password: string
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const user = new CognitoUser({ Username: correo, Pool: getPool() });
-    const details = new AuthenticationDetails({
-      Username: correo,
-      Password: password,
-    });
-    user.authenticateUser(details, {
-      onSuccess: (session) => {
-        const idToken = session.getIdToken().getJwtToken();
-        localStorage.setItem("idToken", idToken);
-        resolve(idToken);
-      },
-      onFailure: (err) => reject(err),
-    });
+  const response = await fetch(GRAPHQL_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      query: `
+        mutation Login($input: LoginInput!) {
+          login(input: $input) {
+            idToken
+            accessToken
+            expiresIn
+          }
+        }
+      `,
+      variables: { input: { email, password } },
+    }),
   });
+
+  const json = await response.json();
+
+  if (json.errors) {
+    throw new Error(json.errors[0]?.message ?? "Error de autenticacion");
+  }
+
+  const result: AuthResult = json.data.login;
+  localStorage.setItem("idToken", result.idToken);
+  localStorage.setItem("accessToken", result.accessToken);
+
+  return result.idToken;
 }
 
-export function cerrarSesion() {
-  const user = getPool().getCurrentUser();
-  user?.signOut();
+/**
+ * Cierra sesion llamando al backend y limpiando localStorage.
+ */
+export async function cerrarSesion(): Promise<void> {
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (accessToken) {
+    try {
+      await fetch(GRAPHQL_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: `
+            mutation Logout($accessToken: String!) {
+              logout(accessToken: $accessToken)
+            }
+          `,
+          variables: { accessToken },
+        }),
+      });
+    } catch {
+      // Ignoramos errores de logout, igual limpiamos local
+    }
+  }
+
   localStorage.removeItem("idToken");
+  localStorage.removeItem("accessToken");
 }
 
 export function haySesion(): boolean {
