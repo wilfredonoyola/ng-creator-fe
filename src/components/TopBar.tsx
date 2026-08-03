@@ -19,9 +19,8 @@ export function TopBar() {
           style={{ background: "#0FED9D" }}
         />
         <span className="text-sm font-medium tracking-wide">
-          COSAS DE FÚTBOL
+          NG VIDEO CREATOR
         </span>
-        <span className="text-xs text-white/40">· El Guardián</span>
       </div>
       <button
         onClick={salir}

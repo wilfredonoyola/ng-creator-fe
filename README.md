@@ -1,6 +1,6 @@
-# Cosas de Fútbol — Frontend
+# NG Video Creator — Frontend
 
-La interfaz de revisión que reemplaza CapCut. Next.js + React + Tailwind + Apollo Client.
+Interfaz de revisión de videos. Next.js + React + Tailwind + Apollo Client.
 
 No hay línea de tiempo ni editor. El video llega listo; el revisor aprueba o regenera con una nota.
 

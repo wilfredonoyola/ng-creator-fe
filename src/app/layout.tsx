@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "Cosas de Fútbol — El Guardián",
-  description: "Motor de expedientes del Guardián del Fútbol",
+  title: "NG Video Creator",
+  description: "Plataforma de creación y revisión de videos",
 };
 
 export default function RootLayout({

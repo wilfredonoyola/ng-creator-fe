@@ -37,7 +37,7 @@ export default function LoginPage() {
             style={{ background: "#0FED9D" }}
           />
           <span className="text-sm font-medium tracking-wide">
-            COSAS DE FÚTBOL
+            NG VIDEO CREATOR
           </span>
         </div>
 
