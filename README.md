@@ -8,7 +8,6 @@ No hay línea de tiempo ni editor. El video llega listo; el revisor aprueba o re
 
 - Node 20+
 - El backend corriendo en `http://localhost:4000/graphql`
-- AWS Cognito configurado (mismo user pool que el backend)
 
 ## Arranque
 
@@ -20,9 +19,11 @@ npm run dev             # arranca en http://localhost:3000
 
 ## Configuración (.env)
 
-- `NEXT_PUBLIC_GRAPHQL_URL` — URL del backend (default http://localhost:4000/graphql)
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_GRAPHQL_URL` | URL del backend GraphQL | `http://localhost:4000/graphql` |
 
-La autenticación pasa por el backend, no se necesitan credenciales de Cognito en el frontend.
+**Nota:** La autenticación pasa por el backend. No se necesitan credenciales de Cognito en el frontend.
 
 ## Pantallas
 
@@ -63,6 +64,6 @@ src/
   graphql/
     operations.ts    queries y mutations
   lib/
-    apollo.ts        cliente con auth
-    auth.ts          Cognito (pool perezoso)
+    apollo.ts        cliente Apollo con auth header
+    auth.ts          login/logout via backend
 ```
