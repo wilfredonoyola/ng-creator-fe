@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { uploadClip, uploadVoiceNote, downloadFromTikTok, getTikTokPreview, TikTokPreview } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
+import { VoiceRecorder } from "./VoiceRecorder";
 
 type Step = "upload" | "config" | "processing" | "done";
 type InputMode = "file" | "link";
@@ -24,7 +25,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const [tiktokUrl, setTiktokUrl] = useState<string>("");
   const [tiktokPreview, setTiktokPreview] = useState<TikTokPreview | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
-  const [voiceFile, setVoiceFile] = useState<File | null>(null);
+  const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
   const [selectedLicense, setSelectedLicense] = useState<string>("");
   const [pagina, setPagina] = useState<string>("PRINCIPAL");
   const [tipoDeValor, setTipoDeValor] = useState<string>("EXPEDIENTE_COMPLETO");
@@ -33,7 +34,6 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const [error, setError] = useState<string | null>(null);
 
   const clipInputRef = useRef<HTMLInputElement>(null);
-  const voiceInputRef = useRef<HTMLInputElement>(null);
 
   const hasClipSource = inputMode === "file" ? !!clipFile : !!tiktokPreview;
 
@@ -78,13 +78,6 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
     setError(null);
   };
 
-  const handleVoiceSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setVoiceFile(file);
-      setError(null);
-    }
-  };
 
   const handleProcess = async () => {
     if (!hasClipSource || !selectedLicense) {
@@ -112,8 +105,12 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
       // Upload voice note if exists
       let voicePath: string | undefined;
-      if (voiceFile) {
+      if (voiceBlob) {
         setProgress(50);
+        // Convert Blob to File for upload
+        const voiceFile = new File([voiceBlob], `voice-${Date.now()}.webm`, {
+          type: voiceBlob.type,
+        });
         const voiceResult = await uploadVoiceNote(voiceFile);
         voicePath = voiceResult.storagePath;
       }
@@ -155,7 +152,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
     setClipPreview(null);
     setTiktokUrl("");
     setTiktokPreview(null);
-    setVoiceFile(null);
+    setVoiceBlob(null);
     setSelectedLicense("");
     setProgress(0);
     setError(null);
@@ -333,33 +330,12 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               </div>
             )}
 
-            {/* Voice Note (Optional) */}
-            <input
-              ref={voiceInputRef}
-              type="file"
-              accept="audio/*"
-              onChange={handleVoiceSelect}
-              className="hidden"
+            {/* Voice Note Recorder */}
+            <VoiceRecorder
+              hasRecording={!!voiceBlob}
+              onRecordingComplete={(blob) => setVoiceBlob(blob)}
+              onClear={() => setVoiceBlob(null)}
             />
-            {voiceFile ? (
-              <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <span className="text-sm">🎙️</span>
-                <span className="flex-1 truncate text-xs">{voiceFile.name}</span>
-                <button
-                  onClick={() => setVoiceFile(null)}
-                  className="text-xs text-white/40 hover:text-white"
-                >
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => voiceInputRef.current?.click()}
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 py-2 text-xs text-white/40 transition hover:border-white/20 hover:text-white/60"
-              >
-                🎙️ Nota de voz (opcional)
-              </button>
-            )}
 
             <button
               onClick={() => setStep("config")}
