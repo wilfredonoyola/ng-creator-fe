@@ -276,14 +276,17 @@ export default function CreatorsPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium">Scope *</label>
-                <input
-                  type="text"
+                <label className="mb-2 block text-sm font-medium">Tipo de licencia *</label>
+                <select
                   value={licenseScope}
                   onChange={(e) => setLicenseScope(e.target.value)}
-                  placeholder="ej: TikTok, YouTube, Instagram"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
-                />
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-[#0FED9D]/50"
+                >
+                  <option value="">Seleccionar tipo</option>
+                  <option value="PROPIO">Propio - Material nuestro</option>
+                  <option value="META_EXCLUSIVO">Meta Exclusivo - Solo Facebook/Instagram</option>
+                  <option value="SOLO_PUBLICACION">Solo Publicación - Uso único</option>
+                </select>
               </div>
             </div>
 
