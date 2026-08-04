@@ -50,6 +50,20 @@ export const COLA_DE_REVISION = gql`
   }
 `;
 
+/** Expedientes que fallaron en el pipeline. */
+export const EXPEDIENTES_FALLIDOS = gql`
+  query ExpedientesFallidos($pagina: Pagina) {
+    expedientesFallidos(pagina: $pagina) {
+      _id
+      pagina
+      tipoDeValor
+      estado
+      clipStoragePath
+      createdAt
+    }
+  }
+`;
+
 export const APROBAR = gql`
   mutation Aprobar($id: ID!) {
     aprobar(id: $id) {

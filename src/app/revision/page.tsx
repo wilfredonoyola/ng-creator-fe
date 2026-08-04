@@ -2,21 +2,37 @@
 
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { COLA_DE_REVISION } from "@/graphql/operations";
+import { COLA_DE_REVISION, EXPEDIENTES_FALLIDOS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VideoCard, Expediente } from "@/components/VideoCard";
 
 const PAGINAS = ["TODAS", "PRINCIPAL", "SECUNDARIO", "ENTRETENIMIENTO"];
 
+interface ExpedienteFallido {
+  _id: string;
+  pagina: string;
+  tipoDeValor: string;
+  estado: string;
+  clipStoragePath?: string;
+  createdAt?: string;
+}
+
 export default function RevisionPage() {
   const [paginaFilter, setPaginaFilter] = useState<string>("TODAS");
+  const [showFallidos, setShowFallidos] = useState(false);
 
   const { data, loading } = useQuery(COLA_DE_REVISION, {
     variables: { pagina: paginaFilter === "TODAS" ? null : paginaFilter },
     pollInterval: 15000,
   });
 
+  const { data: fallidosData, loading: loadingFallidos } = useQuery(EXPEDIENTES_FALLIDOS, {
+    variables: { pagina: paginaFilter === "TODAS" ? null : paginaFilter },
+    pollInterval: 30000,
+  });
+
   const cola: Expediente[] = data?.colaDeRevision ?? [];
+  const fallidos: ExpedienteFallido[] = fallidosData?.expedientesFallidos ?? [];
 
   return (
     <DashboardLayout>
@@ -28,6 +44,18 @@ export default function RevisionPage() {
             {cola.length} video{cola.length !== 1 ? "s" : ""} pendiente{cola.length !== 1 ? "s" : ""} de revisión
           </p>
         </div>
+        {fallidos.length > 0 && (
+          <button
+            onClick={() => setShowFallidos(!showFallidos)}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              showFallidos
+                ? "bg-red-500 text-white"
+                : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+            }`}
+          >
+            {showFallidos ? "Ocultar" : "Ver"} fallidos ({fallidos.length})
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -46,6 +74,58 @@ export default function RevisionPage() {
           </button>
         ))}
       </div>
+
+      {/* Fallidos Section */}
+      {showFallidos && fallidos.length > 0 && (
+        <div className="mb-8">
+          <h2 className="mb-4 text-lg font-semibold text-red-400">
+            Expedientes Fallidos
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {fallidos.map((exp) => (
+              <div
+                key={exp._id}
+                className="rounded-xl border border-red-500/30 bg-red-500/5 p-4"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="rounded bg-red-500/20 px-2 py-1 text-xs font-medium text-red-400">
+                    FALLIDO
+                  </span>
+                  <span className="text-xs text-white/40">
+                    {exp.createdAt ? new Date(exp.createdAt).toLocaleString() : ""}
+                  </span>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <p>
+                    <span className="text-white/40">Página:</span>{" "}
+                    <span className="text-white/70">{exp.pagina}</span>
+                  </p>
+                  <p>
+                    <span className="text-white/40">Tipo:</span>{" "}
+                    <span className="text-white/70">{exp.tipoDeValor}</span>
+                  </p>
+                  <p className="truncate">
+                    <span className="text-white/40">ID:</span>{" "}
+                    <span className="font-mono text-xs text-white/50">{exp._id}</span>
+                  </p>
+                </div>
+                {exp.clipStoragePath && (
+                  <div className="mt-3">
+                    <a
+                      href={`https://ng-creator.b-cdn.net/${exp.clipStoragePath}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-[#0FED9D] hover:underline"
+                    >
+                      Ver clip original →
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       {loading ? (
