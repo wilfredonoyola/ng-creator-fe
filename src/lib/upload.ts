@@ -152,6 +152,49 @@ export function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
+export type TikTokPreview = {
+  title: string;
+  thumbnail: string;
+  duration: number;
+  author: string;
+};
+
+/**
+ * Obtiene preview/metadata de un video de TikTok sin descargarlo.
+ */
+export async function getTikTokPreview(url: string): Promise<TikTokPreview> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Sesión requerida");
+  }
+
+  if (!url.includes("tiktok.com")) {
+    throw new Error("El URL debe ser de TikTok");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/uploads/tiktok/preview`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url }),
+  });
+
+  if (!response.ok) {
+    let errorMsg = `Error al obtener preview (${response.status})`;
+    try {
+      const json = await response.json();
+      errorMsg = json.message || errorMsg;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+
+  return response.json();
+}
+
 /**
  * Descarga un video de TikTok y lo sube a Bunny CDN.
  * El backend hace la descarga y subida, devolviendo el mismo resultado que uploadClip.

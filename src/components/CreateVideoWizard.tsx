@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
-import { uploadClip, uploadVoiceNote, downloadFromTikTok } from "@/lib/upload";
+import { uploadClip, uploadVoiceNote, downloadFromTikTok, getTikTokPreview, TikTokPreview } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
 
 type Step = "upload" | "config" | "processing" | "done";
@@ -22,6 +22,8 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const [clipFile, setClipFile] = useState<File | null>(null);
   const [clipPreview, setClipPreview] = useState<string | null>(null);
   const [tiktokUrl, setTiktokUrl] = useState<string>("");
+  const [tiktokPreview, setTiktokPreview] = useState<TikTokPreview | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
   const [voiceFile, setVoiceFile] = useState<File | null>(null);
   const [selectedLicense, setSelectedLicense] = useState<string>("");
   const [pagina, setPagina] = useState<string>("PRINCIPAL");
@@ -33,9 +35,35 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const clipInputRef = useRef<HTMLInputElement>(null);
   const voiceInputRef = useRef<HTMLInputElement>(null);
 
-  const hasClipSource = inputMode === "file" ? !!clipFile : !!tiktokUrl.trim();
+  const hasClipSource = inputMode === "file" ? !!clipFile : !!tiktokPreview;
 
   const { data: licensesData } = useQuery(LICENSES);
+
+  // Fetch TikTok preview when URL changes
+  useEffect(() => {
+    if (!tiktokUrl || !tiktokUrl.includes("tiktok.com")) {
+      setTiktokPreview(null);
+      return;
+    }
+
+    const fetchPreview = async () => {
+      setLoadingPreview(true);
+      setError(null);
+      try {
+        const preview = await getTikTokPreview(tiktokUrl);
+        setTiktokPreview(preview);
+      } catch (err: any) {
+        setError(err.message || "Error al obtener preview");
+        setTiktokPreview(null);
+      } finally {
+        setLoadingPreview(false);
+      }
+    };
+
+    // Debounce: wait 500ms after user stops typing
+    const timeout = setTimeout(fetchPreview, 500);
+    return () => clearTimeout(timeout);
+  }, [tiktokUrl]);
   const licenses: License[] = licensesData?.licenses?.filter((l: License) => l.status === "ACTIVA") || [];
 
   const [ingestar] = useMutation(INGESTAR, {
@@ -126,6 +154,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
     setClipFile(null);
     setClipPreview(null);
     setTiktokUrl("");
+    setTiktokPreview(null);
     setVoiceFile(null);
     setSelectedLicense("");
     setProgress(0);
@@ -252,9 +281,9 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               )
             ) : (
               // TikTok link mode
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <span className="text-3xl">📱</span>
+                  <span className="text-2xl">🔗</span>
                   <input
                     type="url"
                     value={tiktokUrl}
@@ -264,19 +293,63 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                   />
                   {tiktokUrl && (
                     <button
-                      onClick={() => setTiktokUrl("")}
+                      onClick={() => {
+                        setTiktokUrl("");
+                        setTiktokPreview(null);
+                      }}
                       className="text-white/40 hover:text-white"
                     >
                       ✕
                     </button>
                   )}
                 </div>
-                <p className="text-center text-xs text-white/40">
-                  Pega el link del video de TikTok. El video se descargará automáticamente.
-                </p>
-                {tiktokUrl && tiktokUrl.includes("tiktok.com") && (
-                  <div className="flex items-center justify-center gap-2 rounded-lg bg-[#0FED9D]/10 py-2 text-sm text-[#0FED9D]">
-                    <span>✓</span> Link válido
+
+                {/* Loading state */}
+                {loadingPreview && (
+                  <div className="flex items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 p-8">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+                    <span className="text-sm text-white/50">Obteniendo preview...</span>
+                  </div>
+                )}
+
+                {/* Preview */}
+                {tiktokPreview && !loadingPreview && (
+                  <div className="overflow-hidden rounded-xl border border-[#0FED9D]/30 bg-black">
+                    <div className="relative aspect-[9/16] max-h-[400px] w-full">
+                      <img
+                        src={tiktokPreview.thumbnail}
+                        alt="Preview"
+                        className="h-full w-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <div className="rounded-full bg-white/20 p-4 backdrop-blur-sm">
+                          <span className="text-4xl">▶</span>
+                        </div>
+                      </div>
+                      {tiktokPreview.duration > 0 && (
+                        <div className="absolute bottom-3 right-3 rounded bg-black/70 px-2 py-1 text-xs">
+                          {Math.floor(tiktokPreview.duration / 60)}:{String(tiktokPreview.duration % 60).padStart(2, "0")}
+                        </div>
+                      )}
+                    </div>
+                    <div className="border-t border-white/10 p-4">
+                      <p className="font-medium text-[#0FED9D]">@{tiktokPreview.author}</p>
+                      <p className="mt-1 line-clamp-2 text-sm text-white/70">{tiktokPreview.title}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Empty state */}
+                {!tiktokUrl && !loadingPreview && (
+                  <p className="text-center text-xs text-white/40">
+                    Pega el link del video de TikTok para ver el preview
+                  </p>
+                )}
+
+                {/* Error state */}
+                {error && inputMode === "link" && (
+                  <div className="rounded-xl bg-red-500/10 p-3 text-center text-sm text-red-400">
+                    {error}
                   </div>
                 )}
               </div>
