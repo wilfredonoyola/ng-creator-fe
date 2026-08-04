@@ -58,7 +58,7 @@ export const EXPEDIENTES_FALLIDOS = gql`
       pagina
       tipoDeValor
       estado
-      clipStoragePath
+      error
       createdAt
     }
   }

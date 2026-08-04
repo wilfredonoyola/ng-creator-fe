@@ -13,7 +13,7 @@ interface ExpedienteFallido {
   pagina: string;
   tipoDeValor: string;
   estado: string;
-  clipStoragePath?: string;
+  error?: string;
   createdAt?: string;
 }
 
@@ -109,16 +109,11 @@ export default function RevisionPage() {
                     <span className="font-mono text-xs text-white/50">{exp._id}</span>
                   </p>
                 </div>
-                {exp.clipStoragePath && (
+                {exp.error && (
                   <div className="mt-3">
-                    <a
-                      href={`https://ng-creator.b-cdn.net/${exp.clipStoragePath}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-[#0FED9D] hover:underline"
-                    >
-                      Ver clip original →
-                    </a>
+                    <p className="text-xs text-red-400 line-clamp-2">
+                      {exp.error}
+                    </p>
                   </div>
                 )}
               </div>
