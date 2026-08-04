@@ -7,7 +7,18 @@
       "Bash(git remote add:*)",
       "Bash(git push:*)",
       "Bash(npm install:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(lsof:*)",
+      "Bash(npm run start:*)",
+      "Bash(xargs kill:*)",
+      "Bash(source .env)",
+      "Bash(echo:*)",
+      "Bash(source:*)",
+      "Bash(/dev/null echo 'ELEVENLABS_VOICE_ID: $ELEVENLABS_VOICE_ID' echo 'Testing voice ID...' curl -s -w '\\\\nHTTP: %{http_code}' https://api.elevenlabs.io/v1/voices/$ELEVENLABS_VOICE_ID -H 'xi-api-key: $ELEVENLABS_API_KEY')",
+      "Bash(jq:*)",
+      "Bash(brew install:*)",
+      "Bash(ffmpeg:*)",
+      "Bash(brew reinstall:*)"
     ]
   }
 }

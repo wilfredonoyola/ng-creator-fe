@@ -34,6 +34,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const [error, setError] = useState<string | null>(null);
 
   const clipInputRef = useRef<HTMLInputElement>(null);
+  const videoPreviewRef = useRef<HTMLVideoElement>(null);
 
   const hasClipSource = inputMode === "file" ? !!clipFile : !!tiktokPreview;
 
@@ -240,6 +241,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               clipPreview ? (
                 <div className="relative overflow-hidden rounded-lg">
                   <video
+                    ref={videoPreviewRef}
                     src={clipPreview}
                     controls
                     className="max-h-48 w-full rounded-lg object-contain bg-black"
@@ -335,6 +337,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               hasRecording={!!voiceBlob}
               onRecordingComplete={(blob) => setVoiceBlob(blob)}
               onClear={() => setVoiceBlob(null)}
+              videoRef={videoPreviewRef}
             />
 
             <button

@@ -6,9 +6,11 @@ interface VoiceRecorderProps {
   onRecordingComplete: (blob: Blob) => void;
   onClear: () => void;
   hasRecording: boolean;
+  /** Ref to video element to sync playback during recording */
+  videoRef?: React.RefObject<HTMLVideoElement>;
 }
 
-export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording }: VoiceRecorderProps) {
+export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, videoRef }: VoiceRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -47,11 +49,23 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording }: Vo
 
         // Stop all tracks
         stream.getTracks().forEach((track) => track.stop());
+
+        // Pause video when recording stops
+        if (videoRef?.current) {
+          videoRef.current.pause();
+        }
       };
 
       mediaRecorder.start();
       setIsRecording(true);
       setDuration(0);
+
+      // Play video muted when recording starts
+      if (videoRef?.current) {
+        videoRef.current.muted = true;
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(() => {});
+      }
 
       // Start timer
       timerRef.current = setInterval(() => {
@@ -70,6 +84,10 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording }: Vo
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
+      }
+      // Pause video
+      if (videoRef?.current) {
+        videoRef.current.pause();
       }
     }
   };
