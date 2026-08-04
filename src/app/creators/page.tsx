@@ -1,9 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery, useMutation } from "@apollo/client";
-import { CREATORS, LICENSES, CREAR_CREATOR, CREAR_LICENSE } from "@/graphql/operations";
+import { useState, useRef } from "react";
+import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import {
+  CREATORS,
+  LICENSES,
+  CREAR_CREATOR,
+  CREAR_LICENSE,
+  EVIDENCIAS_DE_LICENCIA,
+  AGREGAR_EVIDENCIA,
+  ELIMINAR_EVIDENCIA,
+} from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { uploadLicenseScreenshot, readFileAsDataUrl } from "@/lib/upload";
+import {
+  MESSAGE_TEMPLATES,
+  aplicarTemplate,
+  MessageTemplate,
+} from "@/lib/message-templates";
 
 interface Creator {
   _id: string;
@@ -19,6 +33,17 @@ interface License {
   creatorId: string;
 }
 
+interface LicenseEvidence {
+  _id: string;
+  licenseId: string;
+  tipo: "MENSAJE" | "SCREENSHOT";
+  contenido?: string;
+  storagePath?: string;
+  storageUrl?: string;
+  nota?: string;
+  createdAt: string;
+}
+
 export default function CreatorsPage() {
   const [showCreatorModal, setShowCreatorModal] = useState(false);
   const [showLicenseModal, setShowLicenseModal] = useState(false);
@@ -27,11 +52,37 @@ export default function CreatorsPage() {
   const [creatorHandle, setCreatorHandle] = useState("");
   const [licenseScope, setLicenseScope] = useState("");
 
+  // Evidence state
+  const [expandedLicense, setExpandedLicense] = useState<string | null>(null);
+  const [evidenceCache, setEvidenceCache] = useState<Record<string, LicenseEvidence[]>>({});
+  const [showMessageModal, setShowMessageModal] = useState<{ licenseId: string; creator: Creator } | null>(null);
+  const [showScreenshotModal, setShowScreenshotModal] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplate | null>(null);
+  const [messageText, setMessageText] = useState("");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string>("");
+  const [screenshotNota, setScreenshotNota] = useState("");
+  const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
+  const [showImageViewer, setShowImageViewer] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { data: creatorsData, loading: loadingCreators } = useQuery(CREATORS);
   const { data: licensesData, loading: loadingLicenses } = useQuery(LICENSES);
 
   const creators: Creator[] = creatorsData?.creators ?? [];
   const licenses: License[] = licensesData?.licenses ?? [];
+
+  const [fetchEvidences, { loading: loadingEvidences }] = useLazyQuery(EVIDENCIAS_DE_LICENCIA, {
+    fetchPolicy: "network-only",
+    onCompleted: (data) => {
+      if (data?.evidenciasDeLicencia && expandedLicense) {
+        setEvidenceCache((prev) => ({
+          ...prev,
+          [expandedLicense]: data.evidenciasDeLicencia,
+        }));
+      }
+    },
+  });
 
   const [crearCreator, { loading: creandoCreator }] = useMutation(CREAR_CREATOR, {
     refetchQueries: [{ query: CREATORS }],
@@ -50,6 +101,27 @@ export default function CreatorsPage() {
       setLicenseScope("");
     },
   });
+
+  const [agregarEvidencia, { loading: agregandoEvidencia }] = useMutation(AGREGAR_EVIDENCIA, {
+    onCompleted: (data) => {
+      if (data?.agregarEvidencia) {
+        const licId = data.agregarEvidencia.licenseId;
+        setEvidenceCache((prev) => ({
+          ...prev,
+          [licId]: [data.agregarEvidencia, ...(prev[licId] || [])],
+        }));
+      }
+      setShowMessageModal(null);
+      setShowScreenshotModal(null);
+      setMessageText("");
+      setSelectedTemplate(null);
+      setScreenshotFile(null);
+      setScreenshotPreview("");
+      setScreenshotNota("");
+    },
+  });
+
+  const [eliminarEvidencia] = useMutation(ELIMINAR_EVIDENCIA);
 
   const handleCreateCreator = () => {
     if (!creatorName.trim()) return;
@@ -78,6 +150,96 @@ export default function CreatorsPage() {
   const getLicensesForCreator = (creatorId: string) => {
     return licenses.filter((l) => l.creatorId === creatorId);
   };
+
+  const toggleLicenseExpand = (licenseId: string) => {
+    if (expandedLicense === licenseId) {
+      setExpandedLicense(null);
+    } else {
+      setExpandedLicense(licenseId);
+      if (!evidenceCache[licenseId]) {
+        fetchEvidences({ variables: { licenseId } });
+      }
+    }
+  };
+
+  const handleTemplateSelect = (template: MessageTemplate) => {
+    setSelectedTemplate(template);
+    if (showMessageModal) {
+      const creator = showMessageModal.creator;
+      setMessageText(
+        aplicarTemplate(template.texto, {
+          nombre: creator.nombre,
+          handle: creator.handle,
+        })
+      );
+    }
+  };
+
+  const handleSaveMessage = () => {
+    if (!showMessageModal || !messageText.trim()) return;
+    agregarEvidencia({
+      variables: {
+        input: {
+          licenseId: showMessageModal.licenseId,
+          tipo: "MENSAJE",
+          contenido: messageText,
+        },
+      },
+    });
+  };
+
+  const handleCopyMessage = () => {
+    navigator.clipboard.writeText(messageText);
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScreenshotFile(file);
+    try {
+      const preview = await readFileAsDataUrl(file);
+      setScreenshotPreview(preview);
+    } catch {
+      setScreenshotPreview("");
+    }
+  };
+
+  const handleUploadScreenshot = async () => {
+    if (!showScreenshotModal || !screenshotFile) return;
+    setUploadingScreenshot(true);
+    try {
+      const result = await uploadLicenseScreenshot(screenshotFile);
+      await agregarEvidencia({
+        variables: {
+          input: {
+            licenseId: showScreenshotModal,
+            tipo: "SCREENSHOT",
+            storagePath: result.storagePath,
+            nota: screenshotNota || undefined,
+          },
+        },
+      });
+    } catch (err: any) {
+      alert(err.message || "Error al subir screenshot");
+    } finally {
+      setUploadingScreenshot(false);
+    }
+  };
+
+  const handleDeleteEvidence = async (evidenceId: string, licenseId: string) => {
+    if (!confirm("¿Eliminar esta evidencia?")) return;
+    try {
+      await eliminarEvidencia({ variables: { id: evidenceId } });
+      setEvidenceCache((prev) => ({
+        ...prev,
+        [licenseId]: (prev[licenseId] || []).filter((e) => e._id !== evidenceId),
+      }));
+    } catch {
+      alert("Error al eliminar");
+    }
+  };
+
+  const getCreatorById = (creatorId: string) => creators.find((c) => c._id === creatorId);
 
   return (
     <DashboardLayout>
@@ -167,23 +329,123 @@ export default function CreatorsPage() {
                   <p className="text-xs text-white/40">
                     {creatorLicenses.length} licencia{creatorLicenses.length !== 1 ? "s" : ""}
                   </p>
-                  {creatorLicenses.map((lic) => (
-                    <div
-                      key={lic._id}
-                      className="flex items-center justify-between rounded-lg bg-black/30 px-3 py-2"
-                    >
-                      <span className="text-sm">{lic.scope}</span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${
-                          lic.status === "ACTIVA"
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-gray-500/20 text-gray-400"
-                        }`}
-                      >
-                        {lic.status}
-                      </span>
-                    </div>
-                  ))}
+                  {creatorLicenses.map((lic) => {
+                    const isExpanded = expandedLicense === lic._id;
+                    const evidences = evidenceCache[lic._id] || [];
+                    return (
+                      <div key={lic._id} className="rounded-lg bg-black/30">
+                        <div
+                          className="flex cursor-pointer items-center justify-between px-3 py-2"
+                          onClick={() => toggleLicenseExpand(lic._id)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{lic.scope}</span>
+                            {evidences.length > 0 && (
+                              <span className="rounded bg-[#0FED9D]/20 px-1.5 py-0.5 text-xs text-[#0FED9D]">
+                                {evidences.length}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-xs ${
+                                lic.status === "ACTIVA"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : "bg-gray-500/20 text-gray-400"
+                              }`}
+                            >
+                              {lic.status}
+                            </span>
+                            <span className="text-white/40">{isExpanded ? "▲" : "▼"}</span>
+                          </div>
+                        </div>
+
+                        {/* Expanded Evidence Section */}
+                        {isExpanded && (
+                          <div className="border-t border-white/5 p-3">
+                            {loadingEvidences ? (
+                              <div className="py-4 text-center text-sm text-white/40">
+                                Cargando evidencias...
+                              </div>
+                            ) : (
+                              <>
+                                {/* Evidence List */}
+                                {evidences.length > 0 ? (
+                                  <div className="mb-3 space-y-2">
+                                    {evidences.map((ev) => (
+                                      <div
+                                        key={ev._id}
+                                        className="group rounded-lg bg-white/5 p-3"
+                                      >
+                                        <div className="flex items-start justify-between">
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-lg">
+                                              {ev.tipo === "MENSAJE" ? "📝" : "🖼️"}
+                                            </span>
+                                            <span className="text-xs text-white/40">
+                                              {new Date(ev.createdAt).toLocaleDateString()}
+                                            </span>
+                                          </div>
+                                          <button
+                                            onClick={() => handleDeleteEvidence(ev._id, lic._id)}
+                                            className="text-xs text-red-400 opacity-0 transition group-hover:opacity-100"
+                                          >
+                                            Eliminar
+                                          </button>
+                                        </div>
+                                        {ev.tipo === "MENSAJE" && ev.contenido && (
+                                          <p className="mt-2 line-clamp-3 text-sm text-white/70">
+                                            {ev.contenido}
+                                          </p>
+                                        )}
+                                        {ev.tipo === "SCREENSHOT" && ev.storageUrl && (
+                                          <div className="mt-2">
+                                            <img
+                                              src={ev.storageUrl}
+                                              alt="Screenshot"
+                                              className="max-h-32 cursor-pointer rounded-lg object-cover"
+                                              onClick={() => setShowImageViewer(ev.storageUrl!)}
+                                            />
+                                            {ev.nota && (
+                                              <p className="mt-1 text-xs text-white/50">
+                                                {ev.nota}
+                                              </p>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="mb-3 text-center text-sm text-white/40">
+                                    Sin evidencias
+                                  </p>
+                                )}
+
+                                {/* Add Evidence Buttons */}
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() =>
+                                      setShowMessageModal({ licenseId: lic._id, creator })
+                                    }
+                                    className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-xs font-medium transition hover:bg-white/20"
+                                  >
+                                    + Mensaje
+                                  </button>
+                                  <button
+                                    onClick={() => setShowScreenshotModal(lic._id)}
+                                    className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-xs font-medium transition hover:bg-white/20"
+                                  >
+                                    + Captura
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -306,6 +568,172 @@ export default function CreatorsPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Add Message Modal */}
+      {showMessageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+            <h2 className="mb-4 text-xl font-bold">Agregar Mensaje</h2>
+            <p className="mb-4 text-sm text-white/50">
+              Para: {showMessageModal.creator.nombre}
+              {showMessageModal.creator.handle && ` (@${showMessageModal.creator.handle})`}
+            </p>
+
+            {/* Template selector */}
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium">Template</label>
+              <div className="flex flex-wrap gap-2">
+                {MESSAGE_TEMPLATES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleTemplateSelect(t)}
+                    className={`rounded-lg px-3 py-1.5 text-xs transition ${
+                      selectedTemplate?.id === t.id
+                        ? "bg-[#0FED9D] text-black"
+                        : "bg-white/10 text-white/70 hover:bg-white/20"
+                    }`}
+                  >
+                    {t.nombre}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Message textarea */}
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium">Mensaje</label>
+              <textarea
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                rows={8}
+                placeholder="Escribe o selecciona un template..."
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowMessageModal(null);
+                  setMessageText("");
+                  setSelectedTemplate(null);
+                }}
+                className="flex-1 rounded-xl border border-white/10 py-3 font-medium text-white/60 transition hover:bg-white/5"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCopyMessage}
+                disabled={!messageText.trim()}
+                className="rounded-xl border border-[#0FED9D]/50 px-4 py-3 font-medium text-[#0FED9D] transition hover:bg-[#0FED9D]/10 disabled:opacity-50"
+              >
+                Copiar
+              </button>
+              <button
+                onClick={handleSaveMessage}
+                disabled={agregandoEvidencia || !messageText.trim()}
+                className="flex-1 rounded-xl bg-[#0FED9D] py-3 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+              >
+                {agregandoEvidencia ? "Guardando..." : "Guardar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Screenshot Modal */}
+      {showScreenshotModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+            <h2 className="mb-6 text-xl font-bold">Subir Captura</h2>
+
+            {/* File input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {screenshotPreview ? (
+              <div className="mb-4">
+                <img
+                  src={screenshotPreview}
+                  alt="Preview"
+                  className="max-h-64 w-full rounded-xl object-contain"
+                />
+                <button
+                  onClick={() => {
+                    setScreenshotFile(null);
+                    setScreenshotPreview("");
+                  }}
+                  className="mt-2 text-sm text-red-400"
+                >
+                  Quitar imagen
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="mb-4 cursor-pointer rounded-xl border-2 border-dashed border-white/20 p-8 text-center transition hover:border-[#0FED9D]/50"
+              >
+                <div className="mb-2 text-4xl opacity-50">📷</div>
+                <p className="text-sm text-white/50">
+                  Click para seleccionar imagen
+                </p>
+              </div>
+            )}
+
+            {/* Note input */}
+            <div className="mb-4">
+              <label className="mb-2 block text-sm font-medium">Nota (opcional)</label>
+              <input
+                type="text"
+                value={screenshotNota}
+                onChange={(e) => setScreenshotNota(e.target.value)}
+                placeholder="Ej: Confirmación por DM"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowScreenshotModal(null);
+                  setScreenshotFile(null);
+                  setScreenshotPreview("");
+                  setScreenshotNota("");
+                }}
+                className="flex-1 rounded-xl border border-white/10 py-3 font-medium text-white/60 transition hover:bg-white/5"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleUploadScreenshot}
+                disabled={uploadingScreenshot || agregandoEvidencia || !screenshotFile}
+                className="flex-1 rounded-xl bg-[#0FED9D] py-3 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+              >
+                {uploadingScreenshot || agregandoEvidencia ? "Subiendo..." : "Subir"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Viewer Modal */}
+      {showImageViewer && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          onClick={() => setShowImageViewer(null)}
+        >
+          <img
+            src={showImageViewer}
+            alt="Evidence"
+            className="max-h-[90vh] max-w-[90vw] rounded-xl object-contain"
+          />
         </div>
       )}
     </DashboardLayout>

@@ -158,6 +158,44 @@ export const REVOCAR_LICENSE = gql`
   }
 `;
 
+// ---- License Evidence ----
+
+export const EVIDENCIAS_DE_LICENCIA = gql`
+  query EvidenciasDeLicencia($licenseId: ID!) {
+    evidenciasDeLicencia(licenseId: $licenseId) {
+      _id
+      licenseId
+      tipo
+      contenido
+      storagePath
+      storageUrl
+      nota
+      createdAt
+    }
+  }
+`;
+
+export const AGREGAR_EVIDENCIA = gql`
+  mutation AgregarEvidencia($input: AgregarEvidenciaInput!) {
+    agregarEvidencia(input: $input) {
+      _id
+      licenseId
+      tipo
+      contenido
+      storagePath
+      storageUrl
+      nota
+      createdAt
+    }
+  }
+`;
+
+export const ELIMINAR_EVIDENCIA = gql`
+  mutation EliminarEvidencia($id: ID!) {
+    eliminarEvidencia(id: $id)
+  }
+`;
+
 // ---- Expediente individual ----
 
 export const EXPEDIENTE = gql`

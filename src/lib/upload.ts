@@ -242,3 +242,62 @@ export async function downloadFromTikTok(url: string): Promise<UploadResult> {
     storagePath: json.storagePath || json.path,
   };
 }
+
+/**
+ * Sube un screenshot de evidencia de licencia.
+ */
+export async function uploadLicenseScreenshot(file: File): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Sesión requerida para subir evidencia");
+  }
+
+  // Validar tipo de archivo
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const validExtensions = ["jpg", "jpeg", "png", "webp", "gif"];
+  const isImageMimetype = file.type.startsWith("image/");
+  const isImageExtension = validExtensions.includes(ext);
+
+  if (!isImageMimetype && !isImageExtension) {
+    throw new Error("Solo se permiten imágenes (jpg, png, webp, gif)");
+  }
+
+  // Validar tamaño (10MB max)
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error("El archivo debe pesar menos de 10MB");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/license-screenshot`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let errorMsg = `Error al subir screenshot (${response.status})`;
+    try {
+      const json = await response.json();
+      errorMsg = json.message || errorMsg;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+
+  const json = await response.json();
+
+  if (!json.url) {
+    throw new Error("El servidor no devolvió la URL del screenshot");
+  }
+
+  return {
+    url: json.url,
+    path: json.path,
+    storagePath: json.storagePath || json.path,
+  };
+}
