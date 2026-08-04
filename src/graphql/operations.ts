@@ -7,6 +7,17 @@ export const LOGIN = gql`
     login(input: $input) {
       idToken
       accessToken
+      refreshToken
+      expiresIn
+    }
+  }
+`;
+
+export const REFRESH_TOKEN = gql`
+  mutation RefreshToken($refreshToken: String!) {
+    refreshToken(refreshToken: $refreshToken) {
+      idToken
+      accessToken
       expiresIn
     }
   }
