@@ -162,18 +162,18 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   };
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-xl">
       {/* Progress Steps */}
-      <div className="mb-8 flex items-center justify-center gap-4">
+      <div className="mb-4 flex items-center justify-center gap-2">
         {["upload", "config", "processing", "done"].map((s, i) => {
           const steps = ["upload", "config", "processing", "done"];
           const currentIndex = steps.indexOf(step);
           const isActive = i === currentIndex;
           const isComplete = i < currentIndex;
           return (
-            <div key={s} className="flex items-center gap-4">
+            <div key={s} className="flex items-center gap-2">
               <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-all ${
                   isComplete
                     ? "bg-[#0FED9D] text-black"
                     : isActive
@@ -185,7 +185,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               </div>
               {i < 3 && (
                 <div
-                  className={`h-0.5 w-12 transition-all ${
+                  className={`h-0.5 w-8 transition-all ${
                     isComplete ? "bg-[#0FED9D]" : "bg-white/10"
                   }`}
                 />
@@ -196,30 +196,23 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
       </div>
 
       {/* Step Content */}
-      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-8">
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
         {step === "upload" && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-bold">Sube tu clip</h2>
-              <p className="mt-1 text-sm text-white/50">
-                Selecciona el video que quieres convertir en contenido
-              </p>
-            </div>
-
+          <div className="space-y-4">
             {/* Mode Selection */}
-            <div className="flex gap-2 rounded-xl bg-white/5 p-1">
+            <div className="flex gap-1 rounded-lg bg-white/5 p-0.5">
               <button
                 onClick={() => {
                   setInputMode("file");
                   setTiktokUrl("");
                 }}
-                className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition ${
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                   inputMode === "file"
                     ? "bg-[#0FED9D] text-black"
                     : "text-white/60 hover:text-white"
                 }`}
               >
-                📁 Subir archivo
+                📁 Archivo
               </button>
               <button
                 onClick={() => {
@@ -227,13 +220,13 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                   setClipFile(null);
                   setClipPreview(null);
                 }}
-                className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition ${
+                className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                   inputMode === "link"
                     ? "bg-[#0FED9D] text-black"
                     : "text-white/60 hover:text-white"
                 }`}
               >
-                🔗 Link de TikTok
+                🔗 TikTok
               </button>
             </div>
 
@@ -248,18 +241,18 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             {inputMode === "file" ? (
               // File upload mode
               clipPreview ? (
-                <div className="relative overflow-hidden rounded-xl">
+                <div className="relative overflow-hidden rounded-lg">
                   <video
                     src={clipPreview}
                     controls
-                    className="aspect-video w-full rounded-xl object-contain bg-black"
+                    className="max-h-48 w-full rounded-lg object-contain bg-black"
                   />
                   <button
                     onClick={() => {
                       setClipFile(null);
                       setClipPreview(null);
                     }}
-                    className="absolute right-3 top-3 rounded-full bg-black/70 p-2 text-white hover:bg-black"
+                    className="absolute right-2 top-2 rounded-full bg-black/70 p-1.5 text-sm text-white hover:bg-black"
                   >
                     ✕
                   </button>
@@ -267,23 +260,20 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               ) : (
                 <button
                   onClick={() => clipInputRef.current?.click()}
-                  className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/5"
+                  className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/5"
                 >
-                  <div className="mb-3 text-5xl opacity-50">📁</div>
-                  <p className="font-medium">Arrastra tu video aquí</p>
-                  <p className="mt-1 text-sm text-white/40">
-                    o haz clic para seleccionar
-                  </p>
-                  <p className="mt-3 text-xs text-white/30">
+                  <div className="mb-1 text-3xl opacity-50">📁</div>
+                  <p className="text-sm font-medium">Arrastra o selecciona video</p>
+                  <p className="mt-0.5 text-xs text-white/30">
                     MP4, MOV, WebM • Máx 500MB
                   </p>
                 </button>
               )
             ) : (
               // TikTok link mode
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <span className="text-2xl">🔗</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <span className="text-lg">🔗</span>
                   <input
                     type="url"
                     value={tiktokUrl}
@@ -306,49 +296,37 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
                 {/* Loading state */}
                 {loadingPreview && (
-                  <div className="flex items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 p-8">
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
-                    <span className="text-sm text-white/50">Obteniendo preview...</span>
+                  <div className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-6">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+                    <span className="text-xs text-white/50">Obteniendo preview...</span>
                   </div>
                 )}
 
                 {/* Preview */}
                 {tiktokPreview && !loadingPreview && (
-                  <div className="overflow-hidden rounded-xl border border-[#0FED9D]/30 bg-black">
-                    <div className="relative flex items-center justify-center bg-black">
+                  <div className="flex gap-3 rounded-lg border border-[#0FED9D]/30 bg-black/50 p-3">
+                    <div className="relative h-24 w-16 flex-shrink-0 overflow-hidden rounded">
                       <img
                         src={tiktokPreview.thumbnail}
                         alt="Preview"
-                        className="max-h-[400px] w-auto max-w-full"
+                        className="h-full w-full object-cover"
                       />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="rounded-full bg-white/20 p-4 backdrop-blur-sm">
-                          <span className="text-4xl">▶</span>
-                        </div>
-                      </div>
                       {tiktokPreview.duration > 0 && (
-                        <div className="absolute bottom-3 right-3 rounded bg-black/70 px-2 py-1 text-xs">
+                        <div className="absolute bottom-1 right-1 rounded bg-black/70 px-1 py-0.5 text-[10px]">
                           {Math.floor(tiktokPreview.duration / 60)}:{String(tiktokPreview.duration % 60).padStart(2, "0")}
                         </div>
                       )}
                     </div>
-                    <div className="border-t border-white/10 p-4">
-                      <p className="font-medium text-[#0FED9D]">@{tiktokPreview.author}</p>
-                      <p className="mt-1 line-clamp-2 text-sm text-white/70">{tiktokPreview.title}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[#0FED9D]">@{tiktokPreview.author}</p>
+                      <p className="mt-0.5 line-clamp-2 text-xs text-white/60">{tiktokPreview.title}</p>
                     </div>
                   </div>
                 )}
 
-                {/* Empty state */}
-                {!tiktokUrl && !loadingPreview && (
-                  <p className="text-center text-xs text-white/40">
-                    Pega el link del video de TikTok para ver el preview
-                  </p>
-                )}
-
                 {/* Error state */}
                 {error && inputMode === "link" && (
-                  <div className="rounded-xl bg-red-500/10 p-3 text-center text-sm text-red-400">
+                  <div className="rounded-lg bg-red-500/10 px-3 py-2 text-center text-xs text-red-400">
                     {error}
                   </div>
                 )}
@@ -356,43 +334,37 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             )}
 
             {/* Voice Note (Optional) */}
-            <div>
-              <label className="mb-2 block text-sm text-white/60">
-                Nota de voz (opcional)
-              </label>
-              <input
-                ref={voiceInputRef}
-                type="file"
-                accept="audio/*"
-                onChange={handleVoiceSelect}
-                className="hidden"
-              />
-              {voiceFile ? (
-                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3">
-                  <span className="text-xl">🎙️</span>
-                  <span className="flex-1 truncate text-sm">{voiceFile.name}</span>
-                  <button
-                    onClick={() => setVoiceFile(null)}
-                    className="text-white/40 hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ) : (
+            <input
+              ref={voiceInputRef}
+              type="file"
+              accept="audio/*"
+              onChange={handleVoiceSelect}
+              className="hidden"
+            />
+            {voiceFile ? (
+              <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                <span className="text-sm">🎙️</span>
+                <span className="flex-1 truncate text-xs">{voiceFile.name}</span>
                 <button
-                  onClick={() => voiceInputRef.current?.click()}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm text-white/50 transition hover:bg-white/10"
+                  onClick={() => setVoiceFile(null)}
+                  className="text-xs text-white/40 hover:text-white"
                 >
-                  <span>🎙️</span>
-                  Agregar nota de voz
+                  ✕
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => voiceInputRef.current?.click()}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/10 py-2 text-xs text-white/40 transition hover:border-white/20 hover:text-white/60"
+              >
+                🎙️ Nota de voz (opcional)
+              </button>
+            )}
 
             <button
               onClick={() => setStep("config")}
               disabled={!hasClipSource}
-              className="w-full rounded-xl bg-[#0FED9D] py-4 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+              className="w-full rounded-lg bg-[#0FED9D] py-3 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
             >
               Continuar →
             </button>
@@ -400,57 +372,37 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
         )}
 
         {step === "config" && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-bold">Configura tu video</h2>
-              <p className="mt-1 text-sm text-white/50">
-                Selecciona la licencia y el tipo de contenido
-              </p>
-            </div>
-
+          <div className="space-y-4">
             {error && (
-              <div className="rounded-xl bg-red-500/10 p-4 text-center text-sm text-red-400">
+              <div className="rounded-lg bg-red-500/10 px-3 py-2 text-center text-xs text-red-400">
                 {error}
               </div>
             )}
 
             {/* License Selection */}
             <div>
-              <label className="mb-2 block text-sm font-medium">Licencia *</label>
+              <label className="mb-1.5 block text-xs font-medium text-white/60">Licencia *</label>
               {licenses.length > 0 ? (
-                <div className="grid gap-2">
+                <select
+                  value={selectedLicense}
+                  onChange={(e) => setSelectedLicense(e.target.value)}
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-[#0FED9D]/50"
+                >
+                  <option value="">Seleccionar licencia</option>
                   {licenses.map((license) => (
-                    <button
-                      key={license._id}
-                      onClick={() => setSelectedLicense(license._id)}
-                      className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
-                        selectedLicense === license._id
-                          ? "border-[#0FED9D] bg-[#0FED9D]/10"
-                          : "border-white/10 hover:border-white/20"
-                      }`}
-                    >
-                      <div
-                        className={`h-4 w-4 rounded-full border-2 ${
-                          selectedLicense === license._id
-                            ? "border-[#0FED9D] bg-[#0FED9D]"
-                            : "border-white/30"
-                        }`}
-                      />
-                      <div>
-                        <p className="font-medium">{license.scope}</p>
-                        <p className="text-xs text-white/40">ID: {license.creatorId}</p>
-                      </div>
-                    </button>
+                    <option key={license._id} value={license._id}>
+                      {license.scope}
+                    </option>
                   ))}
-                </div>
+                </select>
               ) : (
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
-                  <p className="text-sm text-white/40">No hay licencias activas.</p>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-center">
+                  <p className="text-xs text-white/40">No hay licencias activas.</p>
                   <Link
                     href="/creators"
-                    className="mt-2 inline-block text-sm text-[#0FED9D] hover:underline"
+                    className="text-xs text-[#0FED9D] hover:underline"
                   >
-                    Ir a Creators para crear una →
+                    Crear una →
                   </Link>
                 </div>
               )}
@@ -458,19 +410,19 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
             {/* Page Selection */}
             <div>
-              <label className="mb-2 block text-sm font-medium">Página</label>
-              <div className="grid grid-cols-3 gap-2">
+              <label className="mb-1.5 block text-xs font-medium text-white/60">Página</label>
+              <div className="grid grid-cols-3 gap-1.5">
                 {["PRINCIPAL", "SECUNDARIO", "ENTRETENIMIENTO"].map((p) => (
                   <button
                     key={p}
                     onClick={() => setPagina(p)}
-                    className={`rounded-xl border py-3 text-sm transition ${
+                    className={`rounded-lg border py-2 text-xs transition ${
                       pagina === p
                         ? "border-[#0FED9D] bg-[#0FED9D]/10 text-[#0FED9D]"
                         : "border-white/10 text-white/60 hover:border-white/20"
                     }`}
                   >
-                    {p.toLowerCase()}
+                    {p.charAt(0) + p.slice(1).toLowerCase()}
                   </button>
                 ))}
               </div>
@@ -478,86 +430,84 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
             {/* Type Selection */}
             <div>
-              <label className="mb-2 block text-sm font-medium">Tipo de valor</label>
-              <div className="grid gap-2">
+              <label className="mb-1.5 block text-xs font-medium text-white/60">Tipo</label>
+              <div className="grid grid-cols-3 gap-1.5">
                 {[
-                  { value: "EXPEDIENTE_COMPLETO", label: "Expediente completo", desc: "Video narrativo completo" },
-                  { value: "VOZ_SIN_CAMARA", label: "Voz sin cámara", desc: "Solo narración" },
-                  { value: "XED", label: "XED", desc: "Formato corto" },
+                  { value: "EXPEDIENTE_COMPLETO", label: "Expediente" },
+                  { value: "VOZ_SIN_CAMARA", label: "Voz" },
+                  { value: "XED", label: "XED" },
                 ].map((t) => (
                   <button
                     key={t.value}
                     onClick={() => setTipoDeValor(t.value)}
-                    className={`rounded-xl border p-4 text-left transition ${
+                    className={`rounded-lg border py-2 text-xs transition ${
                       tipoDeValor === t.value
-                        ? "border-[#0FED9D] bg-[#0FED9D]/10"
-                        : "border-white/10 hover:border-white/20"
+                        ? "border-[#0FED9D] bg-[#0FED9D]/10 text-[#0FED9D]"
+                        : "border-white/10 text-white/60 hover:border-white/20"
                     }`}
                   >
-                    <p className="font-medium">{t.label}</p>
-                    <p className="text-xs text-white/40">{t.desc}</p>
+                    {t.label}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setStep("upload")}
-                className="flex-1 rounded-xl border border-white/10 py-4 font-medium text-white/60 transition hover:bg-white/5"
+                className="flex-1 rounded-lg border border-white/10 py-2.5 text-sm text-white/60 transition hover:bg-white/5"
               >
                 ← Atrás
               </button>
               <button
                 onClick={handleProcess}
                 disabled={!selectedLicense || uploading}
-                className="flex-1 rounded-xl bg-[#0FED9D] py-4 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
               >
-                Crear Video 🚀
+                Crear 🚀
               </button>
             </div>
           </div>
         )}
 
         {step === "processing" && (
-          <div className="space-y-6 py-8 text-center">
-            <div className="mx-auto h-20 w-20 animate-pulse rounded-full bg-[#0FED9D]/20 p-4">
+          <div className="space-y-4 py-6 text-center">
+            <div className="mx-auto h-14 w-14 animate-pulse rounded-full bg-[#0FED9D]/20 p-3">
               <div className="flex h-full w-full items-center justify-center rounded-full bg-[#0FED9D]/30">
-                <span className="text-3xl">⚡</span>
+                <span className="text-xl">⚡</span>
               </div>
             </div>
             <div>
-              <h2 className="text-xl font-bold">Procesando...</h2>
-              <p className="mt-1 text-sm text-white/50">
-                Subiendo archivos y creando tu video
+              <h2 className="font-bold">Procesando...</h2>
+              <p className="mt-0.5 text-xs text-white/50">
+                Subiendo archivos
               </p>
             </div>
-            <div className="mx-auto h-2 w-64 overflow-hidden rounded-full bg-white/10">
+            <div className="mx-auto h-1.5 w-48 overflow-hidden rounded-full bg-white/10">
               <div
                 className="h-full rounded-full bg-[#0FED9D] transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="text-sm text-white/40">{progress}%</p>
           </div>
         )}
 
         {step === "done" && (
-          <div className="space-y-6 py-8 text-center">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#0FED9D]/20">
-              <span className="text-4xl">✓</span>
+          <div className="space-y-4 py-6 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#0FED9D]/20">
+              <span className="text-2xl">✓</span>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#0FED9D]">¡Video creado!</h2>
-              <p className="mt-1 text-sm text-white/50">
-                Tu video está siendo procesado y aparecerá en la cola de revisión
+              <h2 className="font-bold text-[#0FED9D]">¡Video creado!</h2>
+              <p className="mt-0.5 text-xs text-white/50">
+                Aparecerá en la cola de revisión
               </p>
             </div>
             <button
               onClick={resetWizard}
-              className="rounded-xl border border-white/10 px-8 py-3 text-sm font-medium transition hover:bg-white/5"
+              className="rounded-lg border border-white/10 px-6 py-2 text-sm transition hover:bg-white/5"
             >
-              Crear otro video
+              Crear otro
             </button>
           </div>
         )}
