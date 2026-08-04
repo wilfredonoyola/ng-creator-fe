@@ -8,8 +8,8 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 interface Creator {
   _id: string;
   nombre: string;
-  canal?: string;
-  activo: boolean;
+  handle?: string;
+  esPropio: boolean;
 }
 
 interface License {
@@ -24,7 +24,7 @@ export default function CreatorsPage() {
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<string>("");
   const [creatorName, setCreatorName] = useState("");
-  const [creatorCanal, setCreatorCanal] = useState("");
+  const [creatorHandle, setCreatorHandle] = useState("");
   const [licenseScope, setLicenseScope] = useState("");
 
   const { data: creatorsData, loading: loadingCreators } = useQuery(CREATORS);
@@ -38,7 +38,7 @@ export default function CreatorsPage() {
     onCompleted: () => {
       setShowCreatorModal(false);
       setCreatorName("");
-      setCreatorCanal("");
+      setCreatorHandle("");
     },
   });
 
@@ -57,7 +57,7 @@ export default function CreatorsPage() {
       variables: {
         input: {
           nombre: creatorName,
-          canal: creatorCanal || undefined,
+          handle: creatorHandle || undefined,
         },
       },
     });
@@ -113,9 +113,9 @@ export default function CreatorsPage() {
         </div>
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
           <p className="text-3xl font-bold text-blue-400">
-            {creators.filter((c) => c.activo).length}
+            {creators.filter((c) => c.esPropio).length}
           </p>
-          <p className="mt-1 text-sm text-white/50">Creators activos</p>
+          <p className="mt-1 text-sm text-white/50">Propios</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
           <p className="text-3xl font-bold text-yellow-400">
@@ -146,19 +146,19 @@ export default function CreatorsPage() {
                     </div>
                     <div>
                       <p className="font-medium">{creator.nombre}</p>
-                      {creator.canal && (
-                        <p className="text-sm text-white/40">{creator.canal}</p>
+                      {creator.handle && (
+                        <p className="text-sm text-white/40">@{creator.handle}</p>
                       )}
                     </div>
                   </div>
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium ${
-                      creator.activo
-                        ? "bg-green-500/20 text-green-400"
-                        : "bg-gray-500/20 text-gray-400"
+                      creator.esPropio
+                        ? "bg-blue-500/20 text-blue-400"
+                        : "bg-purple-500/20 text-purple-400"
                     }`}
                   >
-                    {creator.activo ? "Activo" : "Inactivo"}
+                    {creator.esPropio ? "Propio" : "Externo"}
                   </span>
                 </div>
 
@@ -223,12 +223,12 @@ export default function CreatorsPage() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium">Canal</label>
+                <label className="mb-2 block text-sm font-medium">Handle</label>
                 <input
                   type="text"
-                  value={creatorCanal}
-                  onChange={(e) => setCreatorCanal(e.target.value)}
-                  placeholder="Nombre del canal (opcional)"
+                  value={creatorHandle}
+                  onChange={(e) => setCreatorHandle(e.target.value)}
+                  placeholder="@usuario (opcional)"
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
                 />
               </div>
