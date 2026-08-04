@@ -7,14 +7,10 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 interface Publication {
   _id: string;
   expedienteId: string;
-  plataforma: string;
-  publicUrl?: string;
-  metricas?: {
-    views?: number;
-    likes?: number;
-    comments?: number;
-  };
-  createdAt?: string;
+  expedienteNum: number;
+  pagina: string;
+  publicadoEn?: string;
+  videoFinalUrl?: string;
 }
 
 export default function PublicadosPage() {
@@ -41,44 +37,57 @@ export default function PublicadosPage() {
           {publications.map((pub) => (
             <div
               key={pub._id}
-              className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5"
+              className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent overflow-hidden"
             >
-              <div className="mb-4 flex items-center justify-between">
-                <span className="rounded-lg bg-blue-500/20 px-3 py-1 text-xs font-medium text-blue-400">
-                  {pub.plataforma}
-                </span>
-                {pub.publicUrl && (
+              {/* Video Player */}
+              {pub.videoFinalUrl ? (
+                <video
+                  src={pub.videoFinalUrl}
+                  controls
+                  className="w-full aspect-[9/16] bg-black object-contain"
+                  preload="metadata"
+                />
+              ) : (
+                <div className="w-full aspect-[9/16] bg-black/50 flex items-center justify-center">
+                  <span className="text-white/30">Sin video</span>
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-lg font-bold text-[#0FED9D]">
+                    #{pub.expedienteNum}
+                  </span>
+                  <span className="rounded-lg bg-[#0FED9D]/20 px-2 py-1 text-xs font-medium text-[#0FED9D]">
+                    {pub.pagina}
+                  </span>
+                </div>
+
+                {pub.publicadoEn && (
+                  <p className="text-xs text-white/40">
+                    {new Date(pub.publicadoEn).toLocaleDateString("es", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                )}
+
+                {pub.videoFinalUrl && (
                   <a
-                    href={pub.publicUrl}
+                    href={pub.videoFinalUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-[#0FED9D] hover:underline"
+                    download
+                    className="mt-3 block w-full text-center rounded-lg bg-white/10 py-2 text-sm hover:bg-white/20 transition"
                   >
-                    Ver video
+                    ⬇️ Descargar
                   </a>
                 )}
               </div>
-
-              <p className="mb-4 truncate text-sm text-white/40">
-                Expediente: {pub.expedienteId}
-              </p>
-
-              {pub.metricas && (
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-lg bg-white/5 p-3 text-center">
-                    <p className="text-lg font-bold">{pub.metricas.views ?? 0}</p>
-                    <p className="text-xs text-white/40">Views</p>
-                  </div>
-                  <div className="rounded-lg bg-white/5 p-3 text-center">
-                    <p className="text-lg font-bold">{pub.metricas.likes ?? 0}</p>
-                    <p className="text-xs text-white/40">Likes</p>
-                  </div>
-                  <div className="rounded-lg bg-white/5 p-3 text-center">
-                    <p className="text-lg font-bold">{pub.metricas.comments ?? 0}</p>
-                    <p className="text-xs text-white/40">Comments</p>
-                  </div>
-                </div>
-              )}
             </div>
           ))}
         </div>

@@ -249,6 +249,7 @@ export const PUBLICATIONS = gql`
       expedienteNum
       pagina
       publicadoEn
+      videoFinalUrl
     }
   }
 `;
