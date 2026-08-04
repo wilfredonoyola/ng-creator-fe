@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import Link from "next/link";
 import { uploadClip, uploadVoiceNote } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
 
@@ -290,9 +291,15 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                   ))}
                 </div>
               ) : (
-                <p className="rounded-xl border border-white/10 bg-white/5 p-4 text-center text-sm text-white/40">
-                  No hay licencias activas. Crea una primero.
-                </p>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+                  <p className="text-sm text-white/40">No hay licencias activas.</p>
+                  <Link
+                    href="/creators"
+                    className="mt-2 inline-block text-sm text-[#0FED9D] hover:underline"
+                  >
+                    Ir a Creators para crear una →
+                  </Link>
+                </div>
               )}
             </div>
 
