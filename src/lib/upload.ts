@@ -219,21 +219,22 @@ export async function downloadFromTikTok(url: string): Promise<UploadResult> {
     body: JSON.stringify({ url }),
   });
 
+  const json = await response.json().catch(() => ({}));
+
+  // Verificar errores HTTP
   if (!response.ok) {
-    let errorMsg = `Error al descargar video (${response.status})`;
-    try {
-      const json = await response.json();
-      errorMsg = json.message || errorMsg;
-    } catch {
-      // ignore
-    }
+    const errorMsg = json.message || `Error al descargar video (${response.status})`;
     throw new Error(errorMsg);
   }
 
-  const json = await response.json();
+  // Verificar que la respuesta sea exitosa
+  if (!json.success) {
+    throw new Error(json.message || "El servidor reportó un error al procesar el video");
+  }
 
-  if (!json.url) {
-    throw new Error("El servidor no devolvió la URL del video");
+  // Verificar que tengamos los datos necesarios
+  if (!json.url || !json.storagePath) {
+    throw new Error("El servidor no devolvió los datos del video correctamente");
   }
 
   return {
