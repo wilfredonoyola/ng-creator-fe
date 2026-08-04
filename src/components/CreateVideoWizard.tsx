@@ -315,11 +315,11 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 {/* Preview */}
                 {tiktokPreview && !loadingPreview && (
                   <div className="overflow-hidden rounded-xl border border-[#0FED9D]/30 bg-black">
-                    <div className="relative aspect-[9/16] max-h-[400px] w-full">
+                    <div className="relative">
                       <img
                         src={tiktokPreview.thumbnail}
                         alt="Preview"
-                        className="h-full w-full object-cover"
+                        className="w-full"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                         <div className="rounded-full bg-white/20 p-4 backdrop-blur-sm">
