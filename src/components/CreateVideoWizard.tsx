@@ -3,10 +3,11 @@
 import { useState, useRef } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
-import { uploadClip, uploadVoiceNote } from "@/lib/upload";
+import { uploadClip, uploadVoiceNote, downloadFromTikTok } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
 
 type Step = "upload" | "config" | "processing" | "done";
+type InputMode = "file" | "link";
 
 interface License {
   _id: string;
@@ -17,8 +18,10 @@ interface License {
 
 export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const [step, setStep] = useState<Step>("upload");
+  const [inputMode, setInputMode] = useState<InputMode>("file");
   const [clipFile, setClipFile] = useState<File | null>(null);
   const [clipPreview, setClipPreview] = useState<string | null>(null);
+  const [tiktokUrl, setTiktokUrl] = useState<string>("");
   const [voiceFile, setVoiceFile] = useState<File | null>(null);
   const [selectedLicense, setSelectedLicense] = useState<string>("");
   const [pagina, setPagina] = useState<string>("PRINCIPAL");
@@ -29,6 +32,8 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
   const clipInputRef = useRef<HTMLInputElement>(null);
   const voiceInputRef = useRef<HTMLInputElement>(null);
+
+  const hasClipSource = inputMode === "file" ? !!clipFile : !!tiktokUrl.trim();
 
   const { data: licensesData } = useQuery(LICENSES);
   const licenses: License[] = licensesData?.licenses?.filter((l: License) => l.status === "ACTIVA") || [];
@@ -54,7 +59,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   };
 
   const handleProcess = async () => {
-    if (!clipFile || !selectedLicense) {
+    if (!hasClipSource || !selectedLicense) {
       setError("Selecciona un clip y una licencia");
       return;
     }
@@ -64,9 +69,18 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
     setError(null);
 
     try {
-      // Upload clip
-      setProgress(20);
-      const clipResult = await uploadClip(clipFile);
+      // Upload or download clip
+      setProgress(10);
+      let clipResult;
+      if (inputMode === "file" && clipFile) {
+        setProgress(20);
+        clipResult = await uploadClip(clipFile);
+      } else if (inputMode === "link" && tiktokUrl) {
+        setProgress(20);
+        clipResult = await downloadFromTikTok(tiktokUrl);
+      } else {
+        throw new Error("No hay fuente de video");
+      }
 
       // Upload voice note if exists
       let voicePath: string | undefined;
@@ -108,8 +122,10 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
   const resetWizard = () => {
     setStep("upload");
+    setInputMode("file");
     setClipFile(null);
     setClipPreview(null);
+    setTiktokUrl("");
     setVoiceFile(null);
     setSelectedLicense("");
     setProgress(0);
@@ -161,6 +177,37 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               </p>
             </div>
 
+            {/* Mode Selection */}
+            <div className="flex gap-2 rounded-xl bg-white/5 p-1">
+              <button
+                onClick={() => {
+                  setInputMode("file");
+                  setTiktokUrl("");
+                }}
+                className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition ${
+                  inputMode === "file"
+                    ? "bg-[#0FED9D] text-black"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                📁 Subir archivo
+              </button>
+              <button
+                onClick={() => {
+                  setInputMode("link");
+                  setClipFile(null);
+                  setClipPreview(null);
+                }}
+                className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition ${
+                  inputMode === "link"
+                    ? "bg-[#0FED9D] text-black"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                🔗 Link de TikTok
+              </button>
+            </div>
+
             <input
               ref={clipInputRef}
               type="file"
@@ -169,37 +216,70 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               className="hidden"
             />
 
-            {clipPreview ? (
-              <div className="relative overflow-hidden rounded-xl">
-                <video
-                  src={clipPreview}
-                  controls
-                  className="aspect-video w-full rounded-xl object-contain bg-black"
-                />
+            {inputMode === "file" ? (
+              // File upload mode
+              clipPreview ? (
+                <div className="relative overflow-hidden rounded-xl">
+                  <video
+                    src={clipPreview}
+                    controls
+                    className="aspect-video w-full rounded-xl object-contain bg-black"
+                  />
+                  <button
+                    onClick={() => {
+                      setClipFile(null);
+                      setClipPreview(null);
+                    }}
+                    className="absolute right-3 top-3 rounded-full bg-black/70 p-2 text-white hover:bg-black"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={() => {
-                    setClipFile(null);
-                    setClipPreview(null);
-                  }}
-                  className="absolute right-3 top-3 rounded-full bg-black/70 p-2 text-white hover:bg-black"
+                  onClick={() => clipInputRef.current?.click()}
+                  className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/5"
                 >
-                  ✕
+                  <div className="mb-3 text-5xl opacity-50">📁</div>
+                  <p className="font-medium">Arrastra tu video aquí</p>
+                  <p className="mt-1 text-sm text-white/40">
+                    o haz clic para seleccionar
+                  </p>
+                  <p className="mt-3 text-xs text-white/30">
+                    MP4, MOV, WebM • Máx 500MB
+                  </p>
                 </button>
-              </div>
+              )
             ) : (
-              <button
-                onClick={() => clipInputRef.current?.click()}
-                className="flex aspect-video w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/20 bg-white/5 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/5"
-              >
-                <div className="mb-3 text-5xl opacity-50">📁</div>
-                <p className="font-medium">Arrastra tu video aquí</p>
-                <p className="mt-1 text-sm text-white/40">
-                  o haz clic para seleccionar
+              // TikTok link mode
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4">
+                  <span className="text-3xl">📱</span>
+                  <input
+                    type="url"
+                    value={tiktokUrl}
+                    onChange={(e) => setTiktokUrl(e.target.value)}
+                    placeholder="https://www.tiktok.com/@usuario/video/..."
+                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/30"
+                  />
+                  {tiktokUrl && (
+                    <button
+                      onClick={() => setTiktokUrl("")}
+                      className="text-white/40 hover:text-white"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+                <p className="text-center text-xs text-white/40">
+                  Pega el link del video de TikTok. El video se descargará automáticamente.
                 </p>
-                <p className="mt-3 text-xs text-white/30">
-                  MP4, MOV, WebM • Máx 500MB
-                </p>
-              </button>
+                {tiktokUrl && tiktokUrl.includes("tiktok.com") && (
+                  <div className="flex items-center justify-center gap-2 rounded-lg bg-[#0FED9D]/10 py-2 text-sm text-[#0FED9D]">
+                    <span>✓</span> Link válido
+                  </div>
+                )}
+              </div>
             )}
 
             {/* Voice Note (Optional) */}
@@ -238,7 +318,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
             <button
               onClick={() => setStep("config")}
-              disabled={!clipFile}
+              disabled={!hasClipSource}
               className="w-full rounded-xl bg-[#0FED9D] py-4 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
             >
               Continuar →

@@ -151,3 +151,51 @@ export function readFileAsDataUrl(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+
+/**
+ * Descarga un video de TikTok y lo sube a Bunny CDN.
+ * El backend hace la descarga y subida, devolviendo el mismo resultado que uploadClip.
+ */
+export async function downloadFromTikTok(url: string): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) {
+    throw new Error("Sesión requerida para descargar videos");
+  }
+
+  // Validar que sea un URL de TikTok
+  if (!url.includes("tiktok.com")) {
+    throw new Error("El URL debe ser de TikTok");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/uploads/tiktok`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url }),
+  });
+
+  if (!response.ok) {
+    let errorMsg = `Error al descargar video (${response.status})`;
+    try {
+      const json = await response.json();
+      errorMsg = json.message || errorMsg;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+
+  const json = await response.json();
+
+  if (!json.url) {
+    throw new Error("El servidor no devolvió la URL del video");
+  }
+
+  return {
+    url: json.url,
+    path: json.path,
+    storagePath: json.storagePath || json.path,
+  };
+}
