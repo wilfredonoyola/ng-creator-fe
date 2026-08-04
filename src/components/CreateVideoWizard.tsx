@@ -303,20 +303,32 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
                 {/* Preview */}
                 {tiktokPreview && !loadingPreview && (
-                  <div className="flex gap-3 rounded-lg border border-[#0FED9D]/30 bg-black/50 p-3">
-                    <div className="relative h-24 w-16 flex-shrink-0 overflow-hidden rounded">
-                      <img
-                        src={tiktokPreview.thumbnail}
-                        alt="Preview"
-                        className="h-full w-full object-cover"
+                  <div className="rounded-lg border border-[#0FED9D]/30 bg-black/50 overflow-hidden">
+                    {/* Video player or thumbnail */}
+                    {tiktokPreview.videoUrl ? (
+                      <video
+                        ref={videoPreviewRef}
+                        src={tiktokPreview.videoUrl}
+                        controls
+                        className="w-full max-h-64 bg-black"
+                        poster={tiktokPreview.thumbnail}
                       />
-                      {tiktokPreview.duration > 0 && (
-                        <div className="absolute bottom-1 right-1 rounded bg-black/70 px-1 py-0.5 text-[10px]">
-                          {Math.floor(tiktokPreview.duration / 60)}:{String(tiktokPreview.duration % 60).padStart(2, "0")}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
+                    ) : (
+                      <div className="relative">
+                        <img
+                          src={tiktokPreview.thumbnail}
+                          alt="Preview"
+                          className="w-full max-h-48 object-contain bg-black"
+                        />
+                        {tiktokPreview.duration > 0 && (
+                          <div className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-xs">
+                            {Math.floor(tiktokPreview.duration / 60)}:{String(tiktokPreview.duration % 60).padStart(2, "0")}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {/* Info */}
+                    <div className="p-3">
                       <p className="text-sm font-medium text-[#0FED9D]">@{tiktokPreview.author}</p>
                       <p className="mt-0.5 line-clamp-2 text-xs text-white/60">{tiktokPreview.title}</p>
                     </div>

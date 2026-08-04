@@ -157,6 +157,7 @@ export type TikTokPreview = {
   thumbnail: string;
   duration: number;
   author: string;
+  videoUrl?: string;
 };
 
 /**
