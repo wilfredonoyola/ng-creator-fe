@@ -3,12 +3,20 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
+  CAMBIAR_ESTADO_POST,
+  CONTEO_POR_ESTADO,
   ESTADO_POR_ANIO,
   HISTORIAL_DE_PAGINA,
   RESUMEN_HISTORIAL,
   SINCRONIZAR_ANIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import {
+  ETIQUETA_ESTADO,
+  TarjetaRevival,
+  type EstadoRevival,
+  type PostRevival,
+} from "@/components/TarjetaRevival";
 import { usePaginaActiva } from "@/lib/pagina-activa";
 
 type Orden = "SCORE" | "FECHA";
@@ -20,47 +28,47 @@ interface EstadoAnio {
   completo: boolean;
 }
 
-interface PostHistorial {
-  _id: string;
-  mensaje?: string | null;
-  tipo: "IMAGEN" | "VIDEO" | "ENLACE" | "TEXTO" | "OTRO";
-  permalink?: string | null;
-  imagenUrl?: string | null;
-  publicadoEn: string;
-  reacciones: number;
-  comentarios: number;
-  compartidos: number;
-  reproducciones?: number | null;
-  clics?: number | null;
-  score: number;
+interface ConteoEstado {
+  estado: EstadoRevival;
+  total: number;
 }
 
-const ICONO_TIPO: Record<PostHistorial["tipo"], string> = {
-  IMAGEN: "🖼️",
-  VIDEO: "🎬",
-  ENLACE: "🔗",
-  TEXTO: "📝",
-  OTRO: "❓",
-};
+/** Orden de las pestañas: sigue el recorrido del flujo, no el alfabético. */
+const ORDEN_ESTADOS: EstadoRevival[] = [
+  "NUEVO",
+  "PARA_TRABAJAR",
+  "EN_TRABAJO",
+  "EN_REVISION",
+  "PUBLICADO",
+  "DESCARTADO",
+];
 
 /**
- * Historial de la fan page rankeado por rendimiento.
+ * Historial de la fan page: ranking, triage y galería.
  *
- * Se sincroniza un año por vez: el historial completo son decenas de miles de
- * publicaciones, y una corrida única que se corta a la mitad no deja nada
- * aprovechable. La grilla de años muestra qué se trajo y qué falta.
+ * El ranking dice qué funcionó; la galería deja verlo de verdad y marcar qué
+ * merece reciclarse. Sobre cientos de publicaciones, sin estado por post no hay
+ * forma de saber qué ya se evaluó.
  */
 export default function RevivalPage() {
   const { activa } = usePaginaActiva();
   const [orden, setOrden] = useState<Orden>("SCORE");
   const [anioFiltro, setAnioFiltro] = useState<number | null>(null);
+  const [estadoFiltro, setEstadoFiltro] = useState<EstadoRevival | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [sincronizandoAnio, setSincronizandoAnio] = useState<number | null>(null);
+  const [postOcupado, setPostOcupado] = useState<string | null>(null);
 
   const pageId = activa?.pageId;
 
   const { data, loading, refetch } = useQuery(HISTORIAL_DE_PAGINA, {
-    variables: { pageId, orden, limite: 100, anio: anioFiltro },
+    variables: {
+      pageId,
+      orden,
+      limite: 120,
+      anio: anioFiltro,
+      estado: estadoFiltro,
+    },
     skip: !pageId,
   });
 
@@ -68,6 +76,11 @@ export default function RevivalPage() {
     variables: { pageId },
     skip: !pageId,
   });
+
+  const { data: dataConteo, refetch: refetchConteo } = useQuery(
+    CONTEO_POR_ESTADO,
+    { variables: { pageId }, skip: !pageId },
+  );
 
   const { data: dataResumen, refetch: refetchResumen } = useQuery(
     RESUMEN_HISTORIAL,
@@ -84,6 +97,7 @@ export default function RevivalPage() {
       );
       refetch();
       refetchAnios();
+      refetchConteo();
       refetchResumen();
     },
     onError: (err) => {
@@ -92,22 +106,29 @@ export default function RevivalPage() {
     },
   });
 
-  const posts: PostHistorial[] = data?.historialDePagina ?? [];
+  const [cambiarEstado] = useMutation(CAMBIAR_ESTADO_POST, {
+    onCompleted: () => {
+      setPostOcupado(null);
+      refetch();
+      refetchConteo();
+    },
+    onError: (err) => {
+      setPostOcupado(null);
+      setAviso(`Error: ${err.message}`);
+    },
+  });
+
+  const posts: PostRevival[] = data?.historialDePagina ?? [];
   const anios: EstadoAnio[] = dataAnios?.estadoPorAnio ?? [];
+  const conteos: ConteoEstado[] = dataConteo?.conteoPorEstado ?? [];
   const resumen = dataResumen?.resumenHistorial;
 
   const numero = (n: number) => n.toLocaleString("es");
-  const fecha = (iso: string) =>
-    new Date(iso).toLocaleDateString("es", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+  const totalPosts = conteos.reduce((s, c) => s + c.total, 0);
 
-  function lanzarSync(anio: number) {
-    setAviso(null);
-    setSincronizandoAnio(anio);
-    sincronizar({ variables: { pageId, anio } });
+  function moverPost(postId: string, estado: EstadoRevival) {
+    setPostOcupado(postId);
+    cambiarEstado({ variables: { postId, estado } });
   }
 
   return (
@@ -168,7 +189,11 @@ export default function RevivalPage() {
                         {a.anio}
                       </button>
                       <button
-                        onClick={() => lanzarSync(a.anio)}
+                        onClick={() => {
+                          setAviso(null);
+                          setSincronizandoAnio(a.anio);
+                          sincronizar({ variables: { pageId, anio: a.anio } });
+                        }}
                         disabled={sincronizandoAnio !== null}
                         title={`Sincronizar ${a.anio}`}
                         className="rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-[#0FED9D] disabled:cursor-not-allowed disabled:opacity-30"
@@ -200,24 +225,39 @@ export default function RevivalPage() {
                 );
               })}
             </div>
-            <p className="mt-2 text-[11px] text-white/25">
-              Un año activo tarda alrededor de un minuto. Clic en el número para
-              filtrar la tabla; en ↻ para traerlo de Meta.
-            </p>
           </div>
 
-          {/* Aviso de métricas de insights */}
           {resumen && resumen.total > 0 && resumen.conMetricas === 0 && (
             <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200/80">
               Sin reproducciones ni clics: falta el permiso{" "}
               <code>read_insights</code>. Meta acepta la llamada igual y responde
-              vacío, por eso no ves un error. El ranking funciona sin eso — usa
-              reacciones, comentarios y compartidos, que miden a todos los posts
-              con la misma vara.
+              vacío, por eso no ves un error. El ranking funciona sin eso.
             </div>
           )}
 
-          {/* Filtros */}
+          {/* Pestañas de estado */}
+          <div className="mb-4 flex flex-wrap gap-1 border-b border-white/10 pb-2">
+            <Pestana
+              activa={estadoFiltro === null}
+              onClick={() => setEstadoFiltro(null)}
+              texto="Todos"
+              total={totalPosts}
+            />
+            {ORDEN_ESTADOS.map((e) => {
+              const c = conteos.find((x) => x.estado === e);
+              return (
+                <Pestana
+                  key={e}
+                  activa={estadoFiltro === e}
+                  onClick={() => setEstadoFiltro(e)}
+                  texto={ETIQUETA_ESTADO[e]}
+                  total={c?.total ?? 0}
+                />
+              );
+            })}
+          </div>
+
+          {/* Orden y filtro de año */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
             {(
               [
@@ -247,7 +287,7 @@ export default function RevivalPage() {
             )}
           </div>
 
-          {/* Tabla */}
+          {/* Galería */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
@@ -255,96 +295,58 @@ export default function RevivalPage() {
           ) : posts.length === 0 ? (
             <Vacio
               icono="♻️"
-              titulo={anioFiltro ? `Sin datos de ${anioFiltro}` : "Historial vacío"}
-              detalle="Sincronizá un año con el botón ↻ de la grilla de arriba."
+              titulo={
+                totalPosts === 0
+                  ? "Historial vacío"
+                  : "Nada en este filtro"
+              }
+              detalle={
+                totalPosts === 0
+                  ? "Sincronizá un año con el botón ↻ de la grilla de arriba."
+                  : "Probá con otra pestaña o quitá el filtro de año."
+              }
             />
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-white/10">
-              <table className="w-full text-sm">
-                <thead className="bg-white/5 text-left text-xs uppercase tracking-wider text-white/40">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Publicación</th>
-                    <th className="px-4 py-3 font-medium">Fecha</th>
-                    <th className="px-4 py-3 text-right font-medium">Reacc.</th>
-                    <th className="px-4 py-3 text-right font-medium">Coment.</th>
-                    <th className="px-4 py-3 text-right font-medium">Comp.</th>
-                    <th className="px-4 py-3 text-right font-medium">Repro.</th>
-                    <th className="px-4 py-3 text-right font-medium">Score</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {posts.map((p) => (
-                    <tr key={p._id} className="transition hover:bg-white/[0.03]">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {p.imagenUrl ? (
-                            // URL del CDN de Facebook: next/image exigiría declarar
-                            // el dominio y estas URLs además caducan.
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={p.imagenUrl}
-                              alt=""
-                              className="h-12 w-12 shrink-0 rounded-lg object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-white/5">
-                              {ICONO_TIPO[p.tipo]}
-                            </div>
-                          )}
-                          <div className="min-w-0 max-w-md">
-                            <p className="truncate text-white/80">
-                              {p.mensaje || (
-                                <span className="text-white/30">Sin texto</span>
-                              )}
-                            </p>
-                            <p className="text-xs text-white/30">
-                              {ICONO_TIPO[p.tipo]} {p.tipo.toLowerCase()}
-                              {p.permalink && (
-                                <>
-                                  {" · "}
-                                  <a
-                                    href={p.permalink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="hover:text-[#0FED9D]"
-                                  >
-                                    ver en Facebook
-                                  </a>
-                                </>
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-white/50">
-                        {fecha(p.publicadoEn)}
-                      </td>
-                      <td className="px-4 py-3 text-right text-white/70">
-                        {numero(p.reacciones)}
-                      </td>
-                      <td className="px-4 py-3 text-right text-white/70">
-                        {numero(p.comentarios)}
-                      </td>
-                      <td className="px-4 py-3 text-right text-white/70">
-                        {numero(p.compartidos)}
-                      </td>
-                      <td className="px-4 py-3 text-right text-white/50">
-                        {p.reproducciones != null
-                          ? numero(p.reproducciones)
-                          : "—"}
-                      </td>
-                      <td className="px-4 py-3 text-right font-semibold text-[#0FED9D]">
-                        {numero(p.score)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {posts.map((p) => (
+                <TarjetaRevival
+                  key={p._id}
+                  post={p}
+                  ocupado={postOcupado === p.postId}
+                  onCambiarEstado={moverPost}
+                />
+              ))}
             </div>
           )}
         </>
       )}
     </DashboardLayout>
+  );
+}
+
+function Pestana({
+  activa,
+  onClick,
+  texto,
+  total,
+}: {
+  activa: boolean;
+  onClick: () => void;
+  texto: string;
+  total: number;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+        activa
+          ? "bg-[#0FED9D]/10 text-[#0FED9D]"
+          : "text-white/45 hover:bg-white/5 hover:text-white"
+      }`}
+    >
+      {texto}
+      <span className="ml-1.5 text-[10px] opacity-60">{total}</span>
+    </button>
   );
 }
 

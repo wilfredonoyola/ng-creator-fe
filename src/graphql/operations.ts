@@ -449,12 +449,14 @@ export const HISTORIAL_DE_PAGINA = gql`
     $orden: OrdenHistorial!
     $limite: Int!
     $anio: Int
+    $estado: EstadoRevival
   ) {
     historialDePagina(
       pageId: $pageId
       orden: $orden
       limite: $limite
       anio: $anio
+      estado: $estado
     ) {
       _id
       postId
@@ -469,6 +471,8 @@ export const HISTORIAL_DE_PAGINA = gql`
       reproducciones
       clics
       score
+      estado
+      imagenGuardadaUrl
     }
   }
 `;
@@ -502,6 +506,27 @@ export const SINCRONIZAR_ANIO = gql`
       posts
       sincronizadoEn
       completo
+    }
+  }
+`;
+
+/** Cuántos posts hay en cada etapa del flujo. Arma las pestañas. */
+export const CONTEO_POR_ESTADO = gql`
+  query ConteoPorEstado($pageId: String!) {
+    conteoPorEstado(pageId: $pageId) {
+      estado
+      total
+    }
+  }
+`;
+
+export const CAMBIAR_ESTADO_POST = gql`
+  mutation CambiarEstadoPost($postId: String!, $estado: EstadoRevival!) {
+    cambiarEstadoPost(postId: $postId, estado: $estado) {
+      _id
+      postId
+      estado
+      imagenGuardadaUrl
     }
   }
 `;
