@@ -21,24 +21,37 @@ function aMillis(valor: Instante): number | null {
   return Number.isNaN(ms) ? null : ms;
 }
 
-/** "hace 5 minutos", "hace 3 horas", "hace 2 días". */
+/**
+ * "hace 5 minutos", "hace 3 horas", "en 2 meses".
+ *
+ * Sirve para las dos direcciones. La primera version solo miraba al pasado, y
+ * con una fecha futura el calculo daba negativo: el corte `< 45` se cumplia
+ * siempre y un token que vencia en dos meses se mostraba como "vence hace
+ * instantes", o sea vencido.
+ */
 export function tiempoRelativo(iso: Instante, ahora = Date.now()): string {
   const ms = aMillis(iso);
   if (ms === null) return "—";
 
   const seg = Math.round((ahora - ms) / 1000);
-  if (seg < 45) return "hace instantes";
+  const futuro = seg < 0;
+  const abs = Math.abs(seg);
+  // Intl.RelativeTimeFormat toma negativo para el pasado y positivo para el
+  // futuro; el resto del calculo trabaja con el valor absoluto.
+  const signo = futuro ? 1 : -1;
 
-  const min = Math.round(seg / 60);
-  if (min < 60) return rtf.format(-min, "minute");
+  if (abs < 45) return futuro ? "en instantes" : "hace instantes";
+
+  const min = Math.round(abs / 60);
+  if (min < 60) return rtf.format(signo * min, "minute");
 
   const horas = Math.round(min / 60);
-  if (horas < 24) return rtf.format(-horas, "hour");
+  if (horas < 24) return rtf.format(signo * horas, "hour");
 
   const dias = Math.round(horas / 24);
-  if (dias < 30) return rtf.format(-dias, "day");
+  if (dias < 30) return rtf.format(signo * dias, "day");
 
-  return rtf.format(-Math.round(dias / 30), "month");
+  return rtf.format(signo * Math.round(dias / 30), "month");
 }
 
 /** Fecha y hora completas, para el tooltip. */
