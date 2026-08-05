@@ -17,6 +17,7 @@ import {
   type EstadoRevival,
   type PostRevival,
 } from "@/components/TarjetaRevival";
+import { PanelRevival } from "@/components/PanelRevival";
 import { usePaginaActiva } from "@/lib/pagina-activa";
 
 type Orden = "SCORE" | "FECHA";
@@ -39,6 +40,7 @@ const ORDEN_ESTADOS: EstadoRevival[] = [
   "PARA_TRABAJAR",
   "EN_TRABAJO",
   "EN_REVISION",
+  "PROGRAMADO",
   "PUBLICADO",
   "DESCARTADO",
 ];
@@ -58,6 +60,7 @@ export default function RevivalPage() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [sincronizandoAnio, setSincronizandoAnio] = useState<number | null>(null);
   const [postOcupado, setPostOcupado] = useState<string | null>(null);
+  const [postAbierto, setPostAbierto] = useState<string | null>(null);
 
   const pageId = activa?.pageId;
 
@@ -314,12 +317,32 @@ export default function RevivalPage() {
                   post={p}
                   ocupado={postOcupado === p.postId}
                   onCambiarEstado={moverPost}
+                  onAbrirPanel={(x) => setPostAbierto(x.postId)}
                 />
               ))}
             </div>
           )}
         </>
       )}
+
+      {/* El post se relee de la lista para que el panel refleje lo que devuelven
+          las mutaciones sin tener que duplicar su estado aca. */}
+      {postAbierto &&
+        pageId &&
+        (() => {
+          const p = posts.find((x) => x.postId === postAbierto);
+          return p ? (
+            <PanelRevival
+              post={p}
+              pageId={pageId}
+              onCerrar={() => setPostAbierto(null)}
+              onCambio={() => {
+                refetch();
+                refetchConteo();
+              }}
+            />
+          ) : null;
+        })()}
     </DashboardLayout>
   );
 }

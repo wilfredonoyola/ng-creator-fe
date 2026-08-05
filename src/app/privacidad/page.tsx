@@ -149,8 +149,15 @@ export default function PrivacidadPage() {
         </ul>
         <p>
           Solo publicamos en las páginas que un administrador habilitó de forma
-          explícita, y solo cuando alguien del equipo lo indica. La plataforma no
-          publica de manera automática ni programada.
+          explícita, y solo cuando alguien del equipo lo indica. La plataforma
+          nunca publica por su cuenta: todo contenido pasa por la aprobación de
+          una persona antes de salir.
+        </p>
+        <p>
+          Una publicación aprobada puede programarse para una fecha y hora
+          posteriores. En ese caso la agenda queda del lado de Facebook, con su
+          función nativa de programación: no es una publicación automática, sino
+          una que una persona ya aprobó y cuya hora de salida se difirió.
         </p>
       </Seccion>
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import { uploadLogoPagina } from "@/lib/upload";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
@@ -12,6 +13,7 @@ import {
   FACEBOOK_URL_DE_CONEXION,
   FACEBOOK_RESINCRONIZAR,
   FACEBOOK_SET_PAGINA_ACTIVA,
+  FACEBOOK_SET_LOGO_PAGINA,
   FACEBOOK_REGISTRAR_PAGINA_POR_ID,
   FACEBOOK_DESCONECTAR,
 } from "@/graphql/operations";
@@ -22,6 +24,7 @@ interface Pagina {
   nombre: string;
   categoria?: string | null;
   fotoUrl?: string | null;
+  logoUrl?: string | null;
   tasks: string[];
   activa: boolean;
   ultimaSincronizacionEn?: string | null;
@@ -416,6 +419,84 @@ function FilaPagina({
       >
         {pagina.activa ? "Habilitada" : "Habilitar"}
       </button>
+
+      <LogoDePagina pagina={pagina} />
+    </div>
+  );
+}
+
+/**
+ * Logo de la página, que se usa como marca de agua en el contenido reciclado.
+ *
+ * Va por página y no como archivo único del sistema: cada fan page tiene el
+ * suyo, y una marca compartida firmaría el contenido con la marca equivocada.
+ *
+ * No hace falta subirlo con transparencia. El backend detecta si el fondo es
+ * plano y lo recorta, porque casi ningún logo llega bien exportado.
+ */
+function LogoDePagina({ pagina }: { pagina: Pagina }) {
+  const [subiendo, setSubiendo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [guardar] = useMutation(FACEBOOK_SET_LOGO_PAGINA, {
+    refetchQueries: [{ query: FACEBOOK_PAGINAS }],
+    onError: (e) => setError(e.message),
+  });
+
+  async function elegir(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setSubiendo(true);
+    try {
+      const { url } = await uploadLogoPagina(file, pagina.pageId);
+      await guardar({ variables: { pageId: pagina.pageId, logoUrl: url } });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo subir el logo");
+    } finally {
+      setSubiendo(false);
+    }
+  }
+
+  return (
+    <div className="flex w-full items-center gap-3 border-t border-white/10 pt-3">
+      <div className="flex h-10 w-16 shrink-0 items-center justify-center rounded-lg bg-[repeating-conic-gradient(#222_0_25%,#2b2b2b_0_50%)] bg-[length:12px_12px]">
+        {pagina.logoUrl ? (
+          // Fondo a cuadros para que se vea la transparencia del recorte.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={pagina.logoUrl}
+            alt=""
+            className="max-h-9 max-w-[3.5rem] object-contain"
+          />
+        ) : (
+          <span className="text-[10px] text-white/30">sin logo</span>
+        )}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-white/50">Marca de agua</p>
+        <p className="text-[11px] text-white/25">
+          {error ? (
+            <span className="text-red-400">{error}</span>
+          ) : pagina.logoUrl ? (
+            "Se aplica al contenido reciclado de esta página"
+          ) : (
+            "Sin logo no se puede publicar contenido reciclado"
+          )}
+        </p>
+      </div>
+
+      <label className="shrink-0 cursor-pointer rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5">
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={elegir}
+          disabled={subiendo}
+        />
+        {subiendo ? "Subiendo…" : pagina.logoUrl ? "Cambiar" : "Subir logo"}
+      </label>
     </div>
   );
 }

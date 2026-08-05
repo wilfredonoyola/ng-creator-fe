@@ -5,6 +5,7 @@ export type EstadoRevival =
   | "PARA_TRABAJAR"
   | "EN_TRABAJO"
   | "EN_REVISION"
+  | "PROGRAMADO"
   | "PUBLICADO"
   | "DESCARTADO";
 
@@ -16,6 +17,12 @@ export interface PostRevival {
   permalink?: string | null;
   imagenUrl?: string | null;
   imagenGuardadaUrl?: string | null;
+  analisisIa?: string | null;
+  promptImagen?: string | null;
+  imagenNuevaUrl?: string | null;
+  mensajeNuevo?: string | null;
+  publicadoPermalink?: string | null;
+  programadaPara?: string | null;
   publicadoEn: string;
   reacciones: number;
   comentarios: number;
@@ -30,6 +37,7 @@ export const ETIQUETA_ESTADO: Record<EstadoRevival, string> = {
   PARA_TRABAJAR: "Para trabajar",
   EN_TRABAJO: "En trabajo",
   EN_REVISION: "En revisión",
+  PROGRAMADO: "Programado",
   PUBLICADO: "Publicado",
   DESCARTADO: "Descartado",
 };
@@ -39,6 +47,7 @@ const COLOR_ESTADO: Record<EstadoRevival, string> = {
   PARA_TRABAJAR: "bg-[#0FED9D]/15 text-[#0FED9D]",
   EN_TRABAJO: "bg-amber-500/15 text-amber-300",
   EN_REVISION: "bg-sky-500/15 text-sky-300",
+  PROGRAMADO: "bg-indigo-500/15 text-indigo-300",
   PUBLICADO: "bg-violet-500/15 text-violet-300",
   DESCARTADO: "bg-white/5 text-white/25",
 };
@@ -54,9 +63,9 @@ const ICONO_TIPO: Record<PostRevival["tipo"], string> = {
 /**
  * Avance del flujo por etapa: a dónde lleva el botón principal.
  *
- * EN_TRABAJO no avanza todavía porque el paso siguiente (generar el prompt y
- * subir la imagen nueva) aún no está construido. Se muestra deshabilitado en
- * vez de ocultarse, para que se vea que el flujo sigue.
+ * Las etapas que faltan (EN_TRABAJO, EN_REVISION, PUBLICADO) no cambian de
+ * estado con un botón: abren el panel de trabajo, donde el avance depende de
+ * generar el prompt, subir la imagen y publicar.
  */
 const SIGUIENTE: Partial<
   Record<EstadoRevival, { estado: EstadoRevival; texto: string }>
@@ -64,6 +73,21 @@ const SIGUIENTE: Partial<
   NUEVO: { estado: "PARA_TRABAJAR", texto: "Trabajar" },
   PARA_TRABAJAR: { estado: "EN_TRABAJO", texto: "Empezar" },
   DESCARTADO: { estado: "NUEVO", texto: "Recuperar" },
+};
+
+/** Etapas cuyo trabajo ocurre dentro del panel, no con un cambio de estado. */
+const ABRE_PANEL: EstadoRevival[] = [
+  "EN_TRABAJO",
+  "EN_REVISION",
+  "PROGRAMADO",
+  "PUBLICADO",
+];
+
+const TEXTO_PANEL: Partial<Record<EstadoRevival, string>> = {
+  EN_TRABAJO: "Generar imagen",
+  EN_REVISION: "Revisar y publicar",
+  PROGRAMADO: "Ver programación",
+  PUBLICADO: "Ver resultado",
 };
 
 /**
@@ -77,10 +101,12 @@ export function TarjetaRevival({
   post,
   ocupado,
   onCambiarEstado,
+  onAbrirPanel,
 }: {
   post: PostRevival;
   ocupado: boolean;
   onCambiarEstado: (postId: string, estado: EstadoRevival) => void;
+  onAbrirPanel: (post: PostRevival) => void;
 }) {
   // La copia en Bunny es permanente; la de Facebook caduca. Se prefiere la
   // nuestra cuando existe.
@@ -152,7 +178,14 @@ export function TarjetaRevival({
         </div>
 
         <div className="mt-3 flex gap-2">
-          {siguiente ? (
+          {ABRE_PANEL.includes(post.estado) ? (
+            <button
+              onClick={() => onAbrirPanel(post)}
+              className="flex-1 rounded-lg bg-[#0FED9D] py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
+            >
+              {TEXTO_PANEL[post.estado]}
+            </button>
+          ) : siguiente ? (
             <button
               onClick={() => onCambiarEstado(post.postId, siguiente.estado)}
               disabled={ocupado}
@@ -160,15 +193,7 @@ export function TarjetaRevival({
             >
               {siguiente.texto}
             </button>
-          ) : (
-            <button
-              disabled
-              title="El paso siguiente todavía no está construido"
-              className="flex-1 cursor-not-allowed rounded-lg bg-white/5 py-1.5 text-xs text-white/30"
-            >
-              {post.estado === "EN_TRABAJO" ? "Generar imagen" : "—"}
-            </button>
-          )}
+          ) : null}
           {post.estado !== "DESCARTADO" && (
             <button
               onClick={() => onCambiarEstado(post.postId, "DESCARTADO")}

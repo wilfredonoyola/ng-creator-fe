@@ -316,6 +316,7 @@ export const FACEBOOK_PAGINAS = gql`
       nombre
       categoria
       fotoUrl
+      logoUrl
       tasks
       activa
       ultimaSincronizacionEn
@@ -473,6 +474,12 @@ export const HISTORIAL_DE_PAGINA = gql`
       score
       estado
       imagenGuardadaUrl
+      analisisIa
+      promptImagen
+      imagenNuevaUrl
+      mensajeNuevo
+      publicadoPermalink
+      programadaPara
     }
   }
 `;
@@ -527,6 +534,66 @@ export const CAMBIAR_ESTADO_POST = gql`
       postId
       estado
       imagenGuardadaUrl
+    }
+  }
+`;
+
+// ---- Revival: flujo de reciclaje ----
+
+/** Analiza el post y devuelve el prompt para ChatGPT. Una llamada al LLM. */
+export const GENERAR_PROMPT_REVIVAL = gql`
+  mutation GenerarPromptRevival($postId: String!) {
+    generarPromptRevival(postId: $postId) {
+      _id
+      postId
+      analisisIa
+      promptImagen
+      promptGeneradoEn
+    }
+  }
+`;
+
+export const ADJUNTAR_IMAGEN_NUEVA = gql`
+  mutation AdjuntarImagenNueva(
+    $postId: String!
+    $imagenNuevaUrl: String!
+    $mensajeNuevo: String
+  ) {
+    adjuntarImagenNueva(
+      postId: $postId
+      imagenNuevaUrl: $imagenNuevaUrl
+      mensajeNuevo: $mensajeNuevo
+    ) {
+      _id
+      postId
+      estado
+      imagenNuevaUrl
+      mensajeNuevo
+    }
+  }
+`;
+
+export const PUBLICAR_REVIVAL = gql`
+  mutation PublicarRevival($postId: String!, $programarPara: DateTime) {
+    publicarRevival(postId: $postId, programarPara: $programarPara) {
+      _id
+      postId
+      estado
+      publicadoPostId
+      publicadoPermalink
+      publicadoEnNuevo
+      programadaPara
+    }
+  }
+`;
+
+export const FACEBOOK_SET_LOGO_PAGINA = gql`
+  mutation FacebookSetLogoPagina($pageId: String!, $logoUrl: String!) {
+    facebookSetLogoPagina(pageId: $pageId, logoUrl: $logoUrl) {
+      _id
+      pageId
+      nombre
+      logoUrl
     }
   }
 `;

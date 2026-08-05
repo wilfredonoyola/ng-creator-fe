@@ -303,3 +303,65 @@ export async function uploadLicenseScreenshot(file: File): Promise<UploadResult>
     storagePath: json.storagePath || json.path,
   };
 }
+
+/**
+ * Sube el logo de una fan page. El backend le recorta el fondo y lo deja listo
+ * como marca de agua, así que no hace falta exportarlo con transparencia.
+ */
+export async function uploadLogoPagina(
+  file: File,
+  pageId: string,
+): Promise<UploadResult> {
+  return subirImagen("page-logo", file, { pageId });
+}
+
+/**
+ * Sube la imagen nueva de un revival. El backend le aplica la marca de agua de
+ * la página antes de guardarla: no se confía en que venga puesta, porque es un
+ * requisito del producto y desde el cliente se saltearía.
+ */
+export async function uploadImagenRevival(
+  file: File,
+  pageId: string,
+  postId: string,
+): Promise<UploadResult> {
+  return subirImagen("revival-imagen", file, { pageId, postId });
+}
+
+async function subirImagen(
+  endpoint: string,
+  file: File,
+  campos: Record<string, string>,
+): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) throw new Error("Sesión requerida para subir imágenes");
+  if (!file.type.startsWith("image/")) {
+    throw new Error("El archivo tiene que ser una imagen");
+  }
+  if (file.size > 25 * 1024 * 1024) {
+    throw new Error("La imagen debe pesar menos de 25MB");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  for (const [k, v] of Object.entries(campos)) formData.append(k, v);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/${endpoint}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let msg = `Error al subir la imagen (${response.status})`;
+    try {
+      msg = (await response.json()).message || msg;
+    } catch {
+      // el backend no siempre responde JSON
+    }
+    throw new Error(msg);
+  }
+
+  const json = await response.json();
+  return { url: json.url, path: json.path, storagePath: json.path };
+}
