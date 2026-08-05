@@ -70,6 +70,16 @@ export default function LoginPage() {
         >
           {cargando ? "Entrando…" : "Entrar"}
         </button>
+
+        {/* Enlaces públicos: Meta espera encontrarlos accesibles sin sesión. */}
+        <div className="mt-6 flex justify-center gap-4 border-t border-white/10 pt-4 text-xs">
+          <a href="/privacidad" className="text-white/40 hover:text-[#0FED9D]">
+            Privacidad
+          </a>
+          <a href="/terminos" className="text-white/40 hover:text-[#0FED9D]">
+            Términos
+          </a>
+        </div>
       </form>
     </main>
   );
