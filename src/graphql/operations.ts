@@ -436,3 +436,54 @@ export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
     }
   }
 `;
+
+// ---- Revival: historial de la fan page ----
+
+/**
+ * El historial guardado de una pagina, rankeado. Lee de nuestra base: para
+ * refrescar contra Meta hay que llamar a SINCRONIZAR_HISTORIAL.
+ */
+export const HISTORIAL_DE_PAGINA = gql`
+  query HistorialDePagina(
+    $pageId: String!
+    $orden: OrdenHistorial!
+    $limite: Int!
+  ) {
+    historialDePagina(pageId: $pageId, orden: $orden, limite: $limite) {
+      _id
+      postId
+      mensaje
+      tipo
+      permalink
+      imagenUrl
+      publicadoEn
+      reacciones
+      comentarios
+      compartidos
+      alcance
+      impresiones
+      score
+    }
+  }
+`;
+
+export const RESUMEN_HISTORIAL = gql`
+  query ResumenHistorial($pageId: String!) {
+    resumenHistorial(pageId: $pageId) {
+      total
+      conAlcance
+      sincronizadoEn
+    }
+  }
+`;
+
+export const SINCRONIZAR_HISTORIAL = gql`
+  mutation SincronizarHistorial($pageId: String!, $maximo: Int) {
+    sincronizarHistorial(pageId: $pageId, maximo: $maximo) {
+      total
+      conAlcance
+      nuevos
+      sincronizadoEn
+    }
+  }
+`;

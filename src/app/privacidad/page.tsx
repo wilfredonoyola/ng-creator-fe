@@ -139,6 +139,13 @@ export default function PrivacidadPage() {
             </code>{" "}
             — publicar el contenido que apruebes, como reel, historia o imagen.
           </li>
+          <li>
+            <code className="text-[13px] text-[#0FED9D]">read_insights</code> —
+            leer las estadísticas de las publicaciones de esas páginas (alcance e
+            impresiones), para ordenar el historial por rendimiento y ver qué
+            contenido funcionó mejor. Es opcional: si no lo concedés, todo lo
+            demás sigue funcionando.
+          </li>
         </ul>
         <p>
           Solo publicamos en las páginas que un administrador habilitó de forma

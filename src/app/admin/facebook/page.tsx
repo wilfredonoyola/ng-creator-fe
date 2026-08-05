@@ -151,7 +151,10 @@ FACEBOOK_TOKEN_KEY=`}
               Permisos a solicitar:{" "}
               <code className="text-xs">pages_show_list</code>,{" "}
               <code className="text-xs">pages_read_engagement</code>,{" "}
-              <code className="text-xs">pages_manage_posts</code>.
+              <code className="text-xs">pages_manage_posts</code>. Opcional:{" "}
+              <code className="text-xs">read_insights</code> (alcance e
+              impresiones del historial; sin él Revival rankea igual, pero solo
+              con reacciones, comentarios y compartidos).
             </p>
             <p className="text-white/40">
               La redirect URI debe estar registrada <em>exactamente igual</em> en
