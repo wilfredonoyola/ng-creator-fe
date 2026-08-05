@@ -3,6 +3,8 @@
 import { useQuery } from "@apollo/client";
 import { PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
+import { usePaginaActiva } from "@/lib/pagina-activa";
 
 interface Publication {
   _id: string;
@@ -11,19 +13,27 @@ interface Publication {
   pagina: string;
   publicadoEn?: string;
   videoFinalUrl?: string;
+  posterUrl?: string;
 }
 
 export default function PublicadosPage() {
   const { data, loading } = useQuery(PUBLICATIONS);
   const publications: Publication[] = data?.publications ?? [];
+  const { activa } = usePaginaActiva();
 
   return (
     <DashboardLayout>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Videos Publicados</h1>
+        <h1 className="text-2xl font-bold">Videos Aprobados</h1>
         <p className="mt-1 text-white/50">
-          {publications.length} video{publications.length !== 1 ? "s" : ""} publicado{publications.length !== 1 ? "s" : ""}
+          {publications.length} video{publications.length !== 1 ? "s" : ""} listo
+          {publications.length !== 1 ? "s" : ""} para distribuir
+        </p>
+        <p className="mt-1 text-xs text-white/30">
+          {activa
+            ? `Publicando en ${activa.nombre} · cambiá el contexto en la barra lateral`
+            : "Sin página de Facebook habilitada"}
         </p>
       </div>
 
@@ -87,6 +97,13 @@ export default function PublicadosPage() {
                     ⬇️ Descargar
                   </a>
                 )}
+
+                <div className="mt-3">
+                  <PublicarEnFacebook
+                    expedienteId={pub.expedienteId}
+                    tienePoster={!!pub.posterUrl}
+                  />
+                </div>
               </div>
             </div>
           ))}

@@ -2,6 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { cerrarSesion } from "@/lib/auth";
+import { useSesion } from "@/lib/sesion";
+import { PageSwitcher } from "./PageSwitcher";
 
 const navItems = [
   { href: "/", icon: "📊", label: "Dashboard" },
@@ -11,9 +13,15 @@ const navItems = [
   { href: "/creators", icon: "👤", label: "Creators" },
 ];
 
+/** Solo visible con rol ADMIN. */
+const navAdmin = [
+  { href: "/admin/facebook", icon: "🔗", label: "Integraciones" },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { usuario, esAdmin } = useSesion();
 
   function handleLogout() {
     cerrarSesion();
@@ -33,8 +41,13 @@ export function Sidebar() {
         </div>
       </div>
 
+      {/* Contexto de pagina */}
+      <div className="pt-4">
+        <PageSwitcher />
+      </div>
+
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-1 px-3 pb-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -55,6 +68,34 @@ export function Sidebar() {
             </button>
           );
         })}
+
+        {esAdmin && (
+          <>
+            <div className="px-4 pb-1 pt-4 text-[10px] uppercase tracking-wider text-white/25">
+              Administración
+            </div>
+            {navAdmin.map((item) => {
+              const isActive = pathname.startsWith(item.href);
+              return (
+                <button
+                  key={item.href}
+                  onClick={() => router.push(item.href)}
+                  className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all ${
+                    isActive
+                      ? "bg-[#0FED9D]/10 text-[#0FED9D]"
+                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                  }`}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span className="font-medium">{item.label}</span>
+                  {isActive && (
+                    <div className="ml-auto h-2 w-2 rounded-full bg-[#0FED9D]" />
+                  )}
+                </button>
+              );
+            })}
+          </>
+        )}
       </nav>
 
       {/* User section */}
@@ -64,8 +105,12 @@ export function Sidebar() {
             <span className="text-sm">👤</span>
           </div>
           <div className="flex-1 truncate">
-            <p className="truncate text-sm font-medium">Admin</p>
-            <p className="truncate text-xs text-white/40">Administrador</p>
+            <p className="truncate text-sm font-medium">
+              {usuario?.nombre || usuario?.email || "…"}
+            </p>
+            <p className="truncate text-xs text-white/40">
+              {esAdmin ? "Administrador" : "Miembro"}
+            </p>
           </div>
         </div>
         <button

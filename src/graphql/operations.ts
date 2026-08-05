@@ -252,6 +252,177 @@ export const PUBLICATIONS = gql`
       pagina
       publicadoEn
       videoFinalUrl
+      posterUrl
+    }
+  }
+`;
+
+// ---- Sesion / usuarios ----
+
+/** El usuario de la sesion, con sus roles. Define que ve la interfaz. */
+export const YO = gql`
+  query Yo {
+    yo {
+      _id
+      email
+      nombre
+      roles
+      activo
+    }
+  }
+`;
+
+export const USUARIOS = gql`
+  query Usuarios {
+    usuarios {
+      _id
+      email
+      nombre
+      roles
+      activo
+      ultimoAccesoEn
+    }
+  }
+`;
+
+// ---- Facebook: integracion ----
+
+export const FACEBOOK_ESTADO = gql`
+  query FacebookEstado {
+    facebookConfigurado
+    facebookConexion {
+      _id
+      fbUserId
+      fbUserName
+      expiraEn
+      scopes
+      activa
+    }
+  }
+`;
+
+export const FACEBOOK_URL_DE_CONEXION = gql`
+  query FacebookUrlDeConexion {
+    facebookUrlDeConexion
+  }
+`;
+
+/** Todas las paginas conectadas (admin), habilitadas o no. */
+export const FACEBOOK_PAGINAS = gql`
+  query FacebookPaginas {
+    facebookPaginas {
+      _id
+      pageId
+      nombre
+      categoria
+      fotoUrl
+      tasks
+      paginaVinculada
+      activa
+      ultimaSincronizacionEn
+    }
+  }
+`;
+
+/** Solo las habilitadas: alimenta el switch de contexto. */
+export const FACEBOOK_PAGINAS_ACTIVAS = gql`
+  query FacebookPaginasActivas {
+    facebookPaginasActivas {
+      _id
+      pageId
+      nombre
+      fotoUrl
+      paginaVinculada
+    }
+  }
+`;
+
+export const FACEBOOK_CONECTAR = gql`
+  mutation FacebookConectar($code: String!, $state: String!) {
+    facebookConectar(code: $code, state: $state) {
+      _id
+      fbUserId
+      fbUserName
+      activa
+    }
+  }
+`;
+
+export const FACEBOOK_RESINCRONIZAR = gql`
+  mutation FacebookResincronizarPaginas {
+    facebookResincronizarPaginas {
+      _id
+      pageId
+      nombre
+      tasks
+      activa
+      paginaVinculada
+    }
+  }
+`;
+
+export const FACEBOOK_SET_PAGINA_ACTIVA = gql`
+  mutation FacebookSetPaginaActiva($id: ID!, $activa: Boolean!) {
+    facebookSetPaginaActiva(id: $id, activa: $activa) {
+      _id
+      activa
+    }
+  }
+`;
+
+export const FACEBOOK_VINCULAR_PAGINA = gql`
+  mutation FacebookVincularPagina($id: ID!, $pagina: Pagina) {
+    facebookVincularPagina(id: $id, pagina: $pagina) {
+      _id
+      paginaVinculada
+    }
+  }
+`;
+
+export const FACEBOOK_DESCONECTAR = gql`
+  mutation FacebookDesconectar {
+    facebookDesconectar
+  }
+`;
+
+// ---- Facebook: publicar ----
+
+export const PUBLICAR_EN_FACEBOOK = gql`
+  mutation PublicarEnFacebook(
+    $expedienteId: ID!
+    $pageId: String!
+    $formato: FormatoFacebook!
+    $descripcion: String
+  ) {
+    publicarEnFacebook(
+      expedienteId: $expedienteId
+      pageId: $pageId
+      formato: $formato
+      descripcion: $descripcion
+    ) {
+      _id
+      formato
+      estado
+      postId
+      permalink
+      error
+      publicadaEn
+    }
+  }
+`;
+
+export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
+  query FacebookPublicacionesDeExpediente($expedienteId: ID!) {
+    facebookPublicacionesDeExpediente(expedienteId: $expedienteId) {
+      _id
+      pageId
+      pageNombre
+      formato
+      estado
+      postId
+      permalink
+      error
+      publicadaEn
     }
   }
 `;
