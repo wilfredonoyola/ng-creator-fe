@@ -480,6 +480,8 @@ export const HISTORIAL_DE_PAGINA = gql`
       mensajeNuevo
       publicadoPermalink
       programadaPara
+      historiaUrl
+      historiaPublicadaEn
     }
   }
 `;
@@ -594,6 +596,18 @@ export const FACEBOOK_SET_LOGO_PAGINA = gql`
       pageId
       nombre
       logoUrl
+    }
+  }
+`;
+
+/** Sube la versión nueva a historias. Publicación aparte de la del feed. */
+export const PUBLICAR_HISTORIA_REVIVAL = gql`
+  mutation PublicarHistoriaRevival($postId: String!) {
+    publicarHistoriaRevival(postId: $postId) {
+      _id
+      postId
+      historiaUrl
+      historiaPublicadaEn
     }
   }
 `;

@@ -23,6 +23,8 @@ export interface PostRevival {
   mensajeNuevo?: string | null;
   publicadoPermalink?: string | null;
   programadaPara?: string | null;
+  historiaUrl?: string | null;
+  historiaPublicadaEn?: string | null;
   publicadoEn: string;
   reacciones: number;
   comentarios: number;

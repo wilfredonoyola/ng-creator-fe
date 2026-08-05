@@ -6,6 +6,7 @@ import {
   ADJUNTAR_IMAGEN_NUEVA,
   GENERAR_PROMPT_REVIVAL,
   PUBLICAR_REVIVAL,
+  PUBLICAR_HISTORIA_REVIVAL,
 } from "@/graphql/operations";
 import { uploadImagenRevival } from "@/lib/upload";
 import type { PostRevival } from "./TarjetaRevival";
@@ -32,6 +33,8 @@ export function PanelRevival({
     imagenNuevaUrl?: string | null;
     mensajeNuevo?: string | null;
     publicadoPermalink?: string | null;
+    programadaPara?: string | null;
+    historiaPublicadaEn?: string | null;
   };
   pageId: string;
   onCerrar: () => void;
@@ -58,6 +61,10 @@ export function PanelRevival({
     onCompleted: onCambio,
     onError: (e) => setError(e.message),
   });
+  const [publicarHistoria, { loading: subiendoHistoria }] = useMutation(
+    PUBLICAR_HISTORIA_REVIVAL,
+    { onCompleted: onCambio, onError: (e) => setError(e.message) },
+  );
 
   async function elegirArchivo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -343,6 +350,39 @@ export function PanelRevival({
                       ? "Programar publicación"
                       : "Publicar en la página"}
               </button>
+            </div>
+          )}
+
+          {/* Historia: publicación aparte de la del feed */}
+          {post.imagenNuevaUrl && (
+            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold">Historia</h3>
+                  <p className="text-[11px] text-white/40">
+                    {post.historiaPublicadaEn
+                      ? `Subida el ${new Date(post.historiaPublicadaEn).toLocaleString("es", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · expira a las 24 h`
+                      : "Publicación aparte de la del feed. La imagen se adapta a 9:16 con fondo difuminado."}
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    publicarHistoria({ variables: { postId: post.postId } })
+                  }
+                  disabled={subiendoHistoria}
+                  className="shrink-0 rounded-lg border border-white/15 px-4 py-1.5 text-xs font-medium text-white/70 transition hover:border-[#0FED9D]/40 hover:text-[#0FED9D] disabled:opacity-40"
+                >
+                  {subiendoHistoria
+                    ? "Subiendo…"
+                    : post.historiaPublicadaEn
+                      ? "Volver a subir"
+                      : "Subir a historia"}
+                </button>
+              </div>
+              <p className="mt-2 text-[11px] text-white/25">
+                No se puede programar: la API de historias de Meta no acepta
+                agendarlas.
+              </p>
             </div>
           )}
         </div>
