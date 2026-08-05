@@ -440,16 +440,22 @@ export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
 // ---- Revival: historial de la fan page ----
 
 /**
- * El historial guardado de una pagina, rankeado. Lee de nuestra base: para
- * refrescar contra Meta hay que llamar a SINCRONIZAR_HISTORIAL.
+ * El historial guardado, rankeado. Lee de nuestra base: para refrescar contra
+ * Meta hay que sincronizar, y eso se hace un año por vez.
  */
 export const HISTORIAL_DE_PAGINA = gql`
   query HistorialDePagina(
     $pageId: String!
     $orden: OrdenHistorial!
     $limite: Int!
+    $anio: Int
   ) {
-    historialDePagina(pageId: $pageId, orden: $orden, limite: $limite) {
+    historialDePagina(
+      pageId: $pageId
+      orden: $orden
+      limite: $limite
+      anio: $anio
+    ) {
       _id
       postId
       mensaje
@@ -460,8 +466,8 @@ export const HISTORIAL_DE_PAGINA = gql`
       reacciones
       comentarios
       compartidos
-      alcance
-      impresiones
+      reproducciones
+      clics
       score
     }
   }
@@ -471,19 +477,31 @@ export const RESUMEN_HISTORIAL = gql`
   query ResumenHistorial($pageId: String!) {
     resumenHistorial(pageId: $pageId) {
       total
-      conAlcance
+      conMetricas
       sincronizadoEn
     }
   }
 `;
 
-export const SINCRONIZAR_HISTORIAL = gql`
-  mutation SincronizarHistorial($pageId: String!, $maximo: Int) {
-    sincronizarHistorial(pageId: $pageId, maximo: $maximo) {
-      total
-      conAlcance
-      nuevos
+/** Un renglón por año: qué se trajo, cuándo, y si quedó algo afuera. */
+export const ESTADO_POR_ANIO = gql`
+  query EstadoPorAnio($pageId: String!) {
+    estadoPorAnio(pageId: $pageId) {
+      anio
+      posts
       sincronizadoEn
+      completo
+    }
+  }
+`;
+
+export const SINCRONIZAR_ANIO = gql`
+  mutation SincronizarAnio($pageId: String!, $anio: Int!) {
+    sincronizarAnio(pageId: $pageId, anio: $anio) {
+      anio
+      posts
+      sincronizadoEn
+      completo
     }
   }
 `;
