@@ -43,6 +43,8 @@ export const COLA_DE_REVISION = gql`
       videoFinalUrl
       regeneraciones
       notaVozTexto
+      createdAt
+      updatedAt
       guion {
         apertura
         detalle

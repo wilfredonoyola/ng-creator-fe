@@ -21,7 +21,9 @@ export default function DashboardPage() {
   const totalLicenses = licensesData?.licenses?.length ?? 0;
   const totalPublications = publicationsData?.publications?.length ?? 0;
 
-  const recentVideos = cola.slice(0, 3);
+  // colaDeRevision viene ordenada por createdAt ascendente, así que los
+  // primeros son los que llevan más tiempo esperando, no los más nuevos.
+  const esperandoMas = cola.slice(0, 3);
 
   return (
     <DashboardLayout>
@@ -109,7 +111,12 @@ export default function DashboardPage() {
       {/* Recent Videos */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Videos recientes</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Esperando revisión</h2>
+            <p className="text-sm text-white/40">
+              Los que llevan más tiempo en la cola
+            </p>
+          </div>
           {cola.length > 3 && (
             <Link
               href="/revision"
@@ -120,9 +127,9 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {recentVideos.length > 0 ? (
+        {esperandoMas.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
-            {recentVideos.map((exp) => (
+            {esperandoMas.map((exp) => (
               <VideoCard key={exp._id} exp={exp} />
             ))}
           </div>

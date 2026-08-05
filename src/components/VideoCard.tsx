@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { APROBAR, RECHAZAR, REGENERAR, COLA_DE_REVISION } from "@/graphql/operations";
+import {
+  claseUrgencia,
+  fechaCompleta,
+  tiempoRelativo,
+  urgenciaPorEspera,
+  useAhora,
+} from "@/lib/time";
 
 interface Guion {
   apertura?: string;
@@ -31,6 +38,10 @@ export interface Expediente {
   notaVozTexto?: string;
   guion?: Guion;
   validacion?: Validacion;
+  /** Cuándo entró a la cola. */
+  createdAt?: string;
+  /** Última vez que el pipeline lo tocó (generación o regeneración). */
+  updatedAt?: string;
 }
 
 const estadoColors: Record<string, { bg: string; text: string }> = {
@@ -59,6 +70,15 @@ export function VideoCard({ exp }: { exp: Expediente }) {
   const [expanded, setExpanded] = useState(false);
   const [nota, setNota] = useState("");
   const [showRegenerate, setShowRegenerate] = useState(false);
+  const ahora = useAhora();
+
+  const urgencia = urgenciaPorEspera(exp.createdAt, ahora);
+  // updatedAt solo aporta si difiere de createdAt: si son casi iguales el
+  // expediente nunca se regeneró y repetir el dato es ruido.
+  const hayEjecucionPosterior =
+    !!exp.createdAt &&
+    !!exp.updatedAt &&
+    new Date(exp.updatedAt).getTime() - new Date(exp.createdAt).getTime() > 60_000;
 
   const refetch = [{ query: COLA_DE_REVISION, variables: { pagina: null } }];
   const [aprobar, { loading: aprobando }] = useMutation(APROBAR, { refetchQueries: refetch });
@@ -115,7 +135,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
       {/* Content */}
       <div className="p-4">
         {/* Meta */}
-        <div className="mb-3 flex items-center gap-2 text-xs text-white/40">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-white/40">
           <span className="rounded bg-white/10 px-2 py-0.5">{exp.pagina}</span>
           <span>•</span>
           <span>{exp.tipoDeValor}</span>
@@ -124,6 +144,31 @@ export function VideoCard({ exp }: { exp: Expediente }) {
               <span>•</span>
               <span className="text-yellow-400">{exp.regeneraciones} regen</span>
             </>
+          )}
+        </div>
+
+        {/* Tiempos */}
+        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          <span
+            className={`flex items-center gap-1 ${claseUrgencia[urgencia]}`}
+            title={`Entró a la cola: ${fechaCompleta(exp.createdAt)}`}
+          >
+            <span aria-hidden>⏱</span>
+            En cola {tiempoRelativo(exp.createdAt, ahora)}
+            {urgencia === "alta" && (
+              <span className="ml-1 rounded bg-red-500/20 px-1.5 py-0.5 font-medium">
+                demorado
+              </span>
+            )}
+          </span>
+
+          {hayEjecucionPosterior && (
+            <span
+              className="text-white/40"
+              title={`Última ejecución del pipeline: ${fechaCompleta(exp.updatedAt)}`}
+            >
+              · generado {tiempoRelativo(exp.updatedAt, ahora)}
+            </span>
           )}
         </div>
 

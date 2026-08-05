@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@apollo/client";
+import { useEffect, useMemo, useState } from "react";
+import { NetworkStatus, useQuery } from "@apollo/client";
 import { COLA_DE_REVISION, EXPEDIENTES_FALLIDOS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VideoCard, Expediente } from "@/components/VideoCard";
+import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 
 const PAGINAS = ["TODAS", "PRINCIPAL", "SECUNDARIO", "ENTRETENIMIENTO"];
+
+type Orden = "ANTIGUOS" | "RECIENTES";
+
+const ORDENES: Array<{ valor: Orden; label: string }> = [
+  { valor: "ANTIGUOS", label: "Más antiguos" },
+  { valor: "RECIENTES", label: "Más recientes" },
+];
 
 interface ExpedienteFallido {
   _id: string;
@@ -20,59 +28,126 @@ interface ExpedienteFallido {
 export default function RevisionPage() {
   const [paginaFilter, setPaginaFilter] = useState<string>("TODAS");
   const [showFallidos, setShowFallidos] = useState(false);
+  const [orden, setOrden] = useState<Orden>("ANTIGUOS");
+  const ahora = useAhora(10_000);
 
-  const { data, loading } = useQuery(COLA_DE_REVISION, {
+  const { data, loading, refetch, networkStatus } = useQuery(COLA_DE_REVISION, {
     variables: { pagina: paginaFilter === "TODAS" ? null : paginaFilter },
     pollInterval: 15000,
+    notifyOnNetworkStatusChange: true,
   });
 
-  const { data: fallidosData, loading: loadingFallidos } = useQuery(EXPEDIENTES_FALLIDOS, {
+  const { data: fallidosData } = useQuery(EXPEDIENTES_FALLIDOS, {
     variables: { pagina: paginaFilter === "TODAS" ? null : paginaFilter },
     pollInterval: 30000,
   });
 
-  const cola: Expediente[] = data?.colaDeRevision ?? [];
+  // Marca de frescura: la página se refresca sola cada 15s, pero sin esto no
+  // hay forma de saber si lo que estás viendo está al día.
+  const [ultimaActualizacion, setUltimaActualizacion] = useState<number | null>(null);
+  useEffect(() => {
+    if (networkStatus === NetworkStatus.ready) {
+      setUltimaActualizacion(Date.now());
+    }
+  }, [networkStatus]);
+
+  const colaCruda: Expediente[] = data?.colaDeRevision ?? [];
   const fallidos: ExpedienteFallido[] = fallidosData?.expedientesFallidos ?? [];
+
+  // El backend ya devuelve FIFO (createdAt asc); acá solo se invierte si el
+  // revisor pide ver primero lo último que entró.
+  const cola = useMemo(() => {
+    if (orden === "ANTIGUOS") return colaCruda;
+    return [...colaCruda].reverse();
+  }, [colaCruda, orden]);
+
+  const recargando = networkStatus === NetworkStatus.refetch;
+  const primeraCarga = loading && !data;
 
   return (
     <DashboardLayout>
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Cola de Revisión</h1>
           <p className="mt-1 text-white/50">
             {cola.length} video{cola.length !== 1 ? "s" : ""} pendiente{cola.length !== 1 ? "s" : ""} de revisión
           </p>
-        </div>
-        {fallidos.length > 0 && (
-          <button
-            onClick={() => setShowFallidos(!showFallidos)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-              showFallidos
-                ? "bg-red-500 text-white"
-                : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-            }`}
+          <p
+            className="mt-1 text-xs text-white/30"
+            title={
+              ultimaActualizacion
+                ? `Última consulta: ${fechaCompleta(ultimaActualizacion)}`
+                : undefined
+            }
           >
-            {showFallidos ? "Ocultar" : "Ver"} fallidos ({fallidos.length})
+            {ultimaActualizacion
+              ? `Actualizado ${tiempoRelativo(ultimaActualizacion, ahora)} · se refresca cada 15s`
+              : "Cargando…"}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => refetch()}
+            disabled={recargando}
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/5 disabled:opacity-50"
+            title="Volver a consultar ahora"
+          >
+            {recargando ? "Actualizando…" : "↻ Actualizar"}
           </button>
-        )}
+          {fallidos.length > 0 && (
+            <button
+              onClick={() => setShowFallidos(!showFallidos)}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                showFallidos
+                  ? "bg-red-500 text-white"
+                  : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+              }`}
+            >
+              {showFallidos ? "Ocultar" : "Ver"} fallidos ({fallidos.length})
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex gap-2">
-        {PAGINAS.map((p) => (
-          <button
-            key={p}
-            onClick={() => setPaginaFilter(p)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-              paginaFilter === p
-                ? "bg-[#0FED9D] text-black"
-                : "bg-white/5 text-white/60 hover:bg-white/10"
-            }`}
-          >
-            {p.toLowerCase()}
-          </button>
-        ))}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex flex-wrap gap-2">
+          {PAGINAS.map((p) => (
+            <button
+              key={p}
+              onClick={() => setPaginaFilter(p)}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                paginaFilter === p
+                  ? "bg-[#0FED9D] text-black"
+                  : "bg-white/5 text-white/60 hover:bg-white/10"
+              }`}
+            >
+              {p.toLowerCase()}
+            </button>
+          ))}
+        </div>
+
+        {/* Orden: por defecto FIFO, para que nada se quede atrás en la cola */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-white/40">Orden</span>
+          <div className="flex overflow-hidden rounded-lg border border-white/10">
+            {ORDENES.map((o) => (
+              <button
+                key={o.valor}
+                onClick={() => setOrden(o.valor)}
+                className={`px-3 py-2 text-xs font-medium transition ${
+                  orden === o.valor
+                    ? "bg-white/15 text-white"
+                    : "text-white/50 hover:bg-white/5"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Fallidos Section */}
@@ -122,8 +197,10 @@ export default function RevisionPage() {
         </div>
       )}
 
-      {/* Content */}
-      {loading ? (
+      {/* Content: solo la primera carga muestra spinner. Con
+          notifyOnNetworkStatusChange, `loading` también se activa en cada poll,
+          y usarlo acá haría desaparecer la lista cada 15 segundos. */}
+      {primeraCarga ? (
         <div className="flex items-center justify-center py-20">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
         </div>
