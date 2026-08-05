@@ -168,12 +168,31 @@ export function PanelRevival({
                   <pre className="max-h-56 overflow-y-auto whitespace-pre-wrap rounded-lg bg-black/50 p-3 text-xs leading-relaxed text-white/75">
                     {post.promptImagen}
                   </pre>
-                  <button
-                    onClick={copiarPrompt}
-                    className="mt-2 rounded-lg bg-[#0FED9D] px-4 py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
-                  >
-                    {copiado ? "✓ Copiado" : "Copiar prompt"}
-                  </button>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={copiarPrompt}
+                      className="rounded-lg bg-[#0FED9D] px-4 py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
+                    >
+                      {copiado ? "✓ Copiado" : "Copiar prompt"}
+                    </button>
+                    {original && (
+                      <a
+                        href={original}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5"
+                      >
+                        ⬇️ Bajar la referencia
+                      </a>
+                    )}
+                  </div>
+                  <p className="mt-2 text-[11px] text-white/30">
+                    En ChatGPT: adjuntá la imagen original y pegá el prompt. El
+                    prompt arranca diciendo &ldquo;based on the reference
+                    image&rdquo;, así que sin adjuntarla el resultado no va a
+                    parecerse en nada.
+                  </p>
                 </>
               ) : (
                 !generando && (
