@@ -30,7 +30,7 @@ interface Validacion {
 export interface Expediente {
   _id: string;
   numero?: number | null;
-  pagina: string;
+  pageId: string;
   tipoDeValor: string;
   estado: string;
   videoFinalUrl?: string;
@@ -80,7 +80,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
     !!exp.updatedAt &&
     new Date(exp.updatedAt).getTime() - new Date(exp.createdAt).getTime() > 60_000;
 
-  const refetch = [{ query: COLA_DE_REVISION, variables: { pagina: null } }];
+  const refetch = [{ query: COLA_DE_REVISION, variables: { pageId: null } }];
   const [aprobar, { loading: aprobando }] = useMutation(APROBAR, { refetchQueries: refetch });
   const [rechazar, { loading: rechazando }] = useMutation(RECHAZAR, { refetchQueries: refetch });
   const [regenerar, { loading: regenerando }] = useMutation(REGENERAR, { refetchQueries: refetch });
@@ -136,8 +136,8 @@ export function VideoCard({ exp }: { exp: Expediente }) {
       <div className="p-4">
         {/* Meta */}
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-white/40">
-          <span className="rounded bg-white/10 px-2 py-0.5">{exp.pagina}</span>
-          <span>•</span>
+          {/* La pagina no se repite en cada tarjeta: toda la cola es del mismo
+              espacio de trabajo, y se muestra una vez en la cabecera. */}
           <span>{exp.tipoDeValor}</span>
           {exp.regeneraciones > 0 && (
             <>

@@ -6,10 +6,12 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { StatsCard } from "@/components/StatsCard";
 import { VideoCard, Expediente } from "@/components/VideoCard";
 import Link from "next/link";
+import { usePaginaActiva } from "@/lib/pagina-activa";
 
 export default function DashboardPage() {
+  const { activa } = usePaginaActiva();
   const { data: colaData } = useQuery(COLA_DE_REVISION, {
-    variables: { pagina: null },
+    variables: { pageId: activa?.pageId ?? null },
     pollInterval: 30000,
   });
   const { data: creatorsData } = useQuery(CREATORS);

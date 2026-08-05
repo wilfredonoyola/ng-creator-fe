@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { uploadClip, uploadVoiceNote, downloadFromTikTok, getTikTokPreview, TikTokPreview } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
+import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
 import { VoiceRecorder } from "./VoiceRecorder";
 
 type Step = "upload" | "config" | "processing" | "done";
@@ -27,7 +28,10 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
   const [selectedLicense, setSelectedLicense] = useState<string>("");
-  const [pagina, setPagina] = useState<string>("PRINCIPAL");
+  // La pagina NO se elige aca: sale del espacio de trabajo activo. Elegirla
+  // suelta permitiria crear un expediente en una pagina distinta a la que estas
+  // viendo, que es justo la confusion que el switch de contexto evita.
+  const { activa: paginaActiva } = usePaginaActiva();
   const [tipoDeValor, setTipoDeValor] = useState<string>("EXPEDIENTE_COMPLETO");
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -68,7 +72,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const licenses: License[] = licensesData?.licenses?.filter((l: License) => l.status === "ACTIVA") || [];
 
   const [ingestar] = useMutation(INGESTAR, {
-    refetchQueries: [{ query: COLA_DE_REVISION, variables: { pagina: null } }],
+    refetchQueries: [{ query: COLA_DE_REVISION, variables: { pageId: null } }],
   });
 
   const handleClipSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,6 +87,13 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const handleProcess = async () => {
     if (!hasClipSource || !selectedLicense) {
       setError("Selecciona un clip y una licencia");
+      return;
+    }
+    // Sin pagina activa no hay a que espacio de trabajo asignar el expediente.
+    if (!paginaActiva) {
+      setError(
+        "No hay página activa. Un admin tiene que habilitar una en Administrar páginas.",
+      );
       return;
     }
 
@@ -125,7 +136,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             sha256: `sha256-${Date.now()}`, // TODO: calcular SHA256 real
             clipStoragePath: clipResult.storagePath,
             notaVozPath: voicePath,
-            pagina,
+            pageId: paginaActiva!.pageId,
             tipoDeValor,
           },
         },
@@ -399,24 +410,36 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               )}
             </div>
 
-            {/* Page Selection */}
+            {/* Pagina de destino: viene del espacio de trabajo, no se elige */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-white/60">Página</label>
-              <div className="grid grid-cols-3 gap-1.5">
-                {["PRINCIPAL", "SECUNDARIO", "ENTRETENIMIENTO"].map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => setPagina(p)}
-                    className={`rounded-lg border py-2 text-xs transition ${
-                      pagina === p
-                        ? "border-[#0FED9D] bg-[#0FED9D]/10 text-[#0FED9D]"
-                        : "border-white/10 text-white/60 hover:border-white/20"
-                    }`}
-                  >
-                    {p.charAt(0) + p.slice(1).toLowerCase()}
-                  </button>
-                ))}
-              </div>
+              <label className="mb-1.5 block text-xs font-medium text-white/60">
+                Página
+              </label>
+              {paginaActiva ? (
+                <div
+                  style={{ borderLeftColor: colorDePagina(paginaActiva.pageId) }}
+                  className="flex items-center gap-2 rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2.5"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium">
+                      {paginaActiva.nombre}
+                    </span>
+                    <span className="block text-[10px] text-white/40">
+                      Espacio de trabajo activo · cámbialo en la barra lateral
+                    </span>
+                  </span>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-2.5">
+                  <p className="text-xs font-medium text-amber-400">
+                    Sin página activa
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-white/50">
+                    Un admin tiene que habilitar una página en Administrar
+                    páginas antes de poder crear videos.
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Type Selection */}
@@ -452,7 +475,12 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               </button>
               <button
                 onClick={handleProcess}
-                disabled={!selectedLicense || uploading}
+                disabled={!selectedLicense || uploading || !paginaActiva}
+                title={
+                  !paginaActiva
+                    ? "No hay página activa: habilitá una en Administrar páginas"
+                    : undefined
+                }
                 className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
               >
                 Crear 🚀

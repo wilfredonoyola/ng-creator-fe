@@ -10,7 +10,7 @@ interface Publication {
   _id: string;
   expedienteId: string;
   expedienteNum: number;
-  pagina: string;
+  pageId: string;
   publicadoEn?: string;
   videoFinalUrl?: string;
   posterUrl?: string;
@@ -19,7 +19,13 @@ interface Publication {
 export default function PublicadosPage() {
   const { data, loading } = useQuery(PUBLICATIONS);
   const publications: Publication[] = data?.publications ?? [];
-  const { activa } = usePaginaActiva();
+  const { activa, paginas } = usePaginaActiva();
+
+  // El pageId es un numero opaco: se traduce al nombre de la pagina. Si la
+  // pagina ya no esta habilitada no esta en la lista, y entonces se muestra el
+  // id crudo antes que dejar el dato en blanco.
+  const nombreDePagina = (pageId: string) =>
+    paginas.find((p) => p.pageId === pageId)?.nombre ?? pageId;
 
   return (
     <DashboardLayout>
@@ -70,7 +76,7 @@ export default function PublicadosPage() {
                     #{pub.expedienteNum}
                   </span>
                   <span className="rounded-lg bg-[#0FED9D]/20 px-2 py-1 text-xs font-medium text-[#0FED9D]">
-                    {pub.pagina}
+                    {nombreDePagina(pub.pageId)}
                   </span>
                 </div>
 

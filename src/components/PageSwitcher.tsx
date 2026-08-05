@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
 import { useSesion } from "@/lib/sesion";
 
 /**
@@ -57,12 +57,19 @@ export function PageSwitcher() {
     <div ref={contenedor} className="relative mx-3 mb-3">
       <button
         onClick={() => setAbierto(!abierto)}
-        className="flex w-full items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-left transition hover:border-white/20 hover:bg-white/10"
+        // La franja de color a la izquierda es el ancla visual del workspace:
+        // cambia con la pagina, asi que un vistazo basta para saber donde estas.
+        style={
+          activa
+            ? { borderLeftColor: colorDePagina(activa.pageId) }
+            : undefined
+        }
+        className="flex w-full items-center gap-2.5 rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2.5 text-left transition hover:border-white/20 hover:bg-white/10"
       >
         <Avatar pagina={activa} />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] uppercase tracking-wider text-white/35">
-            Publicando en
+            Trabajando en
           </span>
           <span className="block truncate text-sm font-medium">
             {activa?.nombre}
@@ -86,6 +93,11 @@ export function PageSwitcher() {
                   esActiva ? "bg-[#0FED9D]/10" : "hover:bg-white/5"
                 }`}
               >
+                <span
+                  aria-hidden
+                  className="h-7 w-1 shrink-0 rounded-full"
+                  style={{ backgroundColor: colorDePagina(p.pageId) }}
+                />
                 <Avatar pagina={p} />
                 <span className="min-w-0 flex-1">
                   <span
@@ -95,11 +107,9 @@ export function PageSwitcher() {
                   >
                     {p.nombre}
                   </span>
-                  {p.paginaVinculada && (
-                    <span className="block text-[10px] uppercase tracking-wider text-white/35">
-                      {p.paginaVinculada}
-                    </span>
-                  )}
+                  <span className="block text-[10px] text-white/30">
+                    Espacio de trabajo propio
+                  </span>
                 </span>
                 {esActiva && <span className="text-xs text-[#0FED9D]">✓</span>}
               </button>

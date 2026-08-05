@@ -9,8 +9,20 @@ export interface PaginaFacebook {
   pageId: string;
   nombre: string;
   fotoUrl?: string | null;
-  /** Canal interno vinculado (PRINCIPAL, SECUNDARIO...), si tiene. */
-  paginaVinculada?: string | null;
+}
+
+/**
+ * Color estable por pagina, derivado del pageId.
+ *
+ * Sirve para que se vea de un golpe en que espacio de trabajo estas: el mismo
+ * workspace siempre tiene el mismo color, sin guardar nada en la base.
+ */
+export function colorDePagina(pageId: string): string {
+  let h = 0;
+  for (let i = 0; i < pageId.length; i++) {
+    h = (h * 31 + pageId.charCodeAt(i)) % 360;
+  }
+  return `hsl(${h} 80% 58%)`;
 }
 
 interface ContextoPagina {

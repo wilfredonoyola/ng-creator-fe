@@ -33,11 +33,11 @@ export const LOGOUT = gql`
 
 /** La cola de revision: videos listos para aprobar. */
 export const COLA_DE_REVISION = gql`
-  query ColaDeRevision($pagina: Pagina) {
-    colaDeRevision(pagina: $pagina) {
+  query ColaDeRevision($pageId: String) {
+    colaDeRevision(pageId: $pageId) {
       _id
       numero
-      pagina
+      pageId
       tipoDeValor
       estado
       videoFinalUrl
@@ -65,10 +65,10 @@ export const COLA_DE_REVISION = gql`
 
 /** Expedientes que fallaron en el pipeline. */
 export const EXPEDIENTES_FALLIDOS = gql`
-  query ExpedientesFallidos($pagina: Pagina) {
-    expedientesFallidos(pagina: $pagina) {
+  query ExpedientesFallidos($pageId: String) {
+    expedientesFallidos(pageId: $pageId) {
       _id
-      pagina
+      pageId
       tipoDeValor
       estado
       error
@@ -111,7 +111,7 @@ export const INGESTAR = gql`
     ingestar(input: $input) {
       _id
       estado
-      pagina
+      pageId
     }
   }
 `;
@@ -216,7 +216,7 @@ export const EXPEDIENTE = gql`
     expediente(id: $id) {
       _id
       numero
-      pagina
+      pageId
       tipoDeValor
       estado
       videoFinalUrl
@@ -249,7 +249,7 @@ export const PUBLICATIONS = gql`
       _id
       expedienteId
       expedienteNum
-      pagina
+      pageId
       publicadoEn
       videoFinalUrl
       posterUrl
@@ -317,7 +317,6 @@ export const FACEBOOK_PAGINAS = gql`
       categoria
       fotoUrl
       tasks
-      paginaVinculada
       activa
       ultimaSincronizacionEn
     }
@@ -332,7 +331,6 @@ export const FACEBOOK_PAGINAS_ACTIVAS = gql`
       pageId
       nombre
       fotoUrl
-      paginaVinculada
     }
   }
 `;
@@ -356,7 +354,6 @@ export const FACEBOOK_RESINCRONIZAR = gql`
       nombre
       tasks
       activa
-      paginaVinculada
     }
   }
 `;
@@ -370,11 +367,24 @@ export const FACEBOOK_SET_PAGINA_ACTIVA = gql`
   }
 `;
 
-export const FACEBOOK_VINCULAR_PAGINA = gql`
-  mutation FacebookVincularPagina($id: ID!, $pagina: Pagina) {
-    facebookVincularPagina(id: $id, pagina: $pagina) {
+/**
+ * Registra una pagina por su ID de Facebook.
+ *
+ * Hace falta porque con acceso estandar a pages_show_list el listado de Meta
+ * (/me/accounts) viene vacio: la autorizacion es por pagina, asi que la pagina
+ * elegida es accesible pero invisible en el listado. El ID se ve en el propio
+ * dialogo de Meta, debajo del nombre.
+ */
+export const FACEBOOK_REGISTRAR_PAGINA_POR_ID = gql`
+  mutation FacebookRegistrarPaginaPorId($pageId: String!) {
+    facebookRegistrarPaginaPorId(pageId: $pageId) {
       _id
-      paginaVinculada
+      pageId
+      nombre
+      categoria
+      fotoUrl
+      tasks
+      activa
     }
   }
 `;

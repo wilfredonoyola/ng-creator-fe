@@ -12,11 +12,9 @@ import {
   FACEBOOK_URL_DE_CONEXION,
   FACEBOOK_RESINCRONIZAR,
   FACEBOOK_SET_PAGINA_ACTIVA,
-  FACEBOOK_VINCULAR_PAGINA,
+  FACEBOOK_REGISTRAR_PAGINA_POR_ID,
   FACEBOOK_DESCONECTAR,
 } from "@/graphql/operations";
-
-const CANALES = ["PRINCIPAL", "SECUNDARIO", "ENTRETENIMIENTO"];
 
 interface Pagina {
   _id: string;
@@ -25,7 +23,6 @@ interface Pagina {
   categoria?: string | null;
   fotoUrl?: string | null;
   tasks: string[];
-  paginaVinculada?: string | null;
   activa: boolean;
   ultimaSincronizacionEn?: string | null;
 }
@@ -58,9 +55,11 @@ export default function AdminFacebookPage() {
   const [setActiva] = useMutation(FACEBOOK_SET_PAGINA_ACTIVA, {
     refetchQueries: refrescar,
   });
-  const [vincular] = useMutation(FACEBOOK_VINCULAR_PAGINA, {
-    refetchQueries: refrescar,
-  });
+  const [registrarPorId, { loading: registrando }] = useMutation(
+    FACEBOOK_REGISTRAR_PAGINA_POR_ID,
+    { refetchQueries: refrescar },
+  );
+  const [idManual, setIdManual] = useState("");
   const [desconectar, { loading: desconectando }] = useMutation(
     FACEBOOK_DESCONECTAR,
     { refetchQueries: refrescar },
@@ -234,16 +233,14 @@ FACEBOOK_TOKEN_KEY=`}
         completo={habilitadas > 0}
         deshabilitado={!conexion?.activa}
       >
-        {paginas.length === 0 ? (
+        <div className="space-y-4">
           <p className="text-sm text-white/50">
-            No hay páginas todavía. Sincronizá después de autorizar.
+            Cada página habilitada es un espacio de trabajo propio: su cola de
+            revisión y su numeración de expedientes son independientes.
+            Conectar no habilita — marcá explícitamente dónde se puede publicar.
           </p>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-sm text-white/50">
-              Conectar no habilita: marcá explícitamente dónde se puede publicar.
-              Opcionalmente vinculá cada página a un canal interno.
-            </p>
+
+          {paginas.length > 0 && (
             <div className="space-y-2">
               {paginas.map((p) => (
                 <FilaPagina
@@ -254,18 +251,51 @@ FACEBOOK_TOKEN_KEY=`}
                       setActiva({ variables: { id: p._id, activa } }),
                     )
                   }
-                  onVincular={(canal) =>
-                    accion(() =>
-                      vincular({
-                        variables: { id: p._id, pagina: canal || null },
-                      }),
-                    )
-                  }
                 />
               ))}
             </div>
+          )}
+
+          {/*
+            Agregar por ID: con acceso estándar a pages_show_list el listado de
+            Meta (/me/accounts) viene vacío, porque la autorización es por página
+            y enumerarlas exige acceso avanzado. El ID se ve en el diálogo de
+            Meta, debajo del nombre de cada página.
+          */}
+          <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+            <p className="text-xs font-medium text-white/70">
+              Agregar una página por su ID
+            </p>
+            <p className="mt-0.5 text-[11px] text-white/40">
+              {paginas.length === 0
+                ? "Meta no devuelve el listado de páginas mientras la app tenga acceso estándar. Pegá el ID que aparece en el diálogo de autorización, debajo del nombre de la página."
+                : "Si una página que autorizaste no aparece arriba, agregala con su ID."}
+            </p>
+            <div className="mt-2 flex gap-2">
+              <input
+                value={idManual}
+                onChange={(e) => setIdManual(e.target.value)}
+                placeholder="1887745564803724"
+                inputMode="numeric"
+                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-xs outline-none focus:border-[#0FED9D]/50"
+              />
+              <button
+                onClick={() =>
+                  accion(async () => {
+                    await registrarPorId({
+                      variables: { pageId: idManual.trim() },
+                    });
+                    setIdManual("");
+                  })
+                }
+                disabled={!idManual.trim() || registrando}
+                className="rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white/70 transition hover:bg-white/5 disabled:opacity-40"
+              >
+                {registrando ? "Verificando…" : "Agregar"}
+              </button>
+            </div>
           </div>
-        )}
+        </div>
       </Paso>
 
       {habilitadas > 0 && (
@@ -332,14 +362,16 @@ function Paso({
 function FilaPagina({
   pagina,
   onToggle,
-  onVincular,
 }: {
   pagina: Pagina;
   onToggle: (activa: boolean) => void;
-  onVincular: (canal: string) => void;
 }) {
-  // Sin CREATE_CONTENT el backend rechaza habilitarla, así que se avisa acá.
+  // `tasks` solo lo devuelve /me/accounts. Vacío significa "no lo sabemos"
+  // (página registrada por ID), no "sin permiso": el backend la deja habilitar
+  // igual, así que bloquear el botón acá la volvería inhabilitable.
+  const permisosConocidos = pagina.tasks.length > 0;
   const puedePublicar = pagina.tasks.includes("CREATE_CONTENT");
+  const bloqueada = permisosConocidos && !puedePublicar;
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-3">
@@ -356,30 +388,20 @@ function FilaPagina({
         <p className="truncate text-sm font-medium">{pagina.nombre}</p>
         <p className="truncate text-xs text-white/40">
           {pagina.categoria ?? "—"}
-          {!puedePublicar && (
+          {bloqueada && (
             <span className="ml-2 text-yellow-400">sin permiso para publicar</span>
           )}
         </p>
+        <p className="truncate font-mono text-[10px] text-white/25">
+          {pagina.pageId}
+        </p>
       </div>
-
-      <select
-        value={pagina.paginaVinculada ?? ""}
-        onChange={(e) => onVincular(e.target.value)}
-        className="rounded-lg border border-white/10 bg-black/40 px-2 py-1.5 text-xs text-white/70 outline-none focus:border-[#0FED9D]/50"
-      >
-        <option value="">Sin canal</option>
-        {CANALES.map((c) => (
-          <option key={c} value={c}>
-            {c.toLowerCase()}
-          </option>
-        ))}
-      </select>
 
       <button
         onClick={() => onToggle(!pagina.activa)}
-        disabled={!puedePublicar && !pagina.activa}
+        disabled={bloqueada && !pagina.activa}
         title={
-          !puedePublicar
+          bloqueada
             ? "Requiere permiso CREATE_CONTENT sobre la página"
             : undefined
         }

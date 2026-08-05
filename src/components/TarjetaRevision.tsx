@@ -23,7 +23,7 @@ interface Validacion {
 export interface Expediente {
   _id: string;
   numero?: number | null;
-  pagina: string;
+  pageId: string;
   tipoDeValor: string;
   estado: string;
   videoFinalUrl?: string;
@@ -37,7 +37,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
   const [nota, setNota] = useState("");
   const [mostrarNota, setMostrarNota] = useState(false);
 
-  const refetch = [{ query: COLA_DE_REVISION, variables: { pagina: null } }];
+  const refetch = [{ query: COLA_DE_REVISION, variables: { pageId: null } }];
   const [aprobar, { loading: aprobando }] = useMutation(APROBAR, {
     refetchQueries: refetch,
   });
@@ -75,7 +75,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
             {exp.numero ? `EXPEDIENTE #${exp.numero}` : "SIN NUMERAR"}
           </span>
           <span className="text-xs text-white/40">
-            {exp.pagina} · {exp.tipoDeValor}
+            {exp.tipoDeValor}
             {exp.regeneraciones > 0 && ` · ${exp.regeneraciones} regen`}
           </span>
         </div>

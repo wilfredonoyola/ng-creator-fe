@@ -6,8 +6,7 @@ import { COLA_DE_REVISION, EXPEDIENTES_FALLIDOS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VideoCard, Expediente } from "@/components/VideoCard";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
-
-const PAGINAS = ["TODAS", "PRINCIPAL", "SECUNDARIO", "ENTRETENIMIENTO"];
+import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
 
 type Orden = "ANTIGUOS" | "RECIENTES";
 
@@ -18,7 +17,7 @@ const ORDENES: Array<{ valor: Orden; label: string }> = [
 
 interface ExpedienteFallido {
   _id: string;
-  pagina: string;
+  pageId: string;
   tipoDeValor: string;
   estado: string;
   error?: string;
@@ -26,19 +25,22 @@ interface ExpedienteFallido {
 }
 
 export default function RevisionPage() {
-  const [paginaFilter, setPaginaFilter] = useState<string>("TODAS");
+  // La cola es del espacio de trabajo activo: no hay filtro de pagina suelto,
+  // porque ver la cola de una pagina mientras trabajas en otra es la confusion
+  // que el switch de contexto existe para evitar.
+  const { activa: paginaActiva } = usePaginaActiva();
   const [showFallidos, setShowFallidos] = useState(false);
   const [orden, setOrden] = useState<Orden>("ANTIGUOS");
   const ahora = useAhora(10_000);
 
   const { data, loading, refetch, networkStatus } = useQuery(COLA_DE_REVISION, {
-    variables: { pagina: paginaFilter === "TODAS" ? null : paginaFilter },
+    variables: { pageId: paginaActiva?.pageId ?? null },
     pollInterval: 15000,
     notifyOnNetworkStatusChange: true,
   });
 
   const { data: fallidosData } = useQuery(EXPEDIENTES_FALLIDOS, {
-    variables: { pagina: paginaFilter === "TODAS" ? null : paginaFilter },
+    variables: { pageId: paginaActiva?.pageId ?? null },
     pollInterval: 30000,
   });
 
@@ -113,21 +115,25 @@ export default function RevisionPage() {
 
       {/* Filters */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-2">
-          {PAGINAS.map((p) => (
-            <button
-              key={p}
-              onClick={() => setPaginaFilter(p)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                paginaFilter === p
-                  ? "bg-[#0FED9D] text-black"
-                  : "bg-white/5 text-white/60 hover:bg-white/10"
-              }`}
-            >
-              {p.toLowerCase()}
-            </button>
-          ))}
-        </div>
+        {paginaActiva ? (
+          <div
+            style={{ borderLeftColor: colorDePagina(paginaActiva.pageId) }}
+            className="flex items-center gap-2 rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2"
+          >
+            <span>
+              <span className="block text-[10px] uppercase tracking-wider text-white/35">
+                Cola de
+              </span>
+              <span className="block text-sm font-medium">
+                {paginaActiva.nombre}
+              </span>
+            </span>
+          </div>
+        ) : (
+          <p className="text-sm text-amber-400">
+            Sin página activa: no hay cola que mostrar
+          </p>
+        )}
 
         {/* Orden: por defecto FIFO, para que nada se quede atrás en la cola */}
         <div className="flex items-center gap-2">
@@ -173,7 +179,9 @@ export default function RevisionPage() {
                 <div className="space-y-1 text-sm">
                   <p>
                     <span className="text-white/40">Página:</span>{" "}
-                    <span className="text-white/70">{exp.pagina}</span>
+                    <span className="text-white/70">
+                      {paginaActiva?.nombre ?? exp.pageId}
+                    </span>
                   </p>
                   <p>
                     <span className="text-white/40">Tipo:</span>{" "}
@@ -217,8 +225,8 @@ export default function RevisionPage() {
             No hay videos en revisión
           </p>
           <p className="mt-1 text-sm text-white/40">
-            {paginaFilter !== "TODAS"
-              ? `No hay videos en la página ${paginaFilter.toLowerCase()}`
+            {paginaActiva
+              ? `Nada pendiente en ${paginaActiva.nombre}`
               : "Todos los videos han sido procesados"}
           </p>
         </div>
