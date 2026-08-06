@@ -58,6 +58,7 @@ export default function RevivalPage() {
   const [orden, setOrden] = useState<Orden>("SCORE");
   const [anioFiltro, setAnioFiltro] = useState<number | null>(null);
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoRevival | null>(null);
+  const [soloSinHistoria, setSoloSinHistoria] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
   const [sincronizandoAnio, setSincronizandoAnio] = useState<number | null>(null);
   const [postOcupado, setPostOcupado] = useState<string | null>(null);
@@ -71,7 +72,8 @@ export default function RevivalPage() {
       orden,
       limite: 120,
       anio: anioFiltro,
-      estado: estadoFiltro,
+      estado: soloSinHistoria ? null : estadoFiltro,
+      sinHistoria: soloSinHistoria || null,
     },
     skip: !pageId,
   });
@@ -306,12 +308,30 @@ export default function RevivalPage() {
                 {etiqueta}
               </button>
             ))}
+
+            {/* Lo publicado a lo que le falta la historia. Es la tarea que
+                queda pendiente después de publicar y la más fácil de olvidar,
+                porque la historia es una subida aparte. */}
+            {resumen?.sinHistoria > 0 && (
+              <button
+                onClick={() => setSoloSinHistoria(!soloSinHistoria)}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                  soloSinHistoria
+                    ? "bg-amber-500/20 text-amber-200"
+                    : "text-amber-300/70 hover:bg-amber-500/10"
+                }`}
+              >
+                📱 Sin historia
+                <span className="ml-1.5 opacity-70">{resumen.sinHistoria}</span>
+              </button>
+            )}
+
             {anioFiltro && (
               <button
                 onClick={() => setAnioFiltro(null)}
                 className="ml-auto rounded-lg bg-white/5 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/10"
               >
-                Filtrando {anioFiltro} · quitar ✕
+                {anioFiltro} ✕
               </button>
             )}
           </div>

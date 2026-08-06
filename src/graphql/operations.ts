@@ -451,6 +451,7 @@ export const HISTORIAL_DE_PAGINA = gql`
     $limite: Int!
     $anio: Int
     $estado: EstadoRevival
+    $sinHistoria: Boolean
   ) {
     historialDePagina(
       pageId: $pageId
@@ -458,6 +459,7 @@ export const HISTORIAL_DE_PAGINA = gql`
       limite: $limite
       anio: $anio
       estado: $estado
+      sinHistoria: $sinHistoria
     ) {
       _id
       postId
@@ -491,6 +493,7 @@ export const RESUMEN_HISTORIAL = gql`
     resumenHistorial(pageId: $pageId) {
       total
       conMetricas
+      sinHistoria
       sincronizadoEn
     }
   }

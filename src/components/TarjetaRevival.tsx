@@ -143,6 +143,27 @@ export function TarjetaRevival({
         <span className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-bold text-[#0FED9D]">
           {numero(post.score)}
         </span>
+
+        {/* Estado de la historia, solo cuando ya salió al feed.
+            La historia es una subida aparte y es fácil olvidarla; sin esto
+            había que abrir el panel de cada publicación para saber cuáles
+            quedaron a medias. */}
+        {(post.estado === "PUBLICADO" || post.estado === "PROGRAMADO") && (
+          <span
+            title={
+              post.historiaPublicadaEn
+                ? "Historia publicada"
+                : "Falta subir la historia"
+            }
+            className={`absolute bottom-2 left-2 rounded-md px-2 py-0.5 text-[10px] font-medium ${
+              post.historiaPublicadaEn
+                ? "bg-black/70 text-[#0FED9D]"
+                : "bg-amber-500/25 text-amber-200"
+            }`}
+          >
+            {post.historiaPublicadaEn ? "📱 Historia" : "📱 Falta"}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-3">
