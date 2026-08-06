@@ -59,6 +59,7 @@ export default function RevivalPage() {
   const [anioFiltro, setAnioFiltro] = useState<number | null>(null);
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoRevival | null>(null);
   const [soloSinHistoria, setSoloSinHistoria] = useState(false);
+  const [aniosAbierto, setAniosAbierto] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
   const [sincronizandoAnio, setSincronizandoAnio] = useState<number | null>(null);
   const [postOcupado, setPostOcupado] = useState<string | null>(null);
@@ -154,6 +155,11 @@ export default function RevivalPage() {
   const numero = (n: number) => n.toLocaleString("es");
   const totalPosts = conteos.reduce((s, c) => s + c.total, 0);
 
+  // Se abre sola mientras no haya nada traído: ahí sincronizar es la única
+  // acción posible y esconderla dejaría la pantalla sin salida.
+  const aniosSincronizados = anios.filter((a) => a.sincronizadoEn).length;
+  const mostrarAnios = aniosAbierto || aniosSincronizados === 0;
+
   function moverPost(postId: string, estado: EstadoRevival) {
     setPostOcupado(postId);
     cambiarEstado({ variables: { postId, estado } });
@@ -188,11 +194,36 @@ export default function RevivalPage() {
         />
       ) : (
         <>
-          {/* Grilla de años */}
-          <div className="mb-8">
-            <h2 className="mb-3 text-xs uppercase tracking-wider text-white/40">
-              Sincronizar por año
-            </h2>
+          {/* Sincronización por año.
+              Colapsada salvo que no haya nada sincronizado. Ocupaba el tramo
+              más valioso de la pantalla con diez tarjetas, y es lo que menos se
+              toca: una vez traído un año, no se vuelve hasta el mes siguiente.
+              Cuando la página está vacía sí conviene abierta, porque ahí es la
+              única acción posible. */}
+          <div className="mb-6">
+            <button
+              onClick={() => setAniosAbierto(!aniosAbierto)}
+              className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 text-left transition hover:bg-white/5"
+            >
+              <span className="text-xs uppercase tracking-wider text-white/40">
+                Sincronizar por año
+              </span>
+              <span className="text-xs text-white/25">
+                {aniosSincronizados > 0
+                  ? `${aniosSincronizados} de ${anios.length} años`
+                  : "sin sincronizar"}
+              </span>
+              <span
+                className={`ml-auto text-[10px] text-white/30 transition-transform ${
+                  mostrarAnios ? "rotate-180" : ""
+                }`}
+              >
+                ▼
+              </span>
+            </button>
+          </div>
+
+          <div className={`mb-8 ${mostrarAnios ? "" : "hidden"}`}>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
               {anios.map((a) => {
                 const activo = sincronizandoAnio === a.anio;
