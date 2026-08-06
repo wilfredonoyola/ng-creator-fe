@@ -49,9 +49,12 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
   });
 
   return (
-    <div className="grid grid-cols-1 gap-6 rounded-2xl border border-white/10 bg-black/30 p-5 md:grid-cols-[220px_1fr]">
-      {/* Video */}
-      <div className="overflow-hidden rounded-xl bg-black">
+    <div className="grid grid-cols-1 gap-5 rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-5 md:grid-cols-[220px_1fr] md:gap-6">
+      {/* Video.
+          En el teléfono se limita la altura: un 9:16 a ancho completo mide unos
+          670px en una pantalla de 375, así que había que scrollear un video
+          entero antes de leer el guion que se viene a revisar. */}
+      <div className="mx-auto w-full max-w-[220px] overflow-hidden rounded-xl bg-black md:max-w-none">
         {exp.videoFinalUrl ? (
           <video
             src={exp.videoFinalUrl}

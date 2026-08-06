@@ -179,11 +179,13 @@ export function TarjetaRevival({
           )}
         </div>
 
+        {/* py-2.5 para que el objetivo sea cómodo de tocar: a dos columnas en
+            un teléfono la tarjeta mide unos 170px y los botones quedan chicos. */}
         <div className="mt-3 flex gap-2">
           {ABRE_PANEL.includes(post.estado) ? (
             <button
               onClick={() => onAbrirPanel(post)}
-              className="flex-1 rounded-lg bg-[#0FED9D] py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
+              className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-xs font-semibold text-black transition hover:brightness-110"
             >
               {TEXTO_PANEL[post.estado]}
             </button>
@@ -191,7 +193,7 @@ export function TarjetaRevival({
             <button
               onClick={() => onCambiarEstado(post.postId, siguiente.estado)}
               disabled={ocupado}
-              className="flex-1 rounded-lg bg-[#0FED9D] py-1.5 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
+              className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
             >
               {siguiente.texto}
             </button>
@@ -200,9 +202,14 @@ export function TarjetaRevival({
             <button
               onClick={() => onCambiarEstado(post.postId, "DESCARTADO")}
               disabled={ocupado}
-              className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/40 transition hover:border-red-500/40 hover:text-red-400 disabled:opacity-40"
+              title="Descartar"
+              aria-label="Descartar"
+              className="shrink-0 rounded-lg border border-white/10 px-3 py-2.5 text-xs text-white/40 transition hover:border-red-500/40 hover:text-red-400 disabled:opacity-40"
             >
-              Descartar
+              {/* La palabra no entra junto al botón principal en una tarjeta
+                  angosta; el icono sí, y el aria-label mantiene el sentido. */}
+              <span className="sm:hidden">✕</span>
+              <span className="hidden sm:inline">Descartar</span>
             </button>
           )}
         </div>

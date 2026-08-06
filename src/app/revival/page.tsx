@@ -336,7 +336,10 @@ export default function RevivalPage() {
               }
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            // Dos columnas ya en el teléfono. A una sola, cada tarjeta ocupa
+            // media pantalla y revisar 120 publicaciones se vuelve un scroll
+            // interminable: acá se viene a comparar y descartar rápido.
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {posts.map((p) => (
                 <TarjetaRevival
                   key={p._id}
