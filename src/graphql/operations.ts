@@ -611,3 +611,14 @@ export const PUBLICAR_HISTORIA_REVIVAL = gql`
     }
   }
 `;
+
+/** Arma la historia 9:16 con el texto encima, sin publicarla. */
+export const PREVISUALIZAR_HISTORIA = gql`
+  mutation PrevisualizarHistoria($postId: String!) {
+    previsualizarHistoria(postId: $postId) {
+      _id
+      postId
+      historiaUrl
+    }
+  }
+`;

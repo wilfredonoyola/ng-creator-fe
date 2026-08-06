@@ -7,6 +7,7 @@ import {
   GENERAR_PROMPT_REVIVAL,
   PUBLICAR_REVIVAL,
   PUBLICAR_HISTORIA_REVIVAL,
+  PREVISUALIZAR_HISTORIA,
 } from "@/graphql/operations";
 import { uploadImagenRevival } from "@/lib/upload";
 import type { PostRevival } from "./TarjetaRevival";
@@ -34,6 +35,7 @@ export function PanelRevival({
     mensajeNuevo?: string | null;
     publicadoPermalink?: string | null;
     programadaPara?: string | null;
+    historiaUrl?: string | null;
     historiaPublicadaEn?: string | null;
   };
   pageId: string;
@@ -63,6 +65,10 @@ export function PanelRevival({
   });
   const [publicarHistoria, { loading: subiendoHistoria }] = useMutation(
     PUBLICAR_HISTORIA_REVIVAL,
+    { onCompleted: onCambio, onError: (e) => setError(e.message) },
+  );
+  const [previsualizar, { loading: previsualizando }] = useMutation(
+    PREVISUALIZAR_HISTORIA,
     { onCompleted: onCambio, onError: (e) => setError(e.message) },
   );
 
@@ -365,21 +371,54 @@ export function PanelRevival({
                       : "Publicación aparte de la del feed. La imagen se adapta a 9:16 con fondo difuminado."}
                   </p>
                 </div>
-                <button
-                  onClick={() =>
-                    publicarHistoria({ variables: { postId: post.postId } })
-                  }
-                  disabled={subiendoHistoria}
-                  className="shrink-0 rounded-lg border border-white/15 px-4 py-1.5 text-xs font-medium text-white/70 transition hover:border-[#0FED9D]/40 hover:text-[#0FED9D] disabled:opacity-40"
-                >
-                  {subiendoHistoria
-                    ? "Subiendo…"
-                    : post.historiaPublicadaEn
-                      ? "Volver a subir"
-                      : "Subir a historia"}
-                </button>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    onClick={() =>
+                      previsualizar({ variables: { postId: post.postId } })
+                    }
+                    disabled={previsualizando}
+                    className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 disabled:opacity-40"
+                  >
+                    {previsualizando
+                      ? "Armando…"
+                      : post.historiaUrl
+                        ? "Regenerar"
+                        : "Ver cómo queda"}
+                  </button>
+                  <button
+                    onClick={() =>
+                      publicarHistoria({ variables: { postId: post.postId } })
+                    }
+                    disabled={subiendoHistoria}
+                    className="rounded-lg border border-white/15 px-4 py-1.5 text-xs font-medium text-white/70 transition hover:border-[#0FED9D]/40 hover:text-[#0FED9D] disabled:opacity-40"
+                  >
+                    {subiendoHistoria
+                      ? "Subiendo…"
+                      : post.historiaPublicadaEn
+                        ? "Volver a subir"
+                        : "Subir a historia"}
+                  </button>
+                </div>
               </div>
+
+              {/* Vista previa del 9:16 real, no una simulación con CSS */}
+              {post.historiaUrl && (
+                <div className="mt-3 flex justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={post.historiaUrl}
+                    alt="Vista previa de la historia"
+                    className="w-48 rounded-xl border border-white/10"
+                  />
+                </div>
+              )}
+
               <p className="mt-2 text-[11px] text-white/25">
+                El texto de la publicación se quema en la franja de abajo. Si lo
+                editás arriba, dale Regenerar. Los emojis se omiten: el
+                renderizador no los dibuja a color y salen como manchas.
+              </p>
+              <p className="text-[11px] text-white/25">
                 No se puede programar: la API de historias de Meta no acepta
                 agendarlas.
               </p>
