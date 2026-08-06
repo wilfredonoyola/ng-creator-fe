@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { haySesion } from "@/lib/auth";
+import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
 import { Sidebar } from "./Sidebar";
+import { NavInferior } from "./NavInferior";
 
 /**
  * Estructura del dashboard, pensada primero para el teléfono.
@@ -17,6 +19,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
+  const { activa } = usePaginaActiva();
 
   useEffect(() => {
     if (!haySesion()) router.push("/login");
@@ -53,12 +56,28 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <span className="mt-1 block h-0.5 w-5 bg-current" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0FED9D] text-[11px] font-bold text-black">
-            NG
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#0FED9D] text-[11px] font-bold text-black">
+          NG
+        </span>
+
+        {/* Qué fan page está activa. En móvil el switch vive dentro del cajón,
+            y sin este dato no hay forma de saber sobre cuál estás trabajando:
+            el historial, los estados y el logo son distintos en cada una. */}
+        <button
+          onClick={() => setAbierto(true)}
+          className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-2 py-1 text-left transition active:bg-white/5"
+        >
+          {activa && (
+            <span
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{ backgroundColor: colorDePagina(activa.pageId) }}
+            />
+          )}
+          <span className="truncate text-sm font-medium">
+            {activa?.nombre ?? "Creator Studio"}
           </span>
-          <span className="text-sm font-bold tracking-wide">Creator Studio</span>
-        </div>
+          <span className="text-[10px] text-white/30">▾</span>
+        </button>
       </header>
 
       {/* Fondo oscuro que cierra el cajón al tocarlo */}
@@ -73,15 +92,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <Sidebar abierto={abierto} onCerrar={() => setAbierto(false)} />
 
       <main className="lg:pl-64">
-        <div
-          className="min-h-screen p-4 sm:p-6 lg:p-8"
-          style={{
-            paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
-          }}
-        >
+        {/* pb-24 en móvil: la barra inferior es fija y taparía el final del
+            contenido, que suele ser justo el botón de la acción. */}
+        <div className="min-h-screen p-4 pb-24 sm:p-6 sm:pb-24 lg:p-8">
           {children}
         </div>
       </main>
+
+      <NavInferior onMas={() => setAbierto(true)} />
     </div>
   );
 }
