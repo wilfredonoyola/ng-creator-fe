@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
   CAMBIAR_ESTADO_POST,
   CONTEO_POR_ESTADO,
   ESTADO_POR_ANIO,
   HISTORIAL_DE_PAGINA,
+  REFRESCAR_PROGRAMADAS,
   RESUMEN_HISTORIAL,
   SINCRONIZAR_ANIO,
 } from "@/graphql/operations";
@@ -120,6 +121,28 @@ export default function RevivalPage() {
       setAviso(`Error: ${err.message}`);
     },
   });
+
+  // Meta no avisa cuando publica algo agendado. Se le pregunta al abrir la
+  // seccion: el desfase es solo de la etiqueta, el post sale igual, asi que no
+  // hace falta un cron vigilando.
+  const [refrescarProgramadas] = useMutation(REFRESCAR_PROGRAMADAS, {
+    onCompleted: (res) => {
+      if (res.refrescarProgramadas > 0) {
+        setAviso(
+          `${res.refrescarProgramadas} publicación(es) programada(s) ya salieron en Facebook`,
+        );
+        refetch();
+        refetchConteo();
+      }
+    },
+    // Si falla no se muestra nada: es una puesta al día en segundo plano, no
+    // algo que el usuario haya pedido.
+    onError: () => {},
+  });
+
+  useEffect(() => {
+    if (pageId) refrescarProgramadas({ variables: { pageId } });
+  }, [pageId, refrescarProgramadas]);
 
   const posts: PostRevival[] = data?.historialDePagina ?? [];
   const anios: EstadoAnio[] = dataAnios?.estadoPorAnio ?? [];

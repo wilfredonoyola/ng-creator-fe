@@ -622,3 +622,15 @@ export const PREVISUALIZAR_HISTORIA = gql`
     }
   }
 `;
+
+/**
+ * Pregunta a Meta si lo agendado ya salió y actualiza el estado.
+ *
+ * Meta no avisa cuando publica algo programado, así que sin esto un post
+ * agendado se queda en "Programado" para siempre.
+ */
+export const REFRESCAR_PROGRAMADAS = gql`
+  mutation RefrescarProgramadas($pageId: String!) {
+    refrescarProgramadas(pageId: $pageId)
+  }
+`;
