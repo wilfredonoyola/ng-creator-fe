@@ -1,0 +1,46 @@
+{
+  "name": "NG Creator Studio",
+  "short_name": "NG Creator",
+  "description": "Crear, revisar y reciclar el contenido de tus fan pages",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Revival",
+      "short_name": "Revival",
+      "description": "El historial rankeado por rendimiento",
+      "url": "/revival"
+    },
+    {
+      "name": "Revisión",
+      "short_name": "Revisión",
+      "description": "La cola de videos por aprobar",
+      "url": "/revision"
+    }
+  ]
+}

@@ -103,14 +103,17 @@ export function PanelRevival({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-4 sm:p-8"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-0 sm:p-8"
       onClick={onCerrar}
     >
+      {/* En el teléfono ocupa toda la pantalla: un modal flotante con márgenes
+          deja el comparador en una ventana chica, y comparar dos imágenes es
+          justamente lo que se viene a hacer acá. */}
       <div
-        className="w-full max-w-4xl rounded-2xl border border-white/10 bg-[#0a0a0a]"
+        className="min-h-[100dvh] w-full max-w-4xl border-white/10 bg-[#0a0a0a] sm:min-h-0 sm:rounded-2xl sm:border"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#0a0a0a] px-4 py-3 sm:px-5 sm:py-4">
           <div>
             <h2 className="font-bold">Revivir publicación</h2>
             <p className="text-xs text-white/40">
@@ -130,7 +133,7 @@ export function PanelRevival({
           </button>
         </div>
 
-        <div className="space-y-6 p-5">
+        <div className="space-y-6 p-4 sm:p-5">
           {error && (
             <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {error}

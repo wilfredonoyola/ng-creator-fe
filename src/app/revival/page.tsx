@@ -262,7 +262,10 @@ export default function RevivalPage() {
           )}
 
           {/* Pestañas de estado */}
-          <div className="mb-4 flex flex-wrap gap-1 border-b border-white/10 pb-2">
+          {/* Siete pestañas envueltas ocupan tres filas en un teléfono. Se
+              desplazan en horizontal, que es lo que se espera en móvil, y los
+              márgenes negativos las dejan sangrar hasta el borde. */}
+          <div className="mb-4 -mx-4 flex gap-1 overflow-x-auto border-b border-white/10 px-4 pb-2 sm:mx-0 sm:px-0">
             <Pestana
               activa={estadoFiltro === null}
               onClick={() => setEstadoFiltro(null)}
@@ -384,7 +387,7 @@ function Pestana({
   return (
     <button
       onClick={onClick}
-      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+      className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium transition ${
         activa
           ? "bg-[#0FED9D]/10 text-[#0FED9D]"
           : "text-white/45 hover:bg-white/5 hover:text-white"
