@@ -765,14 +765,34 @@ export const CANCELAR_INVITACION = gql`
  * deja como expediente en revisión. Pasa por la puerta de derechos: sin
  * licencia vigente no se crea el asset y falla.
  */
+/**
+ * Arranca el montaje y devuelve el trabajo AL INSTANTE, sin esperar el render.
+ *
+ * El render tarda minutos y no cabe en una petición: si el navegador cortaba
+ * la conexión se perdía la respuesta aunque el servidor terminara bien. El
+ * avance se sigue con MONTAJE_TRABAJO.
+ */
 export const MONTAR_VIDEO = gql`
   mutation MontarVideo($input: MontajeInput!) {
     montarVideo(input: $input) {
       _id
       estado
-      pageId
-      videoFinalUrl
-      posterUrl
+      progreso
+      duracionSeg
+    }
+  }
+`;
+
+/** Cómo va un montaje. Se consulta cada pocos segundos mientras renderiza. */
+export const MONTAJE_TRABAJO = gql`
+  query MontajeTrabajo($id: ID!, $pageId: String!) {
+    montajeTrabajo(id: $id, pageId: $pageId) {
+      _id
+      estado
+      progreso
+      duracionSeg
+      expedienteId
+      error
     }
   }
 `;

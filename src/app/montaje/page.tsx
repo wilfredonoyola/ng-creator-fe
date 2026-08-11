@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EditorRecorte } from "@/components/montaje/EditorRecorte";
 import { PreviewFinal } from "@/components/montaje/PreviewFinal";
@@ -16,7 +16,7 @@ import {
   montajeInicial,
   type Montaje,
 } from "@/lib/montaje";
-import { LICENSES, MONTAR_VIDEO } from "@/graphql/operations";
+import { LICENSES, MONTAJE_TRABAJO, MONTAR_VIDEO } from "@/graphql/operations";
 
 /** Lo que Meta admite en un Reel. El backend lo valida antes de publicar. */
 const LIMITE_REEL_SEG = 90;
@@ -92,7 +92,6 @@ export default function MontajePage() {
   const [fuente, setFuente] = useState<Fuente | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [listo, setListo] = useState<string | null>(null);
 
   const [montaje, setMontaje] = useState<Montaje>(montajeInicial());
   const [proporcion, setProporcion] = useState<string>("libre");
@@ -103,7 +102,22 @@ export default function MontajePage() {
     (l: Licencia) => l.status === "ACTIVA",
   );
 
-  const [montar, { loading: montando }] = useMutation(MONTAR_VIDEO);
+  const [montar] = useMutation(MONTAR_VIDEO);
+  const cliente = useApolloClient();
+
+  /**
+   * El trabajo en curso. Su id se guarda en localStorage para que cerrar la
+   * pestaña no pierda el montaje: el render sigue en el servidor y al volver
+   * se retoma el seguimiento donde estaba.
+   */
+  const [trabajo, setTrabajo] = useState<{
+    _id: string;
+    estado: string;
+    progreso: number;
+    expedienteId?: string | null;
+    error?: string | null;
+  } | null>(null);
+  const montando = trabajo?.estado === "RENDERIZANDO";
 
   const zonaPaneles = useRef<HTMLDivElement>(null);
   const altoPanel = useAltoDisponible(zonaPaneles);
@@ -140,7 +154,6 @@ export default function MontajePage() {
       return;
     }
     setError(null);
-    setListo(null);
     setCargando(true);
     videosPreview.current.clear();
     try {
@@ -208,24 +221,20 @@ export default function MontajePage() {
           },
         },
       });
-      setListo(data?.montarVideo?._id ?? null);
+      const t = data?.montarVideo;
+      if (t) {
+        setTrabajo(t);
+        localStorage.setItem(CLAVE_TRABAJO, t._id);
+      }
     } catch (e: any) {
-      const msg: string = e?.message ?? "No se pudo generar el video";
-      // Un corte de red no significa que el render fallara: el backend crea el
-      // expediente al terminar, escuche alguien o no.
-      const cortoLaEspera = /fetch|network|failed to fetch|timeout/i.test(msg);
-      setError(
-        cortoLaEspera
-          ? `${msg}. La conexion se corto, pero el servidor pudo haber ` +
-            "terminado igual: fijate en la cola de revision antes de repetirlo."
-          : msg,
-      );
+      setError(e?.message ?? "No se pudo iniciar el montaje");
     }
   }
 
-  // Segundos desde que arranco el render. No es una barra de progreso real
-  // —ffmpeg no reporta avance por aca— pero sin ninguna senal de vida, cinco
-  // minutos de espera se sienten como una pantalla colgada.
+  const CLAVE_TRABAJO = "montajeEnCurso";
+
+  // Acompaña a la barra: con el porcentaje solo no se sabe si avanza o se
+  // colgó, y el reloj responde esa pregunta sin consultar nada.
   const [segundos, setSegundos] = useState(0);
   useEffect(() => {
     if (!montando) {
@@ -235,6 +244,66 @@ export default function MontajePage() {
     const t = setInterval(() => setSegundos((n) => n + 1), 1000);
     return () => clearInterval(t);
   }, [montando]);
+
+  /**
+   * Pregunta cómo va cada 2 segundos mientras renderiza.
+   *
+   * Sondeo y no WebSocket: el backend no tiene subscriptions montadas, y para
+   * un proceso de minutos preguntar cada 2s es irrelevante al lado de lo que
+   * cuesta el render.
+   */
+  useEffect(() => {
+    if (!trabajo || trabajo.estado !== "RENDERIZANDO" || !activa) return;
+
+    let vivo = true;
+    const t = setInterval(async () => {
+      try {
+        const { data } = await cliente.query({
+          query: MONTAJE_TRABAJO,
+          variables: { id: trabajo._id, pageId: activa.pageId },
+          fetchPolicy: "network-only",
+        });
+        if (!vivo || !data?.montajeTrabajo) return;
+        setTrabajo(data.montajeTrabajo);
+        if (data.montajeTrabajo.estado !== "RENDERIZANDO") {
+          localStorage.removeItem(CLAVE_TRABAJO);
+          if (data.montajeTrabajo.estado === "FALLIDO") {
+            setError(data.montajeTrabajo.error ?? "El montaje falló");
+          }
+        }
+      } catch {
+        // Un sondeo perdido no es un fallo del render: se reintenta solo.
+      }
+    }, 2000);
+
+    return () => {
+      vivo = false;
+      clearInterval(t);
+    };
+  }, [trabajo, activa, cliente]);
+
+  // Al abrir la pantalla, retomar un montaje que haya quedado corriendo.
+  useEffect(() => {
+    if (trabajo || !activa) return;
+    const guardado = localStorage.getItem(CLAVE_TRABAJO);
+    if (!guardado) return;
+    cliente
+      .query({
+        query: MONTAJE_TRABAJO,
+        variables: { id: guardado, pageId: activa.pageId },
+        fetchPolicy: "network-only",
+      })
+      .then(({ data }) => {
+        if (data?.montajeTrabajo?.estado === "RENDERIZANDO") {
+          setTrabajo(data.montajeTrabajo);
+        } else {
+          localStorage.removeItem(CLAVE_TRABAJO);
+        }
+      })
+      .catch(() => localStorage.removeItem(CLAVE_TRABAJO));
+    // Solo al montar: es un rescate, no un seguimiento.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activa]);
 
   const duracionTrim = useMemo(
     () => Math.max(montaje.trim.hastaSeg - montaje.trim.desdeSeg, 0),
@@ -274,19 +343,38 @@ export default function MontajePage() {
       </div>
 
       {montando && (
-        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
-          <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-[#0FED9D]">
-              Componiendo el video · {Math.floor(segundos / 60)}:
+        <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium text-[#0FED9D]">
+              Componiendo el video · {Math.round(trabajo?.progreso ?? 0)}%
+            </span>
+            <span className="text-xs text-white/40">
+              {Math.floor(segundos / 60)}:
               {String(segundos % 60).padStart(2, "0")}
-            </p>
-            <p className="mt-0.5 text-xs text-white/45">
-              Tarda varios minutos: el servidor codifica el video entero. No
-              cierres esta pestaña. Si la conexión se corta antes de terminar, el
-              video igual se guarda y aparece en revisión.
-            </p>
+            </span>
           </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-[#0FED9D] transition-all duration-500"
+              style={{ width: `${Math.max(2, trabajo?.progreso ?? 0)}%` }}
+            />
+          </div>
+          <p className="mt-2 text-xs text-white/45">
+            Podés cerrar la pestaña: el video se sigue armando en el servidor y
+            al volver acá se retoma. Cuando termine queda en revisión.
+          </p>
+        </div>
+      )}
+
+      {trabajo?.estado === "LISTO" && (
+        <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
+          <p className="text-sm text-[#0FED9D]">Video generado.</p>
+          <Link
+            href="/revision"
+            className="mt-1 inline-block text-xs text-white/60 underline hover:text-white"
+          >
+            Está esperando en la cola de revisión →
+          </Link>
         </div>
       )}
 
@@ -311,18 +399,6 @@ export default function MontajePage() {
       {error && (
         <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <p className="text-sm text-red-400">{error}</p>
-        </div>
-      )}
-
-      {listo && (
-        <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
-          <p className="text-sm text-[#0FED9D]">Video generado.</p>
-          <Link
-            href="/revision"
-            className="mt-1 inline-block text-xs text-white/60 underline hover:text-white"
-          >
-            Está esperando en la cola de revisión →
-          </Link>
         </div>
       )}
 
