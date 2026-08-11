@@ -359,10 +359,12 @@ export const FACEBOOK_RESINCRONIZAR = gql`
   }
 `;
 
+/** Habilitar una página como destino. Solo su propietario. */
 export const FACEBOOK_SET_PAGINA_ACTIVA = gql`
-  mutation FacebookSetPaginaActiva($id: ID!, $activa: Boolean!) {
-    facebookSetPaginaActiva(id: $id, activa: $activa) {
+  mutation FacebookSetPaginaActiva($pageId: String!, $activa: Boolean!) {
+    facebookSetPaginaActiva(pageId: $pageId, activa: $activa) {
       _id
+      pageId
       activa
     }
   }
@@ -390,9 +392,15 @@ export const FACEBOOK_REGISTRAR_PAGINA_POR_ID = gql`
   }
 `;
 
+/**
+ * Desconecta UNA página, no la integración entera.
+ *
+ * Antes esto apagaba todas las conexiones y todas las páginas del sistema, así
+ * que una persona podía dejar sin publicar a todo el resto.
+ */
 export const FACEBOOK_DESCONECTAR = gql`
-  mutation FacebookDesconectar {
-    facebookDesconectar
+  mutation FacebookDesconectar($pageId: String!) {
+    facebookDesconectar(pageId: $pageId)
   }
 `;
 
@@ -635,5 +643,87 @@ export const PREVISUALIZAR_HISTORIA = gql`
 export const REFRESCAR_PROGRAMADAS = gql`
   mutation RefrescarProgramadas($pageId: String!) {
     refrescarProgramadas(pageId: $pageId)
+  }
+`;
+
+// ---- Equipo de cada página ----
+
+/**
+ * Las páginas del usuario y su rol en cada una.
+ *
+ * Define qué muestra la interfaz: quién ve el botón de invitar, quién puede
+ * habilitar una página, quién solo mira. Esconder controles es comodidad, no
+ * seguridad: quien autoriza de verdad es PaginaGuard en el backend.
+ */
+export const MIS_ACCESOS = gql`
+  query MisAccesos {
+    misAccesos {
+      pageId
+      rol
+    }
+  }
+`;
+
+export const MIEMBROS_DE_PAGINA = gql`
+  query MiembrosDePagina($pageId: String!) {
+    miembrosDePagina(pageId: $pageId) {
+      usuarioId
+      pageId
+      rol
+      email
+      nombre
+      activo
+      ultimoAccesoEn
+      desde
+    }
+  }
+`;
+
+/** Invitaciones que todavía no entraron por primera vez. */
+export const INVITACIONES_DE_PAGINA = gql`
+  query InvitacionesDePagina($pageId: String!) {
+    invitacionesDePagina(pageId: $pageId) {
+      _id
+      email
+      rol
+      estado
+      createdAt
+    }
+  }
+`;
+
+export const INVITAR_MIEMBRO = gql`
+  mutation InvitarMiembro($email: String!, $pageId: String!, $rol: RolPagina!) {
+    invitarMiembro(email: $email, pageId: $pageId, rol: $rol) {
+      _id
+      email
+      rol
+      estado
+    }
+  }
+`;
+
+export const CAMBIAR_ROL_MIEMBRO = gql`
+  mutation CambiarRolMiembro(
+    $usuarioId: ID!
+    $pageId: String!
+    $rol: RolPagina!
+  ) {
+    cambiarRolMiembro(usuarioId: $usuarioId, pageId: $pageId, rol: $rol) {
+      _id
+      rol
+    }
+  }
+`;
+
+export const REVOCAR_ACCESO = gql`
+  mutation RevocarAcceso($usuarioId: ID!, $pageId: String!) {
+    revocarAcceso(usuarioId: $usuarioId, pageId: $pageId)
+  }
+`;
+
+export const CANCELAR_INVITACION = gql`
+  mutation CancelarInvitacion($id: ID!, $pageId: String!) {
+    cancelarInvitacion(id: $id, pageId: $pageId)
   }
 `;
