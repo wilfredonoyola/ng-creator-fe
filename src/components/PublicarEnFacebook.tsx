@@ -45,7 +45,19 @@ interface Publicacion {
   publicadoPorNombre?: string | null;
   portadaAplicada?: boolean | null;
   portadaError?: string | null;
+  programadaPara?: string | null;
 }
+
+/**
+ * Los formatos que Meta puede agendar.
+ *
+ * Las historias no: expiran a las 24 horas y la API no las programa. Ofrecer la
+ * fecha y publicarlas al instante seria peor que no ofrecerla.
+ */
+const PROGRAMABLES: Formato[] = ["REEL", "IMAGEN"];
+
+/** Meta exige unos minutos de anticipacion; el backend lo valida igual. */
+const MINUTOS_MINIMOS = 15;
 
 /**
  * Publica un expediente en la página activa.
@@ -84,6 +96,16 @@ export function PublicarEnFacebook({
   const publicadas = previas.filter((p) => p.estado === "PUBLICADA");
   const yaEnEsteFormato = publicadas.some((p) => p.formato === formato);
 
+  const [cuando, setCuando] = useState<"ahora" | "despues">("ahora");
+  const [fecha, setFecha] = useState("");
+  const sePuedeProgramar = PROGRAMABLES.includes(formato);
+
+  // Lo que el input acepta como minimo, en el formato que pide datetime-local.
+  const minimo = new Date(Date.now() + MINUTOS_MINIMOS * 60_000)
+    .toISOString()
+    .slice(0, 16);
+  const faltaFecha = cuando === "despues" && !fecha;
+
   async function enviar() {
     setError(null);
     try {
@@ -93,9 +115,14 @@ export function PublicarEnFacebook({
           pageId: activa!.pageId,
           formato,
           descripcion: descripcion.trim() || null,
+          // El input da hora local; el backend la convierte a la marca que
+          // espera Meta. Mandar la fecha cruda evita razonar sobre zonas acá.
+          programarPara: cuando === "despues" && fecha ? new Date(fecha) : null,
         },
       });
       setDescripcion("");
+      setFecha("");
+      setCuando("ahora");
     } catch (e: any) {
       setError(e?.message ?? "No se pudo publicar");
     }
@@ -171,12 +198,56 @@ export function PublicarEnFacebook({
         </p>
       )}
 
+      {sePuedeProgramar ? (
+        <div className="space-y-2">
+          <div className="flex gap-1.5">
+            <Opcion activa={cuando === "ahora"} onClick={() => setCuando("ahora")}>
+              Ahora
+            </Opcion>
+            <Opcion
+              activa={cuando === "despues"}
+              onClick={() => setCuando("despues")}
+            >
+              Programar
+            </Opcion>
+          </div>
+
+          {cuando === "despues" && (
+            <>
+              <input
+                type="datetime-local"
+                value={fecha}
+                min={minimo}
+                onChange={(e) => setFecha(e.target.value)}
+                className="w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-2 text-xs outline-none focus:border-[#0FED9D]/50"
+              />
+              {/* Que la agenda la sostenga Meta cambia lo que hay que esperar
+                  de esto: no queda ninguna tarea pendiente de nuestro lado. */}
+              <p className="text-[10px] text-white/30">
+                Queda agendado en Facebook y sale a esa hora aunque nuestro
+                servidor esté apagado. Mínimo {MINUTOS_MINIMOS} minutos.
+              </p>
+            </>
+          )}
+        </div>
+      ) : (
+        <p className="text-[10px] text-white/30">
+          Las historias no se pueden programar: expiran a las 24 horas.
+        </p>
+      )}
+
       <button
         onClick={enviar}
-        disabled={loading}
+        disabled={loading || faltaFecha}
         className="w-full rounded-lg bg-[#1877F2] py-2.5 text-sm font-medium text-white transition hover:bg-[#1877F2]/90 disabled:opacity-50"
       >
-        {loading ? "Publicando…" : "Publicar en Facebook"}
+        {loading
+          ? cuando === "despues"
+            ? "Agendando…"
+            : "Publicando…"
+          : cuando === "despues"
+            ? "Programar en Facebook"
+            : "Publicar en Facebook"}
       </button>
 
       {error && (
@@ -199,12 +270,26 @@ export function PublicarEnFacebook({
                       : "text-yellow-400"
                 }
               >
-                {p.estado === "PUBLICADA" ? "✓" : p.estado === "FALLIDA" ? "✗" : "⋯"}
+                {p.estado === "PUBLICADA"
+                  ? "✓"
+                  : p.estado === "FALLIDA"
+                    ? "✗"
+                    : p.estado === "PROGRAMADA"
+                      ? "🕒"
+                      : "⋯"}
               </span>
               <div className="min-w-0 flex-1">
                 <span className="text-white/60">
                   {p.formato.replace("_", " ").toLowerCase()}
                 </span>
+                {p.programadaPara && (
+                  <span
+                    className="ml-1.5 text-indigo-300/80"
+                    title={fechaCompleta(p.programadaPara)}
+                  >
+                    sale {tiempoRelativo(p.programadaPara)}
+                  </span>
+                )}
                 {p.publicadaEn && (
                   <span
                     className="ml-1.5 text-white/30"
@@ -254,5 +339,28 @@ export function PublicarEnFacebook({
         </div>
       )}
     </div>
+  );
+}
+
+function Opcion({
+  activa,
+  onClick,
+  children,
+}: {
+  activa: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition ${
+        activa
+          ? "bg-white/15 text-white"
+          : "border border-white/10 text-white/50 hover:bg-white/5"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
