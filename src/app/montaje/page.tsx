@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -17,6 +17,42 @@ import {
   type Montaje,
 } from "@/lib/montaje";
 import { LICENSES, MONTAR_VIDEO } from "@/graphql/operations";
+
+/** Tope duro del panel. Mas grande no ayuda a encuadrar y obliga a scrollear. */
+const ALTO_MAXIMO = 520;
+
+/**
+ * Alto que queda libre desde donde arranca el elemento hasta el pie de la
+ * ventana.
+ *
+ * Se mide en vez de estimarlo con `vh` porque encima de los paneles hay
+ * encabezado, input de URL y avisos que aparecen y desaparecen: cualquier
+ * fracción fija del viewport termina dejando el video cortado abajo en unas
+ * pantallas y chiquito en otras.
+ *
+ * Se toma la posición respecto del documento y no del viewport, así el valor no
+ * cambia mientras se scrollea: si dependiera del scroll, el panel se agrandaría
+ * y achicaría solo al bajar por la página.
+ */
+function useAltoDisponible(ref: React.RefObject<HTMLElement | null>) {
+  const [alto, setAlto] = useState(ALTO_MAXIMO);
+
+  useEffect(() => {
+    function medir() {
+      const el = ref.current;
+      if (!el) return;
+      const desdeArriba = el.getBoundingClientRect().top + window.scrollY;
+      setAlto(
+        Math.max(240, Math.min(ALTO_MAXIMO, window.innerHeight - desdeArriba - 24)),
+      );
+    }
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, [ref]);
+
+  return alto;
+}
 
 interface Licencia {
   _id: string;
@@ -65,6 +101,9 @@ export default function MontajePage() {
   );
 
   const [montar, { loading: montando }] = useMutation(MONTAR_VIDEO);
+
+  const zonaPaneles = useRef<HTMLDivElement>(null);
+  const altoPanel = useAltoDisponible(zonaPaneles);
 
   const videoMaestro = useRef<HTMLVideoElement | null>(null);
   const videosPreview = useRef<Set<HTMLVideoElement>>(new Set());
@@ -227,7 +266,7 @@ export default function MontajePage() {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div ref={zonaPaneles} className="grid gap-6 lg:grid-cols-2">
         {/* Original y recorte */}
         <section>
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
@@ -235,15 +274,16 @@ export default function MontajePage() {
           </h2>
           {fuente ? (
             <>
-              {/* Se acota el ANCHO para que el alto derivado no pase de 62vh.
-                  Un `max-height` sobre una caja con `aspect-ratio` la recorta
-                  en vez de achicarla; topeando el ancho, el alto lo sigue solo
-                  y la proporcion del video queda intacta. Sin esto, un 9:16 en
-                  una columna ancha se va abajo de la pantalla y hay que
-                  scrollear para ver el recorte, que es lo que se viene a mirar. */}
+              {/* Se acota el ANCHO para que el alto derivado entre en el
+                  espacio libre. Un `max-height` sobre una caja con
+                  `aspect-ratio` la recorta en vez de achicarla; topeando el
+                  ancho, el alto lo sigue solo y la proporción queda intacta.
+                  El ancho depende de la proporción REAL del video, así que un
+                  vertical y un horizontal ocupan el mismo alto y el panel no
+                  salta de tamaño al cargar otro material. */}
               <div
                 className="mx-auto w-full"
-                style={{ maxWidth: `calc(62vh * ${aspectoFuente})` }}
+                style={{ maxWidth: altoPanel * aspectoFuente }}
               >
               <EditorRecorte
                 src={fuente.publicUrl}
@@ -331,7 +371,7 @@ export default function MontajePage() {
           ) : (
             <div
               className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25"
-              style={{ maxWidth: "calc(62vh * 9 / 16)" }}
+              style={{ maxWidth: (altoPanel * 9) / 16 }}
             >
               Pegá un link de TikTok arriba
             </div>
@@ -346,7 +386,10 @@ export default function MontajePage() {
           <div
             className="mx-auto w-full"
             style={{
-              maxWidth: `min(280px, calc(62vh * ${montaje.lienzo.ancho} / ${montaje.lienzo.alto}))`,
+              maxWidth: Math.min(
+                280,
+                (altoPanel * montaje.lienzo.ancho) / montaje.lienzo.alto,
+              ),
             }}
           >
             <PreviewFinal
