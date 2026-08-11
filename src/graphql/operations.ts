@@ -228,6 +228,7 @@ export const EXPEDIENTE = gql`
       tipoDeValor
       estado
       videoFinalUrl
+      posterUrl
       regeneraciones
       notaVozTexto
       error
