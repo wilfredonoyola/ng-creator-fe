@@ -443,6 +443,8 @@ export const PUBLICAR_EN_FACEBOOK = gql`
       error
       publicadaEn
       publicadoPorNombre
+      portadaAplicada
+      portadaError
     }
   }
 `;
@@ -460,6 +462,8 @@ export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
       error
       publicadaEn
       publicadoPorNombre
+      portadaAplicada
+      portadaError
     }
   }
 `;
