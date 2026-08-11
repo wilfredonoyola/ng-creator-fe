@@ -757,3 +757,22 @@ export const CANCELAR_INVITACION = gql`
     cancelarInvitacion(id: $id, pageId: $pageId)
   }
 `;
+
+// ---- Montaje ----
+
+/**
+ * Recorta un video ajeno, lo compone en un lienzo nuevo con titulares, y lo
+ * deja como expediente en revisión. Pasa por la puerta de derechos: sin
+ * licencia vigente no se crea el asset y falla.
+ */
+export const MONTAR_VIDEO = gql`
+  mutation MontarVideo($input: MontajeInput!) {
+    montarVideo(input: $input) {
+      _id
+      estado
+      pageId
+      videoFinalUrl
+      posterUrl
+    }
+  }
+`;
