@@ -2,21 +2,29 @@
 
 import { useRef, useState } from "react";
 import { useMutation } from "@apollo/client";
-import { ELEGIR_PORTADA, PUBLICATIONS } from "@/graphql/operations";
+import { uploadPortada } from "@/lib/upload";
+import {
+  ELEGIR_PORTADA,
+  PUBLICATIONS,
+  USAR_PORTADA_SUBIDA,
+} from "@/graphql/operations";
+
+type Modo = "cuadro" | "imagen";
 
 /**
- * Elige qué cuadro del video va a ser la portada.
+ * Elige qué imagen va a ser la portada del video, de dos maneras.
  *
- * El cuadro se busca moviendo el deslizador sobre el propio video: el navegador
- * lo muestra al instante, sin pedirle nada al servidor. Recién al confirmar se
- * manda el segundo elegido y el backend extrae ese cuadro exacto con ffmpeg.
+ * **Un cuadro del video:** se busca moviendo un deslizador sobre el propio
+ * video. El navegador lo muestra al instante, sin pedirle nada al servidor, y
+ * lo que se ve ES exactamente el cuadro que después extrae ffmpeg. Un selector
+ * que pidiera imágenes al servidor haría una llamada por cada movimiento del
+ * dedo para mostrar algo que el navegador ya tiene decodificado.
  *
- * Un selector que pidiera imágenes al servidor mientras se arrastra haría una
- * llamada por cada movimiento del dedo para mostrar algo que el navegador ya
- * tiene decodificado.
+ * **Una imagen propia:** para cuando la portada se diseñó por fuera y no está
+ * en ningún cuadro del video.
  *
- * La portada importa más de lo que parece: es lo que se sube como cubierta del
- * Reel y lo que se publica cuando el formato es imagen o historia de imagen.
+ * La portada importa más de lo que parece: es la cubierta con la que sale el
+ * Reel y es lo que se publica cuando el formato es imagen o historia de imagen.
  */
 export function ElegirPortada({
   expedienteId,
@@ -28,31 +36,57 @@ export function ElegirPortada({
   posterUrl?: string | null;
 }) {
   const [abierto, setAbierto] = useState(false);
+  const [modo, setModo] = useState<Modo>("cuadro");
   const [segundo, setSegundo] = useState(1.5);
   const [duracion, setDuracion] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [listo, setListo] = useState(false);
+  const [subiendo, setSubiendo] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
 
-  const [elegir, { loading }] = useMutation(ELEGIR_PORTADA, {
-    refetchQueries: [{ query: PUBLICATIONS }],
-  });
+  const refrescar = { refetchQueries: [{ query: PUBLICATIONS }] };
+  const [elegirCuadro, { loading: guardando }] = useMutation(
+    ELEGIR_PORTADA,
+    refrescar,
+  );
+  const [usarSubida] = useMutation(USAR_PORTADA_SUBIDA, refrescar);
 
   function mover(valor: number) {
     setSegundo(valor);
     setListo(false);
-    // Mover el tiempo del <video> ES la vista previa: lo que se ve acá es
-    // exactamente el cuadro que después va a extraer ffmpeg.
+    // Mover el tiempo del <video> ES la vista previa.
     if (video.current) video.current.currentTime = valor;
   }
 
-  async function confirmar() {
+  async function confirmarCuadro() {
     setError(null);
     try {
-      await elegir({ variables: { id: expedienteId, segundo } });
+      await elegirCuadro({ variables: { id: expedienteId, segundo } });
       setListo(true);
     } catch (e: any) {
       setError(e?.message ?? "No se pudo guardar la portada");
+    }
+  }
+
+  async function subirImagen(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setListo(false);
+    setSubiendo(true);
+    try {
+      const r = await uploadPortada(file, expedienteId);
+      // Se manda la RUTA, no la URL: la pública la arma el servidor. Aceptar
+      // una URL del cliente dejaría apuntar la portada a cualquier sitio.
+      await usarSubida({
+        variables: { id: expedienteId, storagePath: r.storagePath },
+      });
+      setListo(true);
+    } catch (err: any) {
+      setError(err?.message ?? "No se pudo subir la imagen");
+    } finally {
+      setSubiendo(false);
+      e.target.value = "";
     }
   }
 
@@ -79,53 +113,126 @@ export function ElegirPortada({
         </button>
       </div>
 
-      <video
-        ref={video}
-        src={videoUrl}
-        muted
-        playsInline
-        preload="metadata"
-        onLoadedMetadata={(e) => {
-          const v = e.currentTarget;
-          setDuracion(v.duration);
-          v.currentTime = Math.min(segundo, v.duration);
-        }}
-        className="w-full rounded-lg bg-black"
-      />
+      <div className="mb-3 flex gap-1.5">
+        <Pestana activa={modo === "cuadro"} onClick={() => setModo("cuadro")}>
+          Un cuadro del video
+        </Pestana>
+        <Pestana activa={modo === "imagen"} onClick={() => setModo("imagen")}>
+          Subir imagen
+        </Pestana>
+      </div>
 
-      <label className="mt-2 block">
-        <span className="flex items-center justify-between text-[11px] text-white/40">
-          Buscá el cuadro
-          <span className="text-white/60">{segundo.toFixed(1)}s</span>
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={Math.max(duracion, 0.1)}
-          step={0.1}
-          value={segundo}
-          onChange={(e) => mover(Number(e.target.value))}
-          className="mt-1 w-full accent-[#0FED9D]"
-        />
-      </label>
+      {modo === "cuadro" ? (
+        <>
+          <video
+            ref={video}
+            src={videoUrl}
+            muted
+            playsInline
+            preload="metadata"
+            onLoadedMetadata={(e) => {
+              const v = e.currentTarget;
+              setDuracion(v.duration);
+              v.currentTime = Math.min(segundo, v.duration);
+            }}
+            className="w-full rounded-lg bg-black"
+          />
 
-      {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
+          <label className="mt-2 block">
+            <span className="flex items-center justify-between text-[11px] text-white/40">
+              Buscá el cuadro
+              <span className="text-white/60">{segundo.toFixed(1)}s</span>
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={Math.max(duracion, 0.1)}
+              step={0.1}
+              value={segundo}
+              onChange={(e) => mover(Number(e.target.value))}
+              className="mt-1 w-full accent-[#0FED9D]"
+            />
+          </label>
 
-      <button
-        onClick={confirmar}
-        disabled={loading || listo}
-        className="mt-2 w-full rounded-lg bg-[#0FED9D] py-2 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-50"
-      >
-        {loading
-          ? "Guardando…"
-          : listo
-            ? "✓ Portada guardada"
-            : "Usar este cuadro"}
-      </button>
+          <button
+            onClick={confirmarCuadro}
+            disabled={guardando || listo}
+            className="mt-2 w-full rounded-lg bg-[#0FED9D] py-2 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-50"
+          >
+            {guardando
+              ? "Guardando…"
+              : listo
+                ? "✓ Portada guardada"
+                : "Usar este cuadro"}
+          </button>
+        </>
+      ) : (
+        <>
+          {/* La portada actual, para poder comparar antes de reemplazarla. */}
+          {posterUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={posterUrl}
+              alt="Portada actual"
+              className="w-full rounded-lg bg-black object-contain"
+            />
+          )}
+
+          <label className="mt-2 block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-[#0FED9D]/50 hover:bg-white/5">
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={subirImagen}
+              disabled={subiendo}
+            />
+            <span className="text-xs text-white/60">
+              {subiendo
+                ? "Subiendo…"
+                : listo
+                  ? "✓ Portada guardada · subir otra"
+                  : "Elegí una imagen de tu computadora"}
+            </span>
+            <span className="mt-1 block text-[10px] text-white/30">
+              JPG, PNG o WEBP · hasta 10MB
+            </span>
+          </label>
+
+          <p className="mt-2 text-[10px] text-white/30">
+            Usá la misma proporción que el video (9:16 en un Reel), o Meta la
+            recorta por su cuenta.
+          </p>
+        </>
+      )}
+
+      {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
 
       <p className="mt-2 text-[10px] text-white/30">
         Es la cubierta del Reel y lo que se publica si elegís formato de imagen.
       </p>
     </div>
+  );
+}
+
+function Pestana({
+  activa,
+  onClick,
+  children,
+}: {
+  activa: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition ${
+        activa
+          ? "bg-[#0FED9D] text-black"
+          : "border border-white/10 text-white/50 hover:bg-white/5"
+      }`}
+    >
+      {children}
+    </button>
   );
 }

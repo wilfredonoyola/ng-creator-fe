@@ -815,3 +815,13 @@ export const ELEGIR_PORTADA = gql`
     }
   }
 `;
+
+/** Usa como portada una imagen ya subida con POST /uploads/portada. */
+export const USAR_PORTADA_SUBIDA = gql`
+  mutation UsarPortadaSubida($id: ID!, $storagePath: String!) {
+    usarPortadaSubida(id: $id, storagePath: $storagePath) {
+      _id
+      posterUrl
+    }
+  }
+`;
