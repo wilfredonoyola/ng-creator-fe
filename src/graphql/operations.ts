@@ -429,12 +429,14 @@ export const PUBLICAR_EN_FACEBOOK = gql`
     $pageId: String!
     $formato: FormatoFacebook!
     $descripcion: String
+    $programarPara: DateTime
   ) {
     publicarEnFacebook(
       expedienteId: $expedienteId
       pageId: $pageId
       formato: $formato
       descripcion: $descripcion
+      programarPara: $programarPara
     ) {
       _id
       formato
@@ -443,6 +445,7 @@ export const PUBLICAR_EN_FACEBOOK = gql`
       permalink
       error
       publicadaEn
+      programadaPara
       publicadoPorNombre
       portadaAplicada
       portadaError
@@ -462,6 +465,7 @@ export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
       permalink
       error
       publicadaEn
+      programadaPara
       publicadoPorNombre
       portadaAplicada
       portadaError
