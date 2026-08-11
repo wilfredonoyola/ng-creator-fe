@@ -5,7 +5,9 @@ import { PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
 import { ElegirPortada } from "@/components/ElegirPortada";
-import { usePaginaActiva } from "@/lib/pagina-activa";
+import { EstadoEnFacebook } from "@/components/EstadoEnFacebook";
+import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 
 interface Publication {
   _id: string;
@@ -17,93 +19,133 @@ interface Publication {
   posterUrl?: string;
 }
 
+/**
+ * Los videos aprobados de la página activa, listos para salir a Facebook.
+ *
+ * Se filtra por la página activa y no se muestran todas juntas, aunque el
+ * backend devuelva las de todas las páginas a las que se tiene acceso. Dos
+ * razones: el resto de la aplicación trabaja siempre sobre un espacio de
+ * trabajo, y sobre todo el panel de publicar manda SIEMPRE a la página activa,
+ * asi que una tarjeta de otra página con un botón de publicar era una forma
+ * silenciosa de sacar el video de una página en la otra.
+ */
 export default function PublicadosPage() {
   const { data, loading } = useQuery(PUBLICATIONS);
-  const publications: Publication[] = data?.publications ?? [];
-  const { activa, paginas } = usePaginaActiva();
+  const { activa, cargando: cargandoPagina } = usePaginaActiva();
 
-  // El pageId es un numero opaco: se traduce al nombre de la pagina. Si la
-  // pagina ya no esta habilitada no esta en la lista, y entonces se muestra el
-  // id crudo antes que dejar el dato en blanco.
-  const nombreDePagina = (pageId: string) =>
-    paginas.find((p) => p.pageId === pageId)?.nombre ?? pageId;
+  const todas: Publication[] = data?.publications ?? [];
+  const publicaciones = activa
+    ? todas.filter((p) => p.pageId === activa.pageId)
+    : [];
+  const enOtrasPaginas = todas.length - publicaciones.length;
+
+  if (!cargandoPagina && !activa) {
+    return (
+      <DashboardLayout>
+        <Vacio
+          icono="🔗"
+          titulo="No hay ninguna página activa"
+          detalle="Los videos se organizan por página. Elegí una en el switch de la izquierda."
+        />
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Videos Aprobados</h1>
-        <p className="mt-1 text-white/50">
-          {publications.length} video{publications.length !== 1 ? "s" : ""} listo
-          {publications.length !== 1 ? "s" : ""} para distribuir
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Listos para publicar</h1>
+        <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/50">
+          <span>
+            {publicaciones.length} video
+            {publicaciones.length !== 1 ? "s" : ""} aprobado
+            {publicaciones.length !== 1 ? "s" : ""} en
+          </span>
+          {activa && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-white/80">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: colorDePagina(activa.pageId) }}
+              />
+              {activa.nombre}
+            </span>
+          )}
         </p>
-        <p className="mt-1 text-xs text-white/30">
-          {activa
-            ? `Publicando en ${activa.nombre} · cambiá el contexto en la barra lateral`
-            : "Sin página de Facebook habilitada"}
-        </p>
+        {/* Que existan videos en otras páginas es información útil: sin esto,
+            alguien que espera ver uno concreto creería que se perdió. */}
+        {enOtrasPaginas > 0 && (
+          <p className="mt-1 text-xs text-white/30">
+            Hay {enOtrasPaginas} más en tus otras páginas · cambiá de página
+            para verlos
+          </p>
+        )}
       </div>
 
-      {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
-        </div>
-      ) : publications.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {publications.map((pub) => (
+          {[0, 1, 2].map((i) => (
             <div
+              key={i}
+              className="aspect-[9/16] animate-pulse rounded-2xl bg-white/5"
+            />
+          ))}
+        </div>
+      ) : publicaciones.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {publicaciones.map((pub) => (
+            <article
               key={pub._id}
-              className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent overflow-hidden"
+              className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]"
             >
-              {/* Video Player */}
-              {pub.videoFinalUrl ? (
-                <video
-                  src={pub.videoFinalUrl}
-                  controls
-                  className="w-full aspect-[9/16] bg-black object-contain"
-                  preload="metadata"
-                />
-              ) : (
-                <div className="w-full aspect-[9/16] bg-black/50 flex items-center justify-center">
-                  <span className="text-white/30">Sin video</span>
-                </div>
-              )}
-
-              {/* Info */}
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-lg font-bold text-[#0FED9D]">
-                    #{pub.expedienteNum}
-                  </span>
-                  <span className="rounded-lg bg-[#0FED9D]/20 px-2 py-1 text-xs font-medium text-[#0FED9D]">
-                    {nombreDePagina(pub.pageId)}
-                  </span>
-                </div>
-
-                {pub.publicadoEn && (
-                  <p className="text-xs text-white/40">
-                    {new Date(pub.publicadoEn).toLocaleDateString("es", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+              <div className="relative bg-black">
+                {pub.videoFinalUrl ? (
+                  // `poster` + `preload="none"`: la grilla muestra la portada
+                  // elegida y no descarga un solo byte de video hasta que
+                  // alguien le da play. Con decenas de tarjetas, precargar
+                  // metadata de todas hacía que la pantalla tardara en asentarse.
+                  <video
+                    src={pub.videoFinalUrl}
+                    poster={pub.posterUrl ?? undefined}
+                    controls
+                    preload="none"
+                    className="aspect-[9/16] w-full object-contain"
+                  />
+                ) : (
+                  <div className="flex aspect-[9/16] items-center justify-center text-sm text-white/30">
+                    Sin video
+                  </div>
                 )}
 
-                {pub.videoFinalUrl && (
-                  <a
-                    href={pub.videoFinalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className="mt-3 block w-full text-center rounded-lg bg-white/10 py-2 text-sm hover:bg-white/20 transition"
-                  >
-                    ⬇️ Descargar
-                  </a>
-                )}
+                <span className="pointer-events-none absolute left-2 top-2 rounded-md bg-black/70 px-2 py-0.5 text-xs font-bold text-[#0FED9D]">
+                  #{pub.expedienteNum}
+                </span>
+                <span className="pointer-events-none absolute right-2 top-2">
+                  <EstadoEnFacebook expedienteId={pub.expedienteId} />
+                </span>
+              </div>
+
+              <div className="p-3">
+                <div className="flex items-center justify-between text-xs text-white/40">
+                  {pub.publicadoEn ? (
+                    <span title={fechaCompleta(pub.publicadoEn)}>
+                      Aprobado {tiempoRelativo(pub.publicadoEn)}
+                    </span>
+                  ) : (
+                    <span />
+                  )}
+                  {pub.videoFinalUrl && (
+                    <a
+                      href={pub.videoFinalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      title="Descargar el video"
+                      className="rounded-lg px-2 py-1 transition hover:bg-white/10 hover:text-white"
+                    >
+                      ⬇
+                    </a>
+                  )}
+                </div>
 
                 {pub.videoFinalUrl && (
                   <ElegirPortada
@@ -113,27 +155,41 @@ export default function PublicadosPage() {
                   />
                 )}
 
-                <div className="mt-3">
+                <div className="mt-2">
                   <PublicarEnFacebook
                     expedienteId={pub.expedienteId}
                     tienePoster={!!pub.posterUrl}
                   />
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-          <div className="mb-4 text-5xl opacity-30">📺</div>
-          <p className="text-lg font-medium text-white/60">
-            No hay videos publicados
-          </p>
-          <p className="mt-1 text-sm text-white/40">
-            Los videos aprobados aparecerán aquí después de publicarse
-          </p>
-        </div>
+        <Vacio
+          icono="📺"
+          titulo={`Todavía no hay videos aprobados en ${activa?.nombre ?? "esta página"}`}
+          detalle="Los videos aparecen acá cuando se aprueban en la cola de revisión."
+        />
       )}
     </DashboardLayout>
+  );
+}
+
+function Vacio({
+  icono,
+  titulo,
+  detalle,
+}: {
+  icono: string;
+  titulo: string;
+  detalle: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-12 text-center">
+      <div className="mb-3 text-4xl opacity-30">{icono}</div>
+      <p className="font-medium text-white/70">{titulo}</p>
+      <p className="mx-auto mt-1 max-w-md text-sm text-white/40">{detalle}</p>
+    </div>
   );
 }
