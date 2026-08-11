@@ -12,11 +12,24 @@ const GRAPHQL_URL =
 const REFRESH_MARGIN_MS = 5 * 60 * 1000;
 
 interface AuthResult {
-  idToken: string;
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
+  idToken?: string | null;
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  expiresIn?: number | null;
+  desafio?: string | null;
+  sesion?: string | null;
 }
+
+/**
+ * Un ingreso no siempre termina en sesion.
+ *
+ * A quien fue invitado, Cognito le manda una contrasena temporal y en el primer
+ * ingreso pide que elija la definitiva antes de darle tokens. Ese caso vuelve
+ * como `nueva-password` y se cierra con `establecerPassword`.
+ */
+export type ResultadoLogin =
+  | { tipo: "sesion" }
+  | { tipo: "nueva-password"; sesion: string };
 
 interface RefreshResult {
   idToken: string;
@@ -31,23 +44,73 @@ interface RefreshResult {
 export async function iniciarSesion(
   email: string,
   password: string
-): Promise<string> {
+): Promise<ResultadoLogin> {
+  const result = await pedir<AuthResult>(
+    `mutation Login($input: LoginInput!) {
+      login(input: $input) {
+        idToken
+        accessToken
+        refreshToken
+        expiresIn
+        desafio
+        sesion
+      }
+    }`,
+    { input: { email, password } },
+    "login"
+  );
+
+  if (result.desafio === "NUEVA_PASSWORD" && result.sesion) {
+    return { tipo: "nueva-password", sesion: result.sesion };
+  }
+
+  guardarSesion(result);
+  return { tipo: "sesion" };
+}
+
+/**
+ * Cierra el primer ingreso: fija la contrasena definitiva y deja la sesion
+ * abierta, para no obligar a volver a escribir el correo recien elegida.
+ */
+export async function establecerPassword(
+  email: string,
+  nuevaPassword: string,
+  sesion: string
+): Promise<void> {
+  const result = await pedir<AuthResult>(
+    `mutation EstablecerPassword(
+      $email: String!
+      $nuevaPassword: String!
+      $sesion: String!
+    ) {
+      establecerPassword(
+        email: $email
+        nuevaPassword: $nuevaPassword
+        sesion: $sesion
+      ) {
+        idToken
+        accessToken
+        refreshToken
+        expiresIn
+      }
+    }`,
+    { email, nuevaPassword, sesion },
+    "establecerPassword"
+  );
+
+  guardarSesion(result);
+}
+
+/** Manda una operacion sin sesion y devuelve su dato, o lanza el error. */
+async function pedir<T>(
+  query: string,
+  variables: Record<string, unknown>,
+  campo: string
+): Promise<T> {
   const response = await fetch(GRAPHQL_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `
-        mutation Login($input: LoginInput!) {
-          login(input: $input) {
-            idToken
-            accessToken
-            refreshToken
-            expiresIn
-          }
-        }
-      `,
-      variables: { input: { email, password } },
-    }),
+    body: JSON.stringify({ query, variables }),
   });
 
   const json = await response.json();
@@ -56,11 +119,22 @@ export async function iniciarSesion(
     throw new Error(json.errors[0]?.message ?? "Error de autenticacion");
   }
 
-  const result: AuthResult = json.data.login;
-  guardarTokens(result.idToken, result.accessToken, result.refreshToken, result.expiresIn);
-  programarRefresh(result.expiresIn);
+  return json.data[campo] as T;
+}
 
-  return result.idToken;
+/** Guarda los tokens de un ingreso completo y arranca el auto-refresh. */
+function guardarSesion(result: AuthResult): void {
+  if (!result.idToken || !result.accessToken || !result.refreshToken) {
+    throw new Error("El servidor no devolvio una sesion valida");
+  }
+  const expiresIn = result.expiresIn ?? 3600;
+  guardarTokens(
+    result.idToken,
+    result.accessToken,
+    result.refreshToken,
+    expiresIn
+  );
+  programarRefresh(expiresIn);
 }
 
 /**
