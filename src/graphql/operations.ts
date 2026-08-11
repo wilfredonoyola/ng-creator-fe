@@ -800,3 +800,18 @@ export const MONTAJE_TRABAJO = gql`
     }
   }
 `;
+
+/**
+ * Elige el cuadro que va a ser la portada del video.
+ *
+ * Es el mismo poster que se sube como cubierta del Reel y que se publica
+ * cuando el formato es imagen, así que se decide antes de publicar.
+ */
+export const ELEGIR_PORTADA = gql`
+  mutation ElegirPortada($id: ID!, $segundo: Float!) {
+    elegirPortada(id: $id, segundo: $segundo) {
+      _id
+      posterUrl
+    }
+  }
+`;
