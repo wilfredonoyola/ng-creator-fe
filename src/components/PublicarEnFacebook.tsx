@@ -43,6 +43,8 @@ interface Publicacion {
   error?: string | null;
   publicadaEn?: string | null;
   publicadoPorNombre?: string | null;
+  portadaAplicada?: boolean | null;
+  portadaError?: string | null;
 }
 
 /**
@@ -224,6 +226,16 @@ export function PublicarEnFacebook({
                 {p.error && (
                   <span className="block break-words text-red-400/70">
                     {p.error}
+                  </span>
+                )}
+                {/* Solo se avisa cuando la portada NO se pudo poner: que salga
+                    bien es lo esperado y no merece una linea en cada fila. */}
+                {p.portadaAplicada === false && (
+                  <span
+                    className="block break-words text-amber-400/70"
+                    title={p.portadaError ?? undefined}
+                  >
+                    Salió con la portada que eligió Meta, no con la nuestra
                   </span>
                 )}
               </div>
