@@ -18,6 +18,9 @@ import {
 } from "@/lib/montaje";
 import { LICENSES, MONTAR_VIDEO } from "@/graphql/operations";
 
+/** Lo que Meta admite en un Reel. El backend lo valida antes de publicar. */
+const LIMITE_REEL_SEG = 90;
+
 /** Tope duro del panel. Mas grande no ayuda a encuadrar y obliga a scrollear. */
 const ALTO_MAXIMO = 520;
 
@@ -142,10 +145,23 @@ export default function MontajePage() {
     videosPreview.current.clear();
     try {
       const r = await downloadFromTikTok(url);
+
+      // El backend devuelve la ruta en Bunny y sin ella no hay nada que montar.
+      // Se valida acá y no al generar porque si se guarda un valor invalido, el
+      // error aparece minutos despues y culpando al servidor: ya paso con un
+      // `origenStoragePath` que llego como la cadena "undefined".
+      const ruta = r.storagePath || r.path;
+      if (typeof ruta !== "string" || !ruta.trim() || ruta === "undefined") {
+        throw new Error(
+          "El servidor no devolvio donde quedo guardado el video. " +
+            "Volve a cargar el link.",
+        );
+      }
+
       // Las dimensiones reales las reporta el <video> al cargar los metadatos;
       // hasta entonces no se puede convertir nada.
       setFuente({
-        storagePath: r.storagePath ?? r.path,
+        storagePath: ruta,
         publicUrl: r.url,
         origenUrl: url.trim(),
         ancho: 1080,
@@ -162,6 +178,10 @@ export default function MontajePage() {
 
   async function generar() {
     if (!activa || !fuente) return;
+    if (!fuente.storagePath) {
+      setError("Se perdio la referencia al video. Volve a cargar el link.");
+      return;
+    }
     setError(null);
     try {
       const { data } = await montar({
@@ -354,6 +374,33 @@ export default function MontajePage() {
                       })
                     }
                   />
+                  {/* Meta rechaza los Reels de mas de 90s, y el pipeline lo
+                      valida antes de publicar: sin este aviso el limite se
+                      descubre despues de esperar todo el render. Ademas cada
+                      segundo de tramo es tiempo de CPU en el servidor. */}
+                  {duracionTrim > LIMITE_REEL_SEG && (
+                    <p className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-[11px] text-amber-300">
+                      {duracionTrim.toFixed(0)}s es demasiado para un Reel: Meta
+                      admite hasta {LIMITE_REEL_SEG}s. Se va a poder generar,
+                      pero al publicarlo como Reel te lo va a rechazar. Y el
+                      render tarda en proporcion al tramo.
+                      <button
+                        onClick={() =>
+                          cambiar({
+                            trim: {
+                              desdeSeg: montaje.trim.desdeSeg,
+                              hastaSeg:
+                                montaje.trim.desdeSeg + LIMITE_REEL_SEG,
+                            },
+                          })
+                        }
+                        className="ml-1 underline hover:text-amber-200"
+                      >
+                        Recortar a {LIMITE_REEL_SEG}s
+                      </button>
+                    </p>
+                  )}
+
                   <button
                     onClick={() =>
                       conTodos((v) => {
