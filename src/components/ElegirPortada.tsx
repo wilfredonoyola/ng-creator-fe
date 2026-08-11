@@ -40,7 +40,18 @@ export function ElegirPortada({
   const [segundo, setSegundo] = useState(1.5);
   const [duracion, setDuracion] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [listo, setListo] = useState(false);
+  /**
+   * La portada que quedó guardada, tal como la devolvió el servidor.
+   *
+   * Se muestra dentro del panel en vez de confiar en que se vea el cambio en la
+   * tarjeta de atrás: la tarjeta sí se actualiza, pero queda tapada por el
+   * panel abierto, así que sin esto había que cerrarlo para comprobar que se
+   * guardó lo que se quería.
+   *
+   * Sale de la respuesta de la mutation y no de refrescar la lista: es el dato
+   * exacto que se acaba de escribir, y aparece sin esperar otra consulta.
+   */
+  const [guardada, setGuardada] = useState<string | null>(null);
   const [subiendo, setSubiendo] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
 
@@ -53,7 +64,7 @@ export function ElegirPortada({
 
   function mover(valor: number) {
     setSegundo(valor);
-    setListo(false);
+    setGuardada(null);
     // Mover el tiempo del <video> ES la vista previa.
     if (video.current) video.current.currentTime = valor;
   }
@@ -61,8 +72,10 @@ export function ElegirPortada({
   async function confirmarCuadro() {
     setError(null);
     try {
-      await elegirCuadro({ variables: { id: expedienteId, segundo } });
-      setListo(true);
+      const { data } = await elegirCuadro({
+        variables: { id: expedienteId, segundo },
+      });
+      setGuardada(data?.elegirPortada?.posterUrl ?? null);
     } catch (e: any) {
       setError(e?.message ?? "No se pudo guardar la portada");
     }
@@ -72,16 +85,16 @@ export function ElegirPortada({
     const file = e.target.files?.[0];
     if (!file) return;
     setError(null);
-    setListo(false);
+    setGuardada(null);
     setSubiendo(true);
     try {
       const r = await uploadPortada(file, expedienteId);
       // Se manda la RUTA, no la URL: la pública la arma el servidor. Aceptar
       // una URL del cliente dejaría apuntar la portada a cualquier sitio.
-      await usarSubida({
+      const { data } = await usarSubida({
         variables: { id: expedienteId, storagePath: r.storagePath },
       });
-      setListo(true);
+      setGuardada(data?.usarPortadaSubida?.posterUrl ?? r.url);
     } catch (err: any) {
       setError(err?.message ?? "No se pudo subir la imagen");
     } finally {
@@ -156,12 +169,12 @@ export function ElegirPortada({
 
           <button
             onClick={confirmarCuadro}
-            disabled={guardando || listo}
+            disabled={guardando || !!guardada}
             className="mt-2 w-full rounded-lg bg-[#0FED9D] py-2 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-50"
           >
             {guardando
               ? "Guardando…"
-              : listo
+              : guardada
                 ? "✓ Portada guardada"
                 : "Usar este cuadro"}
           </button>
@@ -189,7 +202,7 @@ export function ElegirPortada({
             <span className="text-xs text-white/60">
               {subiendo
                 ? "Subiendo…"
-                : listo
+                : guardada
                   ? "✓ Portada guardada · subir otra"
                   : "Elegí una imagen de tu computadora"}
             </span>
@@ -203,6 +216,20 @@ export function ElegirPortada({
             recorta por su cuenta.
           </p>
         </>
+      )}
+
+      {guardada && (
+        <div className="mt-3 rounded-lg border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-2">
+          <p className="mb-1.5 text-[11px] font-medium text-[#0FED9D]">
+            ✓ Así va a salir la portada
+          </p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={guardada}
+            alt="Portada guardada"
+            className="w-full rounded-md bg-black object-contain"
+          />
+        </div>
       )}
 
       {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
