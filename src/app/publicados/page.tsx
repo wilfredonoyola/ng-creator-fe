@@ -3,8 +3,7 @@
 import { useQuery } from "@apollo/client";
 import { PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
-import { ElegirPortada } from "@/components/ElegirPortada";
+import Link from "next/link";
 import { EstadoEnFacebook } from "@/components/EstadoEnFacebook";
 import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
@@ -92,27 +91,29 @@ export default function PublicadosPage() {
         </div>
       ) : publicaciones.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {/* La tarjeta es para ELEGIR, no para trabajar: la portada y la
+              publicación viven en el detalle. Antes cada una arrastraba los dos
+              paneles hacia abajo y en tres columnas era una tira ilegible. */}
           {publicaciones.map((pub) => (
-            <article
+            <Link
               key={pub._id}
-              className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]"
+              href={`/publicados/${pub.expedienteId}`}
+              className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] transition hover:border-[#0FED9D]/40"
             >
               <div className="relative bg-black">
-                {pub.videoFinalUrl ? (
-                  // `poster` + `preload="none"`: la grilla muestra la portada
-                  // elegida y no descarga un solo byte de video hasta que
-                  // alguien le da play. Con decenas de tarjetas, precargar
-                  // metadata de todas hacía que la pantalla tardara en asentarse.
-                  <video
-                    src={pub.videoFinalUrl}
-                    poster={pub.posterUrl ?? undefined}
-                    controls
-                    preload="none"
-                    className="aspect-[9/16] w-full object-contain"
+                {pub.posterUrl ? (
+                  // La portada como imagen: la grilla no necesita reproducir
+                  // nada, y así no se descarga un solo byte de video.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={pub.posterUrl}
+                    alt=""
+                    loading="lazy"
+                    className="aspect-[9/16] w-full object-cover transition group-hover:opacity-90"
                   />
                 ) : (
-                  <div className="flex aspect-[9/16] items-center justify-center text-sm text-white/30">
-                    Sin video
+                  <div className="flex aspect-[9/16] items-center justify-center text-sm text-white/25">
+                    Sin portada
                   </div>
                 )}
 
@@ -124,45 +125,22 @@ export default function PublicadosPage() {
                 </span>
               </div>
 
-              <div className="p-3">
-                <div className="flex items-center justify-between text-xs text-white/40">
-                  {pub.publicadoEn ? (
-                    <span title={fechaCompleta(pub.publicadoEn)}>
-                      Aprobado {tiempoRelativo(pub.publicadoEn)}
-                    </span>
-                  ) : (
-                    <span />
-                  )}
-                  {pub.videoFinalUrl && (
-                    <a
-                      href={pub.videoFinalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      title="Descargar el video"
-                      className="rounded-lg px-2 py-1 transition hover:bg-white/10 hover:text-white"
-                    >
-                      ⬇
-                    </a>
-                  )}
-                </div>
-
-                {pub.videoFinalUrl && (
-                  <ElegirPortada
-                    expedienteId={pub.expedienteId}
-                    videoUrl={pub.videoFinalUrl}
-                    posterUrl={pub.posterUrl}
-                  />
+              <div className="flex items-center justify-between p-3 text-xs">
+                {pub.publicadoEn ? (
+                  <span
+                    className="text-white/40"
+                    title={fechaCompleta(pub.publicadoEn)}
+                  >
+                    Aprobado {tiempoRelativo(pub.publicadoEn)}
+                  </span>
+                ) : (
+                  <span />
                 )}
-
-                <div className="mt-2">
-                  <PublicarEnFacebook
-                    expedienteId={pub.expedienteId}
-                    tienePoster={!!pub.posterUrl}
-                  />
-                </div>
+                <span className="text-white/30 transition group-hover:text-[#0FED9D]">
+                  Abrir →
+                </span>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       ) : (
