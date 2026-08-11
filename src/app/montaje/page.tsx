@@ -228,6 +228,16 @@ export default function MontajePage() {
           </h2>
           {fuente ? (
             <>
+              {/* Se acota el ANCHO para que el alto derivado no pase de 62vh.
+                  Un `max-height` sobre una caja con `aspect-ratio` la recorta
+                  en vez de achicarla; topeando el ancho, el alto lo sigue solo
+                  y la proporcion del video queda intacta. Sin esto, un 9:16 en
+                  una columna ancha se va abajo de la pantalla y hay que
+                  scrollear para ver el recorte, que es lo que se viene a mirar. */}
+              <div
+                className="mx-auto w-full"
+                style={{ maxWidth: `calc(62vh * ${aspectoFuente})` }}
+              >
               <EditorRecorte
                 src={fuente.publicUrl}
                 recorte={montaje.recorte}
@@ -243,6 +253,7 @@ export default function MontajePage() {
                   }));
                 }}
               />
+              </div>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <span className="text-[11px] text-white/35">Proporción</span>
@@ -311,7 +322,10 @@ export default function MontajePage() {
               )}
             </>
           ) : (
-            <div className="flex aspect-[9/16] max-h-[50vh] items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25">
+            <div
+              className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25"
+              style={{ maxWidth: "calc(62vh * 9 / 16)" }}
+            >
               Pegá un link de TikTok arriba
             </div>
           )}
@@ -322,7 +336,12 @@ export default function MontajePage() {
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
             Cómo va a quedar
           </h2>
-          <div className="mx-auto max-h-[60vh] w-full max-w-[280px]">
+          <div
+            className="mx-auto w-full"
+            style={{
+              maxWidth: `min(280px, calc(62vh * ${montaje.lienzo.ancho} / ${montaje.lienzo.alto}))`,
+            }}
+          >
             <PreviewFinal
               montaje={montaje}
               src={fuente?.publicUrl ?? null}
