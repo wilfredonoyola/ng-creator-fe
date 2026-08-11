@@ -826,3 +826,19 @@ export const USAR_PORTADA_SUBIDA = gql`
     }
   }
 `;
+
+/**
+ * Qué expedientes ya salieron a Facebook y en qué formatos.
+ *
+ * Una sola consulta para toda la lista: antes cada tarjeta preguntaba por su
+ * cuenta, así que el dato llegaba después de dibujar la grilla y no se podía
+ * filtrar por algo que todavía no se sabía.
+ */
+export const FORMATOS_PUBLICADOS = gql`
+  query FormatosPublicados {
+    formatosPublicados {
+      expedienteId
+      formatos
+    }
+  }
+`;
