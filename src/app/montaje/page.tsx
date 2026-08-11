@@ -142,10 +142,23 @@ export default function MontajePage() {
     videosPreview.current.clear();
     try {
       const r = await downloadFromTikTok(url);
+
+      // El backend devuelve la ruta en Bunny y sin ella no hay nada que montar.
+      // Se valida acá y no al generar porque si se guarda un valor invalido, el
+      // error aparece minutos despues y culpando al servidor: ya paso con un
+      // `origenStoragePath` que llego como la cadena "undefined".
+      const ruta = r.storagePath || r.path;
+      if (typeof ruta !== "string" || !ruta.trim() || ruta === "undefined") {
+        throw new Error(
+          "El servidor no devolvio donde quedo guardado el video. " +
+            "Volve a cargar el link.",
+        );
+      }
+
       // Las dimensiones reales las reporta el <video> al cargar los metadatos;
       // hasta entonces no se puede convertir nada.
       setFuente({
-        storagePath: r.storagePath ?? r.path,
+        storagePath: ruta,
         publicUrl: r.url,
         origenUrl: url.trim(),
         ancho: 1080,
@@ -162,6 +175,10 @@ export default function MontajePage() {
 
   async function generar() {
     if (!activa || !fuente) return;
+    if (!fuente.storagePath) {
+      setError("Se perdio la referencia al video. Volve a cargar el link.");
+      return;
+    }
     setError(null);
     try {
       const { data } = await montar({
