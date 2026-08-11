@@ -1,5 +1,6 @@
 "use client";
 
+import { Autoria, SelloDeAutoria } from "./SelloDeAutoria";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { APROBAR, RECHAZAR, REGENERAR, COLA_DE_REVISION } from "@/graphql/operations";
@@ -26,6 +27,7 @@ export interface Expediente {
   pageId: string;
   tipoDeValor: string;
   estado: string;
+  creadoPor?: Autoria | null;
   videoFinalUrl?: string;
   regeneraciones: number;
   notaVozTexto?: string;
@@ -82,6 +84,11 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
             {exp.regeneraciones > 0 && ` · ${exp.regeneraciones} regen`}
           </span>
         </div>
+
+        {/* De quién es el trabajo que se está por aprobar. Va acá arriba, antes
+            del guion: cambia cómo se lee una corrección saber a quién se la
+            estás haciendo. */}
+        <SelloDeAutoria accion="creado" autoria={exp.creadoPor} />
 
         {/* Guion */}
         <div className="mb-3 space-y-1 rounded-lg border border-white/10 bg-black/40 p-3 text-sm">
