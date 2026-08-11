@@ -42,6 +42,7 @@ interface Publicacion {
   permalink?: string | null;
   error?: string | null;
   publicadaEn?: string | null;
+  publicadoPorNombre?: string | null;
 }
 
 /**
@@ -208,6 +209,16 @@ export function PublicarEnFacebook({
                     title={fechaCompleta(p.publicadaEn)}
                   >
                     {tiempoRelativo(p.publicadaEn)}
+                  </span>
+                )}
+                {/* Quién la mandó. Sin autor no se escribe nada: las
+                    publicaciones anteriores al registro no lo tienen. */}
+                {p.publicadoPorNombre && (
+                  <span className="ml-1.5 text-white/30">
+                    por{" "}
+                    <span className="text-white/50">
+                      {p.publicadoPorNombre}
+                    </span>
                   </span>
                 )}
                 {p.error && (

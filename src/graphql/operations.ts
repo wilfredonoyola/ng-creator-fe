@@ -45,6 +45,14 @@ export const COLA_DE_REVISION = gql`
       notaVozTexto
       createdAt
       updatedAt
+      creadoPor {
+        nombre
+        en
+      }
+      revisadoPor {
+        nombre
+        en
+      }
       guion {
         apertura
         detalle
@@ -223,6 +231,14 @@ export const EXPEDIENTE = gql`
       regeneraciones
       notaVozTexto
       error
+      creadoPor {
+        nombre
+        en
+      }
+      revisadoPor {
+        nombre
+        en
+      }
       guion {
         apertura
         detalle
@@ -426,6 +442,7 @@ export const PUBLICAR_EN_FACEBOOK = gql`
       permalink
       error
       publicadaEn
+      publicadoPorNombre
     }
   }
 `;
@@ -442,6 +459,7 @@ export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
       permalink
       error
       publicadaEn
+      publicadoPorNombre
     }
   }
 `;
@@ -492,6 +510,18 @@ export const HISTORIAL_DE_PAGINA = gql`
       programadaPara
       historiaUrl
       historiaPublicadaEn
+      imagenSubidaPor {
+        nombre
+        en
+      }
+      publicadoPor {
+        nombre
+        en
+      }
+      historiaPublicadaPor {
+        nombre
+        en
+      }
     }
   }
 `;

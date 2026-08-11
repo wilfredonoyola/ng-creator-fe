@@ -1,5 +1,7 @@
 "use client";
 
+import { Autoria, SelloDeAutoria } from "./SelloDeAutoria";
+
 export type EstadoRevival =
   | "NUEVO"
   | "PARA_TRABAJAR"
@@ -26,6 +28,9 @@ export interface PostRevival {
   historiaUrl?: string | null;
   historiaPublicadaEn?: string | null;
   publicadoEn: string;
+  imagenSubidaPor?: Autoria | null;
+  publicadoPor?: Autoria | null;
+  historiaPublicadaPor?: Autoria | null;
   reacciones: number;
   comentarios: number;
   compartidos: number;
@@ -199,6 +204,18 @@ export function TarjetaRevival({
             </a>
           )}
         </div>
+
+        {/* Quién lo dejó así. Se muestra el último paso relevante y no todos:
+            en una tarjeta de galería, tres líneas de autoría tapan el contenido.
+            Lo que se pregunta al ver algo programado es quién lo puso ahí. */}
+        {post.estado === "PROGRAMADO" || post.estado === "PUBLICADO" ? (
+          <SelloDeAutoria
+            accion={post.estado === "PROGRAMADO" ? "programado" : "publicado"}
+            autoria={post.publicadoPor}
+          />
+        ) : (
+          <SelloDeAutoria accion="imagen subida" autoria={post.imagenSubidaPor} />
+        )}
 
         {/* py-2.5 para que el objetivo sea cómodo de tocar: a dos columnas en
             un teléfono la tarjeta mide unos 170px y los botones quedan chicos. */}
