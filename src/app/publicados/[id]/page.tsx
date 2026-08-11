@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { EXPEDIENTE } from "@/graphql/operations";
@@ -25,9 +24,12 @@ import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
 export default function DetalleVideoPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  // Objeto plano, no promesa: en Next 14 los params llegan resueltos. Envolverlos
+  // con `use()` —que es la forma de Next 15— hace que la pagina reviente en el
+  // navegador con un error generico de cliente.
+  params: { id: string };
 }) {
-  const { id } = use(params);
+  const { id } = params;
   const { activa, paginas } = usePaginaActiva();
 
   const { data, loading } = useQuery(EXPEDIENTE, {
