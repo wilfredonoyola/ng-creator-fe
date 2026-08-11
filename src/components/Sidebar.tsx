@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { cerrarSesion } from "@/lib/auth";
-import { useSesion } from "@/lib/sesion";
+import { ESTILO_ROL, useSesion } from "@/lib/sesion";
+import { usePaginaActiva } from "@/lib/pagina-activa";
 import { PageSwitcher } from "./PageSwitcher";
 
 const navItems = [
@@ -14,7 +15,12 @@ const navItems = [
   { href: "/creators", icon: "👤", label: "Creators" },
 ];
 
-/** Solo visible con rol ADMIN. */
+/**
+ * Administración de la página activa. "Equipo" lo ve cualquiera que tenga
+ * acceso a la página (adentro, quien no es propietario solo mira);
+ * "Integraciones" es de ADMIN, porque es donde se suman cuentas nuevas.
+ */
+const navEquipo = { href: "/admin/equipo", icon: "👥", label: "Equipo" };
 const navAdmin = [
   { href: "/admin/facebook", icon: "🔗", label: "Integraciones" },
 ];
@@ -36,7 +42,9 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { usuario, esAdmin } = useSesion();
+  const { usuario, esAdmin, rolEn } = useSesion();
+  const { activa } = usePaginaActiva();
+  const rolAqui = rolEn(activa?.pageId);
 
   function handleLogout() {
     cerrarSesion();
@@ -89,19 +97,27 @@ export function Sidebar({
           />
         ))}
 
-        {esAdmin && (
+        {(esAdmin || rolAqui) && (
           <>
             <div className="px-4 pb-1 pt-4 text-[10px] uppercase tracking-wider text-white/25">
               Administración
             </div>
-            {navAdmin.map((item) => (
+            {rolAqui && (
               <BotonNav
-                key={item.href}
-                {...item}
-                activo={pathname.startsWith(item.href)}
-                onClick={() => ir(item.href)}
+                {...navEquipo}
+                activo={pathname.startsWith(navEquipo.href)}
+                onClick={() => ir(navEquipo.href)}
               />
-            ))}
+            )}
+            {esAdmin &&
+              navAdmin.map((item) => (
+                <BotonNav
+                  key={item.href}
+                  {...item}
+                  activo={pathname.startsWith(item.href)}
+                  onClick={() => ir(item.href)}
+                />
+              ))}
           </>
         )}
       </nav>
@@ -119,8 +135,14 @@ export function Sidebar({
             <p className="truncate text-sm font-medium">
               {usuario?.nombre || usuario?.email || "…"}
             </p>
+            {/* El rol que importa es el de la página activa: el mismo usuario
+                puede ser propietario de una y lector de otra. */}
             <p className="truncate text-xs text-white/40">
-              {esAdmin ? "Administrador" : "Miembro"}
+              {rolAqui
+                ? `${ESTILO_ROL[rolAqui].etiqueta} de ${activa?.nombre ?? "la página"}`
+                : esAdmin
+                  ? "Administrador"
+                  : "Sin acceso a páginas"}
             </p>
           </div>
         </div>

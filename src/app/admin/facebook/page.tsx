@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { uploadLogoPagina } from "@/lib/upload";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { useSesion } from "@/lib/sesion";
+import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import {
   FACEBOOK_ESTADO,
@@ -16,6 +16,7 @@ import {
   FACEBOOK_SET_LOGO_PAGINA,
   FACEBOOK_REGISTRAR_PAGINA_POR_ID,
   FACEBOOK_DESCONECTAR,
+  MIS_ACCESOS,
 } from "@/graphql/operations";
 
 interface Pagina {
@@ -31,7 +32,12 @@ interface Pagina {
 }
 
 export default function AdminFacebookPage() {
-  const { esAdmin, cargando: cargandoSesion } = useSesion();
+  // Dos públicos distintos en la misma pantalla: un ADMIN suma cuentas nuevas
+  // (pasos 1 y 2), y un propietario que no es ADMIN entra solo a configurar las
+  // páginas que ya son suyas. Sin esto, a quien fue nombrado propietario por
+  // invitación la pantalla le quedaba cerrada y no podía ni habilitar su página.
+  const { esAdmin, rolEn, accesos, cargando: cargandoSesion } = useSesion();
+  const tieneAlguna = accesos.length > 0;
 
   const { data: estado, loading: cargandoEstado } = useQuery(FACEBOOK_ESTADO, {
     errorPolicy: "all",
@@ -46,10 +52,14 @@ export default function AdminFacebookPage() {
     { fetchPolicy: "network-only" },
   );
 
+  // MIS_ACCESOS entra acá porque conectar o registrar una página te deja como
+  // su propietario: sin refrescarlo, la fila recién agregada aparece sin rol y
+  // con el botón de habilitar apagado hasta recargar a mano.
   const refrescar = [
     { query: FACEBOOK_PAGINAS },
     { query: FACEBOOK_PAGINAS_ACTIVAS },
     { query: FACEBOOK_ESTADO },
+    { query: MIS_ACCESOS },
   ];
   const [resincronizar, { loading: resincronizando }] = useMutation(
     FACEBOOK_RESINCRONIZAR,
@@ -63,10 +73,9 @@ export default function AdminFacebookPage() {
     { refetchQueries: refrescar },
   );
   const [idManual, setIdManual] = useState("");
-  const [desconectar, { loading: desconectando }] = useMutation(
-    FACEBOOK_DESCONECTAR,
-    { refetchQueries: refrescar },
-  );
+  const [desconectar] = useMutation(FACEBOOK_DESCONECTAR, {
+    refetchQueries: refrescar,
+  });
 
   const [error, setError] = useState<string | null>(null);
 
@@ -97,14 +106,15 @@ export default function AdminFacebookPage() {
     }
   }
 
-  if (!cargandoSesion && !esAdmin) {
+  if (!cargandoSesion && !esAdmin && !tieneAlguna) {
     return (
       <DashboardLayout>
         <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 p-8 text-center">
           <div className="mb-3 text-4xl opacity-50">🔒</div>
-          <p className="font-medium text-yellow-400">Solo para administradores</p>
-          <p className="mt-1 text-sm text-white/50">
-            Esta sección administra dónde publica todo el equipo.
+          <p className="font-medium text-yellow-400">Sin páginas para configurar</p>
+          <p className="mx-auto mt-1 max-w-md text-sm text-white/50">
+            Conectar cuentas de Facebook nuevas es de administradores. Si ya
+            trabajás en una página, acá vas a ver las tuyas.
           </p>
         </div>
       </DashboardLayout>
@@ -116,7 +126,9 @@ export default function AdminFacebookPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Integración con Facebook</h1>
         <p className="mt-1 text-white/50">
-          Conectá una cuenta y elegí en qué páginas se puede publicar.
+          {esAdmin
+            ? "Conectá una cuenta y elegí en qué páginas se puede publicar."
+            : "Configurá las páginas de las que sos propietario."}
         </p>
       </div>
 
@@ -126,7 +138,9 @@ export default function AdminFacebookPage() {
         </div>
       )}
 
-      {/* Paso 1: credenciales del backend */}
+      {/* Pasos 1 y 2: solo de ADMIN, porque suman cuentas nuevas al sistema. */}
+      {esAdmin && (
+        <>
       <Paso
         numero={1}
         titulo="Credenciales de la app de Meta"
@@ -203,17 +217,12 @@ FACEBOOK_TOKEN_KEY=`}
               >
                 Reconectar
               </button>
-              <button
-                onClick={() => accion(() => desconectar())}
-                disabled={desconectando}
-                className="rounded-lg border border-red-500/30 px-4 py-2 text-sm text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
-              >
-                {desconectando ? "…" : "Desconectar"}
-              </button>
             </div>
             <p className="text-xs text-white/35">
               El token de Facebook dura unos 60 días. Cuando venza hay que
               reconectar; las páginas habilitadas y sus vínculos se conservan.
+              Cada quien conecta su propia cuenta: sincronizar no toca las
+              páginas que ya tienen otro propietario.
             </p>
           </div>
         ) : (
@@ -231,19 +240,28 @@ FACEBOOK_TOKEN_KEY=`}
           </div>
         )}
       </Paso>
+        </>
+      )}
 
       {/* Paso 3: habilitar paginas */}
       <Paso
         numero={3}
         titulo="Habilitar páginas como destino"
         completo={habilitadas > 0}
-        deshabilitado={!conexion?.activa}
+        deshabilitado={esAdmin && !conexion?.activa}
       >
         <div className="space-y-4">
           <p className="text-sm text-white/50">
             Cada página habilitada es un espacio de trabajo propio: su cola de
             revisión y su numeración de expedientes son independientes.
             Conectar no habilita — marcá explícitamente dónde se puede publicar.
+          </p>
+          <p className="text-sm text-white/35">
+            Quien conecta una página queda como su propietario. Para que otra
+            persona trabaje en ella no hace falta que la reconecte: invitala
+            desde <span className="text-white/60">Equipo</span> y publica con el
+            token que ya quedó guardado, sin necesidad de administrar la fan
+            page en Facebook.
           </p>
 
           {paginas.length > 0 && (
@@ -252,9 +270,15 @@ FACEBOOK_TOKEN_KEY=`}
                 <FilaPagina
                   key={p._id}
                   pagina={p}
+                  rol={rolEn(p.pageId)}
                   onToggle={(activa) =>
                     accion(() =>
-                      setActiva({ variables: { id: p._id, activa } }),
+                      setActiva({ variables: { pageId: p.pageId, activa } }),
+                    )
+                  }
+                  onDesconectar={() =>
+                    accion(() =>
+                      desconectar({ variables: { pageId: p.pageId } }),
                     )
                   }
                 />
@@ -367,11 +391,19 @@ function Paso({
 
 function FilaPagina({
   pagina,
+  rol,
   onToggle,
+  onDesconectar,
 }: {
   pagina: Pagina;
+  rol: RolPagina | null;
   onToggle: (activa: boolean) => void;
+  onDesconectar: () => void;
 }) {
+  const [confirmando, setConfirmando] = useState(false);
+  // Habilitar y desconectar cambian dónde publica todo el equipo de la página:
+  // son del propietario. El backend lo impone igual.
+  const mando = rol === "PROPIETARIO";
   // `tasks` solo lo devuelve /me/accounts. Vacío significa "no lo sabemos"
   // (página registrada por ID), no "sin permiso": el backend la deja habilitar
   // igual, así que bloquear el botón acá la volvería inhabilitable.
@@ -403,13 +435,24 @@ function FilaPagina({
         </p>
       </div>
 
+      {rol && (
+        <span
+          title={ESTILO_ROL[rol].ayuda}
+          className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${ESTILO_ROL[rol].clase}`}
+        >
+          {ESTILO_ROL[rol].etiqueta}
+        </span>
+      )}
+
       <button
         onClick={() => onToggle(!pagina.activa)}
-        disabled={bloqueada && !pagina.activa}
+        disabled={!mando || (bloqueada && !pagina.activa)}
         title={
-          bloqueada
-            ? "Requiere permiso CREATE_CONTENT sobre la página"
-            : undefined
+          !mando
+            ? "Solo el propietario de la página puede habilitarla"
+            : bloqueada
+              ? "Requiere permiso CREATE_CONTENT sobre la página"
+              : undefined
         }
         className={`rounded-lg px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
           pagina.activa
@@ -419,6 +462,32 @@ function FilaPagina({
       >
         {pagina.activa ? "Habilitada" : "Habilitar"}
       </button>
+
+      {mando &&
+        (confirmando ? (
+          <span className="flex shrink-0 items-center gap-1.5">
+            <button
+              onClick={onDesconectar}
+              className="rounded-lg bg-red-500/15 px-3 py-1.5 text-xs font-medium text-red-400 transition hover:bg-red-500/25"
+            >
+              Desconectar
+            </button>
+            <button
+              onClick={() => setConfirmando(false)}
+              className="rounded-lg px-2 py-1.5 text-xs text-white/40 transition hover:text-white/70"
+            >
+              No
+            </button>
+          </span>
+        ) : (
+          <button
+            onClick={() => setConfirmando(true)}
+            title="Deja de ser destino de publicación. No borra sus expedientes."
+            className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/40 transition hover:border-red-500/40 hover:text-red-400"
+          >
+            Desconectar
+          </button>
+        ))}
 
       <LogoDePagina pagina={pagina} />
     </div>
