@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -18,6 +18,42 @@ import {
 } from "@/lib/montaje";
 import { LICENSES, MONTAR_VIDEO } from "@/graphql/operations";
 
+/** Tope duro del panel. Mas grande no ayuda a encuadrar y obliga a scrollear. */
+const ALTO_MAXIMO = 520;
+
+/**
+ * Alto que queda libre desde donde arranca el elemento hasta el pie de la
+ * ventana.
+ *
+ * Se mide en vez de estimarlo con `vh` porque encima de los paneles hay
+ * encabezado, input de URL y avisos que aparecen y desaparecen: cualquier
+ * fracción fija del viewport termina dejando el video cortado abajo en unas
+ * pantallas y chiquito en otras.
+ *
+ * Se toma la posición respecto del documento y no del viewport, así el valor no
+ * cambia mientras se scrollea: si dependiera del scroll, el panel se agrandaría
+ * y achicaría solo al bajar por la página.
+ */
+function useAltoDisponible(ref: React.RefObject<HTMLElement | null>) {
+  const [alto, setAlto] = useState(ALTO_MAXIMO);
+
+  useEffect(() => {
+    function medir() {
+      const el = ref.current;
+      if (!el) return;
+      const desdeArriba = el.getBoundingClientRect().top + window.scrollY;
+      setAlto(
+        Math.max(240, Math.min(ALTO_MAXIMO, window.innerHeight - desdeArriba - 24)),
+      );
+    }
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, [ref]);
+
+  return alto;
+}
+
 interface Licencia {
   _id: string;
   scope: string;
@@ -27,6 +63,8 @@ interface Licencia {
 interface Fuente {
   storagePath: string;
   publicUrl: string;
+  /** El link original. Es lo único que después permite volver a buscar al autor. */
+  origenUrl: string;
   ancho: number;
   alto: number;
   duracion: number;
@@ -63,6 +101,9 @@ export default function MontajePage() {
   );
 
   const [montar, { loading: montando }] = useMutation(MONTAR_VIDEO);
+
+  const zonaPaneles = useRef<HTMLDivElement>(null);
+  const altoPanel = useAltoDisponible(zonaPaneles);
 
   const videoMaestro = useRef<HTMLVideoElement | null>(null);
   const videosPreview = useRef<Set<HTMLVideoElement>>(new Set());
@@ -106,6 +147,7 @@ export default function MontajePage() {
       setFuente({
         storagePath: r.storagePath ?? r.path,
         publicUrl: r.url,
+        origenUrl: url.trim(),
         ancho: 1080,
         alto: 1920,
         duracion: 0,
@@ -119,15 +161,19 @@ export default function MontajePage() {
   }
 
   async function generar() {
-    if (!activa || !fuente || !licenciaId) return;
+    if (!activa || !fuente) return;
     setError(null);
     try {
       const { data } = await montar({
         variables: {
           input: {
             pageId: activa.pageId,
-            licenseId: licenciaId,
+            // Vacio = que el backend registre una licencia SIN_VERIFICAR con
+            // el link de origen. La puerta de derechos sigue en pie; lo que se
+            // saca del medio es tener que elegir a mano en cada video.
+            licenseId: licenciaId || null,
             origenStoragePath: fuente.storagePath,
+            origenUrl: fuente.origenUrl,
             trim: montaje.trim,
             recorte: montaje.recorte,
             lienzo: montaje.lienzo,
@@ -220,7 +266,7 @@ export default function MontajePage() {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div ref={zonaPaneles} className="grid gap-6 lg:grid-cols-2">
         {/* Original y recorte */}
         <section>
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
@@ -228,6 +274,17 @@ export default function MontajePage() {
           </h2>
           {fuente ? (
             <>
+              {/* Se acota el ANCHO para que el alto derivado entre en el
+                  espacio libre. Un `max-height` sobre una caja con
+                  `aspect-ratio` la recorta en vez de achicarla; topeando el
+                  ancho, el alto lo sigue solo y la proporción queda intacta.
+                  El ancho depende de la proporción REAL del video, así que un
+                  vertical y un horizontal ocupan el mismo alto y el panel no
+                  salta de tamaño al cargar otro material. */}
+              <div
+                className="mx-auto w-full"
+                style={{ maxWidth: altoPanel * aspectoFuente }}
+              >
               <EditorRecorte
                 src={fuente.publicUrl}
                 recorte={montaje.recorte}
@@ -243,6 +300,7 @@ export default function MontajePage() {
                   }));
                 }}
               />
+              </div>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <span className="text-[11px] text-white/35">Proporción</span>
@@ -311,7 +369,10 @@ export default function MontajePage() {
               )}
             </>
           ) : (
-            <div className="flex aspect-[9/16] max-h-[50vh] items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25">
+            <div
+              className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25"
+              style={{ maxWidth: (altoPanel * 9) / 16 }}
+            >
               Pegá un link de TikTok arriba
             </div>
           )}
@@ -322,7 +383,15 @@ export default function MontajePage() {
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
             Cómo va a quedar
           </h2>
-          <div className="mx-auto max-h-[60vh] w-full max-w-[280px]">
+          <div
+            className="mx-auto w-full"
+            style={{
+              maxWidth: Math.min(
+                280,
+                (altoPanel * montaje.lienzo.ancho) / montaje.lienzo.alto,
+              ),
+            }}
+          >
             <PreviewFinal
               montaje={montaje}
               src={fuente?.publicUrl ?? null}
@@ -435,38 +504,40 @@ export default function MontajePage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="min-w-0 flex-1">
             <label className="mb-1.5 block text-xs font-medium text-white/60">
-              Licencia *
+              Licencia
             </label>
-            {licencias.length > 0 ? (
-              <select
-                value={licenciaId}
-                onChange={(e) => setLicenciaId(e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
-              >
-                <option value="">Seleccionar licencia</option>
-                {licencias.map((l) => (
-                  <option key={l._id} value={l._id} className="bg-[#111]">
-                    {l.scope}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <p className="text-xs text-white/40">
-                No hay licencias activas.{" "}
-                <Link href="/creators" className="text-[#0FED9D] hover:underline">
-                  Creá una primero
-                </Link>
-              </p>
-            )}
+            <select
+              value={licenciaId}
+              onChange={(e) => setLicenciaId(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
+            >
+              <option value="">Sin verificar (no pedí permiso)</option>
+              {licencias.map((l) => (
+                <option key={l._id} value={l._id} className="bg-[#111]">
+                  {l.scope}
+                </option>
+              ))}
+            </select>
             <p className="mt-1.5 text-[11px] text-white/30">
-              Sin licencia vigente el sistema no guarda el material. Es la misma
-              puerta que usa el resto del pipeline.
+              {licenciaId ? (
+                "El material queda con la licencia que elegiste."
+              ) : (
+                <>
+                  Se registra una licencia marcada{" "}
+                  <span className="text-amber-400/70">sin verificar</span> con el
+                  link de origen guardado. Podés regularizarla después desde{" "}
+                  <Link href="/creators" className="text-[#0FED9D] hover:underline">
+                    Creators
+                  </Link>
+                  .
+                </>
+              )}
             </p>
           </div>
 
           <button
             onClick={generar}
-            disabled={!fuente || !licenciaId || montando}
+            disabled={!fuente || montando}
             className="rounded-lg bg-[#0FED9D] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
           >
             {montando ? "Generando…" : "Generar video"}
