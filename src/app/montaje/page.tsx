@@ -210,9 +210,31 @@ export default function MontajePage() {
       });
       setListo(data?.montarVideo?._id ?? null);
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo generar el video");
+      const msg: string = e?.message ?? "No se pudo generar el video";
+      // Un corte de red no significa que el render fallara: el backend crea el
+      // expediente al terminar, escuche alguien o no.
+      const cortoLaEspera = /fetch|network|failed to fetch|timeout/i.test(msg);
+      setError(
+        cortoLaEspera
+          ? `${msg}. La conexion se corto, pero el servidor pudo haber ` +
+            "terminado igual: fijate en la cola de revision antes de repetirlo."
+          : msg,
+      );
     }
   }
+
+  // Segundos desde que arranco el render. No es una barra de progreso real
+  // —ffmpeg no reporta avance por aca— pero sin ninguna senal de vida, cinco
+  // minutos de espera se sienten como una pantalla colgada.
+  const [segundos, setSegundos] = useState(0);
+  useEffect(() => {
+    if (!montando) {
+      setSegundos(0);
+      return;
+    }
+    const t = setInterval(() => setSegundos((n) => n + 1), 1000);
+    return () => clearInterval(t);
+  }, [montando]);
 
   const duracionTrim = useMemo(
     () => Math.max(montaje.trim.hastaSeg - montaje.trim.desdeSeg, 0),
@@ -251,17 +273,35 @@ export default function MontajePage() {
         </p>
       </div>
 
+      {montando && (
+        <div className="mb-4 flex items-center gap-3 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
+          <span className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium text-[#0FED9D]">
+              Componiendo el video · {Math.floor(segundos / 60)}:
+              {String(segundos % 60).padStart(2, "0")}
+            </p>
+            <p className="mt-0.5 text-xs text-white/45">
+              Tarda varios minutos: el servidor codifica el video entero. No
+              cierres esta pestaña. Si la conexión se corta antes de terminar, el
+              video igual se guarda y aparece en revisión.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Paso 1: el link */}
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://www.tiktok.com/@usuario/video/..."
-          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-[#0FED9D]/50"
+          disabled={montando}
+          className="min-w-0 flex-1 disabled:opacity-40 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-[#0FED9D]/50"
         />
         <button
           onClick={cargar}
-          disabled={cargando || !url.trim()}
+          disabled={cargando || montando || !url.trim()}
           className="rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-medium text-black transition hover:brightness-110 disabled:opacity-40"
         >
           {cargando ? "Descargando…" : "Cargar video"}
@@ -286,6 +326,12 @@ export default function MontajePage() {
         </div>
       )}
 
+      <div
+        aria-busy={montando}
+        className={
+          montando ? "pointer-events-none select-none opacity-40" : undefined
+        }
+      >
       <div ref={zonaPaneles} className="grid gap-6 lg:grid-cols-2">
         {/* Original y recorte */}
         <section>
@@ -563,6 +609,8 @@ export default function MontajePage() {
         />
       </div>
 
+      </div>
+
       {/* Generar */}
       <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -607,12 +655,6 @@ export default function MontajePage() {
             {montando ? "Generando…" : "Generar video"}
           </button>
         </div>
-        {montando && (
-          <p className="mt-3 text-xs text-white/40">
-            Se está procesando en el servidor. Puede tardar algunos minutos según
-            el largo del tramo; no cierres esta pestaña.
-          </p>
-        )}
       </div>
     </DashboardLayout>
   );
