@@ -314,9 +314,16 @@ export default function MontajePage() {
                 videoRef={videoMaestro}
                 onMetadatos={({ ancho, alto, duracion }) => {
                   setFuente((f) => (f ? { ...f, ancho, alto, duracion } : f));
+                  // El tramo arranca ya recortado al maximo permitido en vez
+                  // de abarcar el video entero: con un TikTok de 3 minutos, el
+                  // valor por defecto era uno que el servidor iba a rechazar, y
+                  // el usuario se enteraba recien al apretar Generar.
                   setMontaje((m) => ({
                     ...m,
-                    trim: { desdeSeg: 0, hastaSeg: duracion },
+                    trim: {
+                      desdeSeg: 0,
+                      hastaSeg: Math.min(duracion, LIMITE_REEL_SEG),
+                    },
                   }));
                 }}
               />
@@ -339,8 +346,18 @@ export default function MontajePage() {
               {fuente.duracion > 0 && (
                 <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
                   <div className="mb-2 flex items-center justify-between text-[11px] text-white/40">
-                    <span>Tramo del video</span>
-                    <span>{duracionTrim.toFixed(1)}s</span>
+                    <span>
+                      Tramo del video
+                      {fuente.duracion > LIMITE_REEL_SEG && (
+                        <span className="ml-1.5 text-white/25">
+                          · de {fuente.duracion.toFixed(0)}s, recortado a{" "}
+                          {LIMITE_REEL_SEG}s
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-white/60">
+                      {duracionTrim.toFixed(1)}s
+                    </span>
                   </div>
                   <Deslizador
                     etiqueta="Desde"
