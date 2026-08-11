@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client";
 import { PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
+import { ElegirPortada } from "@/components/ElegirPortada";
 import { usePaginaActiva } from "@/lib/pagina-activa";
 
 interface Publication {
@@ -102,6 +103,14 @@ export default function PublicadosPage() {
                   >
                     ⬇️ Descargar
                   </a>
+                )}
+
+                {pub.videoFinalUrl && (
+                  <ElegirPortada
+                    expedienteId={pub.expedienteId}
+                    videoUrl={pub.videoFinalUrl}
+                    posterUrl={pub.posterUrl}
+                  />
                 )}
 
                 <div className="mt-3">
