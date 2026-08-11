@@ -365,3 +365,33 @@ async function subirImagen(
   const json = await response.json();
   return { url: json.url, path: json.path, storagePath: json.path };
 }
+
+/**
+ * Sube una imagen para usar como portada de un video.
+ *
+ * Solo la guarda: asignarla al expediente es la mutation `usarPortadaSubida`,
+ * que es la que puede verificar el acceso a la página.
+ */
+export async function uploadPortada(
+  file: File,
+  expedienteId: string
+): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) throw new Error("Sesión requerida para subir la portada");
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("expedienteId", expedienteId);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/portada`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || !json.success) {
+    throw new Error(json.message || "No se pudo subir la portada");
+  }
+  return { url: json.url, path: json.path, storagePath: json.storagePath };
+}
