@@ -29,6 +29,20 @@ const REQUISITOS: { etiqueta: string; cumple: (v: string) => boolean }[] = [
  * ese segundo paso aparece acá mismo, sin mandarlo a otra pantalla ni pedirle
  * que vuelva a escribir el correo.
  */
+/**
+ * A donde volver despues de entrar.
+ *
+ * Se valida que sea una ruta interna: si se aceptara cualquier valor, un enlace
+ * preparado podria mandar a alguien a otro sitio despues de escribir su
+ * contraseña, que es el momento en que menos mira la barra de direcciones.
+ */
+function destinoSeguro(): string {
+  if (typeof window === "undefined") return "/";
+  const v = new URLSearchParams(window.location.search).get("volverA");
+  if (!v || !v.startsWith("/") || v.startsWith("//")) return "/";
+  return v;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [correo, setCorreo] = useState("");
@@ -54,7 +68,7 @@ export default function LoginPage() {
         setSesionDesafio(resultado.sesion);
         return;
       }
-      router.push("/");
+      router.push(destinoSeguro());
     } catch (err: any) {
       setError(err?.message ?? "No se pudo iniciar sesión");
     } finally {
@@ -72,7 +86,7 @@ export default function LoginPage() {
     setCargando(true);
     try {
       await establecerPassword(correo, nueva, sesionDesafio!);
-      router.push("/");
+      router.push(destinoSeguro());
     } catch (err: any) {
       setError(err?.message ?? "No se pudo guardar la contraseña");
     } finally {
