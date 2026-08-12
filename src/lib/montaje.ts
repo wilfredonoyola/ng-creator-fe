@@ -57,6 +57,31 @@ export interface Texto {
   centroY: number;
 }
 
+export type TipoMomento = "APARICION" | "PAUSA";
+export type PosicionCamara = "ABAJO_DERECHA" | "ABAJO_CENTRO";
+
+/**
+ * Un momento en el que aparece la cámara propia.
+ *
+ * `desdeSeg` es siempre un segundo del video BASE, no del resultado final. Si
+ * fuera del final, cada pausa correría todos los momentos siguientes y cambiar
+ * la duración de una obligaría a recalcular las demás a mano.
+ */
+export interface Momento {
+  id: string;
+  tipo: TipoMomento;
+  desdeSeg: number;
+  duracionSeg: number;
+}
+
+export interface Camara {
+  origenStoragePath: string;
+  posicion: PosicionCamara;
+  tamano: number;
+  factorEnPausa: number;
+  atenuacionDb: number;
+}
+
 export interface Montaje {
   trim: { desdeSeg: number; hastaSeg: number };
   recorte: Recorte;
@@ -65,6 +90,8 @@ export interface Montaje {
   fondo: Fondo;
   textoSuperior: Texto;
   textoInferior: Texto;
+  camara: Camara | null;
+  momentos: Momento[];
 }
 
 /** Formatos de salida. El alto sale del ancho para no arrastrar dos números. */
@@ -115,8 +142,81 @@ export function montajeInicial(): Montaje {
     fondo: { tipo: "SOLIDO", color: "#111111", desenfoque: 40 },
     textoSuperior: textoVacio(0.12),
     textoInferior: textoVacio(0.88),
+    camara: null,
+    momentos: [],
   };
 }
+
+/** Lo que Meta admite en un Reel. Con pausas es fácil pasarse sin notarlo. */
+export const LIMITE_REEL_SEG = 90;
+
+/**
+ * Cuánto va a durar el resultado.
+ *
+ * Solo las pausas suman: la aparición va encima del video que sigue corriendo.
+ * Es la distinción que hace falta ver antes de generar, porque descubrir que te
+ * pasaste después de esperar el render son minutos tirados.
+ */
+export function duracionFinal(base: number, momentos: Momento[]): number {
+  const pausas = momentos
+    .filter((m) => m.tipo === "PAUSA")
+    .reduce((n, m) => n + m.duracionSeg, 0);
+  return base + pausas;
+}
+
+/**
+ * Cuánta grabación consumen los momentos.
+ *
+ * Cada uno usa un tramo distinto y en orden, asumiendo una toma corrida que se
+ * va repartiendo. Si la suma pasa lo grabado, el backend rechaza el montaje, así
+ * que conviene decirlo antes.
+ */
+export function grabacionNecesaria(momentos: Momento[]): number {
+  return momentos.reduce((n, m) => n + m.duracionSeg, 0);
+}
+
+/** Plantillas: un punto de partida, no una jaula. Todo queda editable. */
+export const PLANTILLAS: {
+  id: string;
+  nombre: string;
+  detalle: string;
+  minimoSeg: number;
+  momentos: (base: number) => Omit<Momento, "id">[];
+}[] = [
+  {
+    id: "inicio",
+    nombre: "Reacción al inicio",
+    detalle: "Aparecés los primeros 5 segundos",
+    minimoSeg: 6,
+    momentos: () => [{ tipo: "APARICION", desdeSeg: 0, duracionSeg: 5 }],
+  },
+  {
+    id: "pausa20",
+    nombre: "Pausa para comentar",
+    detalle: "El video se congela a los 20s y hablás 6",
+    minimoSeg: 21,
+    momentos: () => [{ tipo: "PAUSA", desdeSeg: 20, duracionSeg: 6 }],
+  },
+  {
+    id: "presente",
+    nombre: "Presente todo el video",
+    detalle: "Tu círculo desde el principio hasta el final",
+    minimoSeg: 3,
+    momentos: (base) => [
+      { tipo: "APARICION", desdeSeg: 0, duracionSeg: base },
+    ],
+  },
+  {
+    id: "dos",
+    nombre: "Entrada y comentario",
+    detalle: "Aparecés 3s al inicio y pausás a los 20",
+    minimoSeg: 21,
+    momentos: () => [
+      { tipo: "APARICION", desdeSeg: 0, duracionSeg: 3 },
+      { tipo: "PAUSA", desdeSeg: 20, duracionSeg: 6 },
+    ],
+  },
+];
 
 // ---- Layout ----
 

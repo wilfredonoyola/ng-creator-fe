@@ -7,6 +7,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { EditorRecorte } from "@/components/montaje/EditorRecorte";
 import { PreviewFinal } from "@/components/montaje/PreviewFinal";
 import { ControlesTexto } from "@/components/montaje/ControlesTexto";
+import { MomentosCamara } from "@/components/montaje/MomentosCamara";
 import { usePaginaActiva } from "@/lib/pagina-activa";
 import { useSesion } from "@/lib/sesion";
 import { downloadFromTikTok } from "@/lib/upload";
@@ -218,6 +219,15 @@ export default function MontajePage() {
             textoInferior: montaje.textoInferior.contenido.trim()
               ? montaje.textoInferior
               : null,
+            camara: montaje.camara,
+            // El id de cada fila es solo para React; el backend no lo espera.
+            momentos: montaje.camara
+              ? montaje.momentos.map(({ tipo, desdeSeg, duracionSeg }) => ({
+                  tipo,
+                  desdeSeg,
+                  duracionSeg,
+                }))
+              : [],
           },
         },
       });
@@ -669,6 +679,16 @@ export default function MontajePage() {
             )}
           </div>
         </section>
+      </div>
+
+      <div className="mt-6">
+        <MomentosCamara
+          camara={montaje.camara}
+          momentos={montaje.momentos}
+          duracionBase={duracionTrim}
+          onCamara={(camara) => cambiar({ camara })}
+          onMomentos={(momentos) => cambiar({ momentos })}
+        />
       </div>
 
       {/* Titulares */}
