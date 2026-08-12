@@ -418,12 +418,14 @@ export default function MontajePage() {
           montando ? "pointer-events-none select-none opacity-40" : undefined
         }
       >
-      <div ref={zonaPaneles} className="grid gap-6 lg:grid-cols-2">
-        {/* Original y recorte */}
-        <section>
-          <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
-            Original · elegí el área útil
-          </h2>
+        {/* Dos columnas: a la izquierda se trabaja, a la derecha se ve el
+            resultado. La derecha queda FIJA al hacer scroll porque todo lo de
+            la izquierda la modifica: antes los titulares estaban cien lineas
+            debajo del preview, o sea que se escribia a ciegas justo donde mas
+            falta verlo. */}
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,330px)]">
+          <div ref={zonaPaneles} className="min-w-0 space-y-4">
+            <Bloque numero={1} titulo="Elegí el área útil">
           {fuente ? (
             <>
               {/* Se acota el ANCHO para que el alto derivado entre en el
@@ -572,30 +574,65 @@ export default function MontajePage() {
               Pegá un link de TikTok arriba
             </div>
           )}
-        </section>
+            </Bloque>
 
-        {/* Resultado */}
-        <section>
-          <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
-            Cómo va a quedar
-          </h2>
-          <div
-            className="mx-auto w-full"
-            style={{
-              maxWidth: Math.min(
-                280,
-                (altoPanel * montaje.lienzo.ancho) / montaje.lienzo.alto,
-              ),
-            }}
-          >
+            {/* Lo opcional viene plegado: el camino corto es pegar el link,
+                encuadrar y generar. Desplegarlo es una decisión, no un peaje. */}
+            <BloqueOpcional
+              numero={2}
+              titulo="Titulares"
+              resumen={
+                [montaje.textoSuperior, montaje.textoInferior]
+                  .filter((t) => t.contenido.trim())
+                  .map((t) => `“${t.contenido.trim().slice(0, 22)}”`)
+                  .join(" · ") || "Sin titulares"
+              }
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <ControlesTexto
+                  titulo="Titular de arriba"
+                  texto={montaje.textoSuperior}
+                  onCambio={(textoSuperior) => cambiar({ textoSuperior })}
+                />
+                <ControlesTexto
+                  titulo="Titular de abajo"
+                  texto={montaje.textoInferior}
+                  onCambio={(textoInferior) => cambiar({ textoInferior })}
+                />
+              </div>
+            </BloqueOpcional>
+
+            <BloqueOpcional
+              numero={3}
+              titulo="Aparecer en el video"
+              resumen={
+                montaje.camara
+                  ? `${montaje.momentos.length} momento${montaje.momentos.length !== 1 ? "s" : ""}`
+                  : "No aparecés"
+              }
+            >
+              <MomentosCamara
+                camara={montaje.camara}
+                momentos={montaje.momentos}
+                duracionBase={duracionTrim}
+                onCamara={(camara) => cambiar({ camara })}
+                onMomentos={(momentos) => cambiar({ momentos })}
+              />
+            </BloqueOpcional>
+          </div>
+
+          <div className="space-y-3 lg:sticky lg:top-4 lg:self-start">
+            <h2 className="text-xs font-medium uppercase tracking-wider text-white/35">
+              Cómo va a quedar
+            </h2>
+            <div className="mx-auto w-full" style={{ maxWidth: 300 }}>
             <PreviewFinal
               montaje={montaje}
               src={fuente?.publicUrl ?? null}
               aspectoFuente={aspectoFuente}
               registrarVideo={registrarVideo}
             />
-          </div>
-
+            </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="text-[11px] text-white/35">Formato</span>
             {FORMATOS.map((f) => (
@@ -678,38 +715,9 @@ export default function MontajePage() {
               />
             )}
           </div>
-        </section>
-      </div>
 
-      <div className="mt-6">
-        <MomentosCamara
-          camara={montaje.camara}
-          momentos={montaje.momentos}
-          duracionBase={duracionTrim}
-          onCamara={(camara) => cambiar({ camara })}
-          onMomentos={(momentos) => cambiar({ momentos })}
-        />
-      </div>
-
-      {/* Titulares */}
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <ControlesTexto
-          titulo="Titular de arriba"
-          texto={montaje.textoSuperior}
-          onCambio={(textoSuperior) => cambiar({ textoSuperior })}
-        />
-        <ControlesTexto
-          titulo="Titular de abajo"
-          texto={montaje.textoInferior}
-          onCambio={(textoInferior) => cambiar({ textoInferior })}
-        />
-      </div>
-
-      </div>
-
-      {/* Generar */}
-      <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="space-y-3">
           <div className="min-w-0 flex-1">
             <label className="mb-1.5 block text-xs font-medium text-white/60">
               Licencia
@@ -752,7 +760,68 @@ export default function MontajePage() {
           </button>
         </div>
       </div>
+          </div>
+        </div>
+      </div>
+
     </DashboardLayout>
+  );
+}
+
+/** Un paso del trabajo. Numerado para que el orden se lea sin explicarlo. */
+function Bloque({
+  numero,
+  titulo,
+  children,
+}: {
+  numero: number;
+  titulo: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[11px] text-white/60">
+          {numero}
+        </span>
+        {titulo}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Un paso que se puede saltear, plegado por defecto.
+ *
+ * El resumen en la cabecera existe para no tener que abrirlo solo para
+ * recordar qué hay adentro.
+ */
+function BloqueOpcional({
+  numero,
+  titulo,
+  resumen,
+  children,
+}: {
+  numero: number;
+  titulo: string;
+  resumen: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="group rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+      <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[11px] text-white/60">
+          {numero}
+        </span>
+        {titulo}
+        <span className="ml-auto truncate pl-2 text-[11px] font-normal text-white/30">
+          {resumen}
+        </span>
+        <span className="text-white/30 transition group-open:rotate-180">▾</span>
+      </summary>
+      <div className="mt-3">{children}</div>
+    </details>
   );
 }
 
