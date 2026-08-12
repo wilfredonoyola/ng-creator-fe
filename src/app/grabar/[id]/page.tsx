@@ -5,7 +5,6 @@ import { useMutation } from "@apollo/client";
 import { uploadCamara } from "@/lib/upload";
 import { ADJUNTAR_GRABACION } from "@/graphql/operations";
 import { haySesion } from "@/lib/auth";
-import { usePaginaActiva } from "@/lib/pagina-activa";
 
 type Estado = "eligiendo" | "grabando" | "revisando" | "subiendo" | "listo";
 
@@ -28,8 +27,6 @@ const AVISO_MIN = 2;
  */
 export default function GrabarPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const { activa, cargando } = usePaginaActiva();
-
   /**
    * Si el componente ya corrio en el navegador.
    *
@@ -124,7 +121,12 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   }
 
   async function enviar() {
-    if (!grabado || !activa) return;
+    // Antes esto salia en silencio si faltaba algo: se tocaba "Usar esta" y no
+    // pasaba nada, sin ninguna pista de por que.
+    if (!grabado) {
+      setError("No hay ningún video para enviar. Grabá o elegí uno.");
+      return;
+    }
     setError(null);
     setEstado("subiendo");
     try {
@@ -134,12 +136,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       });
       const r = await uploadCamara(archivo);
       await adjuntar({
-        variables: {
-          id,
-          pageId: activa.pageId,
-          storagePath: r.storagePath,
-          duracionSeg: null,
-        },
+        variables: { id, storagePath: r.storagePath, duracionSeg: null },
       });
       setEstado("listo");
     } catch (err: any) {
@@ -148,7 +145,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     }
   }
 
-  if (montado && !cargando && !haySesion()) {
+  if (montado && !haySesion()) {
     return (
       <Marco>
         <p className="text-sm text-white/70">Necesitás iniciar sesión</p>
@@ -195,7 +192,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         Grabar para el montaje
       </h1>
       <p className="mt-1 text-center text-xs text-white/35">
-        {activa ? activa.nombre : "…"}
+        Se envía a la computadora donde lo estás armando
       </p>
 
       {/* El círculo NO es decoración: es el recorte exacto que va a salir en el

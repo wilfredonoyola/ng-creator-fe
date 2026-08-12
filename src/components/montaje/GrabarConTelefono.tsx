@@ -69,7 +69,7 @@ export function GrabarConTelefono({
       try {
         const { data } = await cliente.query({
           query: SESION_GRABACION,
-          variables: { id: sesionId, pageId },
+          variables: { id: sesionId },
           fetchPolicy: "network-only",
         });
         const ruta = data?.sesionGrabacion?.storagePath;
