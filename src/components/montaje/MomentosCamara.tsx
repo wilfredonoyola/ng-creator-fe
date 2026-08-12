@@ -242,7 +242,7 @@ export function MomentosCamara({
                 {momentos.map((m) => (
                   <li
                     key={m.id}
-                    className="flex flex-wrap items-center gap-2 rounded-lg bg-black/30 px-2 py-1.5 text-[11px]"
+                    className="flex flex-wrap items-center gap-2 rounded-lg bg-black/30 px-2 py-2.5 text-[11px]"
                   >
                     <span
                       className={
@@ -257,6 +257,7 @@ export function MomentosCamara({
                       {m.tipo === "PAUSA" ? "en" : "desde"}
                       <input
                         type="number"
+                        inputMode="decimal"
                         min={0}
                         max={Math.max(duracionBase, 1)}
                         step={0.5}
@@ -264,7 +265,7 @@ export function MomentosCamara({
                         onChange={(e) =>
                           cambiar(m.id, { desdeSeg: Number(e.target.value) })
                         }
-                        className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-right text-white"
+                        className="w-16 rounded border border-white/10 bg-black/40 px-1 py-1.5 text-right text-white"
                       />
                       s
                     </label>
@@ -272,13 +273,14 @@ export function MomentosCamara({
                       por
                       <input
                         type="number"
+                        inputMode="decimal"
                         min={0.5}
                         step={0.5}
                         value={m.duracionSeg}
                         onChange={(e) =>
                           cambiar(m.id, { duracionSeg: Number(e.target.value) })
                         }
-                        className="w-14 rounded border border-white/10 bg-black/40 px-1 py-0.5 text-right text-white"
+                        className="w-16 rounded border border-white/10 bg-black/40 px-1 py-1.5 text-right text-white"
                       />
                       s
                     </label>

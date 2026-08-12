@@ -182,8 +182,11 @@ export function EditorRecorte({
 
       <div
         onPointerDown={(e) => empezar(e, "mover")}
+        // Sin `touchAction: none`, arrastrar el recorte scrollea la pagina en
+        // vez de mover el rectangulo.
         className="absolute cursor-move border-2 border-[#0FED9D]"
         style={{
+          touchAction: "none",
           left: pct(recorte.x),
           top: pct(recorte.y),
           width: pct(recorte.ancho),
@@ -199,22 +202,26 @@ export function EditorRecorte({
         </div>
 
         {(["nw", "ne", "sw", "se"] as Esquina[]).map((esquina) => (
+          // El objetivo tactil es un cuadrado de 44px transparente; el punto
+          // verde de 12px que se ve va adentro. Con el dedo, 12px es
+          // inagarrable, y agrandar el punto visible ensuciaria el encuadre
+          // justo cuando se lo esta mirando.
           <span
             key={esquina}
             onPointerDown={(e) => empezar(e, esquina)}
-            // -inset y p-3: el objetivo real es más grande que el punto que se
-            // ve, porque con el dedo un cuadradito de 12px es inagarrable.
-            className={`absolute h-3 w-3 rounded-sm bg-[#0FED9D] ${
+            className={`absolute flex h-11 w-11 items-center justify-center ${
               esquina === "nw"
-                ? "-left-1.5 -top-1.5 cursor-nwse-resize"
+                ? "-left-5 -top-5 cursor-nwse-resize"
                 : esquina === "ne"
-                  ? "-right-1.5 -top-1.5 cursor-nesw-resize"
+                  ? "-right-5 -top-5 cursor-nesw-resize"
                   : esquina === "sw"
-                    ? "-bottom-1.5 -left-1.5 cursor-nesw-resize"
-                    : "-bottom-1.5 -right-1.5 cursor-nwse-resize"
+                    ? "-bottom-5 -left-5 cursor-nesw-resize"
+                    : "-bottom-5 -right-5 cursor-nwse-resize"
             }`}
             style={{ touchAction: "none" }}
-          />
+          >
+            <span className="h-3 w-3 rounded-sm bg-[#0FED9D] shadow-[0_0_0_2px_rgba(0,0,0,0.4)]" />
+          </span>
         ))}
       </div>
     </div>
