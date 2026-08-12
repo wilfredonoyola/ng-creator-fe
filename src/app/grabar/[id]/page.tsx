@@ -30,6 +30,16 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const { activa, cargando } = usePaginaActiva();
 
+  /**
+   * Si el componente ya corrio en el navegador.
+   *
+   * `haySesion()` lee localStorage, que en el render del servidor no existe: sin
+   * esta espera, la primera pantalla dibujada es SIEMPRE la de iniciar sesion,
+   * aunque el telefono ya la tenga.
+   */
+  const [montado, setMontado] = useState(false);
+  useEffect(() => setMontado(true), []);
+
   const [estado, setEstado] = useState<Estado>("eligiendo");
   const [error, setError] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
@@ -138,15 +148,18 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     }
   }
 
-  if (!cargando && !haySesion()) {
+  if (montado && !cargando && !haySesion()) {
     return (
       <Marco>
         <p className="text-sm text-white/70">Necesitás iniciar sesión</p>
         <p className="mt-1 text-xs text-white/40">
           Es una sola vez en este teléfono. Después volvé a escanear el código.
         </p>
+        {/* Vuelve a ESTA pantalla al entrar. Sin esto se caia en el tablero y
+            habia que volver a escanear el codigo, que se sentia como que el
+            login no se guardaba nunca. */}
         <a
-          href="/login"
+          href={`/login?volverA=${encodeURIComponent(`/grabar/${id}`)}`}
           className="mt-4 inline-block rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black"
         >
           Iniciar sesión
