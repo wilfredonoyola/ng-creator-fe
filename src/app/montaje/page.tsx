@@ -650,6 +650,7 @@ export default function MontajePage() {
                 camara={montaje.camara}
                 momentos={montaje.momentos}
                 duracionBase={duracionTrim}
+                pageId={activa.pageId}
                 onCamara={(camara) => cambiar({ camara })}
                 onMomentos={(momentos) => cambiar({ momentos })}
               />

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { uploadCamara } from "@/lib/upload";
+import { GrabarConTelefono } from "./GrabarConTelefono";
 import {
   LIMITE_REEL_SEG,
   PLANTILLAS,
@@ -27,18 +28,41 @@ export function MomentosCamara({
   camara,
   momentos,
   duracionBase,
+  pageId,
   onCamara,
   onMomentos,
 }: {
   camara: Camara | null;
   momentos: Momento[];
   duracionBase: number;
+  pageId: string;
   onCamara: (c: Camara | null) => void;
   onMomentos: (m: Momento[]) => void;
 }) {
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
+
+  // El QR solo tiene sentido en la computadora: si ya estás en el teléfono, no
+  // hay nada que puentear y el botón de subir abre la cámara igual.
+  const [enComputadora, setEnComputadora] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const ver = () => setEnComputadora(mq.matches);
+    ver();
+    mq.addEventListener("change", ver);
+    return () => mq.removeEventListener("change", ver);
+  }, []);
+
+  function usarVideo(storagePath: string) {
+    onCamara({
+      origenStoragePath: storagePath,
+      posicion: "ABAJO_DERECHA",
+      tamano: 0.32,
+      factorEnPausa: 1.6,
+      atenuacionDb: -12,
+    });
+  }
 
   const final = duracionFinal(duracionBase, momentos);
   const necesaria = grabacionNecesaria(momentos);
@@ -101,8 +125,11 @@ export function MomentosCamara({
       </h3>
 
       {!camara ? (
-        <>
-          <label className="mt-2 block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-[#0FED9D]/50 hover:bg-white/5">
+        <div className="mt-2 space-y-2">
+          {enComputadora && (
+            <GrabarConTelefono pageId={pageId} onVideo={usarVideo} />
+          )}
+          <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-[#0FED9D]/50 hover:bg-white/5">
             <input
               type="file"
               accept="video/*"
@@ -111,14 +138,18 @@ export function MomentosCamara({
               disabled={subiendo}
             />
             <span className="text-xs text-white/60">
-              {subiendo ? "Subiendo…" : "Subí tu video de cámara"}
+              {subiendo
+                ? "Subiendo…"
+                : enComputadora
+                  ? "…o subí un video desde acá"
+                  : "Grabar o elegir un video"}
             </span>
             <span className="mt-1 block text-[10px] text-white/30">
               Grabá una toma corrida; los momentos la van repartiendo en orden
             </span>
           </label>
-          {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
-        </>
+          {error && <p className="text-[11px] text-red-400">{error}</p>}
+        </div>
       ) : (
         <div className="mt-2 space-y-3">
           <div className="flex items-center justify-between text-xs">
