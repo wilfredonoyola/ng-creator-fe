@@ -22,8 +22,15 @@ import { LICENSES, MONTAJE_TRABAJO, MONTAR_VIDEO } from "@/graphql/operations";
 /** Lo que Meta admite en un Reel. El backend lo valida antes de publicar. */
 const LIMITE_REEL_SEG = 90;
 
-/** Tope duro del panel. Mas grande no ayuda a encuadrar y obliga a scrollear. */
-const ALTO_MAXIMO = 520;
+/**
+ * Tope del panel del editor.
+ *
+ * Se bajo de 520: con ese alto, en una laptop a 100% el paso 1 ocupaba la
+ * pantalla entera y los titulares quedaban abajo del pliegue. Mas grande no
+ * ayuda a encuadrar —el rectangulo se arrastra igual— y obliga a scrollear
+ * para ver que sigue.
+ */
+const ALTO_MAXIMO = 400;
 
 /**
  * Alto que queda libre desde donde arranca el elemento hasta el pie de la
@@ -435,8 +442,9 @@ export default function MontajePage() {
                   El ancho depende de la proporción REAL del video, así que un
                   vertical y un horizontal ocupan el mismo alto y el panel no
                   salta de tamaño al cargar otro material. */}
+              <div className="flex flex-col gap-4 sm:flex-row">
               <div
-                className="mx-auto w-full"
+                className="mx-auto w-full shrink-0 sm:mx-0"
                 style={{ maxWidth: altoPanel * aspectoFuente }}
               >
               <EditorRecorte
@@ -463,7 +471,10 @@ export default function MontajePage() {
               />
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-2">
+              {/* Columna de controles: el video es vertical y angosto, asi que
+                  debajo desperdiciaba todo el ancho de la fila. */}
+              <div className="min-w-0 flex-1 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[11px] text-white/35">Proporción</span>
                 {PROPORCIONES.map((p) => (
                   <Chip
@@ -478,7 +489,7 @@ export default function MontajePage() {
 
               {/* Tramo temporal */}
               {fuente.duracion > 0 && (
-                <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-3">
+                <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                   <div className="mb-2 flex items-center justify-between text-[11px] text-white/40">
                     <span>
                       Tramo del video
@@ -565,10 +576,12 @@ export default function MontajePage() {
                   </button>
                 </div>
               )}
+              </div>
+              </div>
             </>
           ) : (
             <div
-              className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25"
+              className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25 sm:mx-0"
               style={{ maxWidth: (altoPanel * 9) / 16 }}
             >
               Pegá un link de TikTok arriba
@@ -625,7 +638,18 @@ export default function MontajePage() {
             <h2 className="text-xs font-medium uppercase tracking-wider text-white/35">
               Cómo va a quedar
             </h2>
-            <div className="mx-auto w-full" style={{ maxWidth: 300 }}>
+            {/* Mismo tope de alto que el editor: con el ancho fijo en 300, un
+                lienzo 9:16 daba 533px y el preview terminaba siendo lo mas alto
+                de la pantalla, justo lo que se venia a achicar. */}
+            <div
+              className="mx-auto w-full"
+              style={{
+                maxWidth: Math.min(
+                  300,
+                  (altoPanel * montaje.lienzo.ancho) / montaje.lienzo.alto,
+                ),
+              }}
+            >
             <PreviewFinal
               montaje={montaje}
               src={fuente?.publicUrl ?? null}
