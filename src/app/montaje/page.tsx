@@ -15,6 +15,7 @@ import {
   FORMATOS,
   PROPORCIONES,
   montajeInicial,
+  duracionFinal,
   type Montaje,
 } from "@/lib/montaje";
 import { LICENSES, MONTAJE_TRABAJO, MONTAR_VIDEO } from "@/graphql/operations";
@@ -45,6 +46,19 @@ const ALTO_MAXIMO = 400;
  * cambia mientras se scrollea: si dependiera del scroll, el panel se agrandaría
  * y achicaría solo al bajar por la página.
  */
+/** `lg` de Tailwind. Debajo de eso las columnas se apilan y el preview cambia de papel. */
+function useEsMovil(): boolean {
+  const [movil, setMovil] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1023px)");
+    const ver = () => setMovil(mq.matches);
+    ver();
+    mq.addEventListener("change", ver);
+    return () => mq.removeEventListener("change", ver);
+  }, []);
+  return movil;
+}
+
 function useAltoDisponible(ref: React.RefObject<HTMLElement | null>) {
   const [alto, setAlto] = useState(ALTO_MAXIMO);
 
@@ -129,6 +143,7 @@ export default function MontajePage() {
 
   const zonaPaneles = useRef<HTMLDivElement>(null);
   const altoPanel = useAltoDisponible(zonaPaneles);
+  const esMovil = useEsMovil();
 
   const videoMaestro = useRef<HTMLVideoElement | null>(null);
   const videosPreview = useRef<Set<HTMLVideoElement>>(new Set());
@@ -322,6 +337,12 @@ export default function MontajePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activa]);
 
+  const duracionConMomentos = duracionFinal(
+    Math.max(montaje.trim.hastaSeg - montaje.trim.desdeSeg, 0),
+    montaje.momentos,
+  );
+  const excedeLimite = duracionConMomentos > LIMITE_REEL_SEG;
+
   const duracionTrim = useMemo(
     () => Math.max(montaje.trim.hastaSeg - montaje.trim.desdeSeg, 0),
     [montaje.trim],
@@ -359,6 +380,7 @@ export default function MontajePage() {
         </p>
       </div>
 
+      <div className="pb-20 lg:pb-0">
       {montando && (
         <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
           <div className="flex items-center justify-between text-sm">
@@ -634,19 +656,20 @@ export default function MontajePage() {
             </BloqueOpcional>
           </div>
 
-          <div className="space-y-3 lg:sticky lg:top-4 lg:self-start">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-white/35">
+          <div className="order-first space-y-3 self-start lg:order-none lg:sticky lg:top-4">
+            <h2 className="hidden text-xs font-medium uppercase tracking-wider text-white/35 lg:block">
               Cómo va a quedar
             </h2>
             {/* Mismo tope de alto que el editor: con el ancho fijo en 300, un
                 lienzo 9:16 daba 533px y el preview terminaba siendo lo mas alto
                 de la pantalla, justo lo que se venia a achicar. */}
             <div
-              className="mx-auto w-full"
+              className="mx-auto w-full lg:static lg:bg-transparent lg:py-0 sticky top-0 z-20 bg-[#0a0a0a] py-2"
               style={{
                 maxWidth: Math.min(
-                  300,
-                  (altoPanel * montaje.lienzo.ancho) / montaje.lienzo.alto,
+                  esMovil ? 130 : 300,
+                  ((esMovil ? 230 : altoPanel) * montaje.lienzo.ancho) /
+                    montaje.lienzo.alto,
                 ),
               }}
             >
@@ -787,6 +810,34 @@ export default function MontajePage() {
           </div>
         </div>
       </div>
+
+      </div>
+
+      {/* En telefono, la accion no puede vivir al fondo de una pagina larga:
+          queda fija abajo, con la duracion final al lado para no tener que
+          subir a comprobarla antes de generar. */}
+      {fuente && (
+        <div
+          className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-white/10 bg-[#0a0a0a]/95 px-4 py-3 backdrop-blur lg:hidden"
+          style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        >
+          <div className="min-w-0 flex-1 text-[11px] leading-tight">
+            <p className={excedeLimite ? "text-amber-300" : "text-white/50"}>
+              {duracionConMomentos.toFixed(1)}s finales
+            </p>
+            <p className="truncate text-white/30">
+              {licenciaId ? "Con licencia elegida" : "Licencia sin verificar"}
+            </p>
+          </div>
+          <button
+            onClick={generar}
+            disabled={!fuente || montando}
+            className="shrink-0 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black transition disabled:opacity-40"
+          >
+            {montando ? "Generando…" : "Generar"}
+          </button>
+        </div>
+      )}
 
     </DashboardLayout>
   );
