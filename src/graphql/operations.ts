@@ -846,3 +846,63 @@ export const FORMATOS_PUBLICADOS = gql`
     }
   }
 `;
+
+// ---- Análisis de rendimiento ----
+
+/**
+ * Rendimiento del historial por hora, día y tipo.
+ *
+ * La zona horaria la manda el navegador: las fechas se guardan en UTC y "las 8
+ * de la noche" no es la misma hora en dos países. Una recomendación de horario
+ * en la zona equivocada es peor que no darla.
+ */
+export const ANALISIS_PAGINA = gql`
+  query AnalisisPagina(
+    $pageId: String!
+    $zonaHoraria: String!
+    $desdeDias: Int
+    $dias: Int!
+  ) {
+    rendimientoPorHora(
+      pageId: $pageId
+      zonaHoraria: $zonaHoraria
+      desdeDias: $desdeDias
+    ) {
+      clave
+      posts
+      scorePromedio
+      reaccionesPromedio
+      comentariosPromedio
+      compartidosPromedio
+    }
+    rendimientoPorDiaSemana(
+      pageId: $pageId
+      zonaHoraria: $zonaHoraria
+      desdeDias: $desdeDias
+    ) {
+      clave
+      posts
+      scorePromedio
+      reaccionesPromedio
+      comentariosPromedio
+      compartidosPromedio
+    }
+    rendimientoPorTipo(pageId: $pageId, desdeDias: $desdeDias) {
+      tipo
+      posts
+      scorePromedio
+    }
+    resumenDePeriodo(pageId: $pageId, dias: $dias) {
+      dias
+      posts
+      postsAnterior
+      scoreTotal
+      scoreTotalAnterior
+      scorePromedio
+      scorePromedioAnterior
+      reacciones
+      comentarios
+      compartidos
+    }
+  }
+`;

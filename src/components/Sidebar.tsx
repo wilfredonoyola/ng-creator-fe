@@ -13,6 +13,7 @@ const navItems = [
   { href: "/revision", icon: "✅", label: "Revisión" },
   { href: "/publicados", icon: "📺", label: "Publicados" },
   { href: "/revival", icon: "♻️", label: "Revival" },
+  { href: "/analisis", icon: "📊", label: "Análisis" },
   { href: "/creators", icon: "👤", label: "Creators" },
 ];
 
