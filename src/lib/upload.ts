@@ -395,3 +395,23 @@ export async function uploadPortada(
   }
   return { url: json.url, path: json.path, storagePath: json.storagePath };
 }
+
+/** Sube el video de cámara que se compone sobre un montaje. */
+export async function uploadCamara(file: File): Promise<UploadResult> {
+  const token = getAuthToken();
+  if (!token) throw new Error("Sesión requerida para subir el video");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE_URL}/uploads/camara`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || !json.success) {
+    throw new Error(json.message || "No se pudo subir el video");
+  }
+  return { url: json.url, path: json.path, storagePath: json.storagePath };
+}
