@@ -906,3 +906,51 @@ export const ANALISIS_PAGINA = gql`
     }
   }
 `;
+
+// ---- Puente teléfono → computadora ----
+
+/**
+ * Crea el buzón donde el teléfono va a dejar la grabación.
+ *
+ * No guarda el montaje: solo un id que las dos puntas conocen. El montaje sigue
+ * viviendo en la memoria del navegador de la computadora.
+ */
+export const CREAR_SESION_GRABACION = gql`
+  mutation CrearSesionGrabacion($pageId: String!) {
+    crearSesionGrabacion(pageId: $pageId) {
+      _id
+    }
+  }
+`;
+
+/** La computadora pregunta cada pocos segundos si ya llegó el video. */
+export const SESION_GRABACION = gql`
+  query SesionGrabacion($id: ID!, $pageId: String!) {
+    sesionGrabacion(id: $id, pageId: $pageId) {
+      _id
+      storagePath
+      publicUrl
+      duracionSeg
+    }
+  }
+`;
+
+/** El teléfono deja el video en la sesión, después de subirlo. */
+export const ADJUNTAR_GRABACION = gql`
+  mutation AdjuntarGrabacion(
+    $id: ID!
+    $pageId: String!
+    $storagePath: String!
+    $duracionSeg: Float
+  ) {
+    adjuntarGrabacion(
+      id: $id
+      pageId: $pageId
+      storagePath: $storagePath
+      duracionSeg: $duracionSeg
+    ) {
+      _id
+      storagePath
+    }
+  }
+`;
