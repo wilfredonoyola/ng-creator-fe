@@ -120,6 +120,8 @@ export default function MontajePage() {
   const [montaje, setMontaje] = useState<Montaje>(montajeInicial());
   const [proporcion, setProporcion] = useState<string>("libre");
   const [licenciaId, setLicenciaId] = useState("");
+  /** La licencia se mira al publicar, no mientras se edita. */
+  const [verLicencia, setVerLicencia] = useState(false);
 
   const { data: licenciasData } = useQuery(LICENSES);
   const licencias: Licencia[] = (licenciasData?.licenses ?? []).filter(
@@ -1103,45 +1105,22 @@ export default function MontajePage() {
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="space-y-3">
-          <div className="min-w-0 flex-1">
-            <label className="mb-1.5 block text-xs font-medium text-white/60">
-              Licencia
-            </label>
-            <select
-              value={licenciaId}
-              onChange={(e) => setLicenciaId(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
-            >
-              <option value="">Sin verificar (no pedí permiso)</option>
-              {licencias.map((l) => (
-                <option key={l._id} value={l._id} className="bg-[#111]">
-                  {l.scope}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1.5 text-[11px] text-white/30">
-              {licenciaId ? (
-                "El material queda con la licencia que elegiste."
-              ) : (
-                <>
-                  Se registra una licencia marcada{" "}
-                  <span className="text-amber-400/70">sin verificar</span> con el
-                  link de origen guardado. Podés regularizarla después desde{" "}
-                  <Link href="/creators" className="text-[#0FED9D] hover:underline">
-                    Creators
-                  </Link>
-                  .
-                </>
-              )}
-            </p>
-          </div>
-
           <button
             onClick={generar}
             disabled={!fuente || montando}
             className="rounded-lg bg-[#0FED9D] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
           >
             {montando ? "Generando…" : "Generar video"}
+          </button>
+
+          {/* La licencia como una linea y no como una tarjeta: importa al
+              publicar, no mientras se edita, y ocupaba lugar fijo diciendo algo
+              que casi nunca cambia. */}
+          <button
+            onClick={() => setVerLicencia(true)}
+            className="w-full text-center text-[11px] text-white/30 underline transition hover:text-white/60"
+          >
+            {licenciaId ? "Licencia elegida · cambiar" : "Sin licencia · elegir"}
           </button>
         </div>
       </div>
@@ -1174,6 +1153,67 @@ export default function MontajePage() {
           >
             {montando ? "Generando…" : "Generar"}
           </button>
+        </div>
+      )}
+
+      {verLicencia && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center"
+          onClick={() => setVerLicencia(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold">Licencia</h3>
+              <button
+                onClick={() => setVerLicencia(false)}
+                className="text-white/40 transition hover:text-white"
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+          <div className="min-w-0 flex-1">
+            <label className="mb-1.5 block text-xs font-medium text-white/60">
+              Licencia
+            </label>
+            <select
+              value={licenciaId}
+              onChange={(e) => setLicenciaId(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
+            >
+              <option value="">Sin verificar (no pedí permiso)</option>
+              {licencias.map((l) => (
+                <option key={l._id} value={l._id} className="bg-[#111]">
+                  {l.scope}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-[11px] text-white/30">
+              {licenciaId ? (
+                "El material queda con la licencia que elegiste."
+              ) : (
+                <>
+                  Se registra una licencia marcada{" "}
+                  <span className="text-amber-400/70">sin verificar</span> con el
+                  link de origen guardado. Podés regularizarla después desde{" "}
+                  <Link href="/creators" className="text-[#0FED9D] hover:underline">
+                    Creators
+                  </Link>
+                  .
+                </>
+              )}
+            </p>
+          </div>
+            <button
+              onClick={() => setVerLicencia(false)}
+              className="mt-3 w-full rounded-lg bg-white/10 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
+            >
+              Listo
+            </button>
+          </div>
         </div>
       )}
 
