@@ -35,6 +35,20 @@ export function GrabarConTelefono({
   const [crear] = useMutation(CREAR_SESION_GRABACION);
   const avisado = useRef(false);
 
+  /**
+   * `onVideo` en un ref, no en las dependencias del sondeo.
+   *
+   * El padre la recrea en cada render, así que como dependencia reiniciaba el
+   * intervalo con cada cambio del montaje. Y esta pantalla invita justamente a
+   * eso —"el video aparece acá solo"—: quien movía el slider o escribía un
+   * texto mientras esperaba, volvía a poner el reloj en cero antes de que
+   * llegara a los tres segundos, y el sondeo no se disparaba nunca.
+   */
+  const alLlegar = useRef(onVideo);
+  useEffect(() => {
+    alLlegar.current = onVideo;
+  });
+
   async function abrir() {
     setError(null);
     setCreando(true);
@@ -75,7 +89,7 @@ export function GrabarConTelefono({
         const ruta = data?.sesionGrabacion?.storagePath;
         if (ruta && !avisado.current) {
           avisado.current = true;
-          onVideo(ruta);
+          alLlegar.current(ruta);
           setQr(null);
           setSesionId(null);
         }
@@ -84,7 +98,7 @@ export function GrabarConTelefono({
       }
     }, 3000);
     return () => clearInterval(t);
-  }, [sesionId, pageId, cliente, onVideo]);
+  }, [sesionId, cliente]);
 
   if (!qr) {
     return (

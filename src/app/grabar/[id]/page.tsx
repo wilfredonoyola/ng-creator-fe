@@ -1,12 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { uploadCamara } from "@/lib/upload";
-import { ADJUNTAR_GRABACION } from "@/graphql/operations";
+import { ADJUNTAR_GRABACION, SESION_GRABACION } from "@/graphql/operations";
 import { haySesion } from "@/lib/auth";
 
 type Estado = "eligiendo" | "grabando" | "revisando" | "subiendo" | "listo";
+
+/**
+ * Si el codigo que trajo el QR sigue sirviendo.
+ *
+ * Se pregunta ANTES de dejar grabar. Sin esta comprobacion, un codigo vencido o
+ * ya usado —una captura de pantalla, una pestaña de ayer— se descubria recien
+ * al final: grababas dos minutos, subias ochenta megas por datos moviles, y el
+ * servidor recien ahi decia que la sesion no existia. Todo ese trabajo perdido
+ * en el peor momento posible.
+ */
+type EstadoSesion =
+  | { tipo: "verificando" }
+  | { tipo: "ok" }
+  | { tipo: "rota"; mensaje: string; reintentable: boolean };
 
 /** Pasados estos minutos ya hay de sobra: grabar más solo hace la subida lenta. */
 const AVISO_MIN = 2;
@@ -36,6 +50,57 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
    */
   const [montado, setMontado] = useState(false);
   useEffect(() => setMontado(true), []);
+
+  const cliente = useApolloClient();
+  const [sesion, setSesion] = useState<EstadoSesion>({ tipo: "verificando" });
+  const [intento, setIntento] = useState(0);
+
+  useEffect(() => {
+    if (!montado || !haySesion()) return;
+    let vivo = true;
+    setSesion({ tipo: "verificando" });
+    (async () => {
+      try {
+        const { data } = await cliente.query({
+          query: SESION_GRABACION,
+          variables: { id },
+          fetchPolicy: "network-only",
+        });
+        if (!vivo) return;
+        const s = data?.sesionGrabacion;
+        if (!s) {
+          setSesion({
+            tipo: "rota",
+            mensaje:
+              "Este código ya no sirve: los códigos duran 6 horas. Generá uno nuevo en la computadora y volvé a escanear.",
+            reintentable: false,
+          });
+        } else if (s.storagePath) {
+          // Cada codigo es un buzon de un solo uso. Si ya tiene video, la
+          // computadora lo recogio hace rato y dejo de escuchar: cualquier cosa
+          // que se mande ahora no llega a ninguna parte.
+          setSesion({
+            tipo: "rota",
+            mensaje:
+              "Este código ya se usó. Cada código sirve para un solo video: generá uno nuevo en la computadora.",
+            reintentable: false,
+          });
+        } else {
+          setSesion({ tipo: "ok" });
+        }
+      } catch (e: any) {
+        if (!vivo) return;
+        setSesion({
+          tipo: "rota",
+          mensaje: e?.message ?? "No pudimos verificar el código",
+          reintentable: true,
+        });
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [montado, id, cliente, intento]);
 
   const [estado, setEstado] = useState<Estado>("eligiendo");
   const [error, setError] = useState<string | null>(null);
@@ -145,7 +210,15 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     }
   }
 
-  if (montado && !haySesion()) {
+  if (!montado) {
+    return (
+      <Marco>
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+      </Marco>
+    );
+  }
+
+  if (!haySesion()) {
     return (
       <Marco>
         <p className="text-sm text-white/70">Necesitás iniciar sesión</p>
@@ -173,21 +246,54 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         <p className="mt-1 text-sm text-white/50">
           Seguí en la computadora: ya te aparece cargado.
         </p>
-        <button
-          onClick={() => {
-            setGrabado(null);
-            setEstado("eligiendo");
-          }}
-          className="mt-6 text-xs text-white/40 underline"
-        >
-          Grabar otro
-        </button>
+        {/* Antes habia un "Grabar otro" que mentia: la computadora deja de
+            escuchar en cuanto recoge el video, asi que el segundo salia, decia
+            que se habia enviado, y no llegaba nunca a ninguna parte. */}
+        <p className="mt-6 text-xs text-white/30">
+          ¿Querés mandar otra toma? Generá un código nuevo en la computadora.
+        </p>
+      </Marco>
+    );
+  }
+
+  if (sesion.tipo === "verificando") {
+    return (
+      <Marco>
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+        <p className="mt-3 text-xs text-white/40">Verificando el código…</p>
+      </Marco>
+    );
+  }
+
+  if (sesion.tipo === "rota") {
+    return (
+      <Marco>
+        <div className="text-4xl">⏱</div>
+        <p className="mt-3 text-sm text-white/70">{sesion.mensaje}</p>
+        {sesion.reintentable && (
+          <button
+            onClick={() => setIntento((n) => n + 1)}
+            className="mt-5 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black"
+          >
+            Reintentar
+          </button>
+        )}
       </Marco>
     );
   }
 
   return (
-    <main className="flex min-h-[100dvh] flex-col bg-[#0a0a0a] px-4 py-6">
+    /* El padding seguro va acá y no en el layout: esta pantalla no pasa por
+       `DashboardLayout`, y con `viewportFit: cover` el título se metía bajo el
+       notch y los botones de abajo —los únicos que se tocan— quedaban tapados
+       por la barra de home del iPhone. */
+    <main
+      className="flex min-h-[100dvh] flex-col bg-[#0a0a0a] px-4"
+      style={{
+        paddingTop: "max(1.5rem, env(safe-area-inset-top))",
+        paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+      }}
+    >
       <h1 className="text-center text-sm font-semibold">
         Grabar para el montaje
       </h1>
@@ -325,7 +431,13 @@ function elegirFormato(): MediaRecorderOptions {
 
 function Marco({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#0a0a0a] px-6 text-center">
+    <main
+      className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#0a0a0a] px-6 text-center"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+    >
       {children}
     </main>
   );
