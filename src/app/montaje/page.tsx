@@ -669,10 +669,15 @@ export default function MontajePage() {
                   El ancho depende de la proporción REAL del video, así que un
                   vertical y un horizontal ocupan el mismo alto y el panel no
                   salta de tamaño al cargar otro material. */}
-              <div className="flex flex-col gap-4 sm:flex-row">
+              {/* Apilado y no en fila. El ancho del video sale de
+                  `altoPanel * aspectoFuente`: con un video horizontal eso daba
+                  712px dentro de una columna de 600, asi que a los controles no
+                  les quedaba nada y se desbordaban en una tira vertical.
+                  El tope contra el ancho disponible es lo que lo garantiza. */}
+              <div className="flex flex-col gap-4">
               <div
-                className="mx-auto w-full shrink-0 sm:mx-0"
-                style={{ maxWidth: altoPanel * aspectoFuente }}
+                className="mx-auto w-full shrink-0"
+                style={{ maxWidth: Math.min(altoPanel * aspectoFuente, 540) }}
               >
               <EditorRecorte
                 src={fuente.publicUrl}
