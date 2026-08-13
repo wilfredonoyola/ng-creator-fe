@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { uploadCamara } from "@/lib/upload";
 import { GrabarConTelefono } from "./GrabarConTelefono";
 import {
@@ -53,6 +53,17 @@ export function MomentosCamara({
   const [reemplazando, setReemplazando] = useState(false);
   const [confirmandoQuitar, setConfirmandoQuitar] = useState(false);
 
+  /**
+   * La toma grabada, para poder mirarla antes de generar.
+   *
+   * Sin esto lo unico que se veia era "Video cargado": la unica forma de saber
+   * si habias grabado lo que querias era esperar el render entero. La URL ya
+   * venia en la respuesta —del upload o de la sesion— y se descartaba.
+   */
+  const [urlCamara, setUrlCamara] = useState<string | null>(null);
+  const [viendo, setViendo] = useState(false);
+  const vistaPrevia = useRef<HTMLVideoElement>(null);
+
   // El QR solo tiene sentido en la computadora: si ya estás en el teléfono, no
   // hay nada que puentear y el botón de subir abre la cámara igual.
   const [enComputadora, setEnComputadora] = useState(false);
@@ -70,7 +81,7 @@ export function MomentosCamara({
    * Al reemplazar, la posicion y el tamaño se mantienen: quien ya los acomodo
    * no queria volver a empezar, solo cambiar la toma.
    */
-  function aplicarVideo(storagePath: string) {
+  function aplicarVideo(storagePath: string, url: string | null) {
     onCamara(
       camara
         ? { ...camara, origenStoragePath: storagePath }
@@ -82,11 +93,20 @@ export function MomentosCamara({
             atenuacionDb: -12,
           },
     );
+    // La URL vive solo acá y no en el montaje: el backend recibe la RUTA y arma
+    // la publica él mismo, justamente para que nadie pueda apuntar la cámara a
+    // un archivo de otro sitio. Esto es al pepe para mirar, nada más.
+    setUrlCamara(url);
+    setViendo(false);
     setReemplazando(false);
   }
 
-  function usarVideo(storagePath: string, duracionSeg: number | null) {
-    aplicarVideo(storagePath);
+  function usarVideo(
+    storagePath: string,
+    duracionSeg: number | null,
+    url: string | null,
+  ) {
+    aplicarVideo(storagePath, url);
     // Por el camino del QR la duracion la mide el telefono. Sin esto el aviso
     // de "los momentos piden mas grabacion de la que hay" no funcionaba nunca
     // grabando con el telefono, que es el camino principal.
@@ -97,8 +117,17 @@ export function MomentosCamara({
     onCamara(null);
     onMomentos([]);
     setDuracionGrabacion(0);
+    setUrlCamara(null);
+    setViendo(false);
     setConfirmandoQuitar(false);
     setReemplazando(false);
+  }
+
+  function alternarVista() {
+    const v = vistaPrevia.current;
+    if (!v) return;
+    if (v.paused) void v.play().catch(() => setViendo(false));
+    else v.pause();
   }
 
   const final = duracionFinal(duracionBase, momentos);
@@ -130,7 +159,7 @@ export function MomentosCamara({
     setSubiendo(true);
     try {
       const r = await uploadCamara(file);
-      aplicarVideo(r.storagePath);
+      aplicarVideo(r.storagePath, r.url);
       // La duración real la mide el navegador: sirve para avisar antes de
       // generar si los momentos piden más grabación de la que hay.
       const url = URL.createObjectURL(file);
@@ -196,12 +225,37 @@ export function MomentosCamara({
         </div>
       ) : (
         <div className="mt-2 space-y-3">
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center gap-3 text-xs">
+            {/* El círculo no es decoración: es el recorte real, así que mirarlo
+                acá es la única forma de ver si el encuadre entró bien sin
+                esperar el render entero. */}
+            {urlCamara && (
+              <button
+                onClick={alternarVista}
+                aria-label={viendo ? "Pausar la toma" : "Ver la toma"}
+                className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/15 bg-black"
+              >
+                <video
+                  ref={vistaPrevia}
+                  src={urlCamara}
+                  playsInline
+                  onPlay={() => setViendo(true)}
+                  onPause={() => setViendo(false)}
+                  onEnded={() => setViendo(false)}
+                  className="h-full w-full object-cover"
+                />
+                {!viendo && (
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-[11px] text-white">
+                    ▶
+                  </span>
+                )}
+              </button>
+            )}
             <span className="text-white/50">
               Video cargado
               {duracionGrabacion > 0 && ` · ${duracionGrabacion.toFixed(0)}s`}
             </span>
-            <span className="flex gap-3">
+            <span className="ml-auto flex gap-3">
               <button
                 onClick={() => {
                   setReemplazando(true);
