@@ -6,6 +6,7 @@ import { GrabarConTelefono } from "./GrabarConTelefono";
 import {
   LIMITE_REEL_SEG,
   PLANTILLAS,
+  SUAVIZADOS,
   duracionFinal,
   grabacionNecesaria,
   type Camara,
@@ -120,6 +121,7 @@ export function MomentosCamara({
             tamano: 0.32,
             factorEnPausa: 1.6,
             atenuacionDb: -12,
+            suavizado: 0,
           },
     );
     // La URL vive fuera del montaje: el backend recibe la RUTA y arma la pública
@@ -183,6 +185,7 @@ export function MomentosCamara({
       tamano: 0.32,
       factorEnPausa: 1.6,
       atenuacionDb: -12,
+      suavizado: 0,
     });
   }
 
@@ -501,6 +504,23 @@ export function MomentosCamara({
                       }`}
                     >
                       {etiqueta}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] text-white/35">Piel</span>
+                  {SUAVIZADOS.map((s) => (
+                    <button
+                      key={s.etiqueta}
+                      onClick={() => onCamara({ ...camara, suavizado: s.valor })}
+                      className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
+                        Math.abs((camara.suavizado ?? 0) - s.valor) < 0.05
+                          ? "bg-[#0FED9D] text-black"
+                          : "border border-white/10 text-white/50 hover:bg-white/5"
+                      }`}
+                    >
+                      {s.etiqueta}
                     </button>
                   ))}
                 </div>

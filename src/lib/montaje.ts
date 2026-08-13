@@ -82,6 +82,13 @@ export interface Momento {
   origenStoragePath?: string;
 }
 
+/** Niveles de suavizado. Tres opciones, no un slider: nadie afina esto al 3%. */
+export const SUAVIZADOS: { valor: number; etiqueta: string }[] = [
+  { valor: 0, etiqueta: "Natural" },
+  { valor: 0.4, etiqueta: "Suave" },
+  { valor: 0.8, etiqueta: "Marcado" },
+];
+
 export interface Camara {
   /** La toma compartida: la que usan los momentos que no traen la suya. */
   origenStoragePath?: string;
@@ -89,6 +96,8 @@ export interface Camara {
   tamano: number;
   factorEnPausa: number;
   atenuacionDb: number;
+  /** Suavizado de piel, 0 a 1. Solo sobre la grabación propia. */
+  suavizado: number;
 }
 
 export interface Montaje {
@@ -219,7 +228,7 @@ export const FORMATOS_LISTOS: {
       "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa.",
     ajustes: (m, aspecto) => {
       const camara: Camara = {
-        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12 }),
+        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0 }),
         posicion: "BANDA_ABAJO",
         tamano: 0.45,
       };
@@ -241,7 +250,7 @@ export const FORMATOS_LISTOS: {
     ajustes: (m) => ({
       video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
       camara: {
-        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12 }),
+        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0 }),
         posicion: "ABAJO_DERECHA",
         tamano: 0.32,
       },
