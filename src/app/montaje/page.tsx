@@ -14,6 +14,7 @@ import { downloadFromTikTok } from "@/lib/upload";
 import {
   FORMATOS,
   FORMATOS_LISTOS,
+  encajarVideoSobreBanda,
   PROPORCIONES,
   montajeInicial,
   duracionFinal,
@@ -214,13 +215,27 @@ export default function MontajePage() {
     localStorage.setItem("montajeModo", m);
   }
 
+  /**
+   * Con la cámara en banda, mover su alto reacomoda el video.
+   *
+   * Son dos mitades de una misma decisión: agrandar la banda sin achicar el
+   * video deja al video tapado, y achicarla deja negro. Pedirle a alguien que
+   * ajuste las dos a mano es pedirle que haga la cuenta.
+   */
+  const alturaBanda =
+    montaje.camara?.posicion === "BANDA_ABAJO" ? montaje.camara.tamano : null;
+  useEffect(() => {
+    if (alturaBanda === null || !fuente) return;
+    setMontaje((m) => ({ ...m, video: encajarVideoSobreBanda(m, aspectoFuente) }));
+  }, [alturaBanda, aspectoFuente, fuente]);
+
   function aplicarFormato(id: string) {
     const f = FORMATOS_LISTOS.find((x) => x.id === id);
     if (!f) return;
     setFormatoElegido(id);
     setMontaje((m) => ({
       ...m,
-      ...f.ajustes(m),
+      ...f.ajustes(m, aspectoFuente),
       momentos: f.momentos(duracionTrim).map((mo, i) => ({
         ...mo,
         id: `${id}-${i}`,
