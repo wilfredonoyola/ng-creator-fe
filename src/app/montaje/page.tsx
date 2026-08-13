@@ -762,37 +762,6 @@ export default function MontajePage() {
                     </p>
                   )}
 
-                  {/* Antes habia un solo boton que SIEMPRE volvia al principio:
-                      para revisar un detalle del segundo 40 habia que mirar los
-                      40 anteriores, y no habia forma de frenar ni de escuchar. */}
-                  <div className="mt-2 flex items-center gap-1.5">
-                    <button
-                      onClick={alternarReproduccion}
-                      className="flex-1 rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
-                    >
-                      {reproduciendo ? "⏸ Pausar" : "▶ Reproducir"}
-                    </button>
-                    <button
-                      onClick={desdeElInicio}
-                      title="Volver al inicio del tramo"
-                      aria-label="Volver al inicio del tramo"
-                      className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5"
-                    >
-                      ⏮
-                    </button>
-                    <button
-                      onClick={() => setSonido((s) => !s)}
-                      title={sonido ? "Silenciar" : "Activar el sonido"}
-                      aria-label={sonido ? "Silenciar" : "Activar el sonido"}
-                      className={`rounded-lg border px-3 py-2 text-xs transition ${
-                        sonido
-                          ? "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]"
-                          : "border-white/10 text-white/60 hover:bg-white/5"
-                      }`}
-                    >
-                      {sonido ? "🔊" : "🔇"}
-                    </button>
-                  </div>
                 </div>
               )}
               </div>
@@ -1084,6 +1053,38 @@ export default function MontajePage() {
               sonido={sonido}
             />
             </div>
+            {/* Antes habia un solo boton que SIEMPRE volvia al principio:
+                para revisar un detalle del segundo 40 habia que mirar los
+                40 anteriores, y no habia forma de frenar ni de escuchar. */}
+            <div className="mt-2 flex items-center gap-1.5">
+              <button
+                onClick={alternarReproduccion}
+                className="flex-1 rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
+              >
+                {reproduciendo ? "⏸ Pausar" : "▶ Reproducir"}
+              </button>
+              <button
+                onClick={desdeElInicio}
+                title="Volver al inicio del tramo"
+                aria-label="Volver al inicio del tramo"
+                className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5"
+              >
+                ⏮
+              </button>
+              <button
+                onClick={() => setSonido((s) => !s)}
+                title={sonido ? "Silenciar" : "Activar el sonido"}
+                aria-label={sonido ? "Silenciar" : "Activar el sonido"}
+                className={`rounded-lg border px-3 py-2 text-xs transition ${
+                  sonido
+                    ? "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]"
+                    : "border-white/10 text-white/60 hover:bg-white/5"
+                }`}
+              >
+                {sonido ? "🔊" : "🔇"}
+              </button>
+            </div>
+
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="space-y-3">
