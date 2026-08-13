@@ -20,12 +20,18 @@ import {
  * Lo que viaja es un id de sesión, no el montaje: el montaje sigue viviendo en
  * la memoria de esta pestaña. El teléfono solo deja un archivo en ese buzón.
  */
+/** Tres fallos seguidos son nueve segundos: ya no es un bache de red. */
+const FALLOS_PARA_AVISAR = 3;
+
+/** Cuánto se espera antes de dar la vuelta por perdida. */
+const ESPERA_MAX_MS = 20 * 60 * 1000;
+
 export function GrabarConTelefono({
   pageId,
   onVideo,
 }: {
   pageId: string;
-  onVideo: (storagePath: string) => void;
+  onVideo: (storagePath: string, duracionSeg: number | null) => void;
 }) {
   const [qr, setQr] = useState<string | null>(null);
   const [sesionId, setSesionId] = useState<string | null>(null);
@@ -35,8 +41,29 @@ export function GrabarConTelefono({
   const [crear] = useMutation(CREAR_SESION_GRABACION);
   const avisado = useRef(false);
 
+  /** Fallos seguidos del sondeo, para no gritar por uno suelto. */
+  const fallos = useRef(0);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [cansado, setCansado] = useState(false);
+
+  /**
+   * `onVideo` en un ref, no en las dependencias del sondeo.
+   *
+   * El padre la recrea en cada render, así que como dependencia reiniciaba el
+   * intervalo con cada cambio del montaje. Y esta pantalla invita justamente a
+   * eso —"el video aparece acá solo"—: quien movía el slider o escribía un
+   * texto mientras esperaba, volvía a poner el reloj en cero antes de que
+   * llegara a los tres segundos, y el sondeo no se disparaba nunca.
+   */
+  const alLlegar = useRef(onVideo);
+  useEffect(() => {
+    alLlegar.current = onVideo;
+  });
+
   async function abrir() {
     setError(null);
+    setAviso(null);
+    setCansado(false);
     setCreando(true);
     try {
       const { data } = await crear({ variables: { pageId } });
@@ -65,26 +92,49 @@ export function GrabarConTelefono({
    */
   useEffect(() => {
     if (!sesionId) return;
+    fallos.current = 0;
+    let vueltas = 0;
+
     const t = setInterval(async () => {
+      // Dejar de preguntar despues de un rato. La sesion dura 6 horas, pero una
+      // pestaña sondeando toda la tarde no le sirve a nadie: si en veinte
+      // minutos no llego el video, lo mas probable es que la grabacion haya
+      // quedado en la nada.
+      if (++vueltas * 3000 > ESPERA_MAX_MS) {
+        setCansado(true);
+        setSesionId(null);
+        setQr(null);
+        return;
+      }
       try {
         const { data } = await cliente.query({
           query: SESION_GRABACION,
-          variables: { id: sesionId, pageId },
+          variables: { id: sesionId },
           fetchPolicy: "network-only",
         });
+        fallos.current = 0;
+        setAviso(null);
         const ruta = data?.sesionGrabacion?.storagePath;
         if (ruta && !avisado.current) {
           avisado.current = true;
-          onVideo(ruta);
+          // La duracion la midio el telefono. Puede venir en null si el
+          // navegador no supo medirla: es un aviso, no un requisito.
+          alLlegar.current(ruta, data.sesionGrabacion.duracionSeg ?? null);
           setQr(null);
           setSesionId(null);
         }
-      } catch {
-        // Un sondeo perdido no rompe nada: se reintenta al siguiente.
+      } catch (e: any) {
+        // Un sondeo perdido no rompe nada y se reintenta al siguiente. Pero
+        // callarse SIEMPRE era el problema: con la sesion vencida o sin acceso
+        // fallaban todos, y "Esperando la grabación…" giraba para siempre
+        // mientras el telefono ya habia mandado todo.
+        if (++fallos.current >= FALLOS_PARA_AVISAR) {
+          setAviso(e?.message ?? "No podemos consultar la sesión");
+        }
       }
     }, 3000);
     return () => clearInterval(t);
-  }, [sesionId, pageId, cliente, onVideo]);
+  }, [sesionId, cliente]);
 
   if (!qr) {
     return (
@@ -96,6 +146,12 @@ export function GrabarConTelefono({
         >
           {creando ? "Generando código…" : "📱 Grabar con el teléfono"}
         </button>
+        {cansado && (
+          <p className="mt-1 text-[11px] text-white/40">
+            Dejamos de esperar: no llegó ningún video. Si seguís grabando, pedí
+            un código nuevo.
+          </p>
+        )}
         {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
       </>
     );
@@ -115,10 +171,17 @@ export function GrabarConTelefono({
       <p className="mt-1 text-[11px] text-white/35">
         Grabás ahí y el video aparece acá solo. No cierres esta pestaña.
       </p>
-      <p className="mt-2 flex items-center justify-center gap-2 text-[11px] text-white/40">
-        <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
-        Esperando la grabación…
-      </p>
+      {aviso ? (
+        <p className="mt-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-2 text-[11px] text-amber-300">
+          No podemos consultar la sesión: {aviso}. Si acabás de mandar el video
+          desde el teléfono, recargá esta página.
+        </p>
+      ) : (
+        <p className="mt-2 flex items-center justify-center gap-2 text-[11px] text-white/40">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+          Esperando la grabación…
+        </p>
+      )}
       <button
         onClick={() => {
           setQr(null);

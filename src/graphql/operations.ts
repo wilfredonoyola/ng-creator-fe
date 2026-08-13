@@ -925,8 +925,8 @@ export const CREAR_SESION_GRABACION = gql`
 
 /** La computadora pregunta cada pocos segundos si ya llegó el video. */
 export const SESION_GRABACION = gql`
-  query SesionGrabacion($id: ID!, $pageId: String!) {
-    sesionGrabacion(id: $id, pageId: $pageId) {
+  query SesionGrabacion($id: ID!) {
+    sesionGrabacion(id: $id) {
       _id
       storagePath
       publicUrl
@@ -939,13 +939,11 @@ export const SESION_GRABACION = gql`
 export const ADJUNTAR_GRABACION = gql`
   mutation AdjuntarGrabacion(
     $id: ID!
-    $pageId: String!
     $storagePath: String!
     $duracionSeg: Float
   ) {
     adjuntarGrabacion(
       id: $id
-      pageId: $pageId
       storagePath: $storagePath
       duracionSeg: $duracionSeg
     ) {

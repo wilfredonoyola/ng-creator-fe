@@ -1,16 +1,42 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
 import { uploadCamara } from "@/lib/upload";
-import { ADJUNTAR_GRABACION } from "@/graphql/operations";
+import { ADJUNTAR_GRABACION, SESION_GRABACION } from "@/graphql/operations";
 import { haySesion } from "@/lib/auth";
-import { usePaginaActiva } from "@/lib/pagina-activa";
 
 type Estado = "eligiendo" | "grabando" | "revisando" | "subiendo" | "listo";
 
+/**
+ * Si el codigo que trajo el QR sigue sirviendo.
+ *
+ * Se pregunta ANTES de dejar grabar. Sin esta comprobacion, un codigo vencido o
+ * ya usado —una captura de pantalla, una pestaña de ayer— se descubria recien
+ * al final: grababas dos minutos, subias ochenta megas por datos moviles, y el
+ * servidor recien ahi decia que la sesion no existia. Todo ese trabajo perdido
+ * en el peor momento posible.
+ */
+type EstadoSesion =
+  | { tipo: "verificando" }
+  | { tipo: "ok" }
+  | { tipo: "rota"; mensaje: string; reintentable: boolean };
+
 /** Pasados estos minutos ya hay de sobra: grabar más solo hace la subida lenta. */
 const AVISO_MIN = 2;
+
+/**
+ * El mismo tope que aplica el backend en `POST /uploads/camara`.
+ *
+ * Repetido acá a propósito: si solo lo valida el servidor, el rechazo llega
+ * DESPUÉS de subir los doscientos megas, que por datos móviles son varios
+ * minutos tirados para enterarse de algo que se sabía desde el principio.
+ */
+const TOPE_BYTES = 200 * 1024 * 1024;
+
+function enMegas(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
+}
 
 /**
  * La pantalla del teléfono: grabar o elegir un video y mandarlo a la
@@ -28,8 +54,6 @@ const AVISO_MIN = 2;
  */
 export default function GrabarPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const { activa, cargando } = usePaginaActiva();
-
   /**
    * Si el componente ya corrio en el navegador.
    *
@@ -40,14 +64,76 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   const [montado, setMontado] = useState(false);
   useEffect(() => setMontado(true), []);
 
+  const cliente = useApolloClient();
+  const [sesion, setSesion] = useState<EstadoSesion>({ tipo: "verificando" });
+  const [intento, setIntento] = useState(0);
+
+  useEffect(() => {
+    if (!montado || !haySesion()) return;
+    let vivo = true;
+    setSesion({ tipo: "verificando" });
+    (async () => {
+      try {
+        const { data } = await cliente.query({
+          query: SESION_GRABACION,
+          variables: { id },
+          fetchPolicy: "network-only",
+        });
+        if (!vivo) return;
+        const s = data?.sesionGrabacion;
+        if (!s) {
+          setSesion({
+            tipo: "rota",
+            mensaje:
+              "Este código ya no sirve: los códigos duran 6 horas. Generá uno nuevo en la computadora y volvé a escanear.",
+            reintentable: false,
+          });
+        } else if (s.storagePath) {
+          // Cada codigo es un buzon de un solo uso. Si ya tiene video, la
+          // computadora lo recogio hace rato y dejo de escuchar: cualquier cosa
+          // que se mande ahora no llega a ninguna parte.
+          setSesion({
+            tipo: "rota",
+            mensaje:
+              "Este código ya se usó. Cada código sirve para un solo video: generá uno nuevo en la computadora.",
+            reintentable: false,
+          });
+        } else {
+          setSesion({ tipo: "ok" });
+        }
+      } catch (e: any) {
+        if (!vivo) return;
+        setSesion({
+          tipo: "rota",
+          mensaje: e?.message ?? "No pudimos verificar el código",
+          reintentable: true,
+        });
+      }
+    })();
+    return () => {
+      vivo = false;
+    };
+  }, [montado, id, cliente, intento]);
+
   const [estado, setEstado] = useState<Estado>("eligiendo");
   const [error, setError] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
+  const [avance, setAvance] = useState(0);
   const [grabado, setGrabado] = useState<{ blob: Blob; url: string } | null>(
     null,
   );
 
   const camara = useRef<HTMLVideoElement>(null);
+  const revision = useRef<HTMLVideoElement>(null);
+  const [reproduciendo, setReproduciendo] = useState(false);
+
+  function alternarRevision() {
+    const v = revision.current;
+    if (!v) return;
+    if (v.paused) void v.play().catch(() => setReproduciendo(false));
+    else v.pause();
+  }
+
   const flujo = useRef<MediaStream | null>(null);
   const grabador = useRef<MediaRecorder | null>(null);
   const trozos = useRef<Blob[]>([]);
@@ -58,6 +144,41 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     if (estado !== "grabando") return;
     const t = setInterval(() => setSegundos((n) => n + 1), 1000);
     return () => clearInterval(t);
+  }, [estado]);
+
+  /**
+   * Mantiene la pantalla encendida mientras se graba o se sube.
+   *
+   * Si el teléfono se bloquea, la página pasa a segundo plano: la grabación se
+   * corta a la mitad y la subida puede quedar suspendida. Justo son los dos
+   * momentos en los que nadie está tocando la pantalla, que es lo que el
+   * teléfono usa para decidir que puede dormirse.
+   *
+   * El permiso se pierde al salir de la pestaña, así que se vuelve a pedir al
+   * volver. Donde no exista la API —Safari viejo— no pasa nada: el `?.` deja
+   * todo como estaba.
+   */
+  useEffect(() => {
+    if (estado !== "grabando" && estado !== "subiendo") return;
+    let lock: any = null;
+
+    const pedir = async () => {
+      try {
+        lock = await (navigator as any).wakeLock?.request("screen");
+      } catch {
+        // Denegado o no soportado: se graba igual, solo sin la garantia.
+      }
+    };
+    const alVolver = () => {
+      if (document.visibilityState === "visible") void pedir();
+    };
+
+    void pedir();
+    document.addEventListener("visibilitychange", alVolver);
+    return () => {
+      document.removeEventListener("visibilitychange", alVolver);
+      lock?.release?.().catch(() => {});
+    };
   }, [estado]);
 
   // La cámara se apaga al salir: dejarla viva mantiene la luz encendida y
@@ -91,6 +212,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       rec.onstop = () => {
         const blob = new Blob(trozos.current, { type: rec.mimeType });
         setGrabado({ blob, url: URL.createObjectURL(blob) });
+        setReproduciendo(false);
         setEstado("revisando");
         flujo.current?.getTracks().forEach((t) => t.stop());
       };
@@ -119,27 +241,42 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     const file = e.target.files?.[0];
     if (!file) return;
     setGrabado({ blob: file, url: URL.createObjectURL(file) });
+    setReproduciendo(false);
     setEstado("revisando");
     e.target.value = "";
   }
 
   async function enviar() {
-    if (!grabado || !activa) return;
+    // Antes esto salia en silencio si faltaba algo: se tocaba "Usar esta" y no
+    // pasaba nada, sin ninguna pista de por que.
+    if (!grabado) {
+      setError("No hay ningún video para enviar. Grabá o elegí uno.");
+      return;
+    }
+    if (grabado.blob.size > TOPE_BYTES) {
+      setError(
+        `El video pesa ${enMegas(grabado.blob.size)} y el máximo son ${enMegas(
+          TOPE_BYTES,
+        )}. Grabá una toma más corta.`,
+      );
+      return;
+    }
     setError(null);
+    setAvance(0);
     setEstado("subiendo");
     try {
       const extension = grabado.blob.type.includes("mp4") ? "mp4" : "webm";
       const archivo = new File([grabado.blob], `camara.${extension}`, {
         type: grabado.blob.type || "video/mp4",
       });
-      const r = await uploadCamara(archivo);
+      // La duracion se mide ACA, que es el unico lado donde esta el archivo. Sin
+      // esto viajaba en null y la computadora no podia avisar que los momentos
+      // pedian mas grabacion de la que hay: el error aparecia recien al fallar
+      // el render, minutos despues.
+      const duracionSeg = await medirDuracion(grabado.url);
+      const r = await uploadCamara(archivo, setAvance);
       await adjuntar({
-        variables: {
-          id,
-          pageId: activa.pageId,
-          storagePath: r.storagePath,
-          duracionSeg: null,
-        },
+        variables: { id, storagePath: r.storagePath, duracionSeg },
       });
       setEstado("listo");
     } catch (err: any) {
@@ -148,7 +285,15 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     }
   }
 
-  if (montado && !cargando && !haySesion()) {
+  if (!montado) {
+    return (
+      <Marco>
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+      </Marco>
+    );
+  }
+
+  if (!haySesion()) {
     return (
       <Marco>
         <p className="text-sm text-white/70">Necesitás iniciar sesión</p>
@@ -176,26 +321,59 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         <p className="mt-1 text-sm text-white/50">
           Seguí en la computadora: ya te aparece cargado.
         </p>
-        <button
-          onClick={() => {
-            setGrabado(null);
-            setEstado("eligiendo");
-          }}
-          className="mt-6 text-xs text-white/40 underline"
-        >
-          Grabar otro
-        </button>
+        {/* Antes habia un "Grabar otro" que mentia: la computadora deja de
+            escuchar en cuanto recoge el video, asi que el segundo salia, decia
+            que se habia enviado, y no llegaba nunca a ninguna parte. */}
+        <p className="mt-6 text-xs text-white/30">
+          ¿Querés mandar otra toma? Generá un código nuevo en la computadora.
+        </p>
+      </Marco>
+    );
+  }
+
+  if (sesion.tipo === "verificando") {
+    return (
+      <Marco>
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+        <p className="mt-3 text-xs text-white/40">Verificando el código…</p>
+      </Marco>
+    );
+  }
+
+  if (sesion.tipo === "rota") {
+    return (
+      <Marco>
+        <div className="text-4xl">⏱</div>
+        <p className="mt-3 text-sm text-white/70">{sesion.mensaje}</p>
+        {sesion.reintentable && (
+          <button
+            onClick={() => setIntento((n) => n + 1)}
+            className="mt-5 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black"
+          >
+            Reintentar
+          </button>
+        )}
       </Marco>
     );
   }
 
   return (
-    <main className="flex min-h-[100dvh] flex-col bg-[#0a0a0a] px-4 py-6">
+    /* El padding seguro va acá y no en el layout: esta pantalla no pasa por
+       `DashboardLayout`, y con `viewportFit: cover` el título se metía bajo el
+       notch y los botones de abajo —los únicos que se tocan— quedaban tapados
+       por la barra de home del iPhone. */
+    <main
+      className="flex min-h-[100dvh] flex-col bg-[#0a0a0a] px-4"
+      style={{
+        paddingTop: "max(1.5rem, env(safe-area-inset-top))",
+        paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+      }}
+    >
       <h1 className="text-center text-sm font-semibold">
         Grabar para el montaje
       </h1>
       <p className="mt-1 text-center text-xs text-white/35">
-        {activa ? activa.nombre : "…"}
+        Se envía a la computadora donde lo estás armando
       </p>
 
       {/* El círculo NO es decoración: es el recorte exacto que va a salir en el
@@ -204,11 +382,18 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       <div className="relative mx-auto mt-6 w-full max-w-[300px]">
         <div className="relative aspect-square overflow-hidden rounded-full border-2 border-[#0FED9D]/60 bg-black">
           {estado === "revisando" && grabado ? (
+            /* Sin `controls`: la barra nativa vive abajo del video y el recorte
+               circular le come las puntas, asi que quedaba media barra inutil.
+               El circulo entero pasa a ser el boton de reproducir. */
             <video
+              ref={revision}
               src={grabado.url}
-              controls
               playsInline
-              className="h-full w-full object-cover"
+              onClick={alternarRevision}
+              onEnded={() => setReproduciendo(false)}
+              onPause={() => setReproduciendo(false)}
+              onPlay={() => setReproduciendo(true)}
+              className="h-full w-full cursor-pointer object-cover"
             />
           ) : (
             <video
@@ -218,6 +403,29 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               playsInline
               className="h-full w-full object-cover"
             />
+          )}
+
+          {/* El circulo arrancaba como un agujero negro sin explicacion: la
+              camara recien se enciende al tocar "Grabar acá". */}
+          {estado === "eligiendo" && (
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+              <span className="text-3xl opacity-40">📷</span>
+              <p className="mt-2 text-[11px] leading-snug text-white/35">
+                Acá vas a verte. Así, en círculo, es como sale en el video.
+              </p>
+            </div>
+          )}
+
+          {estado === "revisando" && !reproduciendo && (
+            <button
+              onClick={alternarRevision}
+              aria-label="Reproducir la toma"
+              className="absolute inset-0 flex items-center justify-center bg-black/30"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0FED9D] text-xl text-black">
+                ▶
+              </span>
+            </button>
           )}
         </div>
         {estado === "grabando" && (
@@ -276,6 +484,11 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
 
         {estado === "revisando" && (
           <>
+            {grabado && (
+              <p className="text-center text-[11px] text-white/30">
+                Tocá el círculo para ver la toma · {enMegas(grabado.blob.size)}
+              </p>
+            )}
             <button
               onClick={enviar}
               className="w-full rounded-xl bg-[#0FED9D] py-4 text-base font-semibold text-black"
@@ -296,14 +509,73 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         )}
 
         {estado === "subiendo" && (
-          <div className="flex items-center justify-center gap-3 py-4">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
-            <span className="text-sm text-white/60">Enviando…</span>
+          <div className="py-2">
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <span className="text-white/60">
+                {avance >= 100 ? "Avisando a la computadora…" : "Enviando…"}
+              </span>
+              <span className="tabular-nums text-white/40">{avance}%</span>
+            </div>
+            {/* La barra importa mas que el spinner: por datos moviles esto tarda
+                un minuto largo, y sin un numero que se mueva se lee como
+                colgado. */}
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-[#0FED9D] transition-all duration-300"
+                style={{ width: `${Math.max(avance, 2)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-center text-[11px] text-white/25">
+              No cierres esta pantalla hasta que termine
+            </p>
           </div>
         )}
       </div>
     </main>
   );
+}
+
+/**
+ * Cuánto dura el video, en segundos.
+ *
+ * `MediaRecorder` no escribe la duración en el encabezado del webm, así que el
+ * navegador devuelve `Infinity` hasta que alguien recorre el archivo. El rodeo
+ * conocido es pedirle que salte a un punto imposible: al chocar con el final,
+ * el reproductor ya sabe dónde termina.
+ *
+ * Devuelve null si no se puede medir, y con un tope de tiempo por si el
+ * navegador nunca contesta. La duración es un aviso, no un requisito: vale
+ * mucho más mandar el video sin ella que dejar la subida esperando.
+ */
+function medirDuracion(url: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const v = document.createElement("video");
+    v.preload = "metadata";
+
+    let resuelto = false;
+    const terminar = (valor: number | null) => {
+      if (resuelto) return;
+      resuelto = true;
+      v.src = "";
+      resolve(valor);
+    };
+
+    v.onloadedmetadata = () => {
+      if (Number.isFinite(v.duration)) {
+        terminar(v.duration);
+        return;
+      }
+      v.ontimeupdate = () => {
+        v.ontimeupdate = null;
+        terminar(Number.isFinite(v.duration) ? v.duration : null);
+      };
+      v.currentTime = 1e101;
+    };
+    v.onerror = () => terminar(null);
+    setTimeout(() => terminar(null), 3000);
+
+    v.src = url;
+  });
 }
 
 /**
@@ -328,7 +600,13 @@ function elegirFormato(): MediaRecorderOptions {
 
 function Marco({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#0a0a0a] px-6 text-center">
+    <main
+      className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#0a0a0a] px-6 text-center"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+    >
       {children}
     </main>
   );
