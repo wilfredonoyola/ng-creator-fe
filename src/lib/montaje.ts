@@ -72,10 +72,19 @@ export interface Momento {
   tipo: TipoMomento;
   desdeSeg: number;
   duracionSeg: number;
+  /**
+   * La grabación propia de este momento, si la tiene.
+   *
+   * Sin esto todos se reparten una sola toma en orden, y eso obliga a grabar de
+   * corrido y a ciegas: alargar un momento corre el tramo de todos los que
+   * siguen, que empiezan a la mitad de una palabra sin que nadie los tocara.
+   */
+  origenStoragePath?: string;
 }
 
 export interface Camara {
-  origenStoragePath: string;
+  /** La toma compartida: la que usan los momentos que no traen la suya. */
+  origenStoragePath?: string;
   posicion: PosicionCamara;
   tamano: number;
   factorEnPausa: number;
@@ -165,14 +174,17 @@ export function duracionFinal(base: number, momentos: Momento[]): number {
 }
 
 /**
- * Cuánta grabación consumen los momentos.
+ * Cuánta toma COMPARTIDA consumen los momentos.
  *
- * Cada uno usa un tramo distinto y en orden, asumiendo una toma corrida que se
- * va repartiendo. Si la suma pasa lo grabado, el backend rechaza el montaje, así
- * que conviene decirlo antes.
+ * Solo cuenta los que no traen grabación propia: esos se reparten una toma
+ * corrida y entre todos no pueden pedir más de lo que dura. El que trae su
+ * archivo se mide contra el suyo, y ese chequeo lo hace el backend porque acá
+ * no sabemos cuánto dura cada uno.
  */
 export function grabacionNecesaria(momentos: Momento[]): number {
-  return momentos.reduce((n, m) => n + m.duracionSeg, 0);
+  return momentos
+    .filter((m) => !m.origenStoragePath)
+    .reduce((n, m) => n + m.duracionSeg, 0);
 }
 
 /**
@@ -235,8 +247,14 @@ export function guionDeCamara(
     }))
     .sort((a, b) => a.desdeSeg - b.desdeSeg);
 
+  // El contador corre solo sobre los que comparten la toma. El que trae archivo
+  // propio lo usa desde el principio y no mueve el tramo de nadie: es justo lo
+  // que hace que agregar o alargar un momento deje de desacomodar a los demás.
   let consumido = 0;
   return ordenados.map((m) => {
+    if (m.origenStoragePath) {
+      return { ...m, tramo: { desde: 0, hasta: m.duracionSeg } };
+    }
     const tramo = { desde: consumido, hasta: consumido + m.duracionSeg };
     consumido += m.duracionSeg;
     return { ...m, tramo };

@@ -149,14 +149,20 @@ export default function MontajePage() {
   const videosPreview = useRef<Set<HTMLVideoElement>>(new Set());
 
   /**
-   * La toma grabada, para poder verla antes de generar.
+   * Dónde mirar cada grabación, por ruta de storage.
    *
-   * Vive acá arriba y no en `MomentosCamara` porque la necesitan dos: el panel,
-   * para el círculo con el ▶, y el preview, para componerla sobre el video. No
-   * entra en el montaje: eso viaja al backend, que recibe la ruta y arma la URL
-   * pública él mismo para que nadie apunte la cámara a un archivo ajeno.
+   * Es un mapa y no una sola URL porque cada momento puede traer la suya. Vive
+   * acá arriba porque la necesitan dos: el panel, para los círculos con el ▶, y
+   * el preview, para componer la toma correcta en cada momento.
+   *
+   * No entra en el montaje: eso viaja al backend, que recibe la RUTA y arma la
+   * URL pública él mismo, para que nadie apunte la cámara a un archivo ajeno.
    */
-  const [urlCamara, setUrlCamara] = useState<string | null>(null);
+  const [urlsPorRuta, setUrlsPorRuta] = useState<Record<string, string>>({});
+  const registrarUrl = useCallback((ruta: string, url: string | null) => {
+    if (!url) return;
+    setUrlsPorRuta((m) => (m[ruta] === url ? m : { ...m, [ruta]: url }));
+  }, []);
 
   const aspectoFuente = fuente ? fuente.ancho / fuente.alto : 9 / 16;
   const valorProporcion =
@@ -254,11 +260,14 @@ export default function MontajePage() {
             camara: montaje.camara,
             // El id de cada fila es solo para React; el backend no lo espera.
             momentos: montaje.camara
-              ? montaje.momentos.map(({ tipo, desdeSeg, duracionSeg }) => ({
-                  tipo,
-                  desdeSeg,
-                  duracionSeg,
-                }))
+              ? montaje.momentos.map(
+                  ({ tipo, desdeSeg, duracionSeg, origenStoragePath }) => ({
+                    tipo,
+                    desdeSeg,
+                    duracionSeg,
+                    origenStoragePath: origenStoragePath ?? null,
+                  }),
+                )
               : [],
           },
         },
@@ -661,8 +670,8 @@ export default function MontajePage() {
                 momentos={montaje.momentos}
                 duracionBase={duracionTrim}
                 pageId={activa.pageId}
-                urlCamara={urlCamara}
-                onUrlCamara={setUrlCamara}
+                urlsPorRuta={urlsPorRuta}
+                onUrl={registrarUrl}
                 onCamara={(camara) => cambiar({ camara })}
                 onMomentos={(momentos) => cambiar({ momentos })}
               />
@@ -691,7 +700,7 @@ export default function MontajePage() {
               src={fuente?.publicUrl ?? null}
               aspectoFuente={aspectoFuente}
               registrarVideo={registrarVideo}
-              camaraUrl={urlCamara}
+              urlsPorRuta={urlsPorRuta}
               duracionBase={duracionTrim}
             />
             </div>

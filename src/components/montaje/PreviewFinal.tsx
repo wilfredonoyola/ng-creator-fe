@@ -30,15 +30,15 @@ export function PreviewFinal({
   src,
   aspectoFuente,
   registrarVideo,
-  camaraUrl,
+  urlsPorRuta,
   duracionBase,
 }: {
   montaje: Montaje;
   src: string | null;
   aspectoFuente: number;
   registrarVideo: (v: HTMLVideoElement | null) => void;
-  /** La toma grabada. Sin esto el círculo no se dibuja: no hay nada que mostrar. */
-  camaraUrl?: string | null;
+  /** Dónde mirar cada grabación, por ruta. Sin URL no se dibuja nada. */
+  urlsPorRuta?: Record<string, string>;
   duracionBase?: number;
 }) {
   const { lienzo, recorte, fondo } = montaje;
@@ -48,8 +48,9 @@ export function PreviewFinal({
   const pctAlto = (n: number) => `${(n / lienzo.alto) * 100}%`;
 
   const lienzoRef = useRef<HTMLDivElement>(null);
-  const videoCamara = useRef<HTMLVideoElement>(null);
   const circulo = useRef<HTMLDivElement>(null);
+  /** Un <video> por grabación distinta, por ruta. */
+  const camaras = useRef<Map<string, HTMLVideoElement>>(new Map());
 
   const guion = useMemo(
     () =>
@@ -58,6 +59,22 @@ export function PreviewFinal({
         : [],
     [montaje.camara, montaje.momentos, duracionBase],
   );
+
+  /**
+   * Las grabaciones distintas que hacen falta dibujar.
+   *
+   * Se monta un <video> por cada una en vez de cambiarle el `src` a uno solo:
+   * cambiar la fuente obliga al navegador a recargar, y en un preview eso es un
+   * parpadeo negro justo en el corte entre dos momentos.
+   */
+  const fuentes = useMemo(() => {
+    const rutas: string[] = [];
+    for (const m of guion) {
+      const r = m.origenStoragePath ?? montaje.camara?.origenStoragePath;
+      if (r && urlsPorRuta?.[r] && !rutas.includes(r)) rutas.push(r);
+    }
+    return rutas;
+  }, [guion, montaje.camara, urlsPorRuta]);
 
   /**
    * Mueve el círculo siguiendo al video base, cuadro a cuadro.
@@ -75,9 +92,8 @@ export function PreviewFinal({
    * los suelta al terminar.
    */
   useEffect(() => {
-    const cam = videoCamara.current;
     const marco = circulo.current;
-    if (!cam || !marco || !camaraUrl || !montaje.camara || !guion.length) return;
+    if (!marco || !montaje.camara || !guion.length) return;
 
     const bases = () =>
       Array.from(
@@ -94,9 +110,23 @@ export function PreviewFinal({
     let anterior = 0;
     let vivo = true;
 
+    const camDe = (m: (typeof guion)[number]) => {
+      const r = m.origenStoragePath ?? montaje.camara?.origenStoragePath;
+      return r ? (camaras.current.get(r) ?? null) : null;
+    };
+
+    /** Solo una grabación a la vista; el resto ocultas y quietas. */
+    const soloEsta = (activo: HTMLVideoElement | null) => {
+      camaras.current.forEach((v) => {
+        const suya = v === activo;
+        v.style.display = suya ? "block" : "none";
+        if (!suya && !v.paused) v.pause();
+      });
+    };
+
     const ocultar = () => {
       marco.style.opacity = "0";
-      if (!cam.paused) cam.pause();
+      soloEsta(null);
     };
 
     const colocar = (pausa: boolean, opacidad: number) => {
@@ -149,7 +179,13 @@ export function PreviewFinal({
           t < m.desdeSeg + 0.4,
       );
       if (pausa && !base.paused) {
+        const cam = camDe(pausa);
+        if (!cam) {
+          requestAnimationFrame(paso);
+          return;
+        }
         bases().forEach((v) => v.pause());
+        soloEsta(cam);
         cam.currentTime = pausa.tramo.desde;
         void cam.play().catch(() => {});
         enPausa = { m: pausa, hasta: performance.now() + pausa.duracionSeg * 1000 };
@@ -172,11 +208,14 @@ export function PreviewFinal({
         // Asi que quieto se dibuja como GUIA, apagado, para que se lea "va a ir
         // aca" y no "esto esta pasando ahora". Andando manda la linea de tiempo.
         if (base.paused) {
-          const enPunto = guion.some(
+          const enPunto = guion.find(
             (m) => m.tipo === "PAUSA" && Math.abs(t - m.desdeSeg) < 0.4,
           );
-          colocar(enPunto, 0.55);
-          if (!cam.paused) cam.pause();
+          // La guía muestra la toma del momento mas cercano, o la primera que
+          // haya: sirve para acomodar tamaño y encuadre, no para ser exacta.
+          soloEsta(camDe(enPunto ?? guion[0]));
+          colocar(Boolean(enPunto), 0.55);
+          camaras.current.forEach((v) => !v.paused && v.pause());
         } else {
           ocultar();
         }
@@ -188,6 +227,14 @@ export function PreviewFinal({
       const dentro = t - ap.desdeSeg;
       const restante = ap.duracionSeg - dentro;
       const opacidad = Math.min(1, Math.min(dentro, restante) / 0.3);
+
+      const cam = camDe(ap);
+      if (!cam) {
+        ocultar();
+        requestAnimationFrame(paso);
+        return;
+      }
+      soloEsta(cam);
 
       const objetivo = ap.tramo.desde + dentro;
       // Solo se corrige si se fue lejos: reescribir `currentTime` en cada cuadro
@@ -204,22 +251,26 @@ export function PreviewFinal({
 
     // Safari no pinta un cuadro hasta que se busca uno: sin este empujón la
     // guía se ve como un círculo negro hasta la primera reproducción.
-    const primerCuadro = () => {
-      if (cam.currentTime === 0) cam.currentTime = 0.05;
+    const primerCuadro = (e: Event) => {
+      const v = e.target as HTMLVideoElement;
+      if (v.currentTime === 0) v.currentTime = 0.05;
     };
-    cam.addEventListener("loadeddata", primerCuadro);
-    if (cam.readyState >= 2) primerCuadro();
+    const todas = [...camaras.current.values()];
+    todas.forEach((v) => {
+      v.addEventListener("loadeddata", primerCuadro);
+      if (v.readyState >= 2 && v.currentTime === 0) v.currentTime = 0.05;
+    });
 
     const id = requestAnimationFrame(paso);
     return () => {
       vivo = false;
       cancelAnimationFrame(id);
-      cam.removeEventListener("loadeddata", primerCuadro);
+      todas.forEach((v) => v.removeEventListener("loadeddata", primerCuadro));
       // Si el componente se va en medio de una pausa, los videos base quedarian
       // detenidos para siempre.
       if (enPausa) bases().forEach((v) => void v.play().catch(() => {}));
     };
-  }, [camaraUrl, montaje.camara, guion, lienzo]);
+  }, [urlsPorRuta, montaje.camara, guion, lienzo, fuentes]);
 
   return (
     <div
@@ -287,20 +338,27 @@ export function PreviewFinal({
       {/* La cámara. Va debajo de los titulares y encima del video, que es el
           orden del render: el círculo tapa la imagen, el texto tapa al círculo.
           Arranca invisible; quien la muestra y la mueve es el bucle de arriba. */}
-      {camaraUrl && montaje.camara && (
+      {fuentes.length > 0 && montaje.camara && (
         <div
           ref={circulo}
           className="pointer-events-none absolute overflow-hidden"
           style={{ opacity: 0, borderRadius: "9999px" }}
         >
-          <video
-            ref={videoCamara}
-            src={camaraUrl}
-            muted
-            playsInline
-            preload="auto"
-            className="h-full w-full object-cover"
-          />
+          {fuentes.map((ruta) => (
+            <video
+              key={ruta}
+              ref={(v) => {
+                if (v) camaras.current.set(ruta, v);
+                else camaras.current.delete(ruta);
+              }}
+              src={urlsPorRuta?.[ruta]}
+              muted
+              playsInline
+              preload="auto"
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ display: "none" }}
+            />
+          ))}
         </div>
       )}
 

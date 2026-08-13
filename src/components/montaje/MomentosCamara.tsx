@@ -13,6 +13,23 @@ import {
   type PosicionCamara,
 } from "@/lib/montaje";
 
+/** Un círculo chico y reproducible. Ver la toma vale más que su nombre de archivo. */
+function TomaChica({ url, etiqueta }: { url?: string; etiqueta: string }) {
+  const v = useRef<HTMLVideoElement>(null);
+  if (!url) {
+    return <span className="h-7 w-7 shrink-0 rounded-full bg-white/10" />;
+  }
+  return (
+    <button
+      onClick={() => (v.current?.paused ? v.current?.play() : v.current?.pause())}
+      aria-label={etiqueta}
+      className="h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/15 bg-black"
+    >
+      <video ref={v} src={url} muted playsInline className="h-full w-full object-cover" />
+    </button>
+  );
+}
+
 /**
  * Los momentos en que aparece la cámara propia.
  *
@@ -29,8 +46,8 @@ export function MomentosCamara({
   momentos,
   duracionBase,
   pageId,
-  urlCamara,
-  onUrlCamara,
+  urlsPorRuta,
+  onUrl,
   onCamara,
   onMomentos,
 }: {
@@ -38,9 +55,9 @@ export function MomentosCamara({
   momentos: Momento[];
   duracionBase: number;
   pageId: string;
-  /** La toma grabada. La tiene el padre porque el preview también la necesita. */
-  urlCamara: string | null;
-  onUrlCamara: (u: string | null) => void;
+  /** Dónde mirar cada grabación, por ruta. La tiene el padre: el preview también la usa. */
+  urlsPorRuta: Record<string, string>;
+  onUrl: (ruta: string, url: string | null) => void;
   onCamara: (c: Camara | null) => void;
   onMomentos: (m: Momento[]) => void;
 }) {
@@ -60,6 +77,28 @@ export function MomentosCamara({
 
   const [viendo, setViendo] = useState(false);
   const vistaPrevia = useRef<HTMLVideoElement>(null);
+
+  /** Qué momento tiene abierto el panel para darle su propia toma. */
+  const [abriendo, setAbriendo] = useState<string | null>(null);
+  const [subiendoEn, setSubiendoEn] = useState<string | null>(null);
+
+  async function subirPara(id: string, e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError(null);
+    setSubiendoEn(id);
+    try {
+      const r = await uploadCamara(file);
+      onUrl(r.storagePath, r.url);
+      cambiar(id, { origenStoragePath: r.storagePath });
+      setAbriendo(null);
+    } catch (err: any) {
+      setError(err?.message ?? "No se pudo subir el video");
+    } finally {
+      setSubiendoEn(null);
+      e.target.value = "";
+    }
+  }
 
   // El QR solo tiene sentido en la computadora: si ya estás en el teléfono, no
   // hay nada que puentear y el botón de subir abre la cámara igual.
@@ -90,10 +129,10 @@ export function MomentosCamara({
             atenuacionDb: -12,
           },
     );
-    // La URL vive solo acá y no en el montaje: el backend recibe la RUTA y arma
-    // la publica él mismo, justamente para que nadie pueda apuntar la cámara a
-    // un archivo de otro sitio. Esto es al pepe para mirar, nada más.
-    onUrlCamara(url);
+    // La URL vive fuera del montaje: el backend recibe la RUTA y arma la pública
+    // él mismo, justamente para que nadie pueda apuntar la cámara a un archivo
+    // de otro sitio. Esto es al pepe para mirar, nada más.
+    onUrl(storagePath, url);
     setViendo(false);
     setReemplazando(false);
   }
@@ -114,7 +153,6 @@ export function MomentosCamara({
     onCamara(null);
     onMomentos([]);
     setDuracionGrabacion(0);
-    onUrlCamara(null);
     setViendo(false);
     setConfirmandoQuitar(false);
     setReemplazando(false);
@@ -226,7 +264,7 @@ export function MomentosCamara({
             {/* El círculo no es decoración: es el recorte real, así que mirarlo
                 acá es la única forma de ver si el encuadre entró bien sin
                 esperar el render entero. */}
-            {urlCamara && (
+            {camara.origenStoragePath && urlsPorRuta[camara.origenStoragePath] && (
               <button
                 onClick={alternarVista}
                 aria-label={viendo ? "Pausar la toma" : "Ver la toma"}
@@ -234,7 +272,7 @@ export function MomentosCamara({
               >
                 <video
                   ref={vistaPrevia}
-                  src={urlCamara}
+                  src={urlsPorRuta[camara.origenStoragePath]}
                   playsInline
                   onPlay={() => setViendo(true)}
                   onPause={() => setViendo(false)}
@@ -454,6 +492,74 @@ export function MomentosCamara({
                     >
                       ✕
                     </button>
+
+                    {/* La toma de ESTE momento.
+                        Sin esto todos se reparten una sola grabación en orden, y
+                        alargar uno corre el tramo de los que siguen: empiezan a
+                        la mitad de una palabra sin que nadie los haya tocado. */}
+                    <div className="w-full">
+                      {m.origenStoragePath ? (
+                        <div className="flex items-center gap-2 text-white/40">
+                          <TomaChica
+                            url={urlsPorRuta[m.origenStoragePath]}
+                            etiqueta="Toma propia de este momento"
+                          />
+                          <span>Toma propia</span>
+                          <button
+                            onClick={() =>
+                              cambiar(m.id, { origenStoragePath: undefined })
+                            }
+                            className="text-white/30 underline transition hover:text-white/60"
+                          >
+                            usar la general
+                          </button>
+                        </div>
+                      ) : abriendo === m.id ? (
+                        <div className="space-y-1.5 rounded-lg border border-white/10 p-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-white/40">
+                              Grabá o subí la toma de este momento
+                            </span>
+                            <button
+                              onClick={() => setAbriendo(null)}
+                              className="text-white/30 underline"
+                            >
+                              cancelar
+                            </button>
+                          </div>
+                          {enComputadora && (
+                            <GrabarConTelefono
+                              pageId={pageId}
+                              onVideo={(ruta, _dur, url) => {
+                                onUrl(ruta, url);
+                                cambiar(m.id, { origenStoragePath: ruta });
+                                setAbriendo(null);
+                              }}
+                            />
+                          )}
+                          <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 py-2 text-center text-white/50 transition hover:border-[#0FED9D]/50">
+                            <input
+                              type="file"
+                              accept="video/*"
+                              className="hidden"
+                              onChange={(e) => subirPara(m.id, e)}
+                            />
+                            {subiendoEn === m.id
+                              ? "Subiendo…"
+                              : enComputadora
+                                ? "…o subí un archivo"
+                                : "Elegir un video"}
+                          </label>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setAbriendo(m.id)}
+                          className="text-white/25 underline transition hover:text-white/50"
+                        >
+                          + usar una toma propia para este momento
+                        </button>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>
