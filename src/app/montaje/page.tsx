@@ -545,7 +545,7 @@ export default function MontajePage() {
       )}
 
       {/* Paso 1: el link */}
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+      <div className="mx-auto mb-4 flex w-full max-w-[970px] flex-col gap-2 sm:flex-row">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
@@ -579,7 +579,7 @@ export default function MontajePage() {
             la izquierda la modifica: antes los titulares estaban cien lineas
             debajo del preview, o sea que se escribia a ciegas justo donde mas
             falta verlo. */}
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,330px)]">
+        <div className="grid justify-center gap-5 lg:grid-cols-[minmax(0,620px)_minmax(0,330px)]">
           <div ref={zonaPaneles} className="min-w-0 space-y-4">
             {/* La barra de pasos. Con todos los paneles abiertos hay que saber
                 en que orden atacarlos; una pregunta por vez saca esa carga. */}
@@ -799,11 +799,8 @@ export default function MontajePage() {
               </div>
             </>
           ) : (
-            <div
-              className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25 sm:mx-0"
-              style={{ maxWidth: (altoPanel * 9) / 16 }}
-            >
-              Pegá un link de TikTok arriba
+            <div className="flex items-center justify-center rounded-xl border border-dashed border-white/15 px-6 py-10 text-center text-xs text-white/25">
+              Pegá un link de TikTok arriba para empezar
             </div>
           )}
             </Bloque>
@@ -931,7 +928,7 @@ export default function MontajePage() {
             </BloqueOpcional>
 
             {guiado && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <button
                   onClick={() => setPaso((n) => Math.max(1, n - 1))}
                   disabled={paso === 1}
@@ -942,14 +939,14 @@ export default function MontajePage() {
                 {paso < PASOS.length ? (
                   <button
                     onClick={() => setPaso((n) => Math.min(PASOS.length, n + 1))}
-                    className="flex-1 rounded-lg bg-white/10 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
+                    className="rounded-lg bg-white/10 px-6 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
                   >
                     {/* Los opcionales lo dicen: seguir sin tocarlos es una
                         opcion valida, no algo que uno se saltea mal. */}
                     {paso === 4 || paso === 5 ? "Saltear" : "Siguiente"}
                   </button>
                 ) : (
-                  <span className="flex-1 text-center text-[11px] text-white/35">
+                  <span className="text-[11px] text-white/35">
                     Listo — generá el video con el botón de la derecha
                   </span>
                 )}
@@ -1056,7 +1053,11 @@ export default function MontajePage() {
             </BloqueOpcional>
           </div>
 
-          <div className="order-first space-y-3 self-start lg:order-none lg:sticky lg:top-4">
+          <div
+            className={`order-first space-y-3 self-start lg:order-none lg:sticky lg:top-4 ${
+              fuente ? "" : "hidden"
+            }`}
+          >
             <h2 className="hidden text-xs font-medium uppercase tracking-wider text-white/35 lg:block">
               Cómo va a quedar
             </h2>
