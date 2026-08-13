@@ -182,6 +182,38 @@ export default function MontajePage() {
    */
   const [formatoElegido, setFormatoElegido] = useState<string | null>(null);
 
+  /**
+   * Guiado o todo junto.
+   *
+   * La pantalla con todos los paneles abiertos funciona para quien ya conoce la
+   * herramienta, pero obliga a saber en que orden atacarla. El guiado hace una
+   * pregunta por vez, en el orden en que se decide de verdad.
+   *
+   * Conviven en vez de reemplazarse: el que ya sabe lo que hace no tiene por que
+   * pasar por cinco pantallas para mover un slider.
+   */
+  const [modo, setModo] = useState<"guiado" | "completo">("guiado");
+  const [paso, setPaso] = useState(1);
+  useEffect(() => {
+    const g = localStorage.getItem("montajeModo");
+    if (g === "completo") setModo("completo");
+  }, []);
+
+  const PASOS = [
+    { n: 1, titulo: "El video", ayuda: "Pegá el link y elegí qué parte se ve" },
+    { n: 2, titulo: "Qué armás", ayuda: "El formato decide cómo se ve todo" },
+    { n: 3, titulo: "Tu parte", ayuda: "Grabá lo que vas a decir" },
+    { n: 4, titulo: "Subtítulos", ayuda: "Opcional, se transcribe solo" },
+    { n: 5, titulo: "Titulares", ayuda: "Opcional, el texto de arriba y abajo" },
+  ];
+  const guiado = modo === "guiado";
+  const ve = (n: number) => !guiado || paso === n;
+
+  function cambiarModo(m: "guiado" | "completo") {
+    setModo(m);
+    localStorage.setItem("montajeModo", m);
+  }
+
   function aplicarFormato(id: string) {
     const f = FORMATOS_LISTOS.find((x) => x.id === id);
     if (!f) return;
@@ -549,7 +581,57 @@ export default function MontajePage() {
             falta verlo. */}
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,330px)]">
           <div ref={zonaPaneles} className="min-w-0 space-y-4">
-            <Bloque numero={1} titulo="Elegí el área útil">
+            {/* La barra de pasos. Con todos los paneles abiertos hay que saber
+                en que orden atacarlos; una pregunta por vez saca esa carga. */}
+            {guiado && (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[11px] text-white/35">
+                      Paso {paso} de {PASOS.length}
+                    </span>
+                    <p className="truncate text-sm font-semibold text-white/90">
+                      {PASOS[paso - 1].titulo}
+                    </p>
+                    <p className="truncate text-[11px] text-white/40">
+                      {PASOS[paso - 1].ayuda}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => cambiarModo("completo")}
+                    className="shrink-0 text-[11px] text-white/35 underline transition hover:text-white/70"
+                  >
+                    Ver todo el editor
+                  </button>
+                </div>
+                <div className="mt-2.5 flex gap-1">
+                  {PASOS.map((x) => (
+                    <button
+                      key={x.n}
+                      onClick={() => setPaso(x.n)}
+                      aria-label={x.titulo}
+                      className={`h-1 flex-1 rounded-full transition ${
+                        x.n <= paso ? "bg-[#0FED9D]" : "bg-white/15"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!guiado && (
+              <button
+                onClick={() => {
+                  cambiarModo("guiado");
+                  setPaso(1);
+                }}
+                className="self-start text-[11px] text-white/35 underline transition hover:text-white/70"
+              >
+                ← Volver al modo guiado
+              </button>
+            )}
+
+            <Bloque numero={1} titulo="Elegí el área útil" oculto={!ve(1)}>
           {fuente ? (
             <>
               {/* Se acota el ANCHO para que el alto derivado entre en el
@@ -733,7 +815,7 @@ export default function MontajePage() {
                 video, la forma de la cámara y los momentos —cinco controles
                 repartidos en dos columnas— para llegar a algo que en realidad es
                 UN formato conocido. */}
-            {fuente && (
+            {fuente && ve(2) && (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <h3 className="text-xs font-medium uppercase tracking-wider text-white/35">
                   Qué querés armar
@@ -763,40 +845,47 @@ export default function MontajePage() {
                   ))}
                 </div>
 
-                {/* Un interruptor y nada mas. Elegir por separado si se
-                    subtitula el video o la camara es una pregunta que casi
-                    nadie quiere contestar: quien mira no distingue de donde
-                    sale cada voz. */}
-                <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-xl border border-white/10 p-3 transition hover:bg-white/5">
-                  <input
-                    type="checkbox"
-                    checked={montaje.subtitulos.activos}
-                    onChange={(e) =>
-                      cambiar({
-                        subtitulos: {
-                          ...montaje.subtitulos,
-                          activos: e.target.checked,
-                        },
-                      })
-                    }
-                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#0FED9D]"
-                  />
-                  <span>
-                    <span className="block text-xs font-medium text-white/80">
-                      Subtítulos automáticos
+              </div>
+            )}
+
+            {fuente && ve(4) && (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  {/* Un interruptor y nada mas. Elegir por separado si se
+                      subtitula el video o la camara es una pregunta que casi
+                      nadie quiere contestar: quien mira no distingue de donde
+                      sale cada voz. */}
+                  <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-xl border border-white/10 p-3 transition hover:bg-white/5">
+                    <input
+                      type="checkbox"
+                      checked={montaje.subtitulos.activos}
+                      onChange={(e) =>
+                        cambiar({
+                          subtitulos: {
+                            ...montaje.subtitulos,
+                            activos: e.target.checked,
+                          },
+                        })
+                      }
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#0FED9D]"
+                    />
+                    <span>
+                      <span className="block text-xs font-medium text-white/80">
+                        Subtítulos automáticos
+                      </span>
+                      <span className="mt-0.5 block text-[11px] leading-snug text-white/40">
+                        Transcribe lo que se dice —el video y vos— y lo escribe
+                        palabra por palabra. Suma medio minuto al render.
+                      </span>
                     </span>
-                    <span className="mt-0.5 block text-[11px] leading-snug text-white/40">
-                      Transcribe lo que se dice —el video y vos— y lo escribe
-                      palabra por palabra. Suma medio minuto al render.
-                    </span>
-                  </span>
-                </label>
+                  </label>
               </div>
             )}
 
             <BloqueOpcional
               numero={2}
               titulo="Titulares"
+              oculto={!ve(5)}
+              abierto={guiado}
               resumen={
                 [montaje.textoSuperior, montaje.textoInferior]
                   .filter((t) => t.contenido.trim())
@@ -821,6 +910,8 @@ export default function MontajePage() {
             <BloqueOpcional
               numero={3}
               titulo="Aparecer en el video"
+              oculto={!ve(3)}
+              abierto={guiado}
               resumen={
                 montaje.camara
                   ? `${montaje.momentos.length} momento${montaje.momentos.length !== 1 ? "s" : ""}`
@@ -839,6 +930,32 @@ export default function MontajePage() {
               />
             </BloqueOpcional>
 
+            {guiado && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPaso((n) => Math.max(1, n - 1))}
+                  disabled={paso === 1}
+                  className="rounded-lg border border-white/15 px-4 py-2.5 text-xs text-white/60 transition hover:bg-white/5 disabled:opacity-30"
+                >
+                  Atrás
+                </button>
+                {paso < PASOS.length ? (
+                  <button
+                    onClick={() => setPaso((n) => Math.min(PASOS.length, n + 1))}
+                    className="flex-1 rounded-lg bg-white/10 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
+                  >
+                    {/* Los opcionales lo dicen: seguir sin tocarlos es una
+                        opcion valida, no algo que uno se saltea mal. */}
+                    {paso === 4 || paso === 5 ? "Saltear" : "Siguiente"}
+                  </button>
+                ) : (
+                  <span className="flex-1 text-center text-[11px] text-white/35">
+                    Listo — generá el video con el botón de la derecha
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Los ajustes del lienzo estaban en la columna de la derecha,
                 que debería ser solo para MIRAR. Con decisiones de los dos lados
                 uno termina editando en dos lugares a la vez, y "Tamaño" y
@@ -847,6 +964,7 @@ export default function MontajePage() {
             <BloqueOpcional
               numero={4}
               titulo="Ajustes del lienzo"
+              oculto={guiado}
               resumen={`${montaje.lienzo.ancho}×${montaje.lienzo.alto} · ${
                 montaje.fondo.tipo === "SOLIDO" ? "fondo liso" : "desenfoque"
               }`}
@@ -1050,12 +1168,16 @@ export default function MontajePage() {
 function Bloque({
   numero,
   titulo,
+  oculto,
   children,
 }: {
   numero: number;
   titulo: string;
+  /** En modo guiado solo se ve el paso actual. */
+  oculto?: boolean;
   children: React.ReactNode;
 }) {
+  if (oculto) return null;
   return (
     <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
@@ -1079,15 +1201,24 @@ function BloqueOpcional({
   numero,
   titulo,
   resumen,
+  oculto,
+  abierto,
   children,
 }: {
   numero: number;
   titulo: string;
   resumen: string;
+  oculto?: boolean;
+  /** Guiado abre el paso: plegado seria un click de mas sobre lo que se vino a hacer. */
+  abierto?: boolean;
   children: React.ReactNode;
 }) {
+  if (oculto) return null;
   return (
-    <details className="group rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+    <details
+      open={abierto}
+      className="group rounded-2xl border border-white/10 bg-white/[0.02] p-4"
+    >
       <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold">
         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[11px] text-white/60">
           {numero}
