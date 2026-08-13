@@ -105,6 +105,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   const [estado, setEstado] = useState<Estado>("eligiendo");
   const [error, setError] = useState<string | null>(null);
   const [segundos, setSegundos] = useState(0);
+  const [avance, setAvance] = useState(0);
   const [grabado, setGrabado] = useState<{ blob: Blob; url: string } | null>(
     null,
   );
@@ -193,15 +194,21 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       return;
     }
     setError(null);
+    setAvance(0);
     setEstado("subiendo");
     try {
       const extension = grabado.blob.type.includes("mp4") ? "mp4" : "webm";
       const archivo = new File([grabado.blob], `camara.${extension}`, {
         type: grabado.blob.type || "video/mp4",
       });
-      const r = await uploadCamara(archivo);
+      // La duracion se mide ACA, que es el unico lado donde esta el archivo. Sin
+      // esto viajaba en null y la computadora no podia avisar que los momentos
+      // pedian mas grabacion de la que hay: el error aparecia recien al fallar
+      // el render, minutos despues.
+      const duracionSeg = await medirDuracion(grabado.url);
+      const r = await uploadCamara(archivo, setAvance);
       await adjuntar({
-        variables: { id, storagePath: r.storagePath, duracionSeg: null },
+        variables: { id, storagePath: r.storagePath, duracionSeg },
       });
       setEstado("listo");
     } catch (err: any) {
@@ -399,14 +406,73 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         )}
 
         {estado === "subiendo" && (
-          <div className="flex items-center justify-center gap-3 py-4">
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
-            <span className="text-sm text-white/60">Enviando…</span>
+          <div className="py-2">
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <span className="text-white/60">
+                {avance >= 100 ? "Avisando a la computadora…" : "Enviando…"}
+              </span>
+              <span className="tabular-nums text-white/40">{avance}%</span>
+            </div>
+            {/* La barra importa mas que el spinner: por datos moviles esto tarda
+                un minuto largo, y sin un numero que se mueva se lee como
+                colgado. */}
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-[#0FED9D] transition-all duration-300"
+                style={{ width: `${Math.max(avance, 2)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-center text-[11px] text-white/25">
+              No cierres esta pantalla hasta que termine
+            </p>
           </div>
         )}
       </div>
     </main>
   );
+}
+
+/**
+ * Cuánto dura el video, en segundos.
+ *
+ * `MediaRecorder` no escribe la duración en el encabezado del webm, así que el
+ * navegador devuelve `Infinity` hasta que alguien recorre el archivo. El rodeo
+ * conocido es pedirle que salte a un punto imposible: al chocar con el final,
+ * el reproductor ya sabe dónde termina.
+ *
+ * Devuelve null si no se puede medir, y con un tope de tiempo por si el
+ * navegador nunca contesta. La duración es un aviso, no un requisito: vale
+ * mucho más mandar el video sin ella que dejar la subida esperando.
+ */
+function medirDuracion(url: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const v = document.createElement("video");
+    v.preload = "metadata";
+
+    let resuelto = false;
+    const terminar = (valor: number | null) => {
+      if (resuelto) return;
+      resuelto = true;
+      v.src = "";
+      resolve(valor);
+    };
+
+    v.onloadedmetadata = () => {
+      if (Number.isFinite(v.duration)) {
+        terminar(v.duration);
+        return;
+      }
+      v.ontimeupdate = () => {
+        v.ontimeupdate = null;
+        terminar(Number.isFinite(v.duration) ? v.duration : null);
+      };
+      v.currentTime = 1e101;
+    };
+    v.onerror = () => terminar(null);
+    setTimeout(() => terminar(null), 3000);
+
+    v.src = url;
+  });
 }
 
 /**

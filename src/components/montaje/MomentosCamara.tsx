@@ -43,6 +43,16 @@ export function MomentosCamara({
   const [error, setError] = useState<string | null>(null);
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
 
+  /**
+   * Cambiar la toma y sacar la camara son cosas distintas.
+   *
+   * Antes habia un solo boton, "Quitar", que borraba el video Y todos los
+   * momentos. Quien solo queria repetir la grabacion perdia la lista entera sin
+   * ningun aviso: seis momentos configurados a mano, en un click.
+   */
+  const [reemplazando, setReemplazando] = useState(false);
+  const [confirmandoQuitar, setConfirmandoQuitar] = useState(false);
+
   // El QR solo tiene sentido en la computadora: si ya estás en el teléfono, no
   // hay nada que puentear y el botón de subir abre la cámara igual.
   const [enComputadora, setEnComputadora] = useState(false);
@@ -54,14 +64,41 @@ export function MomentosCamara({
     return () => mq.removeEventListener("change", ver);
   }, []);
 
-  function usarVideo(storagePath: string) {
-    onCamara({
-      origenStoragePath: storagePath,
-      posicion: "ABAJO_DERECHA",
-      tamano: 0.32,
-      factorEnPausa: 1.6,
-      atenuacionDb: -12,
-    });
+  /**
+   * Deja el video nuevo conservando los ajustes que ya estaban.
+   *
+   * Al reemplazar, la posicion y el tamaño se mantienen: quien ya los acomodo
+   * no queria volver a empezar, solo cambiar la toma.
+   */
+  function aplicarVideo(storagePath: string) {
+    onCamara(
+      camara
+        ? { ...camara, origenStoragePath: storagePath }
+        : {
+            origenStoragePath: storagePath,
+            posicion: "ABAJO_DERECHA",
+            tamano: 0.32,
+            factorEnPausa: 1.6,
+            atenuacionDb: -12,
+          },
+    );
+    setReemplazando(false);
+  }
+
+  function usarVideo(storagePath: string, duracionSeg: number | null) {
+    aplicarVideo(storagePath);
+    // Por el camino del QR la duracion la mide el telefono. Sin esto el aviso
+    // de "los momentos piden mas grabacion de la que hay" no funcionaba nunca
+    // grabando con el telefono, que es el camino principal.
+    setDuracionGrabacion(duracionSeg ?? 0);
+  }
+
+  function quitar() {
+    onCamara(null);
+    onMomentos([]);
+    setDuracionGrabacion(0);
+    setConfirmandoQuitar(false);
+    setReemplazando(false);
   }
 
   const final = duracionFinal(duracionBase, momentos);
@@ -93,13 +130,7 @@ export function MomentosCamara({
     setSubiendo(true);
     try {
       const r = await uploadCamara(file);
-      onCamara({
-        origenStoragePath: r.storagePath,
-        posicion: "ABAJO_DERECHA",
-        tamano: 0.32,
-        factorEnPausa: 1.6,
-        atenuacionDb: -12,
-      });
+      aplicarVideo(r.storagePath);
       // La duración real la mide el navegador: sirve para avisar antes de
       // generar si los momentos piden más grabación de la que hay.
       const url = URL.createObjectURL(file);
@@ -124,8 +155,21 @@ export function MomentosCamara({
         Aparecer en el video
       </h3>
 
-      {!camara ? (
+      {!camara || reemplazando ? (
         <div className="mt-2 space-y-2">
+          {reemplazando && (
+            <div className="flex items-center justify-between gap-2 text-[11px]">
+              <span className="text-white/40">
+                Mandá la toma nueva. Los momentos y los ajustes se mantienen.
+              </span>
+              <button
+                onClick={() => setReemplazando(false)}
+                className="shrink-0 text-white/40 underline"
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
           {enComputadora && (
             <GrabarConTelefono pageId={pageId} onVideo={usarVideo} />
           )}
@@ -157,16 +201,51 @@ export function MomentosCamara({
               Video cargado
               {duracionGrabacion > 0 && ` · ${duracionGrabacion.toFixed(0)}s`}
             </span>
-            <button
-              onClick={() => {
-                onCamara(null);
-                onMomentos([]);
-              }}
-              className="text-white/40 transition hover:text-red-400"
-            >
-              Quitar
-            </button>
+            <span className="flex gap-3">
+              <button
+                onClick={() => {
+                  setReemplazando(true);
+                  setConfirmandoQuitar(false);
+                }}
+                className="text-white/40 transition hover:text-white"
+              >
+                Cambiar
+              </button>
+              <button
+                onClick={() =>
+                  momentos.length ? setConfirmandoQuitar(true) : quitar()
+                }
+                className="text-white/40 transition hover:text-red-400"
+              >
+                Quitar
+              </button>
+            </span>
           </div>
+
+          {/* Solo cuando hay algo que perder. Sin momentos configurados, pedir
+              confirmacion es un tramite de mas. */}
+          {confirmandoQuitar && (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2.5 text-[11px]">
+              <p className="text-white/70">
+                Se borran también los {momentos.length} momentos. Si solo querés
+                otra toma, usá <strong>Cambiar</strong>.
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={quitar}
+                  className="rounded-lg bg-red-500/80 px-2.5 py-1 font-medium text-white"
+                >
+                  Quitar igual
+                </button>
+                <button
+                  onClick={() => setConfirmandoQuitar(false)}
+                  className="rounded-lg border border-white/15 px-2.5 py-1 text-white/60"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] text-white/35">Posición</span>

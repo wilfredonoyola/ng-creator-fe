@@ -396,22 +396,62 @@ export async function uploadPortada(
   return { url: json.url, path: json.path, storagePath: json.storagePath };
 }
 
-/** Sube el video de cámara que se compone sobre un montaje. */
-export async function uploadCamara(file: File): Promise<UploadResult> {
+/**
+ * Sube el video de cámara que se compone sobre un montaje.
+ *
+ * `XMLHttpRequest` y no `fetch`: fetch no expone el avance de la subida, y este
+ * es el único upload que se hace desde el teléfono. Dos minutos a 1080p son
+ * decenas de megas, que por datos móviles es un minuto largo; un spinner sin
+ * números durante todo ese rato se lee como colgado, y lo que sigue es cerrar
+ * la pestaña con la subida a mitad de camino.
+ *
+ * `onAvance` recibe el porcentaje entero. Es opcional: desde la computadora la
+ * subida es lo bastante rápida como para que no haga falta.
+ */
+export function uploadCamara(
+  file: File,
+  onAvance?: (porcentaje: number) => void,
+): Promise<UploadResult> {
   const token = getAuthToken();
-  if (!token) throw new Error("Sesión requerida para subir el video");
+  if (!token) {
+    return Promise.reject(new Error("Sesión requerida para subir el video"));
+  }
 
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await fetch(`${API_BASE_URL}/uploads/camara`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE_URL}/uploads/camara`);
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        onAvance?.(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      let json: any = {};
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch {
+        // Un cuerpo que no es JSON solo puede significar que fallo antes de
+        // llegar al handler; el status de abajo es el que decide.
+      }
+      if (xhr.status < 200 || xhr.status >= 300 || !json.success) {
+        reject(new Error(json.message || "No se pudo subir el video"));
+        return;
+      }
+      resolve({ url: json.url, path: json.path, storagePath: json.storagePath });
+    };
+
+    // Un corte de red no deja mensaje propio: sin esto el error que llega es un
+    // ProgressEvent vacio y la pantalla no sabe que decir.
+    xhr.onerror = () =>
+      reject(new Error("Se cortó la conexión mientras se subía el video"));
+    xhr.onabort = () => reject(new Error("Se canceló la subida"));
+
+    xhr.send(formData);
   });
-  const json = await response.json().catch(() => ({}));
-  if (!response.ok || !json.success) {
-    throw new Error(json.message || "No se pudo subir el video");
-  }
-  return { url: json.url, path: json.path, storagePath: json.storagePath };
 }
