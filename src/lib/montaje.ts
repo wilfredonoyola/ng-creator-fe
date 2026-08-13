@@ -82,6 +82,13 @@ export interface Momento {
   origenStoragePath?: string;
 }
 
+/** Volumen del video de origen. Tres niveles alcanzan para decidirlo. */
+export const VOLUMENES: { valor: number; etiqueta: string }[] = [
+  { valor: 1, etiqueta: "Normal" },
+  { valor: 0.25, etiqueta: "Bajo" },
+  { valor: 0, etiqueta: "Mudo" },
+];
+
 /** Niveles de suavizado. Tres opciones, no un slider: nadie afina esto al 3%. */
 export const SUAVIZADOS: { valor: number; etiqueta: string }[] = [
   { valor: 0, etiqueta: "Natural" },
@@ -110,6 +117,8 @@ export interface Montaje {
   textoInferior: Texto;
   camara: Camara | null;
   momentos: Momento[];
+  /** Volumen del video de origen, 0 a 1. Distinto de la atenuación por aparición. */
+  volumenVideo: number;
   /** Subtítulos palabra por palabra, transcritos y quemados en el render. */
   subtitulos: { activos: boolean; video: boolean; camara: boolean };
 }
@@ -164,6 +173,7 @@ export function montajeInicial(): Montaje {
     textoInferior: textoVacio(0.88),
     camara: null,
     momentos: [],
+    volumenVideo: 1,
     // Los dos por defecto: quien mira no distingue de dónde sale cada voz, y
     // subtitular solo una mitad se nota como un error.
     subtitulos: { activos: false, video: true, camara: true },
