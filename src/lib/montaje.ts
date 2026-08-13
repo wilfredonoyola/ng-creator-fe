@@ -58,7 +58,7 @@ export interface Texto {
 }
 
 export type TipoMomento = "APARICION" | "PAUSA";
-export type PosicionCamara = "ABAJO_DERECHA" | "ABAJO_CENTRO";
+export type PosicionCamara = "ABAJO_DERECHA" | "ABAJO_CENTRO" | "BANDA_ABAJO";
 
 /**
  * Un momento en el que aparece la cámara propia.
@@ -156,6 +156,72 @@ export function montajeInicial(): Montaje {
   };
 }
 
+/**
+ * Formatos completos: una decisión en lugar de seis.
+ *
+ * Antes había que acomodar a mano el lienzo, el fondo, dónde va el video, la
+ * forma de la cámara y los momentos —cinco controles repartidos en dos columnas
+ * de la pantalla— para llegar a algo que en realidad es UN formato conocido.
+ * Elegirlo de una es la diferencia entre un editor y un tablero de perillas.
+ *
+ * `momentos` recibe la duración del tramo porque un formato que te acompaña todo
+ * el video necesita saber cuánto dura.
+ */
+export const FORMATOS_LISTOS: {
+  id: string;
+  nombre: string;
+  detalle: string;
+  /** Qué cambia del montaje. Lo que no está acá se deja como estaba. */
+  ajustes: (m: Montaje) => Partial<Montaje>;
+  momentos: (duracion: number) => Omit<Momento, "id">[];
+}[] = [
+  {
+    id: "reaccion",
+    nombre: "Reacción",
+    detalle:
+      "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa.",
+    ajustes: (m) => ({
+      // El video sube para dejarle la mitad de abajo a la banda; si quedara
+      // centrado, la banda le taparía justo lo que se está comentando.
+      video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.28 },
+      fondo: { ...m.fondo, tipo: "SOLIDO" },
+      camara: {
+        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12 }),
+        posicion: "BANDA_ABAJO",
+        tamano: 0.45,
+      },
+    }),
+    momentos: (d) => [{ tipo: "APARICION", desdeSeg: 0, duracionSeg: d }],
+  },
+  {
+    id: "comentario",
+    nombre: "Comentario",
+    detalle:
+      "El video llena la pantalla y vos aparecés en un círculo. Para acotar algo sin taparlo.",
+    ajustes: (m) => ({
+      video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
+      camara: {
+        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12 }),
+        posicion: "ABAJO_DERECHA",
+        tamano: 0.32,
+      },
+    }),
+    momentos: (d) => [
+      { tipo: "APARICION", desdeSeg: 0, duracionSeg: Math.min(5, d) },
+    ],
+  },
+  {
+    id: "simple",
+    nombre: "Solo el video",
+    detalle: "Sin cámara. Solo reencuadrar y publicar.",
+    ajustes: (m) => ({
+      video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
+      camara: null,
+    }),
+    momentos: () => [],
+  },
+];
+
 /** Lo que Meta admite en un Reel. Con pausas es fácil pasarse sin notarlo. */
 export const LIMITE_REEL_SEG = 90;
 
@@ -213,6 +279,15 @@ export function geometriaCamara(
       alto: lienzo.alto,
       redonda: false,
     };
+  }
+
+  // La banda no es un círculo más grande: es el formato de reacción, con el
+  // video de tercero arriba y quien comenta abajo, los dos visibles todo el
+  // tiempo. Sin margen, a todo el ancho, y `tamano` se lee como fracción del
+  // ALTO, que es lo que se ajusta cuando definís cuánta pantalla te llevás.
+  if (camara.posicion === "BANDA_ABAJO") {
+    const alto = par(lienzo.alto * limitar(camara.tamano, 0.15, 0.85));
+    return { x: 0, y: lienzo.alto - alto, ancho: lienzo.ancho, alto, redonda: false };
   }
 
   const diametro = par(lienzo.ancho * limitar(camara.tamano, 0.1, 0.9));

@@ -13,6 +13,7 @@ import { useSesion } from "@/lib/sesion";
 import { downloadFromTikTok } from "@/lib/upload";
 import {
   FORMATOS,
+  FORMATOS_LISTOS,
   PROPORCIONES,
   montajeInicial,
   duracionFinal,
@@ -171,6 +172,29 @@ export default function MontajePage() {
   const cambiar = useCallback((parcial: Partial<Montaje>) => {
     setMontaje((m) => ({ ...m, ...parcial }));
   }, []);
+
+  /**
+   * El formato elegido, solo para marcar cuál está activo.
+   *
+   * No se guarda en el montaje: lo que importa es el resultado, no de qué botón
+   * salió. Si después movés algo a mano, el montaje sigue siendo válido aunque
+   * ya no coincida con ningún preset.
+   */
+  const [formatoElegido, setFormatoElegido] = useState<string | null>(null);
+
+  function aplicarFormato(id: string) {
+    const f = FORMATOS_LISTOS.find((x) => x.id === id);
+    if (!f) return;
+    setFormatoElegido(id);
+    setMontaje((m) => ({
+      ...m,
+      ...f.ajustes(m),
+      momentos: f.momentos(duracionTrim).map((mo, i) => ({
+        ...mo,
+        id: `${id}-${i}`,
+      })),
+    }));
+  }
 
   /**
    * Los videos del preview se registran acá para poder moverlos junto al
@@ -703,6 +727,43 @@ export default function MontajePage() {
 
             {/* Lo opcional viene plegado: el camino corto es pegar el link,
                 encuadrar y generar. Desplegarlo es una decisión, no un peaje. */}
+            {/* Un formato en vez de seis decisiones sueltas.
+                Antes había que acomodar a mano el lienzo, el fondo, dónde va el
+                video, la forma de la cámara y los momentos —cinco controles
+                repartidos en dos columnas— para llegar a algo que en realidad es
+                UN formato conocido. */}
+            {fuente && (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <h3 className="text-xs font-medium uppercase tracking-wider text-white/35">
+                  Qué querés armar
+                </h3>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                  {FORMATOS_LISTOS.map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => aplicarFormato(f.id)}
+                      className={`rounded-xl border p-3 text-left transition ${
+                        formatoElegido === f.id
+                          ? "border-[#0FED9D]/60 bg-[#0FED9D]/10"
+                          : "border-white/10 hover:border-white/25 hover:bg-white/5"
+                      }`}
+                    >
+                      <span
+                        className={`block text-xs font-semibold ${
+                          formatoElegido === f.id ? "text-[#0FED9D]" : "text-white/80"
+                        }`}
+                      >
+                        {f.nombre}
+                      </span>
+                      <span className="mt-1 block text-[11px] leading-snug text-white/40">
+                        {f.detalle}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <BloqueOpcional
               numero={2}
               titulo="Titulares"
@@ -747,6 +808,104 @@ export default function MontajePage() {
                 onMomentos={(momentos) => cambiar({ momentos })}
               />
             </BloqueOpcional>
+
+            {/* Los ajustes del lienzo estaban en la columna de la derecha,
+                que debería ser solo para MIRAR. Con decisiones de los dos lados
+                uno termina editando en dos lugares a la vez, y "Tamaño" y
+                "Posición" significaban una cosa acá y otra allá. Ahora viven
+                donde se decide, y plegados: casi nunca hay que tocarlos. */}
+            <BloqueOpcional
+              numero={4}
+              titulo="Ajustes del lienzo"
+              resumen={`${montaje.lienzo.ancho}×${montaje.lienzo.alto} · ${
+                montaje.fondo.tipo === "SOLIDO" ? "fondo liso" : "desenfoque"
+              }`}
+            >
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] text-white/35">Formato</span>
+                  {FORMATOS.map((f) => (
+                    <Chip
+                      key={f.id}
+                      activo={
+                        montaje.lienzo.ancho === f.ancho &&
+                        montaje.lienzo.alto === f.alto
+                      }
+                      onClick={() =>
+                        cambiar({
+                          lienzo: { ...montaje.lienzo, ancho: f.ancho, alto: f.alto },
+                        })
+                      }
+                    >
+                      {f.etiqueta}
+                    </Chip>
+                  ))}
+                </div>
+
+                <div className="mt-3 space-y-2 rounded-xl border border-white/10 bg-black/20 p-3">
+                  <Deslizador
+                    etiqueta="Tamaño"
+                    valor={montaje.video.escala}
+                    min={0.2}
+                    max={2}
+                    paso={0.01}
+                    formato={(v) => `${Math.round(v * 100)}%`}
+                    onCambio={(escala) =>
+                      cambiar({ video: { ...montaje.video, escala } })
+                    }
+                  />
+                  <Deslizador
+                    etiqueta="Posición"
+                    valor={montaje.video.centroY}
+                    min={0}
+                    max={1}
+                    paso={0.005}
+                    formato={(v) => `${Math.round(v * 100)}%`}
+                    onCambio={(centroY) =>
+                      cambiar({ video: { ...montaje.video, centroY } })
+                    }
+                  />
+                  <button
+                    onClick={() =>
+                      cambiar({ video: { escala: 1, centroX: 0.5, centroY: 0.5 } })
+                    }
+                    className="w-full rounded-lg border border-white/10 py-2 text-xs text-white/50 transition hover:bg-white/5"
+                  >
+                    Centrar
+                  </button>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] text-white/35">Fondo</span>
+                  <Chip
+                    activo={montaje.fondo.tipo === "SOLIDO"}
+                    onClick={() =>
+                      cambiar({ fondo: { ...montaje.fondo, tipo: "SOLIDO" } })
+                    }
+                  >
+                    Color
+                  </Chip>
+                  <Chip
+                    activo={montaje.fondo.tipo === "DESENFOQUE"}
+                    onClick={() =>
+                      cambiar({ fondo: { ...montaje.fondo, tipo: "DESENFOQUE" } })
+                    }
+                  >
+                    Desenfoque
+                  </Chip>
+                  {montaje.fondo.tipo === "SOLIDO" && (
+                    <input
+                      type="color"
+                      value={montaje.fondo.color}
+                      onChange={(e) =>
+                        cambiar({ fondo: { ...montaje.fondo, color: e.target.value } })
+                      }
+                      className="h-7 w-10 cursor-pointer rounded border border-white/10 bg-transparent"
+                    />
+                  )}
+                </div>
+              </div>
+            </BloqueOpcional>
           </div>
 
           <div className="order-first space-y-3 self-start lg:order-none lg:sticky lg:top-4">
@@ -776,88 +935,6 @@ export default function MontajePage() {
               sonido={sonido}
             />
             </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-[11px] text-white/35">Formato</span>
-            {FORMATOS.map((f) => (
-              <Chip
-                key={f.id}
-                activo={
-                  montaje.lienzo.ancho === f.ancho &&
-                  montaje.lienzo.alto === f.alto
-                }
-                onClick={() =>
-                  cambiar({
-                    lienzo: { ...montaje.lienzo, ancho: f.ancho, alto: f.alto },
-                  })
-                }
-              >
-                {f.etiqueta}
-              </Chip>
-            ))}
-          </div>
-
-          <div className="mt-3 space-y-2 rounded-xl border border-white/10 bg-black/20 p-3">
-            <Deslizador
-              etiqueta="Tamaño"
-              valor={montaje.video.escala}
-              min={0.2}
-              max={2}
-              paso={0.01}
-              formato={(v) => `${Math.round(v * 100)}%`}
-              onCambio={(escala) =>
-                cambiar({ video: { ...montaje.video, escala } })
-              }
-            />
-            <Deslizador
-              etiqueta="Posición"
-              valor={montaje.video.centroY}
-              min={0}
-              max={1}
-              paso={0.005}
-              formato={(v) => `${Math.round(v * 100)}%`}
-              onCambio={(centroY) =>
-                cambiar({ video: { ...montaje.video, centroY } })
-              }
-            />
-            <button
-              onClick={() =>
-                cambiar({ video: { escala: 1, centroX: 0.5, centroY: 0.5 } })
-              }
-              className="w-full rounded-lg border border-white/10 py-2 text-xs text-white/50 transition hover:bg-white/5"
-            >
-              Centrar
-            </button>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-[11px] text-white/35">Fondo</span>
-            <Chip
-              activo={montaje.fondo.tipo === "SOLIDO"}
-              onClick={() =>
-                cambiar({ fondo: { ...montaje.fondo, tipo: "SOLIDO" } })
-              }
-            >
-              Color
-            </Chip>
-            <Chip
-              activo={montaje.fondo.tipo === "DESENFOQUE"}
-              onClick={() =>
-                cambiar({ fondo: { ...montaje.fondo, tipo: "DESENFOQUE" } })
-              }
-            >
-              Desenfoque
-            </Chip>
-            {montaje.fondo.tipo === "SOLIDO" && (
-              <input
-                type="color"
-                value={montaje.fondo.color}
-                onChange={(e) =>
-                  cambiar({ fondo: { ...montaje.fondo, color: e.target.value } })
-                }
-                className="h-7 w-10 cursor-pointer rounded border border-white/10 bg-transparent"
-              />
-            )}
-          </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="space-y-3">

@@ -483,11 +483,12 @@ export function MomentosCamara({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Posición</span>
+                  <span className="text-[11px] text-white/35">Dónde aparecés</span>
                   {(
                     [
                       ["ABAJO_DERECHA", "Abajo derecha"],
                       ["ABAJO_CENTRO", "Abajo centro"],
+                      ["BANDA_ABAJO", "Banda abajo"],
                     ] as [PosicionCamara, string][]
                   ).map(([valor, etiqueta]) => (
                     <button
@@ -506,15 +507,17 @@ export function MomentosCamara({
 
                 <label className="block">
                   <span className="flex items-center justify-between text-[11px] text-white/40">
-                    Tamaño del círculo
+                    {camara.posicion === "BANDA_ABAJO"
+                      ? "Alto de la banda"
+                      : "Tamaño del círculo"}
                     <span className="text-white/60">
                       {Math.round(camara.tamano * 100)}%
                     </span>
                   </span>
                   <input
                     type="range"
-                    min={0.15}
-                    max={0.6}
+                    min={camara.posicion === "BANDA_ABAJO" ? 0.25 : 0.15}
+                    max={camara.posicion === "BANDA_ABAJO" ? 0.7 : 0.6}
                     step={0.01}
                     value={camara.tamano}
                     onChange={(e) =>
