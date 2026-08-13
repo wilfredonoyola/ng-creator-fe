@@ -483,7 +483,7 @@ export function MomentosCamara({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Posición</span>
+                  <span className="text-[11px] text-white/35">Dónde aparecés</span>
                   {(
                     [
                       ["ABAJO_DERECHA", "Abajo derecha"],
