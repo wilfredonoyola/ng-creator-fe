@@ -14,6 +14,7 @@ import { downloadFromTikTok } from "@/lib/upload";
 import {
   FORMATOS,
   FORMATOS_LISTOS,
+  encajarVideoSobreBanda,
   PROPORCIONES,
   montajeInicial,
   duracionFinal,
@@ -119,6 +120,8 @@ export default function MontajePage() {
   const [montaje, setMontaje] = useState<Montaje>(montajeInicial());
   const [proporcion, setProporcion] = useState<string>("libre");
   const [licenciaId, setLicenciaId] = useState("");
+  /** La licencia se mira al publicar, no mientras se edita. */
+  const [verLicencia, setVerLicencia] = useState(false);
 
   const { data: licenciasData } = useQuery(LICENSES);
   const licencias: Licencia[] = (licenciasData?.licenses ?? []).filter(
@@ -144,6 +147,15 @@ export default function MontajePage() {
 
   const zonaPaneles = useRef<HTMLDivElement>(null);
   const altoPanel = useAltoDisponible(zonaPaneles);
+  /** El preview es lo que mas se mira: no comparte el tope del editor. */
+  const [altoPreview, setAltoPreview] = useState(560);
+  useEffect(() => {
+    const medir = () =>
+      setAltoPreview(Math.max(360, Math.min(640, window.innerHeight - 230)));
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
   const esMovil = useEsMovil();
 
   const videoMaestro = useRef<HTMLVideoElement | null>(null);
@@ -214,13 +226,27 @@ export default function MontajePage() {
     localStorage.setItem("montajeModo", m);
   }
 
+  /**
+   * Con la cámara en banda, mover su alto reacomoda el video.
+   *
+   * Son dos mitades de una misma decisión: agrandar la banda sin achicar el
+   * video deja al video tapado, y achicarla deja negro. Pedirle a alguien que
+   * ajuste las dos a mano es pedirle que haga la cuenta.
+   */
+  const alturaBanda =
+    montaje.camara?.posicion === "BANDA_ABAJO" ? montaje.camara.tamano : null;
+  useEffect(() => {
+    if (alturaBanda === null || !fuente) return;
+    setMontaje((m) => ({ ...m, video: encajarVideoSobreBanda(m, aspectoFuente) }));
+  }, [alturaBanda, aspectoFuente, fuente]);
+
   function aplicarFormato(id: string) {
     const f = FORMATOS_LISTOS.find((x) => x.id === id);
     if (!f) return;
     setFormatoElegido(id);
     setMontaje((m) => ({
       ...m,
-      ...f.ajustes(m),
+      ...f.ajustes(m, aspectoFuente),
       momentos: f.momentos(duracionTrim).map((mo, i) => ({
         ...mo,
         id: `${id}-${i}`,
@@ -545,7 +571,7 @@ export default function MontajePage() {
       )}
 
       {/* Paso 1: el link */}
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+      <div className="mx-auto mb-4 flex w-full max-w-[970px] flex-col gap-2 sm:flex-row">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
@@ -579,7 +605,7 @@ export default function MontajePage() {
             la izquierda la modifica: antes los titulares estaban cien lineas
             debajo del preview, o sea que se escribia a ciegas justo donde mas
             falta verlo. */}
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,330px)]">
+        <div className="grid justify-center gap-5 lg:grid-cols-[minmax(0,600px)_minmax(0,400px)]">
           <div ref={zonaPaneles} className="min-w-0 space-y-4">
             {/* La barra de pasos. Con todos los paneles abiertos hay que saber
                 en que orden atacarlos; una pregunta por vez saca esa carga. */}
@@ -762,48 +788,14 @@ export default function MontajePage() {
                     </p>
                   )}
 
-                  {/* Antes habia un solo boton que SIEMPRE volvia al principio:
-                      para revisar un detalle del segundo 40 habia que mirar los
-                      40 anteriores, y no habia forma de frenar ni de escuchar. */}
-                  <div className="mt-2 flex items-center gap-1.5">
-                    <button
-                      onClick={alternarReproduccion}
-                      className="flex-1 rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
-                    >
-                      {reproduciendo ? "⏸ Pausar" : "▶ Reproducir"}
-                    </button>
-                    <button
-                      onClick={desdeElInicio}
-                      title="Volver al inicio del tramo"
-                      aria-label="Volver al inicio del tramo"
-                      className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5"
-                    >
-                      ⏮
-                    </button>
-                    <button
-                      onClick={() => setSonido((s) => !s)}
-                      title={sonido ? "Silenciar" : "Activar el sonido"}
-                      aria-label={sonido ? "Silenciar" : "Activar el sonido"}
-                      className={`rounded-lg border px-3 py-2 text-xs transition ${
-                        sonido
-                          ? "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]"
-                          : "border-white/10 text-white/60 hover:bg-white/5"
-                      }`}
-                    >
-                      {sonido ? "🔊" : "🔇"}
-                    </button>
-                  </div>
                 </div>
               )}
               </div>
               </div>
             </>
           ) : (
-            <div
-              className="mx-auto flex aspect-[9/16] w-full items-center justify-center rounded-xl border border-dashed border-white/15 px-6 text-center text-xs text-white/25 sm:mx-0"
-              style={{ maxWidth: (altoPanel * 9) / 16 }}
-            >
-              Pegá un link de TikTok arriba
+            <div className="flex items-center justify-center rounded-xl border border-dashed border-white/15 px-6 py-10 text-center text-xs text-white/25">
+              Pegá un link de TikTok arriba para empezar
             </div>
           )}
             </Bloque>
@@ -931,7 +923,7 @@ export default function MontajePage() {
             </BloqueOpcional>
 
             {guiado && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <button
                   onClick={() => setPaso((n) => Math.max(1, n - 1))}
                   disabled={paso === 1}
@@ -942,14 +934,14 @@ export default function MontajePage() {
                 {paso < PASOS.length ? (
                   <button
                     onClick={() => setPaso((n) => Math.min(PASOS.length, n + 1))}
-                    className="flex-1 rounded-lg bg-white/10 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
+                    className="rounded-lg bg-white/10 px-6 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
                   >
                     {/* Los opcionales lo dicen: seguir sin tocarlos es una
                         opcion valida, no algo que uno se saltea mal. */}
                     {paso === 4 || paso === 5 ? "Saltear" : "Siguiente"}
                   </button>
                 ) : (
-                  <span className="flex-1 text-center text-[11px] text-white/35">
+                  <span className="text-[11px] text-white/35">
                     Listo — generá el video con el botón de la derecha
                   </span>
                 )}
@@ -1056,7 +1048,11 @@ export default function MontajePage() {
             </BloqueOpcional>
           </div>
 
-          <div className="order-first space-y-3 self-start lg:order-none lg:sticky lg:top-4">
+          <div
+            className={`order-first space-y-3 self-start lg:order-none lg:sticky lg:top-4 ${
+              fuente ? "" : "hidden"
+            }`}
+          >
             <h2 className="hidden text-xs font-medium uppercase tracking-wider text-white/35 lg:block">
               Cómo va a quedar
             </h2>
@@ -1066,9 +1062,14 @@ export default function MontajePage() {
             <div
               className="mx-auto w-full lg:static lg:bg-transparent lg:py-0 sticky top-0 z-20 bg-[#0a0a0a] py-2"
               style={{
+                // El preview heredaba el tope de alto del editor —400px— y en
+                // 9:16 eso lo dejaba en 225 de ancho: una miniatura para juzgar
+                // encuadre, tamaño de la banda y legibilidad del texto. Es lo
+                // que mas se mira de la pantalla, asi que se le da su propio
+                // limite, atado al alto de la ventana para que no se corte.
                 maxWidth: Math.min(
-                  esMovil ? 130 : 300,
-                  ((esMovil ? 230 : altoPanel) * montaje.lienzo.ancho) /
+                  esMovil ? 150 : 360,
+                  ((esMovil ? 260 : altoPreview) * montaje.lienzo.ancho) /
                     montaje.lienzo.alto,
                 ),
               }}
@@ -1083,48 +1084,57 @@ export default function MontajePage() {
               sonido={sonido}
             />
             </div>
+            {/* Antes habia un solo boton que SIEMPRE volvia al principio:
+                para revisar un detalle del segundo 40 habia que mirar los
+                40 anteriores, y no habia forma de frenar ni de escuchar. */}
+            <div className="mt-2 flex items-center gap-1.5">
+              <button
+                onClick={alternarReproduccion}
+                className="flex-1 rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
+              >
+                {reproduciendo ? "⏸ Pausar" : "▶ Reproducir"}
+              </button>
+              <button
+                onClick={desdeElInicio}
+                title="Volver al inicio del tramo"
+                aria-label="Volver al inicio del tramo"
+                className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5"
+              >
+                ⏮
+              </button>
+              <button
+                onClick={() => setSonido((s) => !s)}
+                title={sonido ? "Silenciar" : "Activar el sonido"}
+                aria-label={sonido ? "Silenciar" : "Activar el sonido"}
+                className={`rounded-lg border px-3 py-2 text-xs transition ${
+                  sonido
+                    ? "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]"
+                    : "border-white/10 text-white/60 hover:bg-white/5"
+                }`}
+              >
+                {sonido ? "🔊" : "🔇"}
+              </button>
+            </div>
+
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="space-y-3">
-          <div className="min-w-0 flex-1">
-            <label className="mb-1.5 block text-xs font-medium text-white/60">
-              Licencia
-            </label>
-            <select
-              value={licenciaId}
-              onChange={(e) => setLicenciaId(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
-            >
-              <option value="">Sin verificar (no pedí permiso)</option>
-              {licencias.map((l) => (
-                <option key={l._id} value={l._id} className="bg-[#111]">
-                  {l.scope}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1.5 text-[11px] text-white/30">
-              {licenciaId ? (
-                "El material queda con la licencia que elegiste."
-              ) : (
-                <>
-                  Se registra una licencia marcada{" "}
-                  <span className="text-amber-400/70">sin verificar</span> con el
-                  link de origen guardado. Podés regularizarla después desde{" "}
-                  <Link href="/creators" className="text-[#0FED9D] hover:underline">
-                    Creators
-                  </Link>
-                  .
-                </>
-              )}
-            </p>
-          </div>
-
           <button
             onClick={generar}
             disabled={!fuente || montando}
             className="rounded-lg bg-[#0FED9D] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
           >
             {montando ? "Generando…" : "Generar video"}
+          </button>
+
+          {/* La licencia como una linea y no como una tarjeta: importa al
+              publicar, no mientras se edita, y ocupaba lugar fijo diciendo algo
+              que casi nunca cambia. */}
+          <button
+            onClick={() => setVerLicencia(true)}
+            className="w-full text-center text-[11px] text-white/30 underline transition hover:text-white/60"
+          >
+            {licenciaId ? "Licencia elegida · cambiar" : "Sin licencia · elegir"}
           </button>
         </div>
       </div>
@@ -1157,6 +1167,67 @@ export default function MontajePage() {
           >
             {montando ? "Generando…" : "Generar"}
           </button>
+        </div>
+      )}
+
+      {verLicencia && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center"
+          onClick={() => setVerLicencia(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl border border-white/10 bg-[#111] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold">Licencia</h3>
+              <button
+                onClick={() => setVerLicencia(false)}
+                className="text-white/40 transition hover:text-white"
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+          <div className="min-w-0 flex-1">
+            <label className="mb-1.5 block text-xs font-medium text-white/60">
+              Licencia
+            </label>
+            <select
+              value={licenciaId}
+              onChange={(e) => setLicenciaId(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
+            >
+              <option value="">Sin verificar (no pedí permiso)</option>
+              {licencias.map((l) => (
+                <option key={l._id} value={l._id} className="bg-[#111]">
+                  {l.scope}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-[11px] text-white/30">
+              {licenciaId ? (
+                "El material queda con la licencia que elegiste."
+              ) : (
+                <>
+                  Se registra una licencia marcada{" "}
+                  <span className="text-amber-400/70">sin verificar</span> con el
+                  link de origen guardado. Podés regularizarla después desde{" "}
+                  <Link href="/creators" className="text-[#0FED9D] hover:underline">
+                    Creators
+                  </Link>
+                  .
+                </>
+              )}
+            </p>
+          </div>
+            <button
+              onClick={() => setVerLicencia(false)}
+              className="mt-3 w-full rounded-lg bg-white/10 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
+            >
+              Listo
+            </button>
+          </div>
         </div>
       )}
 

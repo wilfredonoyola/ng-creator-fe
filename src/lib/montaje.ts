@@ -162,6 +162,38 @@ export function montajeInicial(): Montaje {
 }
 
 /**
+ * Encaja el video para que llene justo lo que la banda deja libre.
+ *
+ * Sin esto quedaba una franja negra entre el video y la banda: el preset subía
+ * el video pero no lo dimensionaba contra el alto elegido, así que el resultado
+ * dependía de la proporción del recorte y casi nunca cerraba.
+ *
+ * Escala para CUBRIR y no para entrar: preferimos perder los costados antes que
+ * dejar aire. Es la misma decisión que toma el render con la cámara.
+ */
+export function encajarVideoSobreBanda(
+  m: Montaje,
+  aspectoFuente: number,
+): UbicacionVideo {
+  const alturaBanda = m.camara?.posicion === "BANDA_ABAJO" ? m.camara.tamano : 0;
+  const libre = Math.max(0.1, 1 - alturaBanda);
+
+  const proporcionRecorte =
+    (m.recorte.ancho * aspectoFuente) / Math.max(m.recorte.alto, 0.0001);
+
+  // Cuánto hay que escalar para que el alto del video cubra la zona libre.
+  const necesaria =
+    (m.lienzo.alto * libre * proporcionRecorte) / m.lienzo.ancho;
+
+  return {
+    escala: Math.max(1, necesaria),
+    centroX: 0.5,
+    // Centrado en la zona libre, no en el lienzo.
+    centroY: libre / 2,
+  };
+}
+
+/**
  * Formatos completos: una decisión en lugar de seis.
  *
  * Antes había que acomodar a mano el lienzo, el fondo, dónde va el video, la
@@ -177,7 +209,7 @@ export const FORMATOS_LISTOS: {
   nombre: string;
   detalle: string;
   /** Qué cambia del montaje. Lo que no está acá se deja como estaba. */
-  ajustes: (m: Montaje) => Partial<Montaje>;
+  ajustes: (m: Montaje, aspectoFuente: number) => Partial<Montaje>;
   momentos: (duracion: number) => Omit<Momento, "id">[];
 }[] = [
   {
@@ -185,17 +217,20 @@ export const FORMATOS_LISTOS: {
     nombre: "Reacción",
     detalle:
       "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa.",
-    ajustes: (m) => ({
-      // El video sube para dejarle la mitad de abajo a la banda; si quedara
-      // centrado, la banda le taparía justo lo que se está comentando.
-      video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.28 },
-      fondo: { ...m.fondo, tipo: "SOLIDO" },
-      camara: {
+    ajustes: (m, aspecto) => {
+      const camara: Camara = {
         ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12 }),
         posicion: "BANDA_ABAJO",
         tamano: 0.45,
-      },
-    }),
+      };
+      return {
+        camara,
+        fondo: { ...m.fondo, tipo: "SOLIDO" },
+        // El video llena exactamente lo que la banda deja libre: si quedara
+        // centrado o a escala 1, entre los dos aparece una franja negra.
+        video: encajarVideoSobreBanda({ ...m, camara }, aspecto),
+      };
+    },
     momentos: (d) => [{ tipo: "APARICION", desdeSeg: 0, duracionSeg: d }],
   },
   {

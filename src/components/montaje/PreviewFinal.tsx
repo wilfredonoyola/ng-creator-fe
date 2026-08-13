@@ -232,10 +232,16 @@ export function PreviewFinal({
         return;
       }
 
-      // El mismo fundido de 0.3s que aplica el render sobre el alfa.
+      // El mismo fundido de 0.3s que aplica el render sobre el alfa... pero solo
+      // mientras corre. Con el video PARADO el fundido es una trampa: una
+      // aparicion que arranca en el segundo 0 —que es justo lo que arma el
+      // formato de reaccion— daba opacidad 0 exacta, asi que la camara no se
+      // veia nunca hasta darle play. Detenido se muestra entera.
       const dentro = t - ap.desdeSeg;
       const restante = ap.duracionSeg - dentro;
-      const opacidad = Math.min(1, Math.min(dentro, restante) / 0.3);
+      const opacidad = base.paused
+        ? 1
+        : Math.min(1, Math.min(dentro, restante) / 0.3);
 
       const cam = camDe(ap);
       if (!cam) {
