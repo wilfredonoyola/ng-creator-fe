@@ -163,7 +163,21 @@ export function PreviewFinal({
           t <= m.desdeSeg + m.duracionSeg,
       );
       if (!ap) {
-        ocultar();
+        // Con el video detenido el circulo no cae en ningun momento y el panel
+        // se veia igual que antes: sin nada. Peor todavia, el slider de tamaño
+        // no daba ninguna respuesta, que es justo para lo que se mira acá.
+        //
+        // Asi que quieto se dibuja como GUIA, apagado, para que se lea "va a ir
+        // aca" y no "esto esta pasando ahora". Andando manda la linea de tiempo.
+        if (base.paused) {
+          const enPunto = guion.some(
+            (m) => m.tipo === "PAUSA" && Math.abs(t - m.desdeSeg) < 0.4,
+          );
+          colocar(enPunto, 0.55);
+          if (!cam.paused) cam.pause();
+        } else {
+          ocultar();
+        }
         requestAnimationFrame(paso);
         return;
       }
@@ -186,10 +200,19 @@ export function PreviewFinal({
       requestAnimationFrame(paso);
     };
 
+    // Safari no pinta un cuadro hasta que se busca uno: sin este empujón la
+    // guía se ve como un círculo negro hasta la primera reproducción.
+    const primerCuadro = () => {
+      if (cam.currentTime === 0) cam.currentTime = 0.05;
+    };
+    cam.addEventListener("loadeddata", primerCuadro);
+    if (cam.readyState >= 2) primerCuadro();
+
     const id = requestAnimationFrame(paso);
     return () => {
       vivo = false;
       cancelAnimationFrame(id);
+      cam.removeEventListener("loadeddata", primerCuadro);
       // Si el componente se va en medio de una pausa, los videos base quedarian
       // detenidos para siempre.
       if (enPausa) bases().forEach((v) => void v.play().catch(() => {}));
