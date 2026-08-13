@@ -32,6 +32,7 @@ export function PreviewFinal({
   registrarVideo,
   urlsPorRuta,
   duracionBase,
+  sonido = false,
 }: {
   montaje: Montaje;
   src: string | null;
@@ -40,6 +41,14 @@ export function PreviewFinal({
   /** Dónde mirar cada grabación, por ruta. Sin URL no se dibuja nada. */
   urlsPorRuta?: Record<string, string>;
   duracionBase?: number;
+  /**
+   * Si se escucha. El preview es la unica fuente de audio de la pantalla.
+   *
+   * No suena el video del editor: ese sigue corriendo durante una pausa, cuando
+   * justamente NO tiene que oirse nada del original. Acá el sonido acompaña a lo
+   * que se ve, que es de lo que se trata escuchar antes de generar.
+   */
+  sonido?: boolean;
 }) {
   const { lienzo, recorte, fondo } = montaje;
   const ubic = ubicacionEnLienzo(montaje, aspectoFuente);
@@ -314,7 +323,9 @@ export function PreviewFinal({
             ref={registrarVideo}
             data-base
             src={src}
-            muted
+            // El unico que lleva el audio del video base: el fondo desenfocado
+            // es una copia del mismo archivo y sonarian los dos encimados.
+            muted={!sonido}
             loop
             playsInline
             className="absolute max-w-none"
@@ -352,7 +363,7 @@ export function PreviewFinal({
                 else camaras.current.delete(ruta);
               }}
               src={urlsPorRuta?.[ruta]}
-              muted
+              muted={!sonido}
               playsInline
               preload="auto"
               className="absolute inset-0 h-full w-full object-cover"

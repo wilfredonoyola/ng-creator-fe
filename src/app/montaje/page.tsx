@@ -187,6 +187,52 @@ export default function MontajePage() {
     videosPreview.current.forEach(fn);
   }
 
+  /**
+   * Estado del reproductor.
+   *
+   * `reproduciendo` se sigue del video del editor y no de lo que se apretó: el
+   * preview detiene los videos por su cuenta durante una pausa, así que un
+   * booleano manejado a mano quedaría mintiendo apenas empieza la primera.
+   */
+  const [reproduciendo, setReproduciendo] = useState(false);
+  const [sonido, setSonido] = useState(false);
+
+  useEffect(() => {
+    const v = videoMaestro.current;
+    if (!v) return;
+    const anda = () => setReproduciendo(true);
+    const para = () => setReproduciendo(false);
+    v.addEventListener("play", anda);
+    v.addEventListener("pause", para);
+    v.addEventListener("ended", para);
+    return () => {
+      v.removeEventListener("play", anda);
+      v.removeEventListener("pause", para);
+      v.removeEventListener("ended", para);
+    };
+  }, [fuente]);
+
+  function alternarReproduccion() {
+    const v = videoMaestro.current;
+    // Si quedó al final del tramo, "reproducir" tiene que volver a empezar:
+    // apretar play y que no pase nada se siente como que está roto.
+    const alFinal = v && v.currentTime >= montaje.trim.hastaSeg - 0.1;
+    if (reproduciendo) {
+      conTodos((x) => x.pause());
+    } else if (alFinal) {
+      desdeElInicio();
+    } else {
+      conTodos((x) => void x.play().catch(() => {}));
+    }
+  }
+
+  function desdeElInicio() {
+    conTodos((v) => {
+      v.currentTime = montaje.trim.desdeSeg;
+      void v.play().catch(() => {});
+    });
+  }
+
   async function cargar() {
     if (!url.includes("tiktok.com")) {
       setError("Pegá un link de TikTok");
@@ -604,17 +650,37 @@ export default function MontajePage() {
                     </p>
                   )}
 
-                  <button
-                    onClick={() =>
-                      conTodos((v) => {
-                        v.currentTime = montaje.trim.desdeSeg;
-                        void v.play();
-                      })
-                    }
-                    className="mt-2 w-full rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
-                  >
-                    ▶ Reproducir el tramo
-                  </button>
+                  {/* Antes habia un solo boton que SIEMPRE volvia al principio:
+                      para revisar un detalle del segundo 40 habia que mirar los
+                      40 anteriores, y no habia forma de frenar ni de escuchar. */}
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <button
+                      onClick={alternarReproduccion}
+                      className="flex-1 rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
+                    >
+                      {reproduciendo ? "⏸ Pausar" : "▶ Reproducir"}
+                    </button>
+                    <button
+                      onClick={desdeElInicio}
+                      title="Volver al inicio del tramo"
+                      aria-label="Volver al inicio del tramo"
+                      className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5"
+                    >
+                      ⏮
+                    </button>
+                    <button
+                      onClick={() => setSonido((s) => !s)}
+                      title={sonido ? "Silenciar" : "Activar el sonido"}
+                      aria-label={sonido ? "Silenciar" : "Activar el sonido"}
+                      className={`rounded-lg border px-3 py-2 text-xs transition ${
+                        sonido
+                          ? "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]"
+                          : "border-white/10 text-white/60 hover:bg-white/5"
+                      }`}
+                    >
+                      {sonido ? "🔊" : "🔇"}
+                    </button>
+                  </div>
                 </div>
               )}
               </div>
@@ -702,6 +768,7 @@ export default function MontajePage() {
               registrarVideo={registrarVideo}
               urlsPorRuta={urlsPorRuta}
               duracionBase={duracionTrim}
+              sonido={sonido}
             />
             </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
