@@ -94,6 +94,35 @@ export function MomentosCamara({
     }
   }
 
+  /**
+   * La duracion real de la toma general, medida desde el archivo.
+   *
+   * Antes salia solo de lo que reportaba el telefono, y cuando ese numero venia
+   * en null —pasa en Safari con los webm— el aviso de "falta grabacion" quedaba
+   * desactivado en silencio. El resultado: el error aparecia recien al generar,
+   * despues de varios minutos de render.
+   *
+   * Medirlo aca no depende de nadie: el archivo ya esta subido y accesible.
+   */
+  useEffect(() => {
+    const url = camara?.origenStoragePath
+      ? urlsPorRuta[camara.origenStoragePath]
+      : null;
+    if (!url) return;
+    const v = document.createElement("video");
+    v.preload = "metadata";
+    v.onloadedmetadata = () => {
+      if (Number.isFinite(v.duration) && v.duration > 0) {
+        setDuracionGrabacion(v.duration);
+      }
+    };
+    v.src = url;
+    return () => {
+      v.onloadedmetadata = null;
+      v.src = "";
+    };
+  }, [camara?.origenStoragePath, urlsPorRuta]);
+
   // El QR solo tiene sentido en la computadora: si ya estás en el teléfono, no
   // hay nada que puentear y el botón de subir abre la cámara igual.
   const [enComputadora, setEnComputadora] = useState(false);
@@ -157,6 +186,25 @@ export function MomentosCamara({
     setDuracionGrabacion(0);
     setViendo(false);
     setReemplazando(false);
+  }
+
+  /**
+   * Encoge los momentos que comparten la toma hasta que entren.
+   *
+   * Proporcional y no recortando el ultimo: si alguien reparte 4s y 10s, dejarle
+   * el primero intacto y comerse el segundo cambia el sentido de lo que grabo.
+   * El 0.98 deja un margen para no quedar pegado al limite por redondeo.
+   */
+  function ajustarALaGrabacion() {
+    if (!duracionGrabacion) return;
+    const factor = (duracionGrabacion * 0.98) / Math.max(necesaria, 0.01);
+    onMomentos(
+      momentos.map((m) =>
+        m.origenStoragePath
+          ? m
+          : { ...m, duracionSeg: Math.max(0.5, Number((m.duracionSeg * factor).toFixed(1))) },
+      ),
+    );
   }
 
   function alternarVista() {
@@ -621,10 +669,21 @@ export function MomentosCamara({
               </p>
             )}
             {faltaGrabacion && (
-              <p className="text-red-400">
-                Los momentos piden {necesaria.toFixed(1)}s de la toma general y
-                tu video tiene {duracionGrabacion.toFixed(1)}s.
-              </p>
+              <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2.5">
+                <p className="text-red-400">
+                  Los momentos piden {necesaria.toFixed(1)}s de la toma general y
+                  tu video tiene {duracionGrabacion.toFixed(1)}s. Así no se puede
+                  generar.
+                </p>
+                {/* Resolverlo a mano es repartir la diferencia entre N momentos
+                    con una calculadora. La proporcion la puede hacer la app. */}
+                <button
+                  onClick={ajustarALaGrabacion}
+                  className="mt-2 rounded-lg bg-red-500/80 px-2.5 py-1 font-medium text-white"
+                >
+                  Acortar los momentos para que entren
+                </button>
+              </div>
             )}
           </div>
         )}
