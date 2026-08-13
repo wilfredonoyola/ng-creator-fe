@@ -449,8 +449,13 @@ export default function MontajePage() {
       {montando && (
         <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
           <div className="flex items-center justify-between text-sm">
+            {/* Arriba del 95% ffmpeg ya termino y lo que queda es subir a
+                Bunny, que son varias decenas de megas y no reporta avance.
+                Decirlo evita que el ultimo tramo se lea como un cuelgue. */}
             <span className="font-medium text-[#0FED9D]">
-              Componiendo el video · {Math.round(trabajo?.progreso ?? 0)}%
+              {(trabajo?.progreso ?? 0) >= 95
+                ? "Subiendo el video"
+                : `Componiendo el video · ${Math.round(trabajo?.progreso ?? 0)}%`}
             </span>
             <span className="text-xs text-white/40">
               {Math.floor(segundos / 60)}:
