@@ -101,6 +101,8 @@ export interface Montaje {
   textoInferior: Texto;
   camara: Camara | null;
   momentos: Momento[];
+  /** Subtítulos palabra por palabra, transcritos y quemados en el render. */
+  subtitulos: { activos: boolean; video: boolean; camara: boolean };
 }
 
 /** Formatos de salida. El alto sale del ancho para no arrastrar dos números. */
@@ -153,6 +155,9 @@ export function montajeInicial(): Montaje {
     textoInferior: textoVacio(0.88),
     camara: null,
     momentos: [],
+    // Los dos por defecto: quien mira no distingue de dónde sale cada voz, y
+    // subtitular solo una mitad se nota como un error.
+    subtitulos: { activos: false, video: true, camara: true },
   };
 }
 
