@@ -14,6 +14,7 @@ import { downloadFromTikTok } from "@/lib/upload";
 import {
   FORMATOS,
   FORMATOS_LISTOS,
+  VOLUMENES,
   encajarVideoSobreBanda,
   PROPORCIONES,
   montajeInicial,
@@ -386,6 +387,7 @@ export default function MontajePage() {
               ? montaje.textoInferior
               : null,
             camara: montaje.camara,
+            volumenVideo: montaje.volumenVideo,
             subtitulos: montaje.subtitulos,
             // El id de cada fila es solo para React; el backend no lo espera.
             momentos: montaje.camara
@@ -706,6 +708,22 @@ export default function MontajePage() {
               {/* Columna de controles: el video es vertical y angosto, asi que
                   debajo desperdiciaba todo el ancho de la fila. */}
               <div className="min-w-0 flex-1 space-y-3">
+              {/* El audio del video de origen. Es distinto de la atenuacion por
+                  aparicion: eso baja el original solo mientras hablas encima,
+                  esto es el nivel de base. */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[11px] text-white/35">Audio del video</span>
+                {VOLUMENES.map((v) => (
+                  <Chip
+                    key={v.etiqueta}
+                    activo={Math.abs(montaje.volumenVideo - v.valor) < 0.05}
+                    onClick={() => cambiar({ volumenVideo: v.valor })}
+                  >
+                    {v.etiqueta}
+                  </Chip>
+                ))}
+              </div>
+
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[11px] text-white/35">Proporción</span>
                 {PROPORCIONES.map((p) => (
