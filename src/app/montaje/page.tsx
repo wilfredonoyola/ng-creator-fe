@@ -328,6 +328,7 @@ export default function MontajePage() {
               ? montaje.textoInferior
               : null,
             camara: montaje.camara,
+            subtitulos: montaje.subtitulos,
             // El id de cada fila es solo para React; el backend no lo espera.
             momentos: montaje.camara
               ? montaje.momentos.map(
@@ -761,6 +762,35 @@ export default function MontajePage() {
                     </button>
                   ))}
                 </div>
+
+                {/* Un interruptor y nada mas. Elegir por separado si se
+                    subtitula el video o la camara es una pregunta que casi
+                    nadie quiere contestar: quien mira no distingue de donde
+                    sale cada voz. */}
+                <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-xl border border-white/10 p-3 transition hover:bg-white/5">
+                  <input
+                    type="checkbox"
+                    checked={montaje.subtitulos.activos}
+                    onChange={(e) =>
+                      cambiar({
+                        subtitulos: {
+                          ...montaje.subtitulos,
+                          activos: e.target.checked,
+                        },
+                      })
+                    }
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-[#0FED9D]"
+                  />
+                  <span>
+                    <span className="block text-xs font-medium text-white/80">
+                      Subtítulos automáticos
+                    </span>
+                    <span className="mt-0.5 block text-[11px] leading-snug text-white/40">
+                      Transcribe lo que se dice —el video y vos— y lo escribe
+                      palabra por palabra. Suma medio minuto al render.
+                    </span>
+                  </span>
+                </label>
               </div>
             )}
 
