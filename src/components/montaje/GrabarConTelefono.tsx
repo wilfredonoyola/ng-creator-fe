@@ -31,7 +31,11 @@ export function GrabarConTelefono({
   onVideo,
 }: {
   pageId: string;
-  onVideo: (storagePath: string, duracionSeg: number | null) => void;
+  onVideo: (
+    storagePath: string,
+    duracionSeg: number | null,
+    publicUrl: string | null,
+  ) => void;
 }) {
   const [qr, setQr] = useState<string | null>(null);
   const [sesionId, setSesionId] = useState<string | null>(null);
@@ -119,7 +123,15 @@ export function GrabarConTelefono({
           avisado.current = true;
           // La duracion la midio el telefono. Puede venir en null si el
           // navegador no supo medirla: es un aviso, no un requisito.
-          alLlegar.current(ruta, data.sesionGrabacion.duracionSeg ?? null);
+          //
+          // La `publicUrl` la arma el servidor y ya venia en la respuesta; solo
+          // que antes se descartaba, y con ella la unica forma de ver la toma
+          // antes de generar el video.
+          alLlegar.current(
+            ruta,
+            data.sesionGrabacion.duracionSeg ?? null,
+            data.sesionGrabacion.publicUrl ?? null,
+          );
           setQr(null);
           setSesionId(null);
         }
