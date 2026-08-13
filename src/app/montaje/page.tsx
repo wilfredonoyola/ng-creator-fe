@@ -571,7 +571,8 @@ export default function MontajePage() {
       )}
 
       {/* Paso 1: el link */}
-      <div className="mx-auto mb-4 flex w-full max-w-[970px] flex-col gap-2 sm:flex-row">
+      {ve(1) && (
+      <div className="mx-auto mb-4 flex w-full max-w-[1010px] flex-col gap-2 sm:flex-row">
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
@@ -587,6 +588,7 @@ export default function MontajePage() {
           {cargando ? "Descargando…" : "Cargar video"}
         </button>
       </div>
+      )}
 
       {error && (
         <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
@@ -885,7 +887,7 @@ export default function MontajePage() {
                   .join(" · ") || "Sin titulares"
               }
             >
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4">
                 <ControlesTexto
                   titulo="Titular de arriba"
                   texto={montaje.textoSuperior}
