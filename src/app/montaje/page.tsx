@@ -147,6 +147,15 @@ export default function MontajePage() {
 
   const zonaPaneles = useRef<HTMLDivElement>(null);
   const altoPanel = useAltoDisponible(zonaPaneles);
+  /** El preview es lo que mas se mira: no comparte el tope del editor. */
+  const [altoPreview, setAltoPreview] = useState(560);
+  useEffect(() => {
+    const medir = () =>
+      setAltoPreview(Math.max(360, Math.min(640, window.innerHeight - 230)));
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
   const esMovil = useEsMovil();
 
   const videoMaestro = useRef<HTMLVideoElement | null>(null);
@@ -596,7 +605,7 @@ export default function MontajePage() {
             la izquierda la modifica: antes los titulares estaban cien lineas
             debajo del preview, o sea que se escribia a ciegas justo donde mas
             falta verlo. */}
-        <div className="grid justify-center gap-5 lg:grid-cols-[minmax(0,620px)_minmax(0,330px)]">
+        <div className="grid justify-center gap-5 lg:grid-cols-[minmax(0,600px)_minmax(0,400px)]">
           <div ref={zonaPaneles} className="min-w-0 space-y-4">
             {/* La barra de pasos. Con todos los paneles abiertos hay que saber
                 en que orden atacarlos; una pregunta por vez saca esa carga. */}
@@ -1053,9 +1062,14 @@ export default function MontajePage() {
             <div
               className="mx-auto w-full lg:static lg:bg-transparent lg:py-0 sticky top-0 z-20 bg-[#0a0a0a] py-2"
               style={{
+                // El preview heredaba el tope de alto del editor —400px— y en
+                // 9:16 eso lo dejaba en 225 de ancho: una miniatura para juzgar
+                // encuadre, tamaño de la banda y legibilidad del texto. Es lo
+                // que mas se mira de la pantalla, asi que se le da su propio
+                // limite, atado al alto de la ventana para que no se corte.
                 maxWidth: Math.min(
-                  esMovil ? 130 : 300,
-                  ((esMovil ? 230 : altoPanel) * montaje.lienzo.ancho) /
+                  esMovil ? 150 : 360,
+                  ((esMovil ? 260 : altoPreview) * montaje.lienzo.ancho) /
                     montaje.lienzo.alto,
                 ),
               }}
