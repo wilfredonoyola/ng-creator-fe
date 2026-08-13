@@ -240,7 +240,17 @@ export const FORMATOS_LISTOS: {
         video: encajarVideoSobreBanda({ ...m, camara }, aspecto),
       };
     },
-    momentos: (d) => [{ tipo: "APARICION", desdeSeg: 0, duracionSeg: d }],
+    /**
+     * Los primeros 15 segundos, no el video entero.
+     *
+     * Cubrirlo todo obliga a hablar sin parar todo lo que dure: en un video de
+     * 84 segundos son 84 de monologo corrido, y ademas hay que grabarlo de una
+     * sola toma. Quince alcanzan para enganchar, y estirarlo es cambiar un
+     * numero; acortar un momento que no se pidio, no.
+     */
+    momentos: (d) => [
+      { tipo: "APARICION", desdeSeg: 0, duracionSeg: Math.min(15, d) },
+    ],
   },
   {
     id: "comentario",
