@@ -58,7 +58,7 @@ export interface Texto {
 }
 
 export type TipoMomento = "APARICION" | "PAUSA";
-export type PosicionCamara = "ABAJO_DERECHA" | "ABAJO_CENTRO";
+export type PosicionCamara = "ABAJO_DERECHA" | "ABAJO_CENTRO" | "BANDA_ABAJO";
 
 /**
  * Un momento en el que aparece la cámara propia.
@@ -213,6 +213,15 @@ export function geometriaCamara(
       alto: lienzo.alto,
       redonda: false,
     };
+  }
+
+  // La banda no es un círculo más grande: es el formato de reacción, con el
+  // video de tercero arriba y quien comenta abajo, los dos visibles todo el
+  // tiempo. Sin margen, a todo el ancho, y `tamano` se lee como fracción del
+  // ALTO, que es lo que se ajusta cuando definís cuánta pantalla te llevás.
+  if (camara.posicion === "BANDA_ABAJO") {
+    const alto = par(lienzo.alto * limitar(camara.tamano, 0.15, 0.85));
+    return { x: 0, y: lienzo.alto - alto, ancho: lienzo.ancho, alto, redonda: false };
   }
 
   const diametro = par(lienzo.ancho * limitar(camara.tamano, 0.1, 0.9));
