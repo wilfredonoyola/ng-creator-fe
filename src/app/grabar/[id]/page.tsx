@@ -26,6 +26,19 @@ type EstadoSesion =
 const AVISO_MIN = 2;
 
 /**
+ * El mismo tope que aplica el backend en `POST /uploads/camara`.
+ *
+ * Repetido acá a propósito: si solo lo valida el servidor, el rechazo llega
+ * DESPUÉS de subir los doscientos megas, que por datos móviles son varios
+ * minutos tirados para enterarse de algo que se sabía desde el principio.
+ */
+const TOPE_BYTES = 200 * 1024 * 1024;
+
+function enMegas(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
+}
+
+/**
  * La pantalla del teléfono: grabar o elegir un video y mandarlo a la
  * computadora donde se está armando el montaje.
  *
@@ -111,6 +124,16 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   );
 
   const camara = useRef<HTMLVideoElement>(null);
+  const revision = useRef<HTMLVideoElement>(null);
+  const [reproduciendo, setReproduciendo] = useState(false);
+
+  function alternarRevision() {
+    const v = revision.current;
+    if (!v) return;
+    if (v.paused) void v.play().catch(() => setReproduciendo(false));
+    else v.pause();
+  }
+
   const flujo = useRef<MediaStream | null>(null);
   const grabador = useRef<MediaRecorder | null>(null);
   const trozos = useRef<Blob[]>([]);
@@ -121,6 +144,41 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     if (estado !== "grabando") return;
     const t = setInterval(() => setSegundos((n) => n + 1), 1000);
     return () => clearInterval(t);
+  }, [estado]);
+
+  /**
+   * Mantiene la pantalla encendida mientras se graba o se sube.
+   *
+   * Si el teléfono se bloquea, la página pasa a segundo plano: la grabación se
+   * corta a la mitad y la subida puede quedar suspendida. Justo son los dos
+   * momentos en los que nadie está tocando la pantalla, que es lo que el
+   * teléfono usa para decidir que puede dormirse.
+   *
+   * El permiso se pierde al salir de la pestaña, así que se vuelve a pedir al
+   * volver. Donde no exista la API —Safari viejo— no pasa nada: el `?.` deja
+   * todo como estaba.
+   */
+  useEffect(() => {
+    if (estado !== "grabando" && estado !== "subiendo") return;
+    let lock: any = null;
+
+    const pedir = async () => {
+      try {
+        lock = await (navigator as any).wakeLock?.request("screen");
+      } catch {
+        // Denegado o no soportado: se graba igual, solo sin la garantia.
+      }
+    };
+    const alVolver = () => {
+      if (document.visibilityState === "visible") void pedir();
+    };
+
+    void pedir();
+    document.addEventListener("visibilitychange", alVolver);
+    return () => {
+      document.removeEventListener("visibilitychange", alVolver);
+      lock?.release?.().catch(() => {});
+    };
   }, [estado]);
 
   // La cámara se apaga al salir: dejarla viva mantiene la luz encendida y
@@ -154,6 +212,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       rec.onstop = () => {
         const blob = new Blob(trozos.current, { type: rec.mimeType });
         setGrabado({ blob, url: URL.createObjectURL(blob) });
+        setReproduciendo(false);
         setEstado("revisando");
         flujo.current?.getTracks().forEach((t) => t.stop());
       };
@@ -182,6 +241,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     const file = e.target.files?.[0];
     if (!file) return;
     setGrabado({ blob: file, url: URL.createObjectURL(file) });
+    setReproduciendo(false);
     setEstado("revisando");
     e.target.value = "";
   }
@@ -191,6 +251,14 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     // pasaba nada, sin ninguna pista de por que.
     if (!grabado) {
       setError("No hay ningún video para enviar. Grabá o elegí uno.");
+      return;
+    }
+    if (grabado.blob.size > TOPE_BYTES) {
+      setError(
+        `El video pesa ${enMegas(grabado.blob.size)} y el máximo son ${enMegas(
+          TOPE_BYTES,
+        )}. Grabá una toma más corta.`,
+      );
       return;
     }
     setError(null);
@@ -314,11 +382,18 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       <div className="relative mx-auto mt-6 w-full max-w-[300px]">
         <div className="relative aspect-square overflow-hidden rounded-full border-2 border-[#0FED9D]/60 bg-black">
           {estado === "revisando" && grabado ? (
+            /* Sin `controls`: la barra nativa vive abajo del video y el recorte
+               circular le come las puntas, asi que quedaba media barra inutil.
+               El circulo entero pasa a ser el boton de reproducir. */
             <video
+              ref={revision}
               src={grabado.url}
-              controls
               playsInline
-              className="h-full w-full object-cover"
+              onClick={alternarRevision}
+              onEnded={() => setReproduciendo(false)}
+              onPause={() => setReproduciendo(false)}
+              onPlay={() => setReproduciendo(true)}
+              className="h-full w-full cursor-pointer object-cover"
             />
           ) : (
             <video
@@ -328,6 +403,29 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               playsInline
               className="h-full w-full object-cover"
             />
+          )}
+
+          {/* El circulo arrancaba como un agujero negro sin explicacion: la
+              camara recien se enciende al tocar "Grabar acá". */}
+          {estado === "eligiendo" && (
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
+              <span className="text-3xl opacity-40">📷</span>
+              <p className="mt-2 text-[11px] leading-snug text-white/35">
+                Acá vas a verte. Así, en círculo, es como sale en el video.
+              </p>
+            </div>
+          )}
+
+          {estado === "revisando" && !reproduciendo && (
+            <button
+              onClick={alternarRevision}
+              aria-label="Reproducir la toma"
+              className="absolute inset-0 flex items-center justify-center bg-black/30"
+            >
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0FED9D] text-xl text-black">
+                ▶
+              </span>
+            </button>
           )}
         </div>
         {estado === "grabando" && (
@@ -386,6 +484,11 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
 
         {estado === "revisando" && (
           <>
+            {grabado && (
+              <p className="text-center text-[11px] text-white/30">
+                Tocá el círculo para ver la toma · {enMegas(grabado.blob.size)}
+              </p>
+            )}
             <button
               onClick={enviar}
               className="w-full rounded-xl bg-[#0FED9D] py-4 text-base font-semibold text-black"
