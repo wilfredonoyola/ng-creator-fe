@@ -29,6 +29,8 @@ export function MomentosCamara({
   momentos,
   duracionBase,
   pageId,
+  urlCamara,
+  onUrlCamara,
   onCamara,
   onMomentos,
 }: {
@@ -36,6 +38,9 @@ export function MomentosCamara({
   momentos: Momento[];
   duracionBase: number;
   pageId: string;
+  /** La toma grabada. La tiene el padre porque el preview también la necesita. */
+  urlCamara: string | null;
+  onUrlCamara: (u: string | null) => void;
   onCamara: (c: Camara | null) => void;
   onMomentos: (m: Momento[]) => void;
 }) {
@@ -53,14 +58,6 @@ export function MomentosCamara({
   const [reemplazando, setReemplazando] = useState(false);
   const [confirmandoQuitar, setConfirmandoQuitar] = useState(false);
 
-  /**
-   * La toma grabada, para poder mirarla antes de generar.
-   *
-   * Sin esto lo unico que se veia era "Video cargado": la unica forma de saber
-   * si habias grabado lo que querias era esperar el render entero. La URL ya
-   * venia en la respuesta —del upload o de la sesion— y se descartaba.
-   */
-  const [urlCamara, setUrlCamara] = useState<string | null>(null);
   const [viendo, setViendo] = useState(false);
   const vistaPrevia = useRef<HTMLVideoElement>(null);
 
@@ -96,7 +93,7 @@ export function MomentosCamara({
     // La URL vive solo acá y no en el montaje: el backend recibe la RUTA y arma
     // la publica él mismo, justamente para que nadie pueda apuntar la cámara a
     // un archivo de otro sitio. Esto es al pepe para mirar, nada más.
-    setUrlCamara(url);
+    onUrlCamara(url);
     setViendo(false);
     setReemplazando(false);
   }
@@ -117,7 +114,7 @@ export function MomentosCamara({
     onCamara(null);
     onMomentos([]);
     setDuracionGrabacion(0);
-    setUrlCamara(null);
+    onUrlCamara(null);
     setViendo(false);
     setConfirmandoQuitar(false);
     setReemplazando(false);

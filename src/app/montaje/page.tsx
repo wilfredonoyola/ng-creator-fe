@@ -148,6 +148,16 @@ export default function MontajePage() {
   const videoMaestro = useRef<HTMLVideoElement | null>(null);
   const videosPreview = useRef<Set<HTMLVideoElement>>(new Set());
 
+  /**
+   * La toma grabada, para poder verla antes de generar.
+   *
+   * Vive acá arriba y no en `MomentosCamara` porque la necesitan dos: el panel,
+   * para el círculo con el ▶, y el preview, para componerla sobre el video. No
+   * entra en el montaje: eso viaja al backend, que recibe la ruta y arma la URL
+   * pública él mismo para que nadie apunte la cámara a un archivo ajeno.
+   */
+  const [urlCamara, setUrlCamara] = useState<string | null>(null);
+
   const aspectoFuente = fuente ? fuente.ancho / fuente.alto : 9 / 16;
   const valorProporcion =
     PROPORCIONES.find((p) => p.id === proporcion)?.valor ?? null;
@@ -651,6 +661,8 @@ export default function MontajePage() {
                 momentos={montaje.momentos}
                 duracionBase={duracionTrim}
                 pageId={activa.pageId}
+                urlCamara={urlCamara}
+                onUrlCamara={setUrlCamara}
                 onCamara={(camara) => cambiar({ camara })}
                 onMomentos={(momentos) => cambiar({ momentos })}
               />
@@ -679,6 +691,8 @@ export default function MontajePage() {
               src={fuente?.publicUrl ?? null}
               aspectoFuente={aspectoFuente}
               registrarVideo={registrarVideo}
+              camaraUrl={urlCamara}
+              duracionBase={duracionTrim}
             />
             </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">

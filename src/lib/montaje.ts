@@ -175,6 +175,76 @@ export function grabacionNecesaria(momentos: Momento[]): number {
   return momentos.reduce((n, m) => n + m.duracionSeg, 0);
 }
 
+/**
+ * Dónde y de qué tamaño va el círculo de la cámara, en píxeles del lienzo.
+ *
+ * Espeja `ubicar()` y el cálculo de diámetro de `montaje-camara.ts` en el
+ * backend. Vive acá y no en el preview por la misma razón que el resto: que el
+ * dibujo coincida con la salida no puede depender de que un componente "imite"
+ * bien, porque el día que el backend cambie el margen nadie va a acordarse de
+ * tocar las dos partes.
+ *
+ * En pausa el círculo crece anclado a su esquina, igual que en el render: el
+ * margen se mide contra el diámetro que corresponda.
+ */
+export function geometriaCamara(
+  camara: Camara,
+  lienzo: Lienzo,
+  enPausa: boolean,
+): { x: number; y: number; diametro: number } {
+  const base = par(lienzo.ancho * limitar(camara.tamano, 0.1, 0.9));
+  const diametro = enPausa
+    ? par(base * limitar(camara.factorEnPausa, 1, 3))
+    : base;
+
+  const margen = Math.round(lienzo.ancho * 0.04);
+  const y = Math.max(0, lienzo.alto - diametro - margen);
+  const x =
+    camara.posicion === "ABAJO_CENTRO"
+      ? Math.round((lienzo.ancho - diametro) / 2)
+      : lienzo.ancho - diametro - margen;
+
+  return { x, y, diametro };
+}
+
+/**
+ * Los momentos como los ve el backend: filtrados, acotados, en orden, y con el
+ * tramo de grabación que le toca a cada uno.
+ *
+ * El orden importa y no es el de la lista en pantalla: el backend ordena por
+ * `desdeSeg` antes de repartir la grabación, así que un momento agregado último
+ * pero ubicado primero consume el PRIMER tramo. Reproducir eso acá es la única
+ * forma de que el preview muestre el pedazo de toma que va a salir de verdad.
+ */
+export function guionDeCamara(
+  momentos: Momento[],
+  duracionBase: number,
+): (Momento & { tramo: { desde: number; hasta: number } })[] {
+  const ordenados = [...momentos]
+    .filter((m) => m.duracionSeg > 0.1)
+    .map((m) => ({
+      ...m,
+      desdeSeg: Math.max(0, Math.min(m.desdeSeg, duracionBase)),
+    }))
+    .sort((a, b) => a.desdeSeg - b.desdeSeg);
+
+  let consumido = 0;
+  return ordenados.map((m) => {
+    const tramo = { desde: consumido, hasta: consumido + m.duracionSeg };
+    consumido += m.duracionSeg;
+    return { ...m, tramo };
+  });
+}
+
+/** El backend redondea a par porque los codecs lo exigen; acá, para coincidir. */
+function par(n: number): number {
+  return Math.max(2, Math.round(n / 2) * 2);
+}
+
+function limitar(n: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, n));
+}
+
 /** Plantillas: un punto de partida, no una jaula. Todo queda editable. */
 export const PLANTILLAS: {
   id: string;
