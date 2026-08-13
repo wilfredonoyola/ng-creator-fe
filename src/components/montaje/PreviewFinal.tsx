@@ -103,8 +103,10 @@ export function PreviewFinal({
       const g = geometriaCamara(montaje.camara!, lienzo, pausa);
       marco.style.left = `${(g.x / lienzo.ancho) * 100}%`;
       marco.style.top = `${(g.y / lienzo.alto) * 100}%`;
-      marco.style.width = `${(g.diametro / lienzo.ancho) * 100}%`;
-      marco.style.height = `${(g.diametro / lienzo.alto) * 100}%`;
+      marco.style.width = `${(g.ancho / lienzo.ancho) * 100}%`;
+      marco.style.height = `${(g.alto / lienzo.alto) * 100}%`;
+      // En pausa la cámara ocupa el lienzo entero y no va recortada en círculo.
+      marco.style.borderRadius = g.redonda ? "9999px" : "0";
       marco.style.opacity = String(opacidad);
     };
 
@@ -288,8 +290,8 @@ export function PreviewFinal({
       {camaraUrl && montaje.camara && (
         <div
           ref={circulo}
-          className="pointer-events-none absolute overflow-hidden rounded-full"
-          style={{ opacity: 0 }}
+          className="pointer-events-none absolute overflow-hidden"
+          style={{ opacity: 0, borderRadius: "9999px" }}
         >
           <video
             ref={videoCamara}

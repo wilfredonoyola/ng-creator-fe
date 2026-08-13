@@ -176,7 +176,7 @@ export function grabacionNecesaria(momentos: Momento[]): number {
 }
 
 /**
- * Dónde y de qué tamaño va el círculo de la cámara, en píxeles del lienzo.
+ * Dónde y de qué tamaño va la cámara, en píxeles del lienzo.
  *
  * Espeja `ubicar()` y el cálculo de diámetro de `montaje-camara.ts` en el
  * backend. Vive acá y no en el preview por la misma razón que el resto: que el
@@ -184,19 +184,26 @@ export function grabacionNecesaria(momentos: Momento[]): number {
  * bien, porque el día que el backend cambie el margen nadie va a acordarse de
  * tocar las dos partes.
  *
- * En pausa el círculo crece anclado a su esquina, igual que en el render: el
- * margen se mide contra el diámetro que corresponda.
+ * En PAUSA no hay círculo: la cámara toma el lienzo entero. Una aparición es
+ * reaccionar sin interrumpir; una pausa es frenar para explicar, y ahí la
+ * imagen quieta es lo menos interesante del momento.
  */
 export function geometriaCamara(
   camara: Camara,
   lienzo: Lienzo,
   enPausa: boolean,
-): { x: number; y: number; diametro: number } {
-  const base = par(lienzo.ancho * limitar(camara.tamano, 0.1, 0.9));
-  const diametro = enPausa
-    ? par(base * limitar(camara.factorEnPausa, 1, 3))
-    : base;
+): { x: number; y: number; ancho: number; alto: number; redonda: boolean } {
+  if (enPausa) {
+    return {
+      x: 0,
+      y: 0,
+      ancho: lienzo.ancho,
+      alto: lienzo.alto,
+      redonda: false,
+    };
+  }
 
+  const diametro = par(lienzo.ancho * limitar(camara.tamano, 0.1, 0.9));
   const margen = Math.round(lienzo.ancho * 0.04);
   const y = Math.max(0, lienzo.alto - diametro - margen);
   const x =
@@ -204,7 +211,7 @@ export function geometriaCamara(
       ? Math.round((lienzo.ancho - diametro) / 2)
       : lienzo.ancho - diametro - margen;
 
-  return { x, y, diametro };
+  return { x, y, ancho: diametro, alto: diametro, redonda: true };
 }
 
 /**
