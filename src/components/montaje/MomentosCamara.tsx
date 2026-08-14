@@ -7,6 +7,7 @@ import {
   LIMITE_REEL_SEG,
   PLANTILLAS,
   SUAVIZADOS,
+  VOLUMENES_VOZ,
   duracionFinal,
   grabacionNecesaria,
   type Camara,
@@ -151,6 +152,7 @@ export function MomentosCamara({
             factorEnPausa: 1.6,
             atenuacionDb: -12,
             suavizado: 0,
+            volumen: 1,
           },
     );
     // La URL vive fuera del montaje: el backend recibe la RUTA y arma la pública
@@ -234,6 +236,7 @@ export function MomentosCamara({
       factorEnPausa: 1.6,
       atenuacionDb: -12,
       suavizado: 0,
+      volumen: 1,
     });
   }
 
@@ -552,6 +555,25 @@ export function MomentosCamara({
                       }`}
                     >
                       {etiqueta}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Tu voz. Distinto de la atenuacion del audio ajeno: eso baja
+                    el video mientras hablas; esto es tu nivel. */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] text-white/35">Tu voz</span>
+                  {VOLUMENES_VOZ.map((v) => (
+                    <button
+                      key={v.etiqueta}
+                      onClick={() => onCamara({ ...camara, volumen: v.valor })}
+                      className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
+                        Math.abs((camara.volumen ?? 1) - v.valor) < 0.05
+                          ? "bg-[#0FED9D] text-black"
+                          : "border border-white/10 text-white/50 hover:bg-white/5"
+                      }`}
+                    >
+                      {v.etiqueta}
                     </button>
                   ))}
                 </div>

@@ -82,6 +82,13 @@ export interface Momento {
   origenStoragePath?: string;
 }
 
+/** Volumen de la voz propia. Alto pasa de 1 para levantar una toma floja. */
+export const VOLUMENES_VOZ: { valor: number; etiqueta: string }[] = [
+  { valor: 0.5, etiqueta: "Bajo" },
+  { valor: 1, etiqueta: "Normal" },
+  { valor: 1.6, etiqueta: "Alto" },
+];
+
 /** Volumen del video de origen. Tres niveles alcanzan para decidirlo. */
 export const VOLUMENES: { valor: number; etiqueta: string }[] = [
   { valor: 1, etiqueta: "Normal" },
@@ -105,6 +112,8 @@ export interface Camara {
   atenuacionDb: number;
   /** Suavizado de piel, 0 a 1. Solo sobre la grabación propia. */
   suavizado: number;
+  /** Volumen de la voz propia. Distinto de la atenuación del audio ajeno. */
+  volumen: number;
 }
 
 export interface Montaje {
@@ -238,7 +247,7 @@ export const FORMATOS_LISTOS: {
       "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa.",
     ajustes: (m, aspecto) => {
       const camara: Camara = {
-        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0 }),
+        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0, volumen: 1 }),
         posicion: "BANDA_ABAJO",
         tamano: 0.45,
       };
@@ -270,7 +279,7 @@ export const FORMATOS_LISTOS: {
     ajustes: (m) => ({
       video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
       camara: {
-        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0 }),
+        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0, volumen: 1 }),
         posicion: "ABAJO_DERECHA",
         tamano: 0.32,
       },
