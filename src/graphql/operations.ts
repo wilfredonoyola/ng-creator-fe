@@ -868,6 +868,36 @@ export const BORRAR_MONTAJE = gql`
 `;
 
 /**
+ * El estilo por defecto de la página: cómo se ven sus videos.
+ *
+ * Se lee al empezar un montaje para no tomar diez veces las mismas decisiones.
+ */
+export const ESTILO_MONTAJE = gql`
+  query EstiloMontaje($pageId: String!) {
+    estiloMontaje(pageId: $pageId) {
+      _id
+      config
+      updatedAt
+    }
+  }
+`;
+
+export const GUARDAR_ESTILO_MONTAJE = gql`
+  mutation GuardarEstiloMontaje($pageId: String!, $config: JSON!) {
+    guardarEstiloMontaje(pageId: $pageId, config: $config) {
+      _id
+      updatedAt
+    }
+  }
+`;
+
+export const OLVIDAR_ESTILO_MONTAJE = gql`
+  mutation OlvidarEstiloMontaje($pageId: String!) {
+    olvidarEstiloMontaje(pageId: $pageId)
+  }
+`;
+
+/**
  * Elige el cuadro que va a ser la portada del video.
  *
  * Es el mismo poster que se sube como cubierta del Reel y que se publica
