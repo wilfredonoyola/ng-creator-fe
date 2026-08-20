@@ -852,6 +852,22 @@ export const MONTAJE_GUARDADO = gql`
   }
 `;
 
+/**
+ * Copia un borrador entero para arrancar de él.
+ *
+ * La copia la hace el servidor: el cliente no tiene por qué entender la
+ * configuración para copiarla, y armándola campo por campo se olvidaría de los
+ * que se agreguen mañana.
+ */
+export const DUPLICAR_MONTAJE = gql`
+  mutation DuplicarMontaje($id: ID!, $pageId: String!, $nombre: String) {
+    duplicarMontaje(id: $id, pageId: $pageId, nombre: $nombre) {
+      _id
+      nombre
+    }
+  }
+`;
+
 export const RENOMBRAR_MONTAJE = gql`
   mutation RenombrarMontaje($id: ID!, $pageId: String!, $nombre: String!) {
     renombrarMontaje(id: $id, pageId: $pageId, nombre: $nombre) {
