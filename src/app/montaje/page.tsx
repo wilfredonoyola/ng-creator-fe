@@ -29,6 +29,7 @@ import {
   MONTAJE_TRABAJO,
   MONTAR_VIDEO,
 } from "@/graphql/operations";
+import { HistorialMontajes } from "@/components/montaje/HistorialMontajes";
 import {
   aplicarEstilo,
   extraerEstilo,
@@ -588,6 +589,30 @@ export default function MontajePage() {
     [borrador],
   );
 
+  /** Abre un montaje de la lista y deja el editor como estaba. */
+  const abrirBorrador = useCallback(
+    async (id: string) => {
+      if (!activa) return;
+      setError(null);
+      try {
+        const { data } = await cliente.query({
+          query: MONTAJE_GUARDADO,
+          variables: { id, pageId: activa.pageId },
+          fetchPolicy: "network-only",
+        });
+        const g = data?.montajeGuardado;
+        if (!g?.config || !aplicarBorrador(g._id, g.config)) {
+          setError(
+            "Ese montaje se guardó con una versión anterior del editor y ya no se puede abrir.",
+          );
+        }
+      } catch {
+        setError("No se pudo abrir ese montaje");
+      }
+    },
+    [activa, cliente, aplicarBorrador],
+  );
+
   // Al abrir la pantalla, retomar el borrador que quedó a medias.
   useEffect(() => {
     if (fuente || !activa) return;
@@ -720,6 +745,16 @@ export default function MontajePage() {
           {cargando ? "Descargando…" : "Cargar video"}
         </button>
       </div>
+      )}
+
+      {/* Solo con la pantalla vacía: con un video cargado, lo que se está
+          haciendo es ESE video y la lista de los viejos estorba. */}
+      {ve(1) && !fuente && activa && (
+        <HistorialMontajes
+          pageId={activa.pageId}
+          puede={puede}
+          onAbrir={abrirBorrador}
+        />
       )}
 
       {error && (
