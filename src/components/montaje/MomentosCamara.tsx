@@ -149,7 +149,6 @@ export function MomentosCamara({
             origenStoragePath: storagePath,
             posicion: "ABAJO_DERECHA",
             tamano: 0.32,
-            factorEnPausa: 1.6,
             atenuacionDb: -12,
             suavizado: 0,
             volumen: 1,
@@ -233,7 +232,6 @@ export function MomentosCamara({
     onCamara({
       posicion: "ABAJO_DERECHA",
       tamano: 0.32,
-      factorEnPausa: 1.6,
       atenuacionDb: -12,
       suavizado: 0,
       volumen: 1,

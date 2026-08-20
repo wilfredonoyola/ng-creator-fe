@@ -175,7 +175,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
         {/* Guion Preview */}
         {exp.guion?.apertura && (
           <p className="mb-3 line-clamp-2 text-sm text-white/70">
-            "{exp.guion.apertura}"
+            &ldquo;{exp.guion.apertura}&rdquo;
           </p>
         )}
 

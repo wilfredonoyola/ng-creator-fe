@@ -108,7 +108,6 @@ export interface Camara {
   origenStoragePath?: string;
   posicion: PosicionCamara;
   tamano: number;
-  factorEnPausa: number;
   atenuacionDb: number;
   /** Suavizado de piel, 0 a 1. Solo sobre la grabación propia. */
   suavizado: number;
@@ -247,7 +246,7 @@ export const FORMATOS_LISTOS: {
       "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa.",
     ajustes: (m, aspecto) => {
       const camara: Camara = {
-        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0, volumen: 1 }),
+        ...(m.camara ?? { atenuacionDb: -12, suavizado: 0, volumen: 1 }),
         posicion: "BANDA_ABAJO",
         tamano: 0.45,
       };
@@ -279,7 +278,7 @@ export const FORMATOS_LISTOS: {
     ajustes: (m) => ({
       video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
       camara: {
-        ...(m.camara ?? { factorEnPausa: 1.6, atenuacionDb: -12, suavizado: 0, volumen: 1 }),
+        ...(m.camara ?? { atenuacionDb: -12, suavizado: 0, volumen: 1 }),
         posicion: "ABAJO_DERECHA",
         tamano: 0.32,
       },

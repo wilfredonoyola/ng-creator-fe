@@ -3,3 +3,6 @@ node_modules/
 .env
 *.log
 src/generated/
+
+# Estado incremental de tsc: se reescribe en cada compilacion.
+*.tsbuildinfo
