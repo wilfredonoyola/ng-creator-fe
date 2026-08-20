@@ -29,6 +29,7 @@ import {
   MONTAJE_TRABAJO,
   MONTAR_VIDEO,
 } from "@/graphql/operations";
+import { ColaRenders } from "@/components/montaje/ColaRenders";
 import { HistorialMontajes } from "@/components/montaje/HistorialMontajes";
 import {
   aplicarEstilo,
@@ -177,8 +178,29 @@ export default function MontajePage() {
     progreso: number;
     expedienteId?: string | null;
     error?: string | null;
+    /** Cuántos hay delante. Solo tiene sentido mientras espera turno. */
+    posicionEnCola?: number;
   } | null>(null);
-  const montando = trabajo?.estado === "RENDERIZANDO";
+  /**
+   * Hay un render en curso o esperando turno.
+   *
+   * Ojo con lo que YA NO significa: antes esto congelaba la pantalla entera.
+   * Con cola es lo contrario — mientras uno se arma se prepara el siguiente, y
+   * eso es justamente lo que convierte setenta minutos de espera atendida en
+   * setenta de máquina trabajando sola. Editar acá no toca el render en marcha:
+   * el servidor se quedó con una copia del pedido al encolarlo.
+   */
+  const montando =
+    trabajo?.estado === "RENDERIZANDO" || trabajo?.estado === "EN_COLA";
+
+  /**
+   * Lo último que se mandó a la fila, serializado.
+   *
+   * Es contra el doble clic: sin esto, apretar Generar dos veces encola el
+   * mismo video dos veces y se lo cobra dos veces a la única vCPU. Cambiar algo
+   * lo habilita de nuevo, que es lo correcto — ahí ya es otro video.
+   */
+  const [ultimoEnviado, setUltimoEnviado] = useState<string | null>(null);
 
   const zonaPaneles = useRef<HTMLDivElement>(null);
   const altoPanel = useAltoDisponible(zonaPaneles);
@@ -447,6 +469,7 @@ export default function MontajePage() {
       const t = data?.montarVideo;
       if (t) {
         setTrabajo(t);
+        setUltimoEnviado(JSON.stringify(datosBorrador?.config ?? null));
         localStorage.setItem(CLAVE_TRABAJO, t._id);
       }
     } catch (e: any) {
@@ -476,7 +499,8 @@ export default function MontajePage() {
    * cuesta el render.
    */
   useEffect(() => {
-    if (!trabajo || trabajo.estado !== "RENDERIZANDO" || !activa) return;
+    if (!trabajo || !activa) return;
+    if (trabajo.estado !== "RENDERIZANDO" && trabajo.estado !== "EN_COLA") return;
 
     let vivo = true;
     const t = setInterval(async () => {
@@ -488,7 +512,8 @@ export default function MontajePage() {
         });
         if (!vivo || !data?.montajeTrabajo) return;
         setTrabajo(data.montajeTrabajo);
-        if (data.montajeTrabajo.estado !== "RENDERIZANDO") {
+        const e = data.montajeTrabajo.estado;
+        if (e !== "RENDERIZANDO" && e !== "EN_COLA") {
           localStorage.removeItem(CLAVE_TRABAJO);
           if (data.montajeTrabajo.estado === "FALLIDO") {
             setError(data.montajeTrabajo.error ?? "El montaje falló");
@@ -517,7 +542,8 @@ export default function MontajePage() {
         fetchPolicy: "network-only",
       })
       .then(({ data }) => {
-        if (data?.montajeTrabajo?.estado === "RENDERIZANDO") {
+        const e = data?.montajeTrabajo?.estado;
+        if (e === "RENDERIZANDO" || e === "EN_COLA") {
           setTrabajo(data.montajeTrabajo);
         } else {
           localStorage.removeItem(CLAVE_TRABAJO);
@@ -693,9 +719,16 @@ export default function MontajePage() {
                 Bunny, que son varias decenas de megas y no reporta avance.
                 Decirlo evita que el ultimo tramo se lea como un cuelgue. */}
             <span className="font-medium text-[#0FED9D]">
-              {(trabajo?.progreso ?? 0) >= 95
-                ? "Subiendo el video"
-                : `Componiendo el video · ${Math.round(trabajo?.progreso ?? 0)}%`}
+              {/* Esperando turno no es lo mismo que armandose: con la cola, un
+                  0% quieto es normal, y decir "componiendo" lo haria parecer
+                  colgado justo cuando todo esta bien. */}
+              {trabajo?.estado === "EN_COLA"
+                ? (trabajo?.posicionEnCola ?? 0) === 0
+                  ? "Es el siguiente"
+                  : `Esperando turno · ${trabajo?.posicionEnCola} delante`
+                : (trabajo?.progreso ?? 0) >= 95
+                  ? "Subiendo el video"
+                  : `Componiendo el video · ${Math.round(trabajo?.progreso ?? 0)}%`}
             </span>
             <span className="text-xs text-white/40">
               {Math.floor(segundos / 60)}:
@@ -714,6 +747,8 @@ export default function MontajePage() {
           </p>
         </div>
       )}
+
+      {activa && <ColaRenders pageId={activa.pageId} excluir={trabajo?._id} />}
 
       {trabajo?.estado === "LISTO" && (
         <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
@@ -734,12 +769,12 @@ export default function MontajePage() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://www.tiktok.com/@usuario/video/..."
-          disabled={montando}
+
           className="min-w-0 flex-1 disabled:opacity-40 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-[#0FED9D]/50"
         />
         <button
           onClick={cargar}
-          disabled={cargando || montando || !url.trim()}
+          disabled={cargando || !url.trim()}
           className="rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-medium text-black transition hover:brightness-110 disabled:opacity-40"
         >
           {cargando ? "Descargando…" : "Cargar video"}
@@ -763,12 +798,11 @@ export default function MontajePage() {
         </div>
       )}
 
-      <div
-        aria-busy={montando}
-        className={
-          montando ? "pointer-events-none select-none opacity-40" : undefined
-        }
-      >
+      {/* Este div envolvia la pantalla para atenuarla y bloquearla mientras
+          renderizaba. Con cola ya no se bloquea nada —se sigue trabajando
+          mientras la fila avanza— asi que quedo sin atributos. Se conserva el
+          envoltorio para no reindentar quinientas lineas por nada. */}
+      <div>
         {/* Dos columnas: a la izquierda se trabaja, a la derecha se ve el
             resultado. La derecha queda FIJA al hacer scroll porque todo lo de
             la izquierda la modifica: antes los titulares estaban cien lineas
@@ -1311,10 +1345,10 @@ export default function MontajePage() {
               <div className="space-y-3">
           <button
             onClick={generar}
-            disabled={!fuente || montando}
+            disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
             className="rounded-lg bg-[#0FED9D] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
           >
-            {montando ? "Generando…" : "Generar video"}
+            {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar video"}
           </button>
 
           {/* Guardar el estilo es una linea gris y no un boton grande: se usa
@@ -1380,10 +1414,10 @@ export default function MontajePage() {
           </div>
           <button
             onClick={generar}
-            disabled={!fuente || montando}
+            disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
             className="shrink-0 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black transition disabled:opacity-40"
           >
-            {montando ? "Generando…" : "Generar"}
+            {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar"}
           </button>
         </div>
       )}

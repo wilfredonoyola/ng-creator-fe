@@ -792,6 +792,25 @@ export const MONTAR_VIDEO = gql`
   }
 `;
 
+/**
+ * Lo que está esperando o armándose en la página.
+ *
+ * Hay una sola vCPU, así que los renders van de uno en uno: esto es la fila.
+ * Los terminados no salen acá — ya están en la cola de revisión.
+ */
+export const MONTAJES_EN_COLA = gql`
+  query MontajesEnCola($pageId: String!) {
+    montajesEnCola(pageId: $pageId) {
+      _id
+      estado
+      progreso
+      duracionSeg
+      posicionEnCola
+      createdAt
+    }
+  }
+`;
+
 /** Cómo va un montaje. Se consulta cada pocos segundos mientras renderiza. */
 export const MONTAJE_TRABAJO = gql`
   query MontajeTrabajo($id: ID!, $pageId: String!) {
@@ -802,6 +821,7 @@ export const MONTAJE_TRABAJO = gql`
       duracionSeg
       expedienteId
       error
+      posicionEnCola
     }
   }
 `;
