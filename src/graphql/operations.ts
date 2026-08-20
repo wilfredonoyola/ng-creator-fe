@@ -807,6 +807,67 @@ export const MONTAJE_TRABAJO = gql`
 `;
 
 /**
+ * Guarda el borrador de un montaje. Crea la primera vez y pisa después.
+ *
+ * Es un upsert: el editor manda `id` vacío la primera vez y el que recibió de
+ * ahí en más. No hay crear/actualizar separados a propósito — con guardado
+ * automático cada par de segundos, decidir cuál llamar desde acá es una carrera
+ * servida: dos guardados casi simultáneos crearían dos borradores del mismo
+ * video.
+ */
+export const GUARDAR_MONTAJE = gql`
+  mutation GuardarMontaje($input: GuardarMontajeInput!) {
+    guardarMontaje(input: $input) {
+      _id
+      nombre
+      updatedAt
+    }
+  }
+`;
+
+/** Los borradores de la página, del más reciente al más viejo. */
+export const MONTAJES_GUARDADOS = gql`
+  query MontajesGuardados($pageId: String!, $limite: Int) {
+    montajesGuardados(pageId: $pageId, limite: $limite) {
+      _id
+      nombre
+      origenUrl
+      posterUrl
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+/** Uno solo, con su configuración entera, para retomarlo. */
+export const MONTAJE_GUARDADO = gql`
+  query MontajeGuardado($id: ID!, $pageId: String!) {
+    montajeGuardado(id: $id, pageId: $pageId) {
+      _id
+      nombre
+      config
+      origenUrl
+      updatedAt
+    }
+  }
+`;
+
+export const RENOMBRAR_MONTAJE = gql`
+  mutation RenombrarMontaje($id: ID!, $pageId: String!, $nombre: String!) {
+    renombrarMontaje(id: $id, pageId: $pageId, nombre: $nombre) {
+      _id
+      nombre
+    }
+  }
+`;
+
+export const BORRAR_MONTAJE = gql`
+  mutation BorrarMontaje($id: ID!, $pageId: String!) {
+    borrarMontaje(id: $id, pageId: $pageId)
+  }
+`;
+
+/**
  * Elige el cuadro que va a ser la portada del video.
  *
  * Es el mismo poster que se sube como cubierta del Reel y que se publica

@@ -21,7 +21,18 @@ import {
   duracionFinal,
   type Montaje,
 } from "@/lib/montaje";
-import { LICENSES, MONTAJE_TRABAJO, MONTAR_VIDEO } from "@/graphql/operations";
+import {
+  LICENSES,
+  MONTAJE_GUARDADO,
+  MONTAJE_TRABAJO,
+  MONTAR_VIDEO,
+} from "@/graphql/operations";
+import {
+  CLAVE_BORRADOR,
+  DatosBorrador,
+  EstadoGuardado,
+  useGuardadoAutomatico,
+} from "@/lib/borrador-montaje";
 
 /** Lo que Meta admite en un Reel. El backend lo valida antes de publicar. */
 const LIMITE_REEL_SEG = 90;
@@ -350,6 +361,9 @@ export default function MontajePage() {
         duracion: 0,
       });
       setMontaje(montajeInicial());
+      // Link nuevo, borrador nuevo: si se siguiera pisando el anterior, cargar
+      // otro video borraria el trabajo del primero sin avisar.
+      borrador.adoptar(null, null);
     } catch (e: any) {
       setError(e?.message ?? "No se pudo cargar el video");
     } finally {
@@ -487,6 +501,93 @@ export default function MontajePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activa]);
 
+  /**
+   * Lo que se guarda como borrador.
+   *
+   * Va memoizado por contenido y no armado en cada render: el hook reinicia su
+   * espera cada vez que este objeto cambia de identidad, y la pantalla se
+   * redibuja una vez por segundo mientras algo renderiza. Con un objeto nuevo
+   * cada vez, la espera nunca llegaría a cumplirse y no se guardaría jamás.
+   */
+  const datosBorrador = useMemo<DatosBorrador | null>(() => {
+    // Sin video cargado no hay nada que guardar: un borrador vacío por página
+    // ensuciaría el historial con filas que no se pueden abrir.
+    if (!fuente) return null;
+    return {
+      config: {
+        // Versión del formato. La configuración se guarda como JSON sin validar,
+        // así que al leerla hay que poder reconocer lo que no se entiende en vez
+        // de hidratar el editor con basura.
+        version: 1,
+        montaje,
+        fuente,
+        proporcion,
+        formatoElegido,
+        licenciaId,
+      },
+      nombre: nombreDeBorrador(montaje, fuente),
+      origenUrl: fuente.origenUrl,
+    };
+  }, [fuente, montaje, proporcion, formatoElegido, licenciaId]);
+
+  const borrador = useGuardadoAutomatico({
+    pageId: activa?.pageId,
+    datos: datosBorrador,
+  });
+
+  /**
+   * Deja el editor como estaba en un borrador guardado.
+   *
+   * Desconfía del contenido a propósito: es JSON que el backend guarda sin
+   * mirar, así que un borrador viejo o de otra versión del editor podría no
+   * tener la forma que se espera. Ante la duda no se hidrata nada — perder un
+   * borrador raro es molesto; hidratar el editor a medias lo deja en un estado
+   * imposible de entender.
+   */
+  const aplicarBorrador = useCallback(
+    (id: string, config: unknown): boolean => {
+      const c = config as Record<string, any> | null;
+      if (!c || c.version !== 1 || !c.montaje || !c.fuente?.storagePath) {
+        return false;
+      }
+      setFuente(c.fuente);
+      setMontaje(c.montaje);
+      setProporcion(typeof c.proporcion === "string" ? c.proporcion : "libre");
+      setFormatoElegido(c.formatoElegido ?? null);
+      setLicenciaId(typeof c.licenciaId === "string" ? c.licenciaId : "");
+      setUrl(c.fuente.origenUrl ?? "");
+      borrador.adoptar(id, config);
+      return true;
+    },
+    [borrador],
+  );
+
+  // Al abrir la pantalla, retomar el borrador que quedó a medias.
+  useEffect(() => {
+    if (fuente || !activa) return;
+    const guardado = localStorage.getItem(CLAVE_BORRADOR);
+    if (!guardado) return;
+    cliente
+      .query({
+        query: MONTAJE_GUARDADO,
+        variables: { id: guardado, pageId: activa.pageId },
+        fetchPolicy: "network-only",
+      })
+      .then(({ data }) => {
+        const g = data?.montajeGuardado;
+        if (!g?.config || !aplicarBorrador(g._id, g.config)) {
+          localStorage.removeItem(CLAVE_BORRADOR);
+        }
+      })
+      .catch(() => {
+        // Puede ser un borrador borrado desde otra pestaña, o de una página a
+        // la que ya no se tiene acceso. En cualquier caso, olvidarlo.
+        localStorage.removeItem(CLAVE_BORRADOR);
+      });
+    // Solo al montar: es un rescate, no un seguimiento.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activa]);
+
   const duracionConMomentos = duracionFinal(
     Math.max(montaje.trim.hastaSeg - montaje.trim.desdeSeg, 0),
     montaje.momentos,
@@ -523,7 +624,10 @@ export default function MontajePage() {
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Montaje</h1>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl font-bold">Montaje</h1>
+          {fuente && <EstadoBorrador estado={borrador.estado} />}
+        </div>
         <p className="mt-1 text-sm text-white/50">
           De un link a un video listo: elegí el área útil, escribí los titulares
           y generá. Queda en revisión, no se publica solo.
@@ -1261,6 +1365,46 @@ export default function MontajePage() {
 }
 
 /** Un paso del trabajo. Numerado para que el orden se lea sin explicarlo. */
+/**
+ * Con qué nombre aparece un borrador en la lista.
+ *
+ * El titular primero: es lo que uno escribió y por lo tanto lo que reconoce.
+ * Si todavía no hay ninguno queda el id del video de TikTok, que al menos
+ * distingue un borrador de otro — mucho mejor que veinte filas iguales.
+ */
+function nombreDeBorrador(m: Montaje, f: Fuente): string {
+  const titular =
+    m.textoSuperior.contenido.trim() || m.textoInferior.contenido.trim();
+  if (titular) return titular.replace(/\s+/g, " ").slice(0, 80);
+
+  const id = f.origenUrl.match(/\/video\/(\d+)/)?.[1];
+  return id ? `TikTok ${id}` : "Montaje sin nombre";
+}
+
+/**
+ * El cartelito de guardado.
+ *
+ * Chico y sin color salvo cuando algo falla: el guardado automático funciona
+ * bien cuando no se lo nota, y un aviso verde parpadeando cada dos segundos es
+ * exactamente lo contrario. Lo que sí tiene que gritar es el error, porque ahí
+ * el trabajo está en riesgo y hay que enterarse.
+ */
+function EstadoBorrador({ estado }: { estado: EstadoGuardado }) {
+  if (estado === "limpio") return null;
+  if (estado === "error") {
+    return (
+      <span className="text-xs text-red-400">
+        No se pudo guardar · se reintenta al siguiente cambio
+      </span>
+    );
+  }
+  return (
+    <span className="text-xs text-white/35">
+      {estado === "guardando" ? "Guardando…" : "Guardado"}
+    </span>
+  );
+}
+
 function Bloque({
   numero,
   titulo,
