@@ -22,11 +22,18 @@ import {
   type Montaje,
 } from "@/lib/montaje";
 import {
+  ESTILO_MONTAJE,
+  GUARDAR_ESTILO_MONTAJE,
   LICENSES,
   MONTAJE_GUARDADO,
   MONTAJE_TRABAJO,
   MONTAR_VIDEO,
 } from "@/graphql/operations";
+import {
+  aplicarEstilo,
+  extraerEstilo,
+  formatoDelEstilo,
+} from "@/lib/estilo-montaje";
 import {
   CLAVE_BORRADOR,
   DatosBorrador,
@@ -142,6 +149,21 @@ export default function MontajePage() {
 
   const [montar] = useMutation(MONTAR_VIDEO);
   const cliente = useApolloClient();
+
+  /**
+   * El estilo de la página: cómo se ven sus videos.
+   *
+   * Se lee una vez y se aplica al cargar un link, no sobre lo que ya está en
+   * pantalla: pisar un montaje en curso porque llegó una consulta sería
+   * borrarle a alguien lo que estaba haciendo.
+   */
+  const { data: estiloData } = useQuery(ESTILO_MONTAJE, {
+    variables: { pageId: activa?.pageId },
+    skip: !activa,
+  });
+  const estilo = estiloData?.estiloMontaje?.config ?? null;
+  const [guardarEstilo] = useMutation(GUARDAR_ESTILO_MONTAJE);
+  const [estiloGuardado, setEstiloGuardado] = useState(false);
 
   /**
    * El trabajo en curso. Su id se guarda en localStorage para que cerrar la
@@ -360,7 +382,11 @@ export default function MontajePage() {
         alto: 1920,
         duracion: 0,
       });
-      setMontaje(montajeInicial());
+      // El estilo de la página es el punto de partida, no un extra: es lo que
+      // evita tomar diez veces por día las mismas diez decisiones.
+      setMontaje(aplicarEstilo(montajeInicial(), estilo));
+      const formato = formatoDelEstilo(estilo);
+      if (formato) setFormatoElegido(formato);
       // Link nuevo, borrador nuevo: si se siguiera pisando el anterior, cargar
       // otro video borraria el trabajo del primero sin avisar.
       borrador.adoptar(null, null);
@@ -1255,6 +1281,34 @@ export default function MontajePage() {
           >
             {montando ? "Generando…" : "Generar video"}
           </button>
+
+          {/* Guardar el estilo es una linea gris y no un boton grande: se usa
+              una vez cada tantos videos, cuando uno decide que ASI es como
+              quiere que se vean. Compite mal con Generar por la atencion. */}
+          {fuente && puede && (
+            <button
+              onClick={async () => {
+                if (!activa) return;
+                try {
+                  await guardarEstilo({
+                    variables: {
+                      pageId: activa.pageId,
+                      config: extraerEstilo(montaje, formatoElegido),
+                    },
+                  });
+                  setEstiloGuardado(true);
+                  setTimeout(() => setEstiloGuardado(false), 2500);
+                } catch {
+                  setError("No se pudo guardar el estilo");
+                }
+              }}
+              className="text-left text-xs text-white/45 underline underline-offset-2 transition hover:text-white/70"
+            >
+              {estiloGuardado
+                ? "Listo: los próximos videos arrancan así"
+                : "Guardar esto como el estilo de la página"}
+            </button>
+          )}
 
           {/* La licencia como una linea y no como una tarjeta: importa al
               publicar, no mientras se edita, y ocupaba lugar fijo diciendo algo
