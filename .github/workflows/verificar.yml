@@ -1,0 +1,45 @@
+# Lo que se revisa ANTES de mergear.
+#
+# Vercel construye al mergear a main, o sea DESPUES: si algo no compila, se
+# entera produccion. Esto lo mueve al PR, que es donde todavia se puede arreglar
+# sin que nadie lo vea roto.
+#
+# ESLint entra al gate porque ahora existe de verdad (#46): antes el script
+# estaba pero el paquete no, asi que ponerlo aca no habria verificado nada.
+name: Verificar
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: verificar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Los tipos primero: es el que da el mensaje mas claro cuando algo se rompe.
+      - name: Tipos
+        run: npx tsc --noEmit
+
+      # El tope es la cuenta EXACTA de avisos que hay hoy (7, todos de <img>
+      # sin migrar a next/image). Asi no pueden crecer: el que agregue uno
+      # nuevo se entera en su PR y no dentro de seis meses. Cuando se migren,
+      # este numero baja.
+      - name: ESLint
+        run: npx next lint --max-warnings 7
+
+      - name: Compilar
+        run: npm run build
