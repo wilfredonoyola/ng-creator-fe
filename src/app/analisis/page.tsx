@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/client";
 import { ANALISIS_PAGINA } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { BarrasRendimiento } from "@/components/analisis/BarrasRendimiento";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import {
   DIAS,
   DIAS_CORTOS,
@@ -40,7 +40,9 @@ const ETIQUETA_TIPO: Record<string, string> = {
  * sobre algo que ya se rompió una vez.
  */
 export default function AnalisisPage() {
-  const { activa, cargando: cargandoPagina } = usePaginaActiva();
+  const { activa, cargando: cargandoPagina } = useMarcaActiva();
+  // El análisis es del historial de la página de Facebook de la marca.
+  const pageId = activa?.paginaFacebook?.pageId;
   const [dias, setDias] = useState(0);
 
   // La zona del navegador: es la que usa quien lee para pensar en horarios.
@@ -51,16 +53,16 @@ export default function AnalisisPage() {
 
   const { data, loading } = useQuery(ANALISIS_PAGINA, {
     variables: {
-      pageId: activa?.pageId,
+      pageId,
       zonaHoraria,
       desdeDias: dias || null,
       dias: dias || 28,
     },
-    skip: !activa,
+    skip: !pageId,
     errorPolicy: "all",
   });
 
-  if (!cargandoPagina && !activa) {
+  if (!cargandoPagina && !pageId) {
     return (
       <DashboardLayout>
         <Aviso
@@ -91,7 +93,7 @@ export default function AnalisisPage() {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-white/80">
               <span
                 className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: colorDePagina(activa.pageId) }}
+                style={{ backgroundColor: colorDeMarca(activa) }}
               />
               {activa.nombre}
             </span>

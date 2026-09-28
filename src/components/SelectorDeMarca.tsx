@@ -2,15 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva, type Marca } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 
 /**
- * Switch de pagina de Facebook. Define sobre que pagina se esta trabajando y a
- * donde va lo que se publique.
+ * Selector de marca. Define sobre qué marca se está trabajando: su cola, su
+ * equipo, sus borradores, y a qué cuentas va lo que se publique.
+ *
+ * Hasta #58 elegía una página de Facebook. Hoy cada marca tiene una sola
+ * cuenta —su página—, así que se ve igual que antes: mismo nombre, misma foto,
+ * mismo color.
  */
-export function PageSwitcher() {
-  const { paginas, activa, seleccionar, cargando } = usePaginaActiva();
+export function SelectorDeMarca() {
+  const { marcas, activa, seleccionar, cargando } = useMarcaActiva();
   const { esAdmin } = useSesion();
   const [abierto, setAbierto] = useState(false);
   const contenedor = useRef<HTMLDivElement>(null);
@@ -31,9 +35,9 @@ export function PageSwitcher() {
     );
   }
 
-  // Sin paginas habilitadas no hay contexto que elegir. Al admin se le ofrece
+  // Sin marcas habilitadas no hay contexto que elegir. Al admin se le ofrece
   // el camino para resolverlo; a un miembro solo se le informa.
-  if (!paginas.length) {
+  if (!marcas.length) {
     return (
       <div className="mx-3 mb-3 rounded-lg border border-dashed border-white/15 px-3 py-2.5">
         <p className="text-xs text-white/40">Sin página conectada</p>
@@ -58,15 +62,13 @@ export function PageSwitcher() {
       <button
         onClick={() => setAbierto(!abierto)}
         // La franja de color a la izquierda es el ancla visual del workspace:
-        // cambia con la pagina, asi que un vistazo basta para saber donde estas.
+        // cambia con la marca, asi que un vistazo basta para saber donde estas.
         style={
-          activa
-            ? { borderLeftColor: colorDePagina(activa.pageId) }
-            : undefined
+          activa ? { borderLeftColor: colorDeMarca(activa) } : undefined
         }
         className="flex w-full items-center gap-2.5 rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2.5 text-left transition hover:border-white/20 hover:bg-white/10"
       >
-        <Avatar pagina={activa} />
+        <Avatar marca={activa} />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] uppercase tracking-wider text-white/35">
             Trabajando en
@@ -80,13 +82,13 @@ export function PageSwitcher() {
 
       {abierto && (
         <div className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-lg border border-white/10 bg-[#111] shadow-xl">
-          {paginas.map((p) => {
-            const esActiva = p.pageId === activa?.pageId;
+          {marcas.map((m) => {
+            const esActiva = m._id === activa?._id;
             return (
               <button
-                key={p.pageId}
+                key={m._id}
                 onClick={() => {
-                  seleccionar(p.pageId);
+                  seleccionar(m._id);
                   setAbierto(false);
                 }}
                 className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition ${
@@ -96,16 +98,16 @@ export function PageSwitcher() {
                 <span
                   aria-hidden
                   className="h-7 w-1 shrink-0 rounded-full"
-                  style={{ backgroundColor: colorDePagina(p.pageId) }}
+                  style={{ backgroundColor: colorDeMarca(m) }}
                 />
-                <Avatar pagina={p} />
+                <Avatar marca={m} />
                 <span className="min-w-0 flex-1">
                   <span
                     className={`block truncate text-sm ${
                       esActiva ? "font-medium text-[#0FED9D]" : "text-white/80"
                     }`}
                   >
-                    {p.nombre}
+                    {m.nombre}
                   </span>
                   <span className="block text-[10px] text-white/30">
                     Espacio de trabajo propio
@@ -131,12 +133,14 @@ export function PageSwitcher() {
   );
 }
 
-function Avatar({ pagina }: { pagina: { fotoUrl?: string | null; nombre: string } | null }) {
-  if (pagina?.fotoUrl) {
+/** La foto de su página de Facebook, que es la que se veía antes de las marcas. */
+function Avatar({ marca }: { marca: Marca | null }) {
+  const foto = marca?.paginaFacebook?.fotoUrl;
+  if (foto) {
     // eslint-disable-next-line @next/next/no-img-element
     return (
       <img
-        src={pagina.fotoUrl}
+        src={foto}
         alt=""
         className="h-7 w-7 shrink-0 rounded-full object-cover"
       />
@@ -144,7 +148,7 @@ function Avatar({ pagina }: { pagina: { fotoUrl?: string | null; nombre: string 
   }
   return (
     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-xs font-bold">
-      {pagina?.nombre?.[0]?.toUpperCase() ?? "?"}
+      {marca?.nombre?.[0]?.toUpperCase() ?? "?"}
     </span>
   );
 }

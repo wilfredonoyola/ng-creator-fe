@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import {
@@ -17,7 +17,7 @@ import {
 
 interface Miembro {
   usuarioId: string;
-  pageId: string;
+  marcaId: string;
   rol: RolPagina;
   email: string;
   nombre?: string | null;
@@ -36,35 +36,36 @@ interface Invitacion {
 const ROLES: RolPagina[] = ["PROPIETARIO", "EDITOR", "LECTOR", "PROVEEDOR"];
 
 /**
- * Quién trabaja en esta página y con qué rol.
+ * Quién trabaja en esta marca y con qué rol.
  *
- * Es por página y no del sistema entero a propósito: cada fan page es un
- * espacio de trabajo aparte, y quien la conectó es quien decide quién más
- * entra. Un administrador del sistema no aparece acá por serlo.
+ * Es por marca y no del sistema entero a propósito: cada marca es un espacio
+ * de trabajo aparte, y quien conectó sus cuentas es quien decide quién más
+ * entra. Un administrador del sistema no aparece acá por serlo. El rol vale
+ * para todas las cuentas de la marca.
  */
 export default function EquipoPage() {
-  const { activa, cargando: cargandoPagina } = usePaginaActiva();
+  const { activa, cargando: cargandoPagina } = useMarcaActiva();
   const { usuario, esPropietario } = useSesion();
-  const pageId = activa?.pageId;
-  const mando = esPropietario(pageId);
+  const marcaId = activa?._id;
+  const mando = esPropietario(marcaId);
 
   const [error, setError] = useState<string | null>(null);
 
   const { data: miembrosData, loading: cargandoMiembros } = useQuery(
     MIEMBROS_DE_PAGINA,
-    { variables: { pageId }, skip: !pageId, errorPolicy: "all" },
+    { variables: { marcaId }, skip: !marcaId, errorPolicy: "all" },
   );
 
   const { data: invitacionesData } = useQuery(INVITACIONES_DE_PAGINA, {
-    variables: { pageId },
+    variables: { marcaId },
     // Solo el propietario puede verlas; pedirlas sin serlo da un 403 inútil.
-    skip: !pageId || !mando,
+    skip: !marcaId || !mando,
     errorPolicy: "all",
   });
 
   const refrescar = [
-    { query: MIEMBROS_DE_PAGINA, variables: { pageId } },
-    { query: INVITACIONES_DE_PAGINA, variables: { pageId } },
+    { query: MIEMBROS_DE_PAGINA, variables: { marcaId } },
+    { query: INVITACIONES_DE_PAGINA, variables: { marcaId } },
   ];
 
   const [invitar, { loading: invitando }] = useMutation(INVITAR_MIEMBRO, {
@@ -113,7 +114,7 @@ export default function EquipoPage() {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-sm text-white/80">
               <span
                 className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: colorDePagina(activa.pageId) }}
+                style={{ backgroundColor: colorDeMarca(activa) }}
               />
               {activa.nombre}
             </span>
@@ -135,7 +136,7 @@ export default function EquipoPage() {
         <FormularioInvitar
           invitando={invitando}
           onInvitar={(email, rol) =>
-            accion(() => invitar({ variables: { email, pageId, rol } }))
+            accion(() => invitar({ variables: { email, marcaId, rol } }))
           }
         />
       ) : (
@@ -176,7 +177,7 @@ export default function EquipoPage() {
                 <button
                   onClick={() =>
                     accion(() =>
-                      cancelar({ variables: { id: inv._id, pageId } }),
+                      cancelar({ variables: { id: inv._id, marcaId } }),
                     )
                   }
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 transition hover:border-red-500/40 hover:text-red-400"
@@ -221,13 +222,13 @@ export default function EquipoPage() {
                 onCambiarRol={(rol) =>
                   accion(() =>
                     cambiarRol({
-                      variables: { usuarioId: m.usuarioId, pageId, rol },
+                      variables: { usuarioId: m.usuarioId, marcaId, rol },
                     }),
                   )
                 }
                 onRevocar={() =>
                   accion(() =>
-                    revocar({ variables: { usuarioId: m.usuarioId, pageId } }),
+                    revocar({ variables: { usuarioId: m.usuarioId, marcaId } }),
                   )
                 }
               />

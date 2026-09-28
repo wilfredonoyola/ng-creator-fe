@@ -19,7 +19,7 @@ import {
   type PostRevival,
 } from "@/components/TarjetaRevival";
 import { PanelRevival } from "@/components/PanelRevival";
-import { usePaginaActiva } from "@/lib/pagina-activa";
+import { useMarcaActiva } from "@/lib/marca-activa";
 
 type Orden = "SCORE" | "FECHA";
 
@@ -54,7 +54,7 @@ const ORDEN_ESTADOS: EstadoRevival[] = [
  * forma de saber qué ya se evaluó.
  */
 export default function RevivalPage() {
-  const { activa } = usePaginaActiva();
+  const { activa } = useMarcaActiva();
   const [orden, setOrden] = useState<Orden>("SCORE");
   const [anioFiltro, setAnioFiltro] = useState<number | null>(null);
   const [estadoFiltro, setEstadoFiltro] = useState<EstadoRevival | null>(null);
@@ -65,7 +65,8 @@ export default function RevivalPage() {
   const [postOcupado, setPostOcupado] = useState<string | null>(null);
   const [postAbierto, setPostAbierto] = useState<string | null>(null);
 
-  const pageId = activa?.pageId;
+  // El historial es de la pagina de Facebook de la marca, no de la marca.
+  const pageId = activa?.paginaFacebook?.pageId;
 
   const { data, loading, refetch } = useQuery(HISTORIAL_DE_PAGINA, {
     variables: {

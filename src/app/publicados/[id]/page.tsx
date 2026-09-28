@@ -8,7 +8,7 @@ import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
 import { ElegirPortada } from "@/components/ElegirPortada";
 import { EstadoEnFacebook } from "@/components/EstadoEnFacebook";
 import { SelloDeAutoria } from "@/components/SelloDeAutoria";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 
 /**
  * Un video y todo lo que hay que decidir antes de sacarlo.
@@ -30,7 +30,7 @@ export default function DetalleVideoPage({
   params: { id: string };
 }) {
   const { id } = params;
-  const { activa, paginas } = usePaginaActiva();
+  const { activa, marcas } = useMarcaActiva();
 
   const { data, loading } = useQuery(EXPEDIENTE, {
     variables: { id },
@@ -38,8 +38,8 @@ export default function DetalleVideoPage({
   });
   const exp = data?.expediente;
 
-  const nombrePagina =
-    paginas.find((p) => p.pageId === exp?.pageId)?.nombre ?? exp?.pageId;
+  const marcaDelVideo = marcas.find((m) => m._id === exp?.marcaId);
+  const nombrePagina = marcaDelVideo?.nombre ?? exp?.marcaId;
 
   if (loading) {
     return (
@@ -69,9 +69,10 @@ export default function DetalleVideoPage({
     );
   }
 
-  // Publicar manda siempre a la página activa. Si el video es de otra, avisar
-  // antes de que alguien saque el video de una página en la otra sin notarlo.
-  const enOtraPagina = !!activa && exp.pageId !== activa.pageId;
+  // Publicar manda siempre a la marca activa. Si el video es de otra, avisar
+  // antes de que alguien saque el video de una marca en la otra sin notarlo.
+  // (El backend además lo rechaza desde #58.)
+  const enOtraPagina = !!activa && exp.marcaId !== activa._id;
 
   return (
     <DashboardLayout>
@@ -88,8 +89,12 @@ export default function DetalleVideoPage({
         </h1>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-sm text-white/70">
           <span
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: colorDePagina(exp.pageId) }}
+            className="h-2 w-2 rounded-full bg-white/30"
+            style={
+              marcaDelVideo
+                ? { backgroundColor: colorDeMarca(marcaDelVideo) }
+                : undefined
+            }
           />
           {nombrePagina}
         </span>

@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { FORMATOS_PUBLICADOS, PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 
 interface Publication {
   _id: string;
   expedienteId: string;
   expedienteNum: number;
-  pageId: string;
+  marcaId: string;
   publicadoEn?: string;
   videoFinalUrl?: string;
   posterUrl?: string;
@@ -45,7 +45,7 @@ export default function PublicadosPage() {
   const { data: estadoData } = useQuery(FORMATOS_PUBLICADOS, {
     errorPolicy: "all",
   });
-  const { activa, cargando: cargandoPagina } = usePaginaActiva();
+  const { activa, cargando: cargandoPagina } = useMarcaActiva();
   const [pestana, setPestana] = useState<Pestana>("pendientes");
 
   /** expedienteId -> formatos en los que ya salió. */
@@ -59,7 +59,7 @@ export default function PublicadosPage() {
 
   const todas: Publication[] = data?.publications ?? [];
   const deLaPagina = activa
-    ? todas.filter((p) => p.pageId === activa.pageId)
+    ? todas.filter((p) => p.marcaId === activa._id)
     : [];
   const enOtrasPaginas = todas.length - deLaPagina.length;
 
@@ -95,7 +95,7 @@ export default function PublicadosPage() {
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-white/80">
               <span
                 className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: colorDePagina(activa.pageId) }}
+                style={{ backgroundColor: colorDeMarca(activa) }}
               />
               {activa.nombre}
             </span>

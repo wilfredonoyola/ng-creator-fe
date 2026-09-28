@@ -16,7 +16,7 @@ interface Guardado {
 }
 
 /**
- * Los montajes de la página: verlos, abrirlos y duplicarlos.
+ * Los montajes de la marca: verlos, abrirlos y duplicarlos.
  *
  * Aparece cuando no hay video cargado, que es exactamente cuando uno quiere
  * retomar algo. Con un video en pantalla estorba: ahí lo que se está haciendo
@@ -27,16 +27,16 @@ interface Guardado {
  * material.
  */
 export function HistorialMontajes({
-  pageId,
+  marcaId,
   puede,
   onAbrir,
 }: {
-  pageId: string;
+  marcaId: string;
   puede: boolean;
   onAbrir: (id: string) => void;
 }) {
   const { data, loading, refetch } = useQuery(MONTAJES_GUARDADOS, {
-    variables: { pageId, limite: 30 },
+    variables: { marcaId, limite: 30 },
     fetchPolicy: "cache-and-network",
   });
   const [duplicar] = useMutation(DUPLICAR_MONTAJE);
@@ -80,7 +80,7 @@ export function HistorialMontajes({
                     setOcupado(m._id);
                     try {
                       const { data } = await duplicar({
-                        variables: { id: m._id, pageId, nombre: null },
+                        variables: { id: m._id, marcaId, nombre: null },
                       });
                       await refetch();
                       // Se abre la copia y no se queda en la lista: duplicar es
@@ -103,7 +103,7 @@ export function HistorialMontajes({
                       onClick={async () => {
                         setOcupado(m._id);
                         try {
-                          await borrar({ variables: { id: m._id, pageId } });
+                          await borrar({ variables: { id: m._id, marcaId } });
                           await refetch();
                         } finally {
                           setOcupado(null);

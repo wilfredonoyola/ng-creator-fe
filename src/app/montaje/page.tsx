@@ -8,7 +8,7 @@ import { EditorRecorte } from "@/components/montaje/EditorRecorte";
 import { PreviewFinal } from "@/components/montaje/PreviewFinal";
 import { ControlesTexto } from "@/components/montaje/ControlesTexto";
 import { MomentosCamara } from "@/components/montaje/MomentosCamara";
-import { usePaginaActiva } from "@/lib/pagina-activa";
+import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 import { downloadFromTikTok } from "@/lib/upload";
 import {
@@ -129,9 +129,9 @@ interface Fuente {
  * su licencia, y sale por la cola de siempre.
  */
 export default function MontajePage() {
-  const { activa } = usePaginaActiva();
+  const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
-  const puede = puedeOperar(activa?.pageId);
+  const puede = puedeOperar(activa?._id);
 
   const [url, setUrl] = useState("");
   const [fuente, setFuente] = useState<Fuente | null>(null);
@@ -153,14 +153,14 @@ export default function MontajePage() {
   const cliente = useApolloClient();
 
   /**
-   * El estilo de la página: cómo se ven sus videos.
+   * El estilo de la marca: cómo se ven sus videos.
    *
    * Se lee una vez y se aplica al cargar un link, no sobre lo que ya está en
    * pantalla: pisar un montaje en curso porque llegó una consulta sería
    * borrarle a alguien lo que estaba haciendo.
    */
   const { data: estiloData } = useQuery(ESTILO_MONTAJE, {
-    variables: { pageId: activa?.pageId },
+    variables: { marcaId: activa?._id },
     skip: !activa,
   });
   const estilo = estiloData?.estiloMontaje?.config ?? null;
@@ -405,7 +405,7 @@ export default function MontajePage() {
         alto: 1920,
         duracion: 0,
       });
-      // El estilo de la página es el punto de partida, no un extra: es lo que
+      // El estilo de la marca es el punto de partida, no un extra: es lo que
       // evita tomar diez veces por día las mismas diez decisiones.
       setMontaje(aplicarEstilo(montajeInicial(), estilo));
       const formato = formatoDelEstilo(estilo);
@@ -431,7 +431,7 @@ export default function MontajePage() {
       const { data } = await montar({
         variables: {
           input: {
-            pageId: activa.pageId,
+            marcaId: activa._id,
             // Vacio = que el backend registre una licencia SIN_VERIFICAR con
             // el link de origen. La puerta de derechos sigue en pie; lo que se
             // saca del medio es tener que elegir a mano en cada video.
@@ -507,7 +507,7 @@ export default function MontajePage() {
       try {
         const { data } = await cliente.query({
           query: MONTAJE_TRABAJO,
-          variables: { id: trabajo._id, pageId: activa.pageId },
+          variables: { id: trabajo._id, marcaId: activa._id },
           fetchPolicy: "network-only",
         });
         if (!vivo || !data?.montajeTrabajo) return;
@@ -538,7 +538,7 @@ export default function MontajePage() {
     cliente
       .query({
         query: MONTAJE_TRABAJO,
-        variables: { id: guardado, pageId: activa.pageId },
+        variables: { id: guardado, marcaId: activa._id },
         fetchPolicy: "network-only",
       })
       .then(({ data }) => {
@@ -584,7 +584,7 @@ export default function MontajePage() {
   }, [fuente, montaje, proporcion, formatoElegido, licenciaId]);
 
   const borrador = useGuardadoAutomatico({
-    pageId: activa?.pageId,
+    marcaId: activa?._id,
     datos: datosBorrador,
   });
 
@@ -623,7 +623,7 @@ export default function MontajePage() {
       try {
         const { data } = await cliente.query({
           query: MONTAJE_GUARDADO,
-          variables: { id, pageId: activa.pageId },
+          variables: { id, marcaId: activa._id },
           fetchPolicy: "network-only",
         });
         const g = data?.montajeGuardado;
@@ -647,7 +647,7 @@ export default function MontajePage() {
     cliente
       .query({
         query: MONTAJE_GUARDADO,
-        variables: { id: guardado, pageId: activa.pageId },
+        variables: { id: guardado, marcaId: activa._id },
         fetchPolicy: "network-only",
       })
       .then(({ data }) => {
@@ -748,7 +748,7 @@ export default function MontajePage() {
         </div>
       )}
 
-      {activa && <ColaRenders pageId={activa.pageId} excluir={trabajo?._id} />}
+      {activa && <ColaRenders marcaId={activa._id} excluir={trabajo?._id} />}
 
       {trabajo?.estado === "LISTO" && (
         <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
@@ -786,7 +786,7 @@ export default function MontajePage() {
           haciendo es ESE video y la lista de los viejos estorba. */}
       {ve(1) && !fuente && activa && (
         <HistorialMontajes
-          pageId={activa.pageId}
+          marcaId={activa._id}
           puede={puede}
           onAbrir={abrirBorrador}
         />
@@ -1138,7 +1138,7 @@ export default function MontajePage() {
                 camara={montaje.camara}
                 momentos={montaje.momentos}
                 duracionBase={duracionTrim}
-                pageId={activa.pageId}
+                marcaId={activa._id}
                 urlsPorRuta={urlsPorRuta}
                 onUrl={registrarUrl}
                 onCamara={(camara) => cambiar({ camara })}
@@ -1361,7 +1361,7 @@ export default function MontajePage() {
                 try {
                   await guardarEstilo({
                     variables: {
-                      pageId: activa.pageId,
+                      marcaId: activa._id,
                       config: extraerEstilo(montaje, formatoElegido),
                     },
                   });

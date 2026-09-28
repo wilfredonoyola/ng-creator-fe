@@ -6,7 +6,7 @@ import {
   PUBLICAR_EN_FACEBOOK,
   FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE,
 } from "@/graphql/operations";
-import { usePaginaActiva } from "@/lib/pagina-activa";
+import { useMarcaActiva } from "@/lib/marca-activa";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 
 type Formato = "REEL" | "HISTORIA_VIDEO" | "IMAGEN" | "HISTORIA_IMAGEN";
@@ -60,10 +60,10 @@ const PROGRAMABLES: Formato[] = ["REEL", "IMAGEN"];
 const MINUTOS_MINIMOS = 15;
 
 /**
- * Publica un expediente en la página activa.
+ * Publica un expediente en la página de Facebook de la marca activa.
  *
  * El destino es el contexto elegido en la barra lateral, no un selector aparte:
- * si querés otra página, cambiás de contexto. Así no hay dos lugares donde
+ * si querés otra página, cambiás de marca. Así no hay dos lugares donde
  * decidir lo mismo.
  */
 export function PublicarEnFacebook({
@@ -73,7 +73,8 @@ export function PublicarEnFacebook({
   expedienteId: string;
   tienePoster?: boolean;
 }) {
-  const { activa } = usePaginaActiva();
+  const { activa: marca } = useMarcaActiva();
+  const activa = marca?.paginaFacebook ?? null;
   const [formato, setFormato] = useState<Formato>("REEL");
   const [descripcion, setDescripcion] = useState("");
   const [error, setError] = useState<string | null>(null);

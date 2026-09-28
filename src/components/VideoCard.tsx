@@ -30,7 +30,7 @@ interface Validacion {
 export interface Expediente {
   _id: string;
   numero?: number | null;
-  pageId: string;
+  marcaId: string;
   tipoDeValor: string;
   estado: string;
   videoFinalUrl?: string;
@@ -80,7 +80,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
     !!exp.updatedAt &&
     new Date(exp.updatedAt).getTime() - new Date(exp.createdAt).getTime() > 60_000;
 
-  const refetch = [{ query: COLA_DE_REVISION, variables: { pageId: null } }];
+  const refetch = [{ query: COLA_DE_REVISION, variables: { marcaId: null } }];
   const [aprobar, { loading: aprobando }] = useMutation(APROBAR, { refetchQueries: refetch });
   const [rechazar, { loading: rechazando }] = useMutation(RECHAZAR, { refetchQueries: refetch });
   const [regenerar, { loading: regenerando }] = useMutation(REGENERAR, { refetchQueries: refetch });
