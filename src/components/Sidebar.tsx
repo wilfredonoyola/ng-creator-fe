@@ -10,6 +10,7 @@ const navItems = [
   { href: "/", icon: "📊", label: "Dashboard" },
   { href: "/crear", icon: "🎬", label: "Crear Video" },
   { href: "/montaje", icon: "✂️", label: "Montaje" },
+  { href: "/episodios", icon: "🎙️", label: "Episodios" },
   { href: "/revision", icon: "✅", label: "Revisión" },
   { href: "/publicados", icon: "📺", label: "Publicados" },
   { href: "/revival", icon: "♻️", label: "Revival" },

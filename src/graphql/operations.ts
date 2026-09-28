@@ -1091,3 +1091,94 @@ export const ADJUNTAR_GRABACION = gql`
     }
   }
 `;
+
+// ---- Episodios largos (subida directa a Bunny Stream) ----
+
+/**
+ * Lo que la lista y la subida necesitan de un episodio. Un fragmento para que
+ * lo que devuelve cada mutacion actualice la misma fila en la cache de Apollo.
+ */
+const CAMPOS_EPISODIO = gql`
+  fragment CamposEpisodio on Episodio {
+    _id
+    pageId
+    titulo
+    nombreArchivo
+    tamanoBytes
+    estado
+    duracionSeg
+    miniaturaUrl
+    urlReproduccion
+    urlOriginal
+    error
+    createdAt
+    subidoPor {
+      nombre
+      en
+    }
+  }
+`;
+
+/**
+ * Los episodios de la página. El backend le pregunta a Bunny por los que están
+ * pendientes al listarlos, así que refrescar esta query es lo que hace avanzar
+ * a "listo".
+ */
+export const EPISODIOS = gql`
+  ${CAMPOS_EPISODIO}
+  query Episodios($pageId: String!, $limite: Int) {
+    episodios(pageId: $pageId, limite: $limite) {
+      ...CamposEpisodio
+    }
+  }
+`;
+
+/**
+ * Crea el episodio (o retoma el que quedó a medias con el mismo archivo) y
+ * devuelve la firma para subir directo a Bunny. La llave de Bunny no viene:
+ * solo el hash que la usa.
+ */
+export const PREPARAR_SUBIDA_EPISODIO = gql`
+  ${CAMPOS_EPISODIO}
+  mutation PrepararSubidaEpisodio($input: PrepararSubidaEpisodioInput!) {
+    prepararSubidaEpisodio(input: $input) {
+      endpoint
+      libraryId
+      videoId
+      expiracion
+      firma
+      retomada
+      episodio {
+        ...CamposEpisodio
+      }
+    }
+  }
+`;
+
+/** Firma nueva para el mismo video, cuando la anterior está por vencer. */
+export const RENOVAR_SUBIDA_EPISODIO = gql`
+  mutation RenovarSubidaEpisodio($id: ID!, $pageId: String!) {
+    renovarSubidaEpisodio(id: $id, pageId: $pageId) {
+      endpoint
+      libraryId
+      videoId
+      expiracion
+      firma
+    }
+  }
+`;
+
+export const CONFIRMAR_SUBIDA_EPISODIO = gql`
+  ${CAMPOS_EPISODIO}
+  mutation ConfirmarSubidaEpisodio($id: ID!, $pageId: String!) {
+    confirmarSubidaEpisodio(id: $id, pageId: $pageId) {
+      ...CamposEpisodio
+    }
+  }
+`;
+
+export const BORRAR_EPISODIO = gql`
+  mutation BorrarEpisodio($id: ID!, $pageId: String!) {
+    borrarEpisodio(id: $id, pageId: $pageId)
+  }
+`;
