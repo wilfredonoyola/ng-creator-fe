@@ -11,7 +11,7 @@ import {
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 import {
   iniciarSubidaTus,
@@ -56,10 +56,12 @@ const ESTILO_ESTADO: Record<EstadoEpisodio, { etiqueta: string; clase: string }>
 };
 
 export default function EpisodiosPage() {
-  const { activa } = usePaginaActiva();
+  const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
-  const pageId = activa?.pageId ?? null;
-  const opera = puedeOperar(pageId);
+  // Los episodios son de la marca, no de una cuenta: uno largo se recorta
+  // después para cualquier red (ng-creator-be#58).
+  const marcaId = activa?._id ?? null;
+  const opera = puedeOperar(marcaId);
 
   const [subida, setSubida] = useState<SubidaActiva | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +69,8 @@ export default function EpisodiosPage() {
   const input = useRef<HTMLInputElement>(null);
 
   const { data, loading, refetch, startPolling, stopPolling } = useQuery(EPISODIOS, {
-    variables: { pageId: pageId ?? "" },
-    skip: !pageId,
+    variables: { marcaId: marcaId ?? "" },
+    skip: !marcaId,
     notifyOnNetworkStatusChange: false,
   });
   const episodios: Episodio[] = data?.episodios ?? [];
@@ -109,7 +111,7 @@ export default function EpisodiosPage() {
   useEffect(() => () => control.current?.detener(), []);
 
   async function elegirArchivo(archivo: File) {
-    if (!pageId) return;
+    if (!marcaId) return;
     setError(null);
     control.current?.detener();
 
@@ -118,7 +120,7 @@ export default function EpisodiosPage() {
       const r = await preparar({
         variables: {
           input: {
-            pageId,
+            marcaId,
             nombreArchivo: archivo.name,
             tamanoBytes: archivo.size,
             tipoArchivo: archivo.type || null,
@@ -149,7 +151,7 @@ export default function EpisodiosPage() {
         titulo: cred.episodio.titulo,
         credenciales: cred,
         renovar: async () => {
-          const r = await renovarFirma({ variables: { id: episodioId, pageId } });
+          const r = await renovarFirma({ variables: { id: episodioId, marcaId } });
           return r.data.renovarSubidaEpisodio as CredencialesTus;
         },
         onProgreso: (subidos, total) =>
@@ -182,9 +184,9 @@ export default function EpisodiosPage() {
   }
 
   async function alTerminar(episodioId: string) {
-    if (!pageId) return;
+    if (!marcaId) return;
     try {
-      await confirmar({ variables: { id: episodioId, pageId } });
+      await confirmar({ variables: { id: episodioId, marcaId } });
     } catch {
       // No es grave: la lista le pregunta a Bunny sola en la próxima consulta.
     }
@@ -192,7 +194,7 @@ export default function EpisodiosPage() {
   }
 
   async function descartar(ep: Episodio) {
-    if (!pageId) return;
+    if (!marcaId) return;
     const aviso =
       ep.estado === "SUBIENDO"
         ? `¿Descartar "${ep.titulo}"? Se pierde lo que ya se subió.`
@@ -204,7 +206,7 @@ export default function EpisodiosPage() {
       setSubida(null);
     }
     try {
-      await borrar({ variables: { id: ep._id, pageId } });
+      await borrar({ variables: { id: ep._id, marcaId } });
       void refetch();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo borrar");
@@ -223,7 +225,7 @@ export default function EpisodiosPage() {
         </div>
         {activa && (
           <div
-            style={{ borderLeftColor: colorDePagina(activa.pageId) }}
+            style={{ borderLeftColor: colorDeMarca(activa) }}
             className="rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2"
           >
             <span className="block text-[10px] uppercase tracking-wider text-white/35">
@@ -234,8 +236,8 @@ export default function EpisodiosPage() {
         )}
       </div>
 
-      {!pageId ? (
-        <p className="text-sm text-amber-400">Sin página activa: no hay dónde subir.</p>
+      {!marcaId ? (
+        <p className="text-sm text-amber-400">Sin marca activa: no hay dónde subir.</p>
       ) : (
         <>
           {opera && (
@@ -289,7 +291,7 @@ export default function EpisodiosPage() {
             </div>
           ) : episodios.length === 0 ? (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-white/50">
-              Todavía no hay episodios en {activa?.nombre ?? "esta página"}.
+              Todavía no hay episodios en {activa?.nombre ?? "esta marca"}.
             </div>
           ) : (
             <ul className="space-y-3">

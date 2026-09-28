@@ -1101,7 +1101,7 @@ export const ADJUNTAR_GRABACION = gql`
 const CAMPOS_EPISODIO = gql`
   fragment CamposEpisodio on Episodio {
     _id
-    pageId
+    marcaId
     titulo
     nombreArchivo
     tamanoBytes
@@ -1120,14 +1120,14 @@ const CAMPOS_EPISODIO = gql`
 `;
 
 /**
- * Los episodios de la página. El backend le pregunta a Bunny por los que están
+ * Los episodios de la marca. El backend le pregunta a Bunny por los que están
  * pendientes al listarlos, así que refrescar esta query es lo que hace avanzar
  * a "listo".
  */
 export const EPISODIOS = gql`
   ${CAMPOS_EPISODIO}
-  query Episodios($pageId: String!, $limite: Int) {
-    episodios(pageId: $pageId, limite: $limite) {
+  query Episodios($marcaId: String!, $limite: Int) {
+    episodios(marcaId: $marcaId, limite: $limite) {
       ...CamposEpisodio
     }
   }
@@ -1157,8 +1157,8 @@ export const PREPARAR_SUBIDA_EPISODIO = gql`
 
 /** Firma nueva para el mismo video, cuando la anterior está por vencer. */
 export const RENOVAR_SUBIDA_EPISODIO = gql`
-  mutation RenovarSubidaEpisodio($id: ID!, $pageId: String!) {
-    renovarSubidaEpisodio(id: $id, pageId: $pageId) {
+  mutation RenovarSubidaEpisodio($id: ID!, $marcaId: String!) {
+    renovarSubidaEpisodio(id: $id, marcaId: $marcaId) {
       endpoint
       libraryId
       videoId
@@ -1170,15 +1170,15 @@ export const RENOVAR_SUBIDA_EPISODIO = gql`
 
 export const CONFIRMAR_SUBIDA_EPISODIO = gql`
   ${CAMPOS_EPISODIO}
-  mutation ConfirmarSubidaEpisodio($id: ID!, $pageId: String!) {
-    confirmarSubidaEpisodio(id: $id, pageId: $pageId) {
+  mutation ConfirmarSubidaEpisodio($id: ID!, $marcaId: String!) {
+    confirmarSubidaEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposEpisodio
     }
   }
 `;
 
 export const BORRAR_EPISODIO = gql`
-  mutation BorrarEpisodio($id: ID!, $pageId: String!) {
-    borrarEpisodio(id: $id, pageId: $pageId)
+  mutation BorrarEpisodio($id: ID!, $marcaId: String!) {
+    borrarEpisodio(id: $id, marcaId: $marcaId)
   }
 `;
