@@ -24,7 +24,7 @@ interface Validacion {
 export interface Expediente {
   _id: string;
   numero?: number | null;
-  pageId: string;
+  marcaId: string;
   tipoDeValor: string;
   estado: string;
   creadoPor?: Autoria | null;
@@ -39,7 +39,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
   const [nota, setNota] = useState("");
   const [mostrarNota, setMostrarNota] = useState(false);
 
-  const refetch = [{ query: COLA_DE_REVISION, variables: { pageId: null } }];
+  const refetch = [{ query: COLA_DE_REVISION, variables: { marcaId: null } }];
   const [aprobar, { loading: aprobando }] = useMutation(APROBAR, {
     refetchQueries: refetch,
   });

@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
 import { uploadClip, uploadVoiceNote, downloadFromTikTok, getTikTokPreview, TikTokPreview } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { VoiceRecorder } from "./VoiceRecorder";
 
 type Step = "upload" | "config" | "processing" | "done";
@@ -31,7 +31,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   // La pagina NO se elige aca: sale del espacio de trabajo activo. Elegirla
   // suelta permitiria crear un expediente en una pagina distinta a la que estas
   // viendo, que es justo la confusion que el switch de contexto evita.
-  const { activa: paginaActiva } = usePaginaActiva();
+  const { activa: marcaActiva } = useMarcaActiva();
   const [tipoDeValor, setTipoDeValor] = useState<string>("EXPEDIENTE_COMPLETO");
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -72,7 +72,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
   const licenses: License[] = licensesData?.licenses?.filter((l: License) => l.status === "ACTIVA") || [];
 
   const [ingestar] = useMutation(INGESTAR, {
-    refetchQueries: [{ query: COLA_DE_REVISION, variables: { pageId: null } }],
+    refetchQueries: [{ query: COLA_DE_REVISION, variables: { marcaId: null } }],
   });
 
   const handleClipSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +90,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
       return;
     }
     // Sin pagina activa no hay a que espacio de trabajo asignar el expediente.
-    if (!paginaActiva) {
+    if (!marcaActiva) {
       setError(
         "No hay página activa. Un admin tiene que habilitar una en Administrar páginas.",
       );
@@ -136,7 +136,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             sha256: `sha256-${Date.now()}`, // TODO: calcular SHA256 real
             clipStoragePath: clipResult.storagePath,
             notaVozPath: voicePath,
-            pageId: paginaActiva!.pageId,
+            marcaId: marcaActiva!._id,
             tipoDeValor,
           },
         },
@@ -415,14 +415,14 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               <label className="mb-1.5 block text-xs font-medium text-white/60">
                 Página
               </label>
-              {paginaActiva ? (
+              {marcaActiva ? (
                 <div
-                  style={{ borderLeftColor: colorDePagina(paginaActiva.pageId) }}
+                  style={{ borderLeftColor: colorDeMarca(marcaActiva) }}
                   className="flex items-center gap-2 rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2.5"
                 >
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">
-                      {paginaActiva.nombre}
+                      {marcaActiva.nombre}
                     </span>
                     <span className="block text-[10px] text-white/40">
                       Espacio de trabajo activo · cámbialo en la barra lateral
@@ -475,9 +475,9 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               </button>
               <button
                 onClick={handleProcess}
-                disabled={!selectedLicense || uploading || !paginaActiva}
+                disabled={!selectedLicense || uploading || !marcaActiva}
                 title={
-                  !paginaActiva
+                  !marcaActiva
                     ? "No hay página activa: habilitá una en Administrar páginas"
                     : undefined
                 }

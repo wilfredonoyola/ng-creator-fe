@@ -27,10 +27,10 @@ const FALLOS_PARA_AVISAR = 3;
 const ESPERA_MAX_MS = 20 * 60 * 1000;
 
 export function GrabarConTelefono({
-  pageId,
+  marcaId,
   onVideo,
 }: {
-  pageId: string;
+  marcaId: string;
   onVideo: (
     storagePath: string,
     duracionSeg: number | null,
@@ -70,7 +70,7 @@ export function GrabarConTelefono({
     setCansado(false);
     setCreando(true);
     try {
-      const { data } = await crear({ variables: { pageId } });
+      const { data } = await crear({ variables: { marcaId } });
       const id = data?.crearSesionGrabacion?._id;
       if (!id) throw new Error("El servidor no devolvió la sesión");
       setSesionId(id);

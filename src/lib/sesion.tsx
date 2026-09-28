@@ -7,8 +7,10 @@ import { MIS_ACCESOS, YO } from "@/graphql/operations";
 export type Rol = "ADMIN" | "MIEMBRO";
 
 /**
- * Rol dentro de una página. Es lo que decide casi todo; `Rol` quedó solo para
- * lo que es del sistema entero (administrar usuarios, sumar páginas nuevas).
+ * Rol dentro de una marca (hasta #58, de una página). Es lo que decide casi
+ * todo; `Rol` quedó solo para lo que es del sistema entero (administrar
+ * usuarios, sumar páginas nuevas). Quien opera una marca opera todas sus
+ * cuentas.
  *
  * PROVEEDOR es el dueño de material con quien hay un trato: no entra al espacio
  * de trabajo, solo sube lo suyo y sigue su estado. Su flujo todavía no está
@@ -24,8 +26,8 @@ export interface Usuario {
   activo: boolean;
 }
 
-export interface AccesoDePagina {
-  pageId: string;
+export interface AccesoDeMarca {
+  marcaId: string;
   rol: RolPagina;
 }
 
@@ -33,13 +35,13 @@ interface Sesion {
   usuario: Usuario | null;
   /** Rol global. Solo habilita sumar cuentas de Facebook nuevas al sistema. */
   esAdmin: boolean;
-  accesos: AccesoDePagina[];
-  /** El rol en una página, o null si no tiene acceso. */
-  rolEn: (pageId?: string | null) => RolPagina | null;
+  accesos: AccesoDeMarca[];
+  /** El rol en una marca, o null si no tiene acceso. */
+  rolEn: (marcaId?: string | null) => RolPagina | null;
   /** Puede cambiar cosas del espacio de trabajo (crear, aprobar, publicar). */
-  puedeOperar: (pageId?: string | null) => boolean;
-  /** Puede configurar la página y repartir accesos. */
-  esPropietario: (pageId?: string | null) => boolean;
+  puedeOperar: (marcaId?: string | null) => boolean;
+  /** Puede configurar las cuentas de la marca y repartir accesos. */
+  esPropietario: (marcaId?: string | null) => boolean;
   cargando: boolean;
 }
 
@@ -56,11 +58,11 @@ const VACIO: Sesion = {
 const SesionContext = createContext<Sesion>(VACIO);
 
 /**
- * Usuario de la sesión, sus roles globales y su acceso a cada página.
+ * Usuario de la sesión, sus roles globales y su acceso a cada marca.
  *
  * Los permisos viven en nuestro backend, no en los claims de Cognito, así que
  * hay que preguntarlos. Esconder controles en la interfaz es comodidad, no
- * seguridad: quien autoriza de verdad son CognitoGuard y PaginaGuard.
+ * seguridad: quien autoriza de verdad son CognitoGuard y MarcaGuard.
  */
 export function SesionProvider({ children }: { children: React.ReactNode }) {
   // errorPolicy para que un 401 no tumbe el árbol: DashboardLayout ya redirige
@@ -71,26 +73,26 @@ export function SesionProvider({ children }: { children: React.ReactNode }) {
   });
 
   const usuario: Usuario | null = data?.yo ?? null;
-  const accesos: AccesoDePagina[] = useMemo(
+  const accesos: AccesoDeMarca[] = useMemo(
     () => accesosData?.misAccesos ?? [],
     [accesosData],
   );
 
   const valor = useMemo<Sesion>(() => {
-    const porPagina = new Map(accesos.map((a) => [a.pageId, a.rol]));
-    const rolEn = (pageId?: string | null) =>
-      (pageId && porPagina.get(pageId)) || null;
+    const porMarca = new Map(accesos.map((a) => [a.marcaId, a.rol]));
+    const rolEn = (marcaId?: string | null) =>
+      (marcaId && porMarca.get(marcaId)) || null;
 
     return {
       usuario,
       esAdmin: !!usuario?.roles?.includes("ADMIN"),
       accesos,
       rolEn,
-      puedeOperar: (pageId) => {
-        const rol = rolEn(pageId);
+      puedeOperar: (marcaId) => {
+        const rol = rolEn(marcaId);
         return rol === "PROPIETARIO" || rol === "EDITOR";
       },
-      esPropietario: (pageId) => rolEn(pageId) === "PROPIETARIO",
+      esPropietario: (marcaId) => rolEn(marcaId) === "PROPIETARIO",
       cargando: loading || cargandoAccesos,
     };
   }, [usuario, accesos, loading, cargandoAccesos]);

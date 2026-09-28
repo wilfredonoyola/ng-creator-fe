@@ -9,7 +9,7 @@ import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import {
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
-  FACEBOOK_PAGINAS_ACTIVAS,
+  MARCAS_ACTIVAS,
   FACEBOOK_URL_DE_CONEXION,
   FACEBOOK_RESINCRONIZAR,
   FACEBOOK_SET_PAGINA_ACTIVA,
@@ -22,6 +22,8 @@ import {
 interface Pagina {
   _id: string;
   pageId: string;
+  /** El rol se tiene en la marca de la página, no en la página (#58). */
+  marcaId?: string | null;
   nombre: string;
   categoria?: string | null;
   fotoUrl?: string | null;
@@ -57,7 +59,7 @@ export default function AdminFacebookPage() {
   // con el botón de habilitar apagado hasta recargar a mano.
   const refrescar = [
     { query: FACEBOOK_PAGINAS },
-    { query: FACEBOOK_PAGINAS_ACTIVAS },
+    { query: MARCAS_ACTIVAS },
     { query: FACEBOOK_ESTADO },
     { query: MIS_ACCESOS },
   ];
@@ -270,7 +272,7 @@ FACEBOOK_TOKEN_KEY=`}
                 <FilaPagina
                   key={p._id}
                   pagina={p}
-                  rol={rolEn(p.pageId)}
+                  rol={rolEn(p.marcaId)}
                   onToggle={(activa) =>
                     accion(() =>
                       setActiva({ variables: { pageId: p.pageId, activa } }),

@@ -3,8 +3,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import { cerrarSesion } from "@/lib/auth";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
-import { usePaginaActiva } from "@/lib/pagina-activa";
-import { PageSwitcher } from "./PageSwitcher";
+import { useMarcaActiva } from "@/lib/marca-activa";
+import { SelectorDeMarca } from "./SelectorDeMarca";
 
 const navItems = [
   { href: "/", icon: "📊", label: "Dashboard" },
@@ -45,8 +45,8 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const { usuario, esAdmin, rolEn } = useSesion();
-  const { activa } = usePaginaActiva();
-  const rolAqui = rolEn(activa?.pageId);
+  const { activa } = useMarcaActiva();
+  const rolAqui = rolEn(activa?._id);
 
   function handleLogout() {
     cerrarSesion();
@@ -85,7 +85,7 @@ export function Sidebar({
 
       {/* Contexto de pagina */}
       <div className="pt-4">
-        <PageSwitcher />
+        <SelectorDeMarca />
       </div>
 
       {/* Navegacion. Scrollea sola si no entra, sin arrastrar el resto. */}

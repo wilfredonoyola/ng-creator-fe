@@ -8,7 +8,7 @@ import {
   FACEBOOK_CONECTAR,
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
-  FACEBOOK_PAGINAS_ACTIVAS,
+  MARCAS_ACTIVAS,
 } from "@/graphql/operations";
 
 /**
@@ -27,7 +27,7 @@ function Callback() {
     refetchQueries: [
       { query: FACEBOOK_ESTADO },
       { query: FACEBOOK_PAGINAS },
-      { query: FACEBOOK_PAGINAS_ACTIVAS },
+      { query: MARCAS_ACTIVAS },
     ],
   });
 

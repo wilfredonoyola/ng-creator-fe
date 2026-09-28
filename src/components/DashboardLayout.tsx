@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { haySesion } from "@/lib/auth";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { Sidebar } from "./Sidebar";
 import { NavInferior } from "./NavInferior";
 
@@ -19,7 +19,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
-  const { activa } = usePaginaActiva();
+  const { activa } = useMarcaActiva();
 
   useEffect(() => {
     if (!haySesion()) router.push("/login");
@@ -70,7 +70,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {activa && (
             <span
               className="h-2 w-2 shrink-0 rounded-full"
-              style={{ backgroundColor: colorDePagina(activa.pageId) }}
+              style={{ backgroundColor: colorDeMarca(activa) }}
             />
           )}
           <span className="truncate text-sm font-medium">

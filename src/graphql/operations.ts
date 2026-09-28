@@ -33,11 +33,11 @@ export const LOGOUT = gql`
 
 /** La cola de revision: videos listos para aprobar. */
 export const COLA_DE_REVISION = gql`
-  query ColaDeRevision($pageId: String) {
-    colaDeRevision(pageId: $pageId) {
+  query ColaDeRevision($marcaId: String) {
+    colaDeRevision(marcaId: $marcaId) {
       _id
       numero
-      pageId
+      marcaId
       tipoDeValor
       estado
       videoFinalUrl
@@ -73,10 +73,10 @@ export const COLA_DE_REVISION = gql`
 
 /** Expedientes que fallaron en el pipeline. */
 export const EXPEDIENTES_FALLIDOS = gql`
-  query ExpedientesFallidos($pageId: String) {
-    expedientesFallidos(pageId: $pageId) {
+  query ExpedientesFallidos($marcaId: String) {
+    expedientesFallidos(marcaId: $marcaId) {
       _id
-      pageId
+      marcaId
       tipoDeValor
       estado
       error
@@ -119,7 +119,7 @@ export const INGESTAR = gql`
     ingestar(input: $input) {
       _id
       estado
-      pageId
+      marcaId
     }
   }
 `;
@@ -224,7 +224,7 @@ export const EXPEDIENTE = gql`
     expediente(id: $id) {
       _id
       numero
-      pageId
+      marcaId
       tipoDeValor
       estado
       videoFinalUrl
@@ -266,7 +266,7 @@ export const PUBLICATIONS = gql`
       _id
       expedienteId
       expedienteNum
-      pageId
+      marcaId
       publicadoEn
       videoFinalUrl
       posterUrl
@@ -330,6 +330,7 @@ export const FACEBOOK_PAGINAS = gql`
     facebookPaginas {
       _id
       pageId
+      marcaId
       nombre
       categoria
       fotoUrl
@@ -341,14 +342,25 @@ export const FACEBOOK_PAGINAS = gql`
   }
 `;
 
-/** Solo las habilitadas: alimenta el switch de contexto. */
-export const FACEBOOK_PAGINAS_ACTIVAS = gql`
-  query FacebookPaginasActivas {
-    facebookPaginasActivas {
+/**
+ * Las marcas activas del usuario: alimenta el selector de arriba.
+ *
+ * Trae la página de Facebook de cada marca porque las pantallas propias de
+ * Facebook (historial, análisis, publicar) trabajan sobre ella, y porque su
+ * foto es la que se ve en el selector desde antes de que existieran las marcas.
+ */
+export const MARCAS_ACTIVAS = gql`
+  query MarcasActivas {
+    marcasActivas {
       _id
-      pageId
       nombre
-      fotoUrl
+      logoUrl
+      paginaFacebook {
+        _id
+        pageId
+        nombre
+        fotoUrl
+      }
     }
   }
 `;
@@ -688,26 +700,26 @@ export const REFRESCAR_PROGRAMADAS = gql`
 // ---- Equipo de cada página ----
 
 /**
- * Las páginas del usuario y su rol en cada una.
+ * Las marcas del usuario y su rol en cada una.
  *
  * Define qué muestra la interfaz: quién ve el botón de invitar, quién puede
  * habilitar una página, quién solo mira. Esconder controles es comodidad, no
- * seguridad: quien autoriza de verdad es PaginaGuard en el backend.
+ * seguridad: quien autoriza de verdad es MarcaGuard en el backend.
  */
 export const MIS_ACCESOS = gql`
   query MisAccesos {
     misAccesos {
-      pageId
+      marcaId
       rol
     }
   }
 `;
 
 export const MIEMBROS_DE_PAGINA = gql`
-  query MiembrosDePagina($pageId: String!) {
-    miembrosDePagina(pageId: $pageId) {
+  query MiembrosDePagina($marcaId: String!) {
+    miembrosDePagina(marcaId: $marcaId) {
       usuarioId
-      pageId
+      marcaId
       rol
       email
       nombre
@@ -720,8 +732,8 @@ export const MIEMBROS_DE_PAGINA = gql`
 
 /** Invitaciones que todavía no entraron por primera vez. */
 export const INVITACIONES_DE_PAGINA = gql`
-  query InvitacionesDePagina($pageId: String!) {
-    invitacionesDePagina(pageId: $pageId) {
+  query InvitacionesDePagina($marcaId: String!) {
+    invitacionesDePagina(marcaId: $marcaId) {
       _id
       email
       rol
@@ -732,8 +744,8 @@ export const INVITACIONES_DE_PAGINA = gql`
 `;
 
 export const INVITAR_MIEMBRO = gql`
-  mutation InvitarMiembro($email: String!, $pageId: String!, $rol: RolPagina!) {
-    invitarMiembro(email: $email, pageId: $pageId, rol: $rol) {
+  mutation InvitarMiembro($email: String!, $marcaId: String!, $rol: RolPagina!) {
+    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol) {
       _id
       email
       rol
@@ -745,10 +757,10 @@ export const INVITAR_MIEMBRO = gql`
 export const CAMBIAR_ROL_MIEMBRO = gql`
   mutation CambiarRolMiembro(
     $usuarioId: ID!
-    $pageId: String!
+    $marcaId: String!
     $rol: RolPagina!
   ) {
-    cambiarRolMiembro(usuarioId: $usuarioId, pageId: $pageId, rol: $rol) {
+    cambiarRolMiembro(usuarioId: $usuarioId, marcaId: $marcaId, rol: $rol) {
       _id
       rol
     }
@@ -756,14 +768,14 @@ export const CAMBIAR_ROL_MIEMBRO = gql`
 `;
 
 export const REVOCAR_ACCESO = gql`
-  mutation RevocarAcceso($usuarioId: ID!, $pageId: String!) {
-    revocarAcceso(usuarioId: $usuarioId, pageId: $pageId)
+  mutation RevocarAcceso($usuarioId: ID!, $marcaId: String!) {
+    revocarAcceso(usuarioId: $usuarioId, marcaId: $marcaId)
   }
 `;
 
 export const CANCELAR_INVITACION = gql`
-  mutation CancelarInvitacion($id: ID!, $pageId: String!) {
-    cancelarInvitacion(id: $id, pageId: $pageId)
+  mutation CancelarInvitacion($id: ID!, $marcaId: String!) {
+    cancelarInvitacion(id: $id, marcaId: $marcaId)
   }
 `;
 
@@ -799,8 +811,8 @@ export const MONTAR_VIDEO = gql`
  * Los terminados no salen acá — ya están en la cola de revisión.
  */
 export const MONTAJES_EN_COLA = gql`
-  query MontajesEnCola($pageId: String!) {
-    montajesEnCola(pageId: $pageId) {
+  query MontajesEnCola($marcaId: String!) {
+    montajesEnCola(marcaId: $marcaId) {
       _id
       estado
       progreso
@@ -813,8 +825,8 @@ export const MONTAJES_EN_COLA = gql`
 
 /** Cómo va un montaje. Se consulta cada pocos segundos mientras renderiza. */
 export const MONTAJE_TRABAJO = gql`
-  query MontajeTrabajo($id: ID!, $pageId: String!) {
-    montajeTrabajo(id: $id, pageId: $pageId) {
+  query MontajeTrabajo($id: ID!, $marcaId: String!) {
+    montajeTrabajo(id: $id, marcaId: $marcaId) {
       _id
       estado
       progreso
@@ -845,10 +857,10 @@ export const GUARDAR_MONTAJE = gql`
   }
 `;
 
-/** Los borradores de la página, del más reciente al más viejo. */
+/** Los borradores de la marca, del más reciente al más viejo. */
 export const MONTAJES_GUARDADOS = gql`
-  query MontajesGuardados($pageId: String!, $limite: Int) {
-    montajesGuardados(pageId: $pageId, limite: $limite) {
+  query MontajesGuardados($marcaId: String!, $limite: Int) {
+    montajesGuardados(marcaId: $marcaId, limite: $limite) {
       _id
       nombre
       origenUrl
@@ -861,8 +873,8 @@ export const MONTAJES_GUARDADOS = gql`
 
 /** Uno solo, con su configuración entera, para retomarlo. */
 export const MONTAJE_GUARDADO = gql`
-  query MontajeGuardado($id: ID!, $pageId: String!) {
-    montajeGuardado(id: $id, pageId: $pageId) {
+  query MontajeGuardado($id: ID!, $marcaId: String!) {
+    montajeGuardado(id: $id, marcaId: $marcaId) {
       _id
       nombre
       config
@@ -880,8 +892,8 @@ export const MONTAJE_GUARDADO = gql`
  * que se agreguen mañana.
  */
 export const DUPLICAR_MONTAJE = gql`
-  mutation DuplicarMontaje($id: ID!, $pageId: String!, $nombre: String) {
-    duplicarMontaje(id: $id, pageId: $pageId, nombre: $nombre) {
+  mutation DuplicarMontaje($id: ID!, $marcaId: String!, $nombre: String) {
+    duplicarMontaje(id: $id, marcaId: $marcaId, nombre: $nombre) {
       _id
       nombre
     }
@@ -889,8 +901,8 @@ export const DUPLICAR_MONTAJE = gql`
 `;
 
 export const RENOMBRAR_MONTAJE = gql`
-  mutation RenombrarMontaje($id: ID!, $pageId: String!, $nombre: String!) {
-    renombrarMontaje(id: $id, pageId: $pageId, nombre: $nombre) {
+  mutation RenombrarMontaje($id: ID!, $marcaId: String!, $nombre: String!) {
+    renombrarMontaje(id: $id, marcaId: $marcaId, nombre: $nombre) {
       _id
       nombre
     }
@@ -898,19 +910,19 @@ export const RENOMBRAR_MONTAJE = gql`
 `;
 
 export const BORRAR_MONTAJE = gql`
-  mutation BorrarMontaje($id: ID!, $pageId: String!) {
-    borrarMontaje(id: $id, pageId: $pageId)
+  mutation BorrarMontaje($id: ID!, $marcaId: String!) {
+    borrarMontaje(id: $id, marcaId: $marcaId)
   }
 `;
 
 /**
- * El estilo por defecto de la página: cómo se ven sus videos.
+ * El estilo por defecto de la marca: cómo se ven sus videos.
  *
  * Se lee al empezar un montaje para no tomar diez veces las mismas decisiones.
  */
 export const ESTILO_MONTAJE = gql`
-  query EstiloMontaje($pageId: String!) {
-    estiloMontaje(pageId: $pageId) {
+  query EstiloMontaje($marcaId: String!) {
+    estiloMontaje(marcaId: $marcaId) {
       _id
       config
       updatedAt
@@ -919,8 +931,8 @@ export const ESTILO_MONTAJE = gql`
 `;
 
 export const GUARDAR_ESTILO_MONTAJE = gql`
-  mutation GuardarEstiloMontaje($pageId: String!, $config: JSON!) {
-    guardarEstiloMontaje(pageId: $pageId, config: $config) {
+  mutation GuardarEstiloMontaje($marcaId: String!, $config: JSON!) {
+    guardarEstiloMontaje(marcaId: $marcaId, config: $config) {
       _id
       updatedAt
     }
@@ -928,8 +940,8 @@ export const GUARDAR_ESTILO_MONTAJE = gql`
 `;
 
 export const OLVIDAR_ESTILO_MONTAJE = gql`
-  mutation OlvidarEstiloMontaje($pageId: String!) {
-    olvidarEstiloMontaje(pageId: $pageId)
+  mutation OlvidarEstiloMontaje($marcaId: String!) {
+    olvidarEstiloMontaje(marcaId: $marcaId)
   }
 `;
 
@@ -1043,8 +1055,8 @@ export const ANALISIS_PAGINA = gql`
  * viviendo en la memoria del navegador de la computadora.
  */
 export const CREAR_SESION_GRABACION = gql`
-  mutation CrearSesionGrabacion($pageId: String!) {
-    crearSesionGrabacion(pageId: $pageId) {
+  mutation CrearSesionGrabacion($marcaId: String!) {
+    crearSesionGrabacion(marcaId: $marcaId) {
       _id
     }
   }

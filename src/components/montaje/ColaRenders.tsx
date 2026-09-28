@@ -12,7 +12,7 @@ interface EnCola {
 }
 
 /**
- * La fila de renders de la página.
+ * La fila de renders de la marca.
  *
  * Existe porque ahora se puede pedir varios: sin esto, el segundo video que se
  * manda desaparece de la vista —no hay barra que mirar hasta que le toque— y
@@ -22,16 +22,16 @@ interface EnCola {
  * el mismo render aparecería dos veces y parecería que se pidió doble.
  */
 export function ColaRenders({
-  pageId,
+  marcaId,
   excluir,
 }: {
-  pageId: string;
+  marcaId: string;
   excluir?: string | null;
 }) {
   // Cada 3 segundos: el que está armándose mueve su barra, y los que esperan
   // cambian de posición cuando termina cualquier otro.
   const { data } = useQuery(MONTAJES_EN_COLA, {
-    variables: { pageId },
+    variables: { marcaId },
     pollInterval: 3000,
     fetchPolicy: "cache-and-network",
   });

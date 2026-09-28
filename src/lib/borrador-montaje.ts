@@ -40,7 +40,7 @@ export interface DatosBorrador {
 }
 
 export function useGuardadoAutomatico(params: {
-  pageId?: string;
+  marcaId?: string;
   /** `null` mientras no haya nada que guardar (sin video cargado). */
   datos: DatosBorrador | null;
 }): {
@@ -70,7 +70,7 @@ export function useGuardadoAutomatico(params: {
 
   const escribir = useCallback(
     async (datos: DatosBorrador) => {
-      if (!params.pageId) return;
+      if (!params.marcaId) return;
       if (enVuelo.current) {
         // Guardar de nuevo mientras el anterior viaja crearía dos borradores:
         // el segundo saldría sin `id` porque el primero todavía no lo devolvió.
@@ -85,7 +85,7 @@ export function useGuardadoAutomatico(params: {
           variables: {
             input: {
               id: idRef.current,
-              pageId: params.pageId,
+              marcaId: params.marcaId,
               nombre: datos.nombre,
               config: datos.config,
               origenUrl: datos.origenUrl ?? null,
@@ -117,13 +117,13 @@ export function useGuardadoAutomatico(params: {
         if (siguiente) void escribir(siguiente);
       }
     },
-    [guardar, params.pageId],
+    [guardar, params.marcaId],
   );
 
   // El disparador: cada cambio reinicia la espera.
   const datos = params.datos;
   useEffect(() => {
-    if (!datos || !params.pageId) return;
+    if (!datos || !params.marcaId) return;
     if (JSON.stringify(datos.config) === ultimoGuardado.current) return;
 
     if (temporizador.current) clearTimeout(temporizador.current);
@@ -131,7 +131,7 @@ export function useGuardadoAutomatico(params: {
     return () => {
       if (temporizador.current) clearTimeout(temporizador.current);
     };
-  }, [datos, escribir, params.pageId]);
+  }, [datos, escribir, params.marcaId]);
 
   /** Adopta un borrador ya existente sin volver a escribirlo. */
   const adoptar = useCallback((nuevoId: string | null, config: unknown) => {

@@ -47,7 +47,7 @@ export function MomentosCamara({
   camara,
   momentos,
   duracionBase,
-  pageId,
+  marcaId,
   urlsPorRuta,
   onUrl,
   onCamara,
@@ -56,7 +56,7 @@ export function MomentosCamara({
   camara: Camara | null;
   momentos: Momento[];
   duracionBase: number;
-  pageId: string;
+  marcaId: string;
   /** Dónde mirar cada grabación, por ruta. La tiene el padre: el preview también la usa. */
   urlsPorRuta: Record<string, string>;
   onUrl: (ruta: string, url: string | null) => void;
@@ -445,7 +445,7 @@ export function MomentosCamara({
                         </div>
                         {enComputadora && (
                           <GrabarConTelefono
-                            pageId={pageId}
+                            marcaId={marcaId}
                             onVideo={(ruta, _dur, url) => {
                               onUrl(ruta, url);
                               cambiar(m.id, { origenStoragePath: ruta });
@@ -635,7 +635,7 @@ export function MomentosCamara({
                   )}
                 </div>
                 {enComputadora && (
-                  <GrabarConTelefono pageId={pageId} onVideo={usarVideo} />
+                  <GrabarConTelefono marcaId={marcaId} onVideo={usarVideo} />
                 )}
                 <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-[#0FED9D]/50 hover:bg-white/5">
                   <input

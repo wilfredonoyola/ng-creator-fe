@@ -5,7 +5,7 @@ import { ApolloProvider } from "@apollo/client";
 import { apolloClient } from "@/lib/apollo";
 import { inicializarAutoRefresh } from "@/lib/auth";
 import { SesionProvider } from "@/lib/sesion";
-import { PaginaActivaProvider } from "@/lib/pagina-activa";
+import { MarcaActivaProvider } from "@/lib/marca-activa";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -16,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ApolloProvider client={apolloClient}>
       <SesionProvider>
-        <PaginaActivaProvider>{children}</PaginaActivaProvider>
+        <MarcaActivaProvider>{children}</MarcaActivaProvider>
       </SesionProvider>
     </ApolloProvider>
   );

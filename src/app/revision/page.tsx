@@ -6,7 +6,7 @@ import { COLA_DE_REVISION, EXPEDIENTES_FALLIDOS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VideoCard, Expediente } from "@/components/VideoCard";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
-import { colorDePagina, usePaginaActiva } from "@/lib/pagina-activa";
+import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 
 type Orden = "ANTIGUOS" | "RECIENTES";
 
@@ -17,7 +17,7 @@ const ORDENES: Array<{ valor: Orden; label: string }> = [
 
 interface ExpedienteFallido {
   _id: string;
-  pageId: string;
+  marcaId: string;
   tipoDeValor: string;
   estado: string;
   error?: string;
@@ -25,22 +25,22 @@ interface ExpedienteFallido {
 }
 
 export default function RevisionPage() {
-  // La cola es del espacio de trabajo activo: no hay filtro de pagina suelto,
-  // porque ver la cola de una pagina mientras trabajas en otra es la confusion
-  // que el switch de contexto existe para evitar.
-  const { activa: paginaActiva } = usePaginaActiva();
+  // La cola es del espacio de trabajo activo: no hay filtro de marca suelto,
+  // porque ver la cola de una marca mientras trabajas en otra es la confusion
+  // que el selector de marca existe para evitar.
+  const { activa: marcaActiva } = useMarcaActiva();
   const [showFallidos, setShowFallidos] = useState(false);
   const [orden, setOrden] = useState<Orden>("ANTIGUOS");
   const ahora = useAhora(10_000);
 
   const { data, loading, refetch, networkStatus } = useQuery(COLA_DE_REVISION, {
-    variables: { pageId: paginaActiva?.pageId ?? null },
+    variables: { marcaId: marcaActiva?._id ?? null },
     pollInterval: 15000,
     notifyOnNetworkStatusChange: true,
   });
 
   const { data: fallidosData } = useQuery(EXPEDIENTES_FALLIDOS, {
-    variables: { pageId: paginaActiva?.pageId ?? null },
+    variables: { marcaId: marcaActiva?._id ?? null },
     pollInterval: 30000,
   });
 
@@ -115,9 +115,9 @@ export default function RevisionPage() {
 
       {/* Filters */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        {paginaActiva ? (
+        {marcaActiva ? (
           <div
-            style={{ borderLeftColor: colorDePagina(paginaActiva.pageId) }}
+            style={{ borderLeftColor: colorDeMarca(marcaActiva) }}
             className="flex items-center gap-2 rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2"
           >
             <span>
@@ -125,7 +125,7 @@ export default function RevisionPage() {
                 Cola de
               </span>
               <span className="block text-sm font-medium">
-                {paginaActiva.nombre}
+                {marcaActiva.nombre}
               </span>
             </span>
           </div>
@@ -180,7 +180,7 @@ export default function RevisionPage() {
                   <p>
                     <span className="text-white/40">Página:</span>{" "}
                     <span className="text-white/70">
-                      {paginaActiva?.nombre ?? exp.pageId}
+                      {marcaActiva?.nombre ?? exp.marcaId}
                     </span>
                   </p>
                   <p>
@@ -225,8 +225,8 @@ export default function RevisionPage() {
             No hay videos en revisión
           </p>
           <p className="mt-1 text-sm text-white/40">
-            {paginaActiva
-              ? `Nada pendiente en ${paginaActiva.nombre}`
+            {marcaActiva
+              ? `Nada pendiente en ${marcaActiva.nombre}`
               : "Todos los videos han sido procesados"}
           </p>
         </div>
