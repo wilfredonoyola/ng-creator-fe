@@ -433,56 +433,90 @@ export const FACEBOOK_DESCONECTAR = gql`
   }
 `;
 
-// ---- Facebook: publicar ----
+// ---- Publicar: la cola de publicaciones (ng-creator-be#59) ----
 
-export const PUBLICAR_EN_FACEBOOK = gql`
-  mutation PublicarEnFacebook(
-    $expedienteId: ID!
-    $pageId: String!
-    $formato: FormatoFacebook!
-    $descripcion: String
-    $programarPara: DateTime
-  ) {
-    publicarEnFacebook(
-      expedienteId: $expedienteId
-      pageId: $pageId
-      formato: $formato
-      descripcion: $descripcion
-      programarPara: $programarPara
-    ) {
-      _id
-      formato
-      estado
-      postId
-      permalink
-      error
-      publicadaEn
-      programadaPara
-      publicadoPorNombre
-      portadaAplicada
-      portadaError
+/**
+ * Lo que se lee de cada publicación. Igual para las de la cola y para las de
+ * antes, que el backend traduce: la tarjeta no tiene que saber de dónde vienen.
+ */
+const CAMPOS_PUBLICACION = gql`
+  fragment CamposPublicacion on PublicacionRed {
+    _id
+    marcaId
+    red
+    cuentaId
+    cuentaNombre
+    expedienteId
+    formato
+    estado
+    publicarEn
+    intentos
+    error
+    postId
+    permalink
+    publicadaEn
+    portadaAplicada
+    portadaError
+    createdAt
+    creadoPor {
+      nombre
+    }
+    canceladoPor {
+      nombre
     }
   }
 `;
 
-export const FACEBOOK_PUBLICACIONES_DE_EXPEDIENTE = gql`
-  query FacebookPublicacionesDeExpediente($expedienteId: ID!) {
-    facebookPublicacionesDeExpediente(expedienteId: $expedienteId) {
-      _id
-      pageId
-      pageNombre
-      formato
-      estado
-      postId
-      permalink
-      error
-      publicadaEn
-      programadaPara
-      publicadoPorNombre
-      portadaAplicada
-      portadaError
+/**
+ * Si Facebook programa por la cola propia o le deja la hora a Meta. Cambia lo
+ * que la pantalla puede prometer: "sale aunque el servidor esté apagado" solo
+ * es cierto cuando la hora la tiene Meta.
+ */
+export const PUBLICACIONES_POR_COLA = gql`
+  query PublicacionesPorCola {
+    publicacionesPorCola
+  }
+`;
+
+export const PROGRAMAR_PUBLICACION = gql`
+  mutation ProgramarPublicacion($input: ProgramarPublicacionInput!) {
+    programarPublicacion(input: $input) {
+      ...CamposPublicacion
     }
   }
+  ${CAMPOS_PUBLICACION}
+`;
+
+export const CANCELAR_PUBLICACION = gql`
+  mutation CancelarPublicacion($marcaId: ID!, $id: ID!) {
+    cancelarPublicacion(marcaId: $marcaId, id: $id) {
+      ...CamposPublicacion
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
+export const REPROGRAMAR_PUBLICACION = gql`
+  mutation ReprogramarPublicacion(
+    $marcaId: ID!
+    $id: ID!
+    $publicarEn: DateTime!
+  ) {
+    reprogramarPublicacion(marcaId: $marcaId, id: $id, publicarEn: $publicarEn) {
+      ...CamposPublicacion
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
+/** Las de un expediente, de la cola y de antes, las más nuevas primero. */
+export const PUBLICACIONES_DE_EXPEDIENTE = gql`
+  query PublicacionesDeExpediente($marcaId: ID!, $expedienteId: ID!) {
+    publicacionesDeExpediente(marcaId: $marcaId, expedienteId: $expedienteId) {
+      ...CamposPublicacion
+    }
+  }
+  ${CAMPOS_PUBLICACION}
 `;
 
 // ---- Revival: historial de la fan page ----
