@@ -98,7 +98,7 @@ export default function DetalleVideoPage({
           />
           {nombrePagina}
         </span>
-        <EstadoEnFacebook expedienteId={exp._id} />
+        <EstadoEnFacebook expedienteId={exp._id} marcaIdDelVideo={exp.marcaId} />
       </div>
 
       {enOtraPagina && (
@@ -179,6 +179,7 @@ export default function DetalleVideoPage({
           >
             <PublicarEnFacebook
               expedienteId={exp._id}
+              marcaIdDelVideo={exp.marcaId}
               tienePoster={!!exp.posterUrl}
             />
           </Seccion>
