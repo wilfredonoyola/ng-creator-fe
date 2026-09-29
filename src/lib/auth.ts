@@ -101,6 +101,39 @@ export async function establecerPassword(
   guardarSesion(result);
 }
 
+/**
+ * "Olvide mi contrasena", paso 1: el backend le pide a Cognito que mande un
+ * codigo al correo. Responde igual exista o no la cuenta.
+ */
+export async function pedirCodigoPassword(email: string): Promise<void> {
+  await pedir<boolean>(
+    `mutation PedirCodigoPassword($email: String!) { pedirCodigoPassword(email: $email) }`,
+    { email },
+    "pedirCodigoPassword"
+  );
+}
+
+/** Paso 2: el codigo y la contrasena nueva. Deja la sesion iniciada. */
+export async function confirmarPasswordNueva(
+  email: string,
+  codigo: string,
+  nuevaPassword: string
+): Promise<void> {
+  const result = await pedir<AuthResult>(
+    `mutation ConfirmarPasswordNueva($email: String!, $codigo: String!, $nuevaPassword: String!) {
+      confirmarPasswordNueva(email: $email, codigo: $codigo, nuevaPassword: $nuevaPassword) {
+        idToken
+        accessToken
+        refreshToken
+        expiresIn
+      }
+    }`,
+    { email, codigo, nuevaPassword },
+    "confirmarPasswordNueva"
+  );
+  guardarSesion(result);
+}
+
 /** Manda una operacion sin sesion y devuelve su dato, o lanza el error. */
 async function pedir<T>(
   query: string,
