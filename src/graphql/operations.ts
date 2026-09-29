@@ -1150,6 +1150,10 @@ const CAMPOS_EPISODIO = gql`
     errorTranscripcion
     palabrasTranscritas
     costoTranscripcionUsd
+    estadoMomentos
+    errorMomentos
+    clipsSugeridos
+    costoMomentosUsd
     createdAt
     subidoPor {
       nombre
@@ -1224,6 +1228,43 @@ export const TRANSCRIBIR_EPISODIO = gql`
   ${CAMPOS_EPISODIO}
   mutation TranscribirEpisodio($id: ID!, $marcaId: String!) {
     transcribirEpisodio(id: $id, marcaId: $marcaId) {
+      ...CamposEpisodio
+    }
+  }
+`;
+
+export const EPISODIO = gql`
+  ${CAMPOS_EPISODIO}
+  query Episodio($id: ID!, $marcaId: String!) {
+    episodio(id: $id, marcaId: $marcaId) {
+      ...CamposEpisodio
+    }
+  }
+`;
+
+/** Los clips que propuso la IA, de mejor a peor (ng-creator-be#68). */
+export const CLIPS_DE_EPISODIO = gql`
+  query ClipsDeEpisodio($id: ID!, $marcaId: String!) {
+    clipsDeEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      estado
+      desdeSeg
+      hastaSeg
+      puntuacion
+      motivo
+      titulo
+      explicacion
+      gancho
+      texto
+    }
+  }
+`;
+
+/** Busca momentos otra vez: reintentar un análisis fallido o rehacerlo. */
+export const ANALIZAR_MOMENTOS_EPISODIO = gql`
+  ${CAMPOS_EPISODIO}
+  mutation AnalizarMomentosEpisodio($id: ID!, $marcaId: String!) {
+    analizarMomentosEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposEpisodio
     }
   }

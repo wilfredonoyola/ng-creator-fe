@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
@@ -38,6 +39,8 @@ interface Episodio {
   errorTranscripcion?: string | null;
   palabrasTranscritas?: number | null;
   costoTranscripcionUsd?: number | null;
+  estadoMomentos?: "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO" | null;
+  clipsSugeridos?: number | null;
   createdAt: string;
   subidoPor?: Autoria | null;
 }
@@ -74,7 +77,21 @@ function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
         clase: "bg-sky-500/15 text-sky-300",
       };
     case "LISTA":
-      return { etiqueta: "Transcrito", clase: "bg-[#0FED9D]/15 text-[#0FED9D]" };
+      // Transcrito: lo que importa ahora es la búsqueda de clips (ng-creator-be#68).
+      switch (ep.estadoMomentos) {
+        case "EN_COLA":
+        case "ANALIZANDO":
+          return { etiqueta: "Buscando momentos", clase: "bg-sky-500/15 text-sky-300" };
+        case "LISTO":
+          return {
+            etiqueta: `${ep.clipsSugeridos ?? 0} clips sugeridos`,
+            clase: "bg-[#0FED9D]/15 text-[#0FED9D]",
+          };
+        case "FALLIDO":
+          return { etiqueta: "Falló la búsqueda de clips", clase: "bg-red-500/15 text-red-400" };
+        default:
+          return { etiqueta: "Transcrito", clase: "bg-[#0FED9D]/15 text-[#0FED9D]" };
+      }
     case "FALLIDA":
       return { etiqueta: "Falló la transcripción", clase: "bg-red-500/15 text-red-400" };
   }
@@ -115,7 +132,9 @@ export default function EpisodiosPage() {
       e.estado === "SUBIENDO" ||
       e.estado === "PROCESANDO" ||
       e.estadoTranscripcion === "EN_COLA" ||
-      e.estadoTranscripcion === "TRANSCRIBIENDO",
+      e.estadoTranscripcion === "TRANSCRIBIENDO" ||
+      e.estadoMomentos === "EN_COLA" ||
+      e.estadoMomentos === "ANALIZANDO",
   );
   useEffect(() => {
     if (hayPendientes) startPolling(15_000);
@@ -462,7 +481,16 @@ function FilaEpisodio({
         }
       />
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">{ep.titulo}</p>
+        {ep.estado === "LISTO" ? (
+          <Link
+            href={`/episodios/${ep._id}`}
+            className="block truncate font-medium hover:text-[#0FED9D]"
+          >
+            {ep.titulo}
+          </Link>
+        ) : (
+          <p className="truncate font-medium">{ep.titulo}</p>
+        )}
         <p className="mt-0.5 text-xs text-white/45">
           {ep.duracionSeg ? `${duracion(ep.duracionSeg)} · ` : ""}
           {gb(ep.tamanoBytes)}
