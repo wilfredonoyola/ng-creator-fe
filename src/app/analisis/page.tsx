@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { ANALISIS_PAGINA } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
 import { BarrasRendimiento } from "@/components/analisis/BarrasRendimiento";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import {
@@ -65,6 +66,7 @@ export default function AnalisisPage() {
   if (!cargandoPagina && !pageId) {
     return (
       <DashboardLayout>
+        <PestanasPublicaciones />
         <Aviso
           titulo="No hay ninguna página activa"
           detalle="El análisis es del historial de una página. Elegí una en el switch de la izquierda."
@@ -85,6 +87,7 @@ export default function AnalisisPage() {
 
   return (
     <DashboardLayout>
+      <PestanasPublicaciones />
       <div className="mb-4">
         <h1 className="text-2xl font-bold">Análisis</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/50">

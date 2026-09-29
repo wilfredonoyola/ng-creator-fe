@@ -1,22 +1,30 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Clapperboard, LayoutDashboard, ListChecks, Menu, Recycle } from "lucide-react";
+import { Clapperboard, House, Menu, Mic, MonitorPlay, type LucideIcon } from "lucide-react";
+import { useSesion } from "@/lib/sesion";
 
 /**
- * Los cuatro destinos del trabajo diario. El resto vive detrás de "Más".
+ * Los destinos del trabajo diario. El resto vive detrás de "Más".
  *
- * Cuatro y no siete: en una pantalla de 375px, siete pestañas dan objetivos de
- * 53px con la etiqueta ilegible. Se eligen por frecuencia de uso, no por
- * jerarquía — Publicados, Creators e Integraciones se visitan de vez en cuando
- * y no merecen ocupar el pulgar.
+ * Pocos y no siete: en una pantalla de 375px, siete pestañas dan objetivos de
+ * 53px con la etiqueta ilegible. Son los del flujo de episodios, el mismo
+ * orden que el menú; "Crear" (videos de reacción) solo para quien lo ve en el
+ * menú.
  */
-const TABS = [
-  { href: "/panel", icon: LayoutDashboard, label: "Inicio" },
-  { href: "/crear", icon: Clapperboard, label: "Crear" },
-  { href: "/revision", icon: ListChecks, label: "Revisión" },
-  { href: "/revival", icon: Recycle, label: "Revival" },
+interface Tab {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  tambien?: string[];
+}
+
+const TABS: Tab[] = [
+  { href: "/panel", icon: House, label: "Inicio" },
+  { href: "/episodios", icon: Mic, label: "Episodios" },
+  { href: "/publicados", icon: MonitorPlay, label: "Publicaciones", tambien: ["/analisis"] },
 ];
+const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, label: "Crear" };
 
 /**
  * Navegación inferior, solo en móvil.
@@ -31,14 +39,18 @@ const TABS = [
 export function NavInferior({ onMas }: { onMas: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { esAdmin } = useSesion();
+  const tabs = esAdmin ? [...TABS, TAB_REACCION] : TABS;
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-white/10 bg-ng-fondo/95 backdrop-blur lg:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="fixed inset-x-0 bottom-0 z-30 grid border-t border-white/10 bg-ng-fondo/95 backdrop-blur lg:hidden"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)", gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}
     >
-      {TABS.map((t) => {
-        const activo = pathname === t.href;
+      {tabs.map((t) => {
+        const activo = [t.href, ...(t.tambien ?? [])].some(
+          (r) => pathname === r || pathname.startsWith(`${r}/`),
+        );
         return (
           <button
             key={t.href}
