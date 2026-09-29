@@ -18,7 +18,8 @@ export function useHls(video: RefObject<HTMLVideoElement>, url: string | null | 
     let hls: Hls | null = null;
     let cancelado = false;
 
-    if (el.canPlayType("application/vnd.apple.mpegurl")) {
+    // Un MP4 suelto (el de un clip ya renderizado) no necesita hls.js.
+    if (!/\.m3u8(\?|$)/.test(url) || el.canPlayType("application/vnd.apple.mpegurl")) {
       el.src = url;
     } else {
       void import("hls.js").then(({ default: HlsJs }) => {

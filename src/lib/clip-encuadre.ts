@@ -64,11 +64,21 @@ export function recorteDelCuadro(
   return { x, y, ancho, alto };
 }
 
-/** Cuerpo y altura del subtítulo en píxeles del lienzo. Ver el backend. */
-export function medidasSubtitulo(lienzo: Lienzo): { cuerpo: number; margenAbajo: number } {
+/**
+ * Cuerpo y altura del subtítulo en píxeles del lienzo. Ver el backend: en
+ * DIVIDIDO apilado va en la costura entre los paneles.
+ */
+export function medidasSubtitulo(
+  lienzo: Lienzo,
+  diseno: "UNO" | "DIVIDIDO" = "UNO",
+): { cuerpo: number; margenAbajo: number } {
   const lado = Math.min(lienzo.ancho, lienzo.alto);
+  const cuerpo = Math.round(lado * 0.075);
+  if (diseno === "DIVIDIDO" && lienzo.alto >= lienzo.ancho) {
+    return { cuerpo, margenAbajo: Math.round(lienzo.alto / 2 - cuerpo * 0.6) };
+  }
   return {
-    cuerpo: Math.round(lado * 0.075),
+    cuerpo,
     margenAbajo: Math.round(lienzo.alto * (lienzo.alto > lienzo.ancho ? 0.22 : 0.1)),
   };
 }
@@ -80,3 +90,120 @@ export function medidasSubtitulo(lienzo: Lienzo): { cuerpo: number; margenAbajo:
  * tamaño, no en posición ni en cuándo aparece.
  */
 export const GANCHO = { tamano: 64, centroY: 0.2, grosorContorno: 8 };
+
+// ---- Diseño y posiciones en el tiempo (copiado del backend, igual) ----
+
+export type DisenoClip = "UNO" | "DIVIDIDO";
+
+export interface Panel {
+  x: number;
+  y: number;
+  ancho: number;
+  alto: number;
+}
+
+export function panelesDe(formato: FormatoClip, diseno: DisenoClip): Panel[] {
+  const l = LIENZOS[formato];
+  if (diseno !== "DIVIDIDO") return [{ x: 0, y: 0, ancho: l.ancho, alto: l.alto }];
+  if (l.alto >= l.ancho) {
+    const mitad = Math.floor(l.alto / 2);
+    return [
+      { x: 0, y: 0, ancho: l.ancho, alto: mitad },
+      { x: 0, y: mitad, ancho: l.ancho, alto: l.alto - mitad },
+    ];
+  }
+  const mitad = Math.floor(l.ancho / 2);
+  return [
+    { x: 0, y: 0, ancho: mitad, alto: l.alto },
+    { x: mitad, y: 0, ancho: l.ancho - mitad, alto: l.alto },
+  ];
+}
+
+export const REGION_MINIMA = 0.05;
+
+export function ajustarRegion(
+  region: Region,
+  fuente: { ancho: number; alto: number },
+  panel: { ancho: number; alto: number },
+): Region {
+  const k = (panel.ancho / panel.alto) * (fuente.alto / fuente.ancho);
+  let ancho = entre(region.ancho || 0, REGION_MINIMA, 1);
+  let alto = ancho / k;
+  if (alto > 1) {
+    alto = 1;
+    ancho = k;
+  }
+  if (alto < REGION_MINIMA) {
+    alto = REGION_MINIMA;
+    ancho = Math.min(1, alto * k);
+  }
+  const cx = (region.x || 0) + (region.ancho || 0) / 2;
+  const cy = (region.y || 0) + (region.alto || 0) / 2;
+  return {
+    x: entre(cx - ancho / 2, 0, 1 - ancho),
+    y: entre(cy - alto / 2, 0, 1 - alto),
+    ancho,
+    alto,
+  };
+}
+
+export function regionPorDefecto(
+  fuente: { ancho: number; alto: number },
+  panel: { ancho: number; alto: number },
+  indice: number,
+  total: number,
+): Region {
+  const cx = total === 1 ? 0.5 : (indice + 0.5) / total;
+  const ancho = total === 1 ? 1 : 1 / total;
+  return ajustarRegion({ x: cx - ancho / 2, y: 0, ancho, alto: 1 }, fuente, panel);
+}
+
+export interface PosicionEfectiva {
+  desdeSeg: number;
+  regiones: Region[];
+}
+
+export function posicionesEfectivas(
+  clip: {
+    formato: FormatoClip;
+    diseno?: DisenoClip | null;
+    encuadre?: Encuadre | null;
+    posiciones?: { desdeSeg: number; regiones: Region[] }[] | null;
+  },
+  fuente: { ancho: number; alto: number },
+  duracionSeg: number,
+): PosicionEfectiva[] {
+  const diseno = clip.diseno ?? "UNO";
+  const paneles = panelesDe(clip.formato, diseno);
+  const defecto = (i: number) =>
+    diseno === "UNO" && clip.encuadre
+      ? recorteDelCuadro(fuente, clip.formato, clip.encuadre)
+      : regionPorDefecto(fuente, paneles[i], i, paneles.length);
+
+  const validas = (clip.posiciones ?? [])
+    .filter((p) => Number.isFinite(p.desdeSeg) && p.desdeSeg < duracionSeg)
+    .sort((a, b) => a.desdeSeg - b.desdeSeg);
+  if (!validas.length) {
+    return [{ desdeSeg: 0, regiones: paneles.map((_, i) => defecto(i)) }];
+  }
+
+  const salida: PosicionEfectiva[] = [];
+  for (const p of validas) {
+    const desdeSeg = salida.length ? Math.max(0, p.desdeSeg) : 0;
+    const regiones = paneles.map((panel, i) =>
+      p.regiones?.[i] ? ajustarRegion(p.regiones[i], fuente, panel) : defecto(i),
+    );
+    if (salida.length && Math.abs(salida[salida.length - 1].desdeSeg - desdeSeg) < 0.001) {
+      salida[salida.length - 1] = { desdeSeg, regiones };
+    } else {
+      salida.push({ desdeSeg, regiones });
+    }
+  }
+  return salida;
+}
+
+export function posicionEn(posiciones: PosicionEfectiva[], t: number): PosicionEfectiva {
+  let actual = posiciones[0];
+  for (const p of posiciones) if (p.desdeSeg <= t) actual = p;
+  return actual;
+}
