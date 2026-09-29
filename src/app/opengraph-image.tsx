@@ -22,11 +22,11 @@ export default function Imagen() {
         }}
       >
         <div style={{ fontSize: 34, color: "#60A5FA", letterSpacing: 6 }}>NG CREATOR</div>
-        <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05, marginTop: 24, maxWidth: 950 }}>
-          Del episodio completo a clips que se comparten
+        <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, marginTop: 24, maxWidth: 950 }}>
+          Subí el episodio. Publicá los clips. Todo en un solo lugar.
         </div>
         <div style={{ fontSize: 32, color: "#94A3B8", marginTop: 28 }}>
-          IA que encuentra los momentos · subtítulos · TikTok, Reels y Shorts
+          Transcripción · momentos con IA · edición en equipo · todas tus redes
         </div>
       </div>
     ),

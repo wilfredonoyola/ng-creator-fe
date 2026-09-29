@@ -2,17 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   AudioLines,
+  CalendarClock,
+  X,
   Captions,
   Check,
   Crop,
   Download,
   LayoutPanelTop,
   ListChecks,
-  Mic,
   Send,
   Smartphone,
   Sparkles,
   Type,
+  Upload,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -23,33 +25,62 @@ import { MaquetaProducto } from "@/components/landing/MaquetaProducto";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 
 export const metadata: Metadata = {
-  title: { absolute: "NG Creator — Convertí tu podcast en clips para TikTok, Reels y Shorts" },
+  title: { absolute: "NG Creator — De tu podcast a clips publicados en TikTok, Reels, Shorts y Facebook" },
   description:
-    "Editá tu podcast rápido: subí el episodio completo, la IA encuentra los mejores momentos y los convertís en clips verticales con subtítulos automáticos. Web y app para iPhone y Android.",
+    "El flujo completo en un solo lugar: subí el episodio, se transcribe solo, la IA encuentra los mejores momentos, tu equipo los edita con subtítulos y los aprueba, y los publicás en todas tus redes. Web y app para iPhone y Android.",
   alternates: { canonical: "/" },
 };
 
+/** El camino completo, del archivo a las redes: es lo que se vende. */
 const PASOS: { icono: LucideIcon; titulo: string; texto: string }[] = [
   {
-    icono: Mic,
-    titulo: "Subí el episodio",
-    texto: "El video completo, de una o dos horas. Se sube por partes: si se corta internet, sigue desde donde quedó.",
+    icono: Upload,
+    titulo: "Subís el episodio",
+    texto: "El video completo, de una o tres horas, directo desde el navegador. Si se corta internet, sigue donde quedó.",
+  },
+  {
+    icono: AudioLines,
+    titulo: "Se transcribe solo",
+    texto: "Cada palabra con su segundo exacto. Es la base de los cortes y de los subtítulos.",
   },
   {
     icono: Sparkles,
     titulo: "La IA encuentra los momentos",
-    texto: "Transcribe palabra por palabra y propone los clips que se entienden solos, con un puntaje y el porqué.",
+    texto: "Propone los clips que se entienden solos, con su potencial viral y el porqué.",
   },
   {
     icono: Crop,
-    titulo: "Editá en minutos",
-    texto: "Vertical, dividido, subtítulos con la palabra resaltada, textos con diseño. Lo que ves es lo que sale.",
+    titulo: "Editás en minutos",
+    texto: "Vertical, dividido, subtítulos con la palabra resaltada y textos con diseño. Lo que ves es lo que sale.",
   },
   {
     icono: Users,
-    titulo: "Tu equipo revisa y publica",
-    texto: "Cada uno trabaja su clip sin pisar al otro, y lo que sale ya pasó por una persona.",
+    titulo: "Tu equipo revisa y aprueba",
+    texto: "Cada uno trabaja su clip y nada sale sin que una persona lo apruebe.",
   },
+  {
+    icono: Send,
+    titulo: "Publicás en todas tus redes",
+    texto: "Desde aquí mismo, a la hora que elijas. Sin descargar el video ni entrar red por red.",
+  },
+];
+
+/** Dónde se publica. `hoy` es lo que ya funciona; el resto está en camino (#64). */
+const REDES: { nombre: string; hoy: boolean }[] = [
+  { nombre: "Facebook", hoy: true },
+  { nombre: "Instagram", hoy: false },
+  { nombre: "TikTok", hoy: false },
+  { nombre: "YouTube", hoy: false },
+];
+
+/** Lo que hoy hace falta para lo mismo, sin NG Creator. */
+const ANTES = [
+  "Pasar el archivo de dos horas por Drive o WeTransfer",
+  "Ver el episodio entero buscando los momentos",
+  "Cortar en Premiere o CapCut",
+  "Otra app para los subtítulos",
+  "Mandar los clips a un grupo de WhatsApp para que los aprueben",
+  "Descargar y subir red por red",
 ];
 
 const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: boolean }[] = [
@@ -62,7 +93,7 @@ const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: bo
   { icono: Download, titulo: "MP4 listo para redes", texto: "1080×1920 en H.264, procesado en la nube. Descargalo o publicalo." },
   { icono: Smartphone, titulo: "App para iPhone y Android", texto: "Revisá los clips que encontró la IA desde el celular." },
   { icono: ListChecks, titulo: "Revisión en equipo", texto: "Asignar, editar, enviar a revisión y aprobar.", pronto: true },
-  { icono: Send, titulo: "Publicar en todas las redes", texto: "TikTok, Instagram, YouTube y Facebook, programado.", pronto: true },
+  { icono: CalendarClock, titulo: "Publicar y programar", texto: "Facebook hoy; Instagram, TikTok y YouTube en camino, todo desde el mismo lugar." },
 ];
 
 const PLANES = [
@@ -168,14 +199,14 @@ export default function Producto() {
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
           <div>
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ng-secundario">
-              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Editor de clips para podcasts
+              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Del podcast a tus redes, en un solo lugar
             </p>
             <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
-              Del episodio completo a <span className="texto-marca">clips que se comparten</span>.
+              Subí el episodio. <span className="texto-marca">Publicá los clips.</span> Todo en un solo lugar.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ng-secundario">
-              Subís el podcast una vez. La IA encuentra los mejores momentos, tu equipo los edita en vertical con
-              subtítulos, y salen listos para TikTok, Reels y Shorts. Sin descargar nada.
+              NG Creator hace el camino completo: transcribe tu podcast, la IA encuentra los mejores momentos, tu equipo
+              los edita en vertical con subtítulos y los aprueba, y los publicás en tus redes desde aquí. Sin descargar nada y sin saltar entre cinco programas.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 text-base font-semibold text-white brillo-marca hover:brightness-110">
@@ -191,28 +222,72 @@ export default function Producto() {
         </div>
       </section>
 
-      {/* ---- Cómo funciona ---- */}
+      {/* ---- El flujo completo ---- */}
       <section id="como" className="border-t border-white/5 bg-ng-fondo">
         <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl">Un episodio. Diez clips. Una tarde.</h2>
-          <p className="mt-3 max-w-2xl text-ng-secundario">
-            Lo que antes era bajar el video, buscar el momento, cortar en otro programa y exportar a mano, acá es un
-            solo lugar.
-          </p>
-          <ol className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {PASOS.map((p, i) => (
-              <li key={p.titulo} className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-5">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-ng-azul/15 text-ng-celeste">
-                    <p.icono size={18} aria-hidden />
-                  </span>
-                  <span className="text-xs text-ng-tenue">Paso {i + 1}</span>
-                </div>
-                <h3 className="mt-4 font-semibold">{p.titulo}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-ng-secundario">{p.texto}</p>
-              </li>
-            ))}
+          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">El flujo completo</p>
+          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">
+            Del archivo de dos horas a los clips publicados, sin salir de aquí
+          </h2>
+          <ol className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {PASOS.map((p, i) => {
+              const ultimo = i === PASOS.length - 1;
+              return (
+                <li
+                  key={p.titulo}
+                  className={`relative rounded-ng-xl border p-5 ${ultimo ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-tarjeta"}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-marca text-sm font-bold text-white">{i + 1}</span>
+                    <p.icono size={18} className="text-ng-celeste" aria-hidden />
+                  </div>
+                  <h3 className="mt-4 text-lg font-semibold">{p.titulo}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ng-secundario">{p.texto}</p>
+                  {ultimo && (
+                    <ul className="mt-4 flex flex-wrap gap-2">
+                      {REDES.map((r) => (
+                        <li
+                          key={r.nombre}
+                          className={`rounded-full border px-2.5 py-1 text-xs ${r.hoy ? "border-ng-teal/40 bg-ng-teal/10 text-ng-teal" : "border-white/10 text-ng-secundario"}`}
+                        >
+                          {r.nombre}
+                          {!r.hoy && <span className="ml-1 text-ng-lila">· pronto</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
           </ol>
+        </div>
+      </section>
+
+      {/* ---- Antes y ahora ---- */}
+      <section className="border-t border-white/5">
+        <div className="mx-auto grid max-w-6xl gap-6 px-5 py-20 lg:grid-cols-2">
+          <div className="rounded-ng-xl border border-white/10 bg-ng-superficie/40 p-7">
+            <p className="text-sm font-semibold text-ng-tenue">Hoy, sin NG Creator</p>
+            <p className="mt-1 text-2xl font-bold">Seis herramientas y una tarde por episodio</p>
+            <ul className="mt-6 space-y-3 text-sm text-ng-secundario">
+              {ANTES.map((t) => (
+                <li key={t} className="flex items-start gap-2.5">
+                  <X size={16} className="mt-0.5 shrink-0 text-red-400/80" aria-hidden /> {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-ng-xl border border-ng-azul/50 bg-ng-tarjeta p-7 brillo-marca">
+            <p className="text-sm font-semibold text-ng-celeste">Con NG Creator</p>
+            <p className="mt-1 text-2xl font-bold">Una pestaña, de principio a fin</p>
+            <ul className="mt-6 space-y-3 text-sm">
+              {PASOS.map((p) => (
+                <li key={p.titulo} className="flex items-start gap-2.5">
+                  <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {p.titulo}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 
