@@ -41,6 +41,12 @@ export function Pie() {
           <Link href="/login" className="hover:text-white">Entrar</Link>
         </div>
       </div>
+      <p className="mx-auto max-w-6xl px-5 pb-8 text-xs text-ng-tenue">
+        Un producto de{" "}
+        <a href="https://ngstudios.co" className="font-semibold text-white/80 hover:text-white">
+          NG Studios
+        </a>
+      </p>
     </footer>
   );
 }
