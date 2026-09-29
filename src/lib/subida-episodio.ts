@@ -54,6 +54,22 @@ export interface SubidaEpisodio {
 const TAMANO_PEDAZO = 50 * 1024 * 1024;
 
 /**
+ * En cuántas partes se sube el archivo a la vez.
+ *
+ * Una sola conexión hacia el endpoint de Bunny (Chicago, ~95 ms desde aquí) se
+ * estanca en 6-8 Mbps aunque la línea dé 35: lo mide cualquier prueba de una
+ * conexión contra varias. Cuatro partes en paralelo llenan la línea. Bunny
+ * acepta la extensión `concatenation` de TUS, que es la que las junta al final.
+ */
+const PARTES_EN_PARALELO = 4;
+
+/**
+ * Debajo de esto no vale la pena partir: el POST extra que junta las partes
+ * cuesta más de lo que se gana.
+ */
+const MINIMO_PARA_PARALELO = 200 * 1024 * 1024;
+
+/**
  * Cuánto esperar entre reintentos. Suman unos 12 minutos: alcanza para un
  * corte de wifi o un cambio de red sin que nadie tenga que tocar nada. Si se
  * agotan, la subida queda en error y se retoma sola al volver la conexión.
@@ -88,15 +104,22 @@ export async function iniciarSubidaTus(opts: {
   // `start()` sobre una que sigue viva abriría dos PATCH sobre el mismo offset.
   let frenada = false;
 
+  const metadata = {
+    // Bunny exige los dos. Algunos .mov llegan sin tipo desde el navegador.
+    filetype: archivo.type || "video/mp4",
+    title: opts.titulo,
+  };
+
   const upload = new tus.Upload(archivo, {
     endpoint: cred.endpoint,
     chunkSize: TAMANO_PEDAZO,
     retryDelays: ESPERAS_REINTENTO,
-    metadata: {
-      // Bunny exige los dos. Algunos .mov llegan sin tipo desde el navegador.
-      filetype: archivo.type || "video/mp4",
-      title: opts.titulo,
-    },
+    parallelUploads:
+      archivo.size >= MINIMO_PARA_PARALELO ? PARTES_EN_PARALELO : 1,
+    metadata,
+    // Las partes llevan su propia metadata, que por defecto va vacía; Bunny
+    // exige la misma que el video entero.
+    metadataForPartialUploads: metadata,
     /**
      * La huella con la que tus-js-client guarda en localStorage dónde quedó
      * cada subida.
@@ -208,7 +231,12 @@ export async function iniciarSubidaTus(opts: {
   // de este video, se sigue desde ahí.
   const anteriores = await upload.findPreviousUploads();
   if (anteriores.length) {
-    upload.resumeFromPreviousUpload(anteriores[0]);
+    const anterior = anteriores[0];
+    // Una subida que empezó por una sola conexión (antes de que existiera el
+    // paralelo) se termina igual: en paralelo arrancaría de cero y se perdería
+    // lo ya subido.
+    if (!anterior.parallelUploadUrls) upload.options.parallelUploads = 1;
+    upload.resumeFromPreviousUpload(anterior);
   }
   onEstado("subiendo");
   upload.start();
