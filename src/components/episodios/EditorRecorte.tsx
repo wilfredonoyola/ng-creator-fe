@@ -63,6 +63,10 @@ export function EditorRecorte({
   estilo,
   puedeEditar,
   debajoDeLaVista,
+  duracionEpisodio,
+  onCambiarTramo,
+  onCambiarFormato,
+  onCambiarDiseno,
 }: {
   url: string;
   /** Segundos del episodio. */
@@ -81,6 +85,11 @@ export function EditorRecorte({
   estilo: EstiloClip;
   puedeEditar: boolean;
   debajoDeLaVista?: ReactNode;
+  /** Para la barra del tramo: hasta dónde se puede extender el clip. */
+  duracionEpisodio: number;
+  onCambiarTramo: (desde: number, hasta: number) => void;
+  onCambiarFormato: (f: FormatoClip) => void;
+  onCambiarDiseno: (d: DisenoClip) => void;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
@@ -261,11 +270,23 @@ export function EditorRecorte({
     <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       {/* ---- El cuadro entero, con los recuadros ---- */}
       <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-        <div className="mb-2 flex items-baseline justify-between gap-2">
+        {/* Formato y diseño arriba, a mano: es lo primero que se decide. */}
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-medium">Posicioná el recorte</p>
-          <p className="text-xs text-white/40">
-            {puedeEditar ? "Arrastrá el recuadro para moverlo; la esquina, para agrandarlo." : ""}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Pestanas
+              opciones={FORMATOS}
+              valor={formato}
+              onCambio={onCambiarFormato}
+              deshabilitado={!puedeEditar}
+            />
+            <Pestanas
+              opciones={DISENOS}
+              valor={diseno}
+              onCambio={onCambiarDiseno}
+              deshabilitado={!puedeEditar}
+            />
+          </div>
         </div>
         <div
           ref={cuadro}
@@ -326,6 +347,12 @@ export function EditorRecorte({
           ))}
         </div>
 
+        {puedeEditar && (
+          <p className="mt-1.5 text-[11px] text-white/35">
+            Arrastrá el recuadro para moverlo; la esquina, para agrandarlo.
+          </p>
+        )}
+
         {/* ---- Transporte y posiciones ---- */}
         <div className="mt-3 flex items-center gap-3">
           <button
@@ -357,6 +384,15 @@ export function EditorRecorte({
             {tc.toFixed(1)} / {duracion.toFixed(1)} s
           </span>
         </div>
+
+        <BarraDelTramo
+          desde={desde}
+          hasta={hasta}
+          t={t}
+          duracionEpisodio={duracionEpisodio}
+          onCambiar={onCambiarTramo}
+          deshabilitado={!puedeEditar}
+        />
 
         <div className="mt-3">
           <div className="mb-2 flex items-center justify-between">
@@ -467,4 +503,181 @@ export function EditorRecorte({
       </div>
     </div>
   );
+}
+
+const FORMATOS: { valor: FormatoClip; etiqueta: string; titulo: string }[] = [
+  { valor: "VERTICAL", etiqueta: "9:16", titulo: "Reels, TikTok, Shorts" },
+  { valor: "CUADRADO", etiqueta: "1:1", titulo: "Feed" },
+  { valor: "HORIZONTAL", etiqueta: "16:9", titulo: "YouTube" },
+];
+
+const DISENOS: { valor: DisenoClip; etiqueta: string; titulo: string }[] = [
+  { valor: "UNO", etiqueta: "Un recuadro", titulo: "Una persona o el plano" },
+  { valor: "DIVIDIDO", etiqueta: "Dividido", titulo: "Dos recuadros, uno encima del otro" },
+];
+
+function Pestanas<T extends string>({
+  opciones,
+  valor,
+  onCambio,
+  deshabilitado,
+}: {
+  opciones: { valor: T; etiqueta: string; titulo: string }[];
+  valor: T;
+  onCambio: (v: T) => void;
+  deshabilitado?: boolean;
+}) {
+  return (
+    <div className="flex rounded-lg border border-white/10 bg-black/30 p-0.5">
+      {opciones.map((o) => (
+        <button
+          key={o.valor}
+          title={o.titulo}
+          disabled={deshabilitado}
+          onClick={() => o.valor !== valor && onCambio(o.valor)}
+          className={`rounded-md px-2.5 py-1 text-xs transition ${
+            o.valor === valor ? "bg-[#0FED9D] font-medium text-black" : "text-white/60 hover:text-white"
+          }`}
+        >
+          {o.etiqueta}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Tope de un clip a mano, el mismo que valida el backend. */
+const CLIP_MAXIMO_SEG = 180;
+
+/**
+ * El tramo del clip dentro del episodio, para extenderlo o acortarlo
+ * arrastrando sus bordes. Muestra un poco de episodio a cada lado: lo que se
+ * podría sumar.
+ *
+ * La ventana se congela al empezar a arrastrar; si se recalculara con cada
+ * movimiento, la barra se correría debajo del dedo.
+ */
+function BarraDelTramo({
+  desde,
+  hasta,
+  t,
+  duracionEpisodio,
+  onCambiar,
+  deshabilitado,
+}: {
+  desde: number;
+  hasta: number;
+  t: number;
+  duracionEpisodio: number;
+  onCambiar: (desde: number, hasta: number) => void;
+  deshabilitado?: boolean;
+}) {
+  const barra = useRef<HTMLDivElement>(null);
+  const [fija, setFija] = useState<{ ini: number; fin: number } | null>(null);
+  const margen = Math.max(30, (hasta - desde) * 0.6);
+  const ventana = fija ?? {
+    ini: Math.max(0, desde - margen),
+    fin: Math.min(duracionEpisodio || hasta + margen, hasta + margen),
+  };
+  const largo = Math.max(1, ventana.fin - ventana.ini);
+  const pct = (seg: number) => ((seg - ventana.ini) / largo) * 100;
+
+  const acotar = (d: number, h: number) => {
+    let a = Math.max(0, Math.round(d * 100) / 100);
+    let b = Math.min(duracionEpisodio || h, Math.round(h * 100) / 100);
+    if (b - a < 1) b = a + 1;
+    if (b - a > CLIP_MAXIMO_SEG) {
+      if (d !== desde) a = b - CLIP_MAXIMO_SEG;
+      else b = a + CLIP_MAXIMO_SEG;
+    }
+    return [a, b] as const;
+  };
+
+  function arrastrar(e: React.PointerEvent, borde: "desde" | "hasta") {
+    if (deshabilitado) return;
+    e.preventDefault();
+    const caja = barra.current?.getBoundingClientRect();
+    if (!caja) return;
+    const congelada = { ...ventana };
+    setFija(congelada);
+    const mover = (ev: PointerEvent) => {
+      const seg = congelada.ini + ((ev.clientX - caja.left) / caja.width) * (congelada.fin - congelada.ini);
+      if (borde === "desde") onCambiar(...acotar(Math.min(seg, hasta - 1), hasta));
+      else onCambiar(...acotar(desde, Math.max(seg, desde + 1)));
+    };
+    const soltar = () => {
+      setFija(null);
+      window.removeEventListener("pointermove", mover);
+      window.removeEventListener("pointerup", soltar);
+    };
+    window.addEventListener("pointermove", mover);
+    window.addEventListener("pointerup", soltar);
+  }
+
+  const boton = "rounded border border-white/15 px-2 py-0.5 text-[11px] text-white/70 hover:bg-white/5 disabled:opacity-40";
+  return (
+    <div className="mt-4">
+      <div className="mb-1.5 flex items-center justify-between text-[11px] text-white/45">
+        <span className="font-medium uppercase tracking-wide text-white/50">
+          Tramo del clip <span className="normal-case tracking-normal text-white/35">· arrastrá los bordes para alargarlo o acortarlo</span>
+        </span>
+        <span className="tabular-nums">
+          {reloj(desde)} – {reloj(hasta)} · {(hasta - desde).toFixed(1)} s
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="flex shrink-0 gap-1">
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde - 5, hasta))} title="Mover el inicio 5 s antes (el clip se alarga)">
+            ← 5 s
+          </button>
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(Math.min(desde + 5, hasta - 1), hasta))} title="Mover el inicio 5 s después (el clip se acorta)">
+            5 s →
+          </button>
+        </div>
+        <div ref={barra} className="relative h-9 flex-1 touch-none select-none rounded-md bg-white/[0.06]">
+          <div
+            className="absolute inset-y-0 rounded-md border-2 border-[#0FED9D] bg-[#0FED9D]/15"
+            style={{ left: `${pct(desde)}%`, width: `${pct(hasta) - pct(desde)}%` }}
+          >
+            <div
+              onPointerDown={(e) => arrastrar(e, "desde")}
+              className="absolute -left-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-[#0FED9D]"
+              title="Arrastrá para mover el inicio"
+            />
+            <div
+              onPointerDown={(e) => arrastrar(e, "hasta")}
+              className="absolute -right-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-[#0FED9D]"
+              title="Arrastrá para mover el final"
+            />
+          </div>
+          {t >= ventana.ini && t <= ventana.fin && (
+            <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white" style={{ left: `${pct(t)}%` }} />
+          )}
+          <span className="pointer-events-none absolute bottom-0.5 left-1 text-[10px] tabular-nums text-white/30">
+            {reloj(ventana.ini)}
+          </span>
+          <span className="pointer-events-none absolute bottom-0.5 right-1 text-[10px] tabular-nums text-white/30">
+            {reloj(ventana.fin)}
+          </span>
+        </div>
+        <div className="flex shrink-0 gap-1">
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, Math.max(hasta - 5, desde + 1)))} title="Mover el final 5 s antes (el clip se acorta)">
+            ← 5 s
+          </button>
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, hasta + 5))} title="Mover el final 5 s después (el clip se alarga)">
+            5 s →
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** 5423.7 → "1:30:23". */
+function reloj(seg: number): string {
+  const s = Math.max(0, Math.floor(seg));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const r = String(s % 60).padStart(2, "0");
+  return h ? `${h}:${String(m).padStart(2, "0")}:${r}` : `${m}:${r}`;
 }

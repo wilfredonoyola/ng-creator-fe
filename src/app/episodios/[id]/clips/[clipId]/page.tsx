@@ -41,17 +41,6 @@ interface Borrador {
   ganchoSeg: number;
 }
 
-const DISENOS: { valor: DisenoClip; etiqueta: string; detalle: string }[] = [
-  { valor: "UNO", etiqueta: "Un recuadro", detalle: "una persona o el plano" },
-  { valor: "DIVIDIDO", etiqueta: "Dividido", detalle: "dos recuadros, uno encima del otro" },
-];
-
-const FORMATOS: { valor: FormatoClip; etiqueta: string; para: string }[] = [
-  { valor: "VERTICAL", etiqueta: "9:16", para: "Reels, TikTok, Shorts" },
-  { valor: "CUADRADO", etiqueta: "1:1", para: "Feed" },
-  { valor: "HORIZONTAL", etiqueta: "16:9", para: "YouTube" },
-];
-
 /** Cuánto contexto se muestra alrededor del clip en la transcripción. */
 const CONTEXTO_SEG = 30;
 
@@ -223,12 +212,44 @@ export default function EditorClipPage({
   const duracion = b.hastaSeg - b.desdeSeg;
   const redondo = (n: number) => Math.round(n * 1000) / 1000;
 
+  /**
+   * Cambia el tramo del clip. Las posiciones del recorte están en segundos DEL
+   * CLIP: si el inicio se corre, se corren al revés para seguir cayendo en el
+   * mismo momento del video. Sin esto, extender el inicio 5 s adelantaría 5 s
+   * cada cambio de encuadre.
+   */
+  function cambiarTramo(desde: number, hasta: number) {
+    if (!b) return;
+    const delta = desde - b.desdeSeg;
+    let posiciones = b.posiciones;
+    if (delta !== 0 && posiciones.length > 1) {
+      const corridas = posiciones.map((p) => ({ ...p, desdeSeg: redondo(p.desdeSeg - delta) }));
+      // La que queda rigiendo al principio pasa a ser la primera, en el 0.
+      const antes = corridas.filter((p) => p.desdeSeg <= 0);
+      const primera = antes.length ? antes[antes.length - 1] : corridas[0];
+      posiciones = [
+        { ...primera, desdeSeg: 0 },
+        ...corridas.filter((p) => p.desdeSeg > 0 && p.desdeSeg < hasta - desde),
+      ];
+    }
+    cambiar({ desdeSeg: redondo(desde), hastaSeg: redondo(hasta), posiciones });
+  }
+
+  function cambiarDiseno(d: DisenoClip) {
+    if (!b || d === b.diseno) return;
+    // Otro diseño tiene otra cantidad de recuadros: se arranca de cero.
+    if (b.posiciones.length > 1 && !window.confirm("Cambiar el diseño borra los cambios de encuadre. ¿Seguir?")) {
+      return;
+    }
+    cambiar({ diseno: d, posiciones: [] });
+  }
+
   function tocarPalabra(p: Palabra) {
     if (!b || !opera) return;
     if (modo === "inicio") {
-      cambiar({ desdeSeg: p.desde, hastaSeg: Math.max(b.hastaSeg, p.desde + 1) });
+      cambiarTramo(p.desde, Math.max(b.hastaSeg, p.desde + 1));
     } else if (modo === "fin") {
-      cambiar({ hastaSeg: p.hasta, desdeSeg: Math.min(b.desdeSeg, p.hasta - 1) });
+      cambiarTramo(Math.min(b.desdeSeg, p.hasta - 1), p.hasta);
     } else {
       setCorrigiendo(p);
     }
@@ -287,6 +308,10 @@ export default function EditorClipPage({
           gancho={{ texto: b.gancho, activo: b.ganchoActivo, seg: b.ganchoSeg }}
           estilo={estilo}
           puedeEditar={opera}
+          duracionEpisodio={ep.duracionSeg ?? 0}
+          onCambiarTramo={cambiarTramo}
+          onCambiarFormato={(formato) => cambiar({ formato })}
+          onCambiarDiseno={cambiarDiseno}
           debajoDeLaVista={
             <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -393,13 +418,13 @@ export default function EditorClipPage({
               <AjusteFino
                 etiqueta="Empieza"
                 valor={b.desdeSeg}
-                onCambio={(v) => cambiar({ desdeSeg: redondo(Math.min(v, b.hastaSeg - 1)) })}
+                onCambio={(v) => cambiarTramo(Math.min(v, b.hastaSeg - 1), b.hastaSeg)}
                 disabled={!opera}
               />
               <AjusteFino
                 etiqueta="Termina"
                 valor={b.hastaSeg}
-                onCambio={(v) => cambiar({ hastaSeg: redondo(Math.max(v, b.desdeSeg + 1)) })}
+                onCambio={(v) => cambiarTramo(b.desdeSeg, Math.max(v, b.desdeSeg + 1))}
                 disabled={!opera}
               />
             </div>
@@ -408,46 +433,6 @@ export default function EditorClipPage({
         </div>
 
         <div className="space-y-5">
-          <Seccion titulo="Formato y diseño">
-            <div className="mb-3 flex flex-wrap gap-2">
-              {FORMATOS.map((f) => (
-                <button
-                  key={f.valor}
-                  onClick={() => cambiar({ formato: f.valor })}
-                  disabled={!opera}
-                  className={`rounded-lg px-3 py-1.5 text-left text-xs ${
-                    b.formato === f.valor ? "bg-white text-black" : "border border-white/15 text-white/70"
-                  }`}
-                >
-                  <span className="font-semibold">{f.etiqueta}</span> · {f.para}
-                </button>
-              ))}
-            </div>
-            <p className="mb-2 mt-1 text-xs text-white/50">Diseño</p>
-            <div className="flex flex-wrap gap-2">
-              {DISENOS.map((d) => (
-                <button
-                  key={d.valor}
-                  onClick={() => {
-                    if (d.valor === b.diseno) return;
-                    // Otro diseño tiene otra cantidad de recuadros: se arranca de cero.
-                    if (b.posiciones.length > 1 && !window.confirm("Cambiar el diseño borra los cambios de encuadre. ¿Seguir?")) return;
-                    cambiar({ diseno: d.valor, posiciones: [] });
-                  }}
-                  disabled={!opera}
-                  className={`rounded-lg px-3 py-1.5 text-left text-xs ${
-                    b.diseno === d.valor ? "bg-white text-black" : "border border-white/15 text-white/70"
-                  }`}
-                >
-                  <span className="font-semibold">{d.etiqueta}</span> · {d.detalle}
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-xs text-white/40">
-              El encuadre se mueve arriba, arrastrando los recuadros. Para cambiarlo a mitad del
-              clip: “+ Cambiar encuadre aquí”.
-            </p>
-          </Seccion>
 
           <Seccion titulo="Subtítulos">
             <label className="flex items-center gap-2 text-sm">
