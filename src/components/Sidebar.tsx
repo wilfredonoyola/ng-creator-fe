@@ -24,7 +24,7 @@ import { SelectorDeMarca } from "./SelectorDeMarca";
 // Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
 // sola familia de íconos, no emojis.
 const navItems: { href: string; icon: LucideIcon; label: string }[] = [
-  { href: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/panel", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/crear", icon: Clapperboard, label: "Crear Video" },
   { href: "/montaje", icon: Scissors, label: "Montaje" },
   { href: "/episodios", icon: Mic, label: "Episodios" },

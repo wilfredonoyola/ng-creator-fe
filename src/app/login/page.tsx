@@ -43,9 +43,9 @@ const REQUISITOS: { etiqueta: string; cumple: (v: string) => boolean }[] = [
  * contraseña, que es el momento en que menos mira la barra de direcciones.
  */
 function destinoSeguro(): string {
-  if (typeof window === "undefined") return "/";
+  if (typeof window === "undefined") return "/panel";
   const v = new URLSearchParams(window.location.search).get("volverA");
-  if (!v || !v.startsWith("/") || v.startsWith("//")) return "/";
+  if (!v || !v.startsWith("/") || v.startsWith("//")) return "/panel";
   return v;
 }
 

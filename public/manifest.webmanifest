@@ -2,7 +2,7 @@
   "name": "NG Creator",
   "short_name": "NG Creator",
   "description": "Crear, revisar y reciclar el contenido de tus fan pages",
-  "start_url": "/",
+  "start_url": "/panel",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
