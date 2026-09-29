@@ -17,20 +17,17 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { LogoNG } from "@/components/LogoNG";
+import { Cabecera, ENLACE_EMPEZAR, Pie } from "@/components/landing/Marco";
+import { MaquetaTelefono } from "@/components/landing/MaquetaTelefono";
 import { MaquetaProducto } from "@/components/landing/MaquetaProducto";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 
 export const metadata: Metadata = {
-  title: "NG Creator — De tu podcast a clips listos para publicar",
+  title: { absolute: "NG Creator — Convertí tu podcast en clips para TikTok, Reels y Shorts" },
   description:
-    "Subí el episodio completo. La IA encuentra los mejores momentos, tu equipo los edita en vertical con subtítulos y los publica. Create. Share. Grow.",
+    "Editá tu podcast rápido: subí el episodio completo, la IA encuentra los mejores momentos y los convertís en clips verticales con subtítulos automáticos. Web y app para iPhone y Android.",
+  alternates: { canonical: "/" },
 };
-
-/**
- * A dónde lleva "Empezar". Hoy al ingreso (las cuentas se crean por
- * invitación); cuando exista el cobro, al checkout. Un solo lugar para cambiarlo.
- */
-const ENLACE_EMPEZAR = "/login";
 
 const PASOS: { icono: LucideIcon; titulo: string; texto: string }[] = [
   {
@@ -63,7 +60,7 @@ const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: bo
   { icono: Captions, titulo: "Subtítulos que se leen", texto: "Grandes, con la palabra que se dice resaltada. Corregí una palabra sin tocar tiempos." },
   { icono: Type, titulo: "Textos con diseño", texto: "Hasta cuatro por clip, con contorno, sombra o caja, y palabras destacadas." },
   { icono: Download, titulo: "MP4 listo para redes", texto: "1080×1920 en H.264, procesado en la nube. Descargalo o publicalo." },
-  { icono: Smartphone, titulo: "App para iPhone", texto: "Revisá episodios y clips desde el teléfono." },
+  { icono: Smartphone, titulo: "App para iPhone y Android", texto: "Revisá los clips que encontró la IA desde el celular." },
   { icono: ListChecks, titulo: "Revisión en equipo", texto: "Asignar, editar, enviar a revisión y aprobar.", pronto: true },
   { icono: Send, titulo: "Publicar en todas las redes", texto: "TikTok, Instagram, YouTube y Facebook, programado.", pronto: true },
 ];
@@ -79,7 +76,7 @@ const PLANES = [
       "Hasta 12 episodios al mes (~3 por semana)",
       "Episodios de hasta 3 horas",
       "Clips y exportaciones ilimitados",
-      "Editor completo y app para iPhone",
+      "Editor completo y app para iPhone y Android",
     ],
     destacado: false,
   },
@@ -101,8 +98,24 @@ const PLANES = [
 
 const PREGUNTAS = [
   {
+    p: "¿Cómo convierto mi podcast en clips para TikTok, Reels y Shorts?",
+    r: "Subís el video del episodio. NG Creator lo transcribe, la IA marca los momentos que se entienden solos y cada uno se abre en el editor ya en vertical 9:16, con subtítulos. Ajustás el encuadre y el texto, y bajás el MP4.",
+  },
+  {
+    p: "¿Cuánto tardo en sacar clips de un episodio?",
+    r: "La transcripción y los momentos de un episodio de dos horas están en unos minutos. Después, cada clip se ajusta en uno o dos minutos: el encuadre, los subtítulos y el gancho ya vienen armados.",
+  },
+  {
     p: "¿Tengo que descargar el episodio para editar?",
     r: "No. El original queda en la nube; la edición y el render pasan en nuestros servidores. Solo bajás el MP4 terminado, si querés.",
+  },
+  {
+    p: "¿Pone subtítulos automáticos?",
+    r: "Sí. Salen de la transcripción palabra por palabra, grandes y con la palabra que se está diciendo resaltada. Si alguna palabra quedó mal, la corregís sin tocar los tiempos.",
+  },
+  {
+    p: "¿Hay app para el celular?",
+    r: "Sí, para iPhone y Android, con la misma cuenta de la web. Hoy sirve para ver los episodios y revisar los clips que encontró la IA; la edición desde el teléfono viene en camino.",
   },
   {
     p: "¿En qué idioma funciona?",
@@ -118,27 +131,32 @@ const PREGUNTAS = [
   },
 ];
 
+/** Para Google: qué es, en qué corre y cuánto cuesta, y las preguntas como FAQ. */
+const DATOS_ESTRUCTURADOS = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "NG Creator",
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "Web, iOS, Android",
+    inLanguage: "es",
+    description: "Convertí episodios de podcast en clips verticales con subtítulos para TikTok, Reels y Shorts. La IA encuentra los mejores momentos y tu equipo los edita y publica.",
+    offers: PLANES.map((p) => ({ "@type": "Offer", name: p.nombre, price: p.precio, priceCurrency: "USD" })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: PREGUNTAS.map((q) => ({ "@type": "Question", name: q.p, acceptedAnswer: { "@type": "Answer", text: q.r } })),
+  },
+];
+
 export default function Producto() {
   return (
     <div className="min-h-screen bg-ng-hondo text-ng-texto">
       <RedirigirSiHaySesion />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(DATOS_ESTRUCTURADOS) }} />
 
-      {/* ---- Cabecera ---- */}
-      <header className="sticky top-0 z-30 border-b border-white/5 bg-ng-hondo/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-          <Link href="/" aria-label="NG Creator, inicio">
-            <LogoNG tamano={30} />
-          </Link>
-          <nav className="flex items-center gap-5 text-sm">
-            <a href="#como" className="hidden text-ng-secundario hover:text-white sm:inline">Cómo funciona</a>
-            <a href="#precios" className="hidden text-ng-secundario hover:text-white sm:inline">Precios</a>
-            <Link href="/login" className="text-ng-secundario hover:text-white">Entrar</Link>
-            <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-white brillo-marca hover:brightness-110">
-              Empezar
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Cabecera />
 
       {/* ---- Portada ---- */}
       <section className="relative overflow-hidden">
@@ -150,7 +168,7 @@ export default function Producto() {
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
           <div>
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ng-secundario">
-              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Para podcasts en video
+              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Editor de clips para podcasts
             </p>
             <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
               Del episodio completo a <span className="texto-marca">clips que se comparten</span>.
@@ -254,6 +272,24 @@ export default function Producto() {
         </div>
       </section>
 
+      {/* ---- La app ---- */}
+      <section className="border-t border-white/5">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_auto]">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">iPhone y Android</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Tus clips, también en el bolsillo</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
+              La misma cuenta en la web y en el celular. Mirá cómo va cada episodio, revisá los clips que propuso la IA con
+              su puntaje y lo que se dice en cada uno, y decidí cuáles salen desde donde estés.
+            </p>
+            <Link href="/app" className="mt-6 inline-block rounded-ng-md border border-white/15 bg-white/5 px-5 py-2.5 font-semibold hover:bg-white/10">
+              Ver la app
+            </Link>
+          </div>
+          <MaquetaTelefono />
+        </div>
+      </section>
+
       {/* ---- Precios ---- */}
       <section id="precios" className="border-t border-white/5">
         <div className="mx-auto max-w-5xl px-5 py-20">
@@ -335,16 +371,7 @@ export default function Producto() {
         </div>
       </section>
 
-      <footer className="border-t border-white/5">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm text-ng-tenue">
-          <LogoNG tamano={22} />
-          <div className="flex gap-5">
-            <Link href="/privacidad" className="hover:text-white">Privacidad</Link>
-            <Link href="/terminos" className="hover:text-white">Términos</Link>
-            <Link href="/login" className="hover:text-white">Entrar</Link>
-          </div>
-        </div>
-      </footer>
+      <Pie />
     </div>
   );
 }
