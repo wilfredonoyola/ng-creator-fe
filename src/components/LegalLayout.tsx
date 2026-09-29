@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Cabecera, Pie } from "@/components/landing/Marco";
 
 /**
  * Contenedor de las páginas legales.
@@ -20,20 +21,8 @@ export function LegalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-ng-fondo text-white/80">
-      <header className="border-b border-white/10">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-marca text-sm font-bold text-white">
-            NG
-          </span>
-          <div>
-            <p className="text-sm font-bold tracking-wide text-white">
-              NG VIDEO CREATOR
-            </p>
-            <p className="text-xs text-white/40">Creator Studio</p>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-ng-hondo text-white/80">
+      <Cabecera />
 
       <main className="mx-auto max-w-3xl px-6 py-12">
         <h1 className="text-3xl font-bold text-white">{titulo}</h1>
@@ -52,6 +41,7 @@ export function LegalLayout({
           </Link>
         </footer>
       </main>
+      <Pie />
     </div>
   );
 }
