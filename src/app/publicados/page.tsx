@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { FORMATOS_PUBLICADOS, PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 
@@ -76,6 +77,7 @@ export default function PublicadosPage() {
   if (!cargandoPagina && !activa) {
     return (
       <DashboardLayout>
+        <PestanasPublicaciones />
         <Vacio
           icono="🔗"
           titulo="No hay ninguna página activa"
@@ -87,6 +89,7 @@ export default function PublicadosPage() {
 
   return (
     <DashboardLayout>
+      <PestanasPublicaciones />
       <div className="mb-4">
         <h1 className="text-2xl font-bold">Videos aprobados</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/50">
