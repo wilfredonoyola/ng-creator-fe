@@ -8,6 +8,7 @@ import {
   EPISODIOS,
   PREPARAR_SUBIDA_EPISODIO,
   RENOVAR_SUBIDA_EPISODIO,
+  TRANSCRIBIR_EPISODIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
@@ -21,6 +22,7 @@ import {
 } from "@/lib/subida-episodio";
 
 type EstadoEpisodio = "SUBIENDO" | "PROCESANDO" | "LISTO" | "FALLIDO";
+type EstadoTranscripcion = "EN_COLA" | "TRANSCRIBIENDO" | "LISTA" | "FALLIDA";
 
 interface Episodio {
   _id: string;
@@ -31,6 +33,11 @@ interface Episodio {
   duracionSeg?: number | null;
   miniaturaUrl?: string | null;
   error?: string | null;
+  estadoTranscripcion?: EstadoTranscripcion | null;
+  progresoTranscripcion?: number | null;
+  errorTranscripcion?: string | null;
+  palabrasTranscritas?: number | null;
+  costoTranscripcionUsd?: number | null;
   createdAt: string;
   subidoPor?: Autoria | null;
 }
@@ -54,6 +61,24 @@ const ESTILO_ESTADO: Record<EstadoEpisodio, { etiqueta: string; clase: string }>
   LISTO: { etiqueta: "Listo para transcribir", clase: "bg-[#0FED9D]/15 text-[#0FED9D]" },
   FALLIDO: { etiqueta: "Falló", clase: "bg-red-500/15 text-red-400" },
 };
+
+/** Un episodio LISTO en Bunny se muestra por el estado de su transcripción. */
+function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
+  if (ep.estado !== "LISTO" || !ep.estadoTranscripcion) return ESTILO_ESTADO[ep.estado];
+  switch (ep.estadoTranscripcion) {
+    case "EN_COLA":
+      return { etiqueta: "En cola para transcribir", clase: "bg-sky-500/15 text-sky-300" };
+    case "TRANSCRIBIENDO":
+      return {
+        etiqueta: `Transcribiendo · ${ep.progresoTranscripcion ?? 0}%`,
+        clase: "bg-sky-500/15 text-sky-300",
+      };
+    case "LISTA":
+      return { etiqueta: "Transcrito", clase: "bg-[#0FED9D]/15 text-[#0FED9D]" };
+    case "FALLIDA":
+      return { etiqueta: "Falló la transcripción", clase: "bg-red-500/15 text-red-400" };
+  }
+}
 
 export default function EpisodiosPage() {
   const { activa } = useMarcaActiva();
@@ -79,12 +104,18 @@ export default function EpisodiosPage() {
   const [renovarFirma] = useMutation(RENOVAR_SUBIDA_EPISODIO);
   const [confirmar] = useMutation(CONFIRMAR_SUBIDA_EPISODIO);
   const [borrar] = useMutation(BORRAR_EPISODIO);
+  const [pedirTranscripcion] = useMutation(TRANSCRIBIR_EPISODIO);
 
   // Se consulta seguido solo mientras haya algo pendiente. Consultar es lo que
   // hace que el backend le pregunte a Bunny, así que es lo que mueve un
-  // episodio de "procesando" a "listo".
+  // episodio de "procesando" a "listo". La transcripción la avanza el worker
+  // solo; consultar ahí es para ver el progreso.
   const hayPendientes = episodios.some(
-    (e) => e.estado === "SUBIENDO" || e.estado === "PROCESANDO",
+    (e) =>
+      e.estado === "SUBIENDO" ||
+      e.estado === "PROCESANDO" ||
+      e.estadoTranscripcion === "EN_COLA" ||
+      e.estadoTranscripcion === "TRANSCRIBIENDO",
   );
   useEffect(() => {
     if (hayPendientes) startPolling(15_000);
@@ -191,6 +222,16 @@ export default function EpisodiosPage() {
       // No es grave: la lista le pregunta a Bunny sola en la próxima consulta.
     }
     void refetch();
+  }
+
+  async function transcribir(ep: Episodio) {
+    if (!marcaId) return;
+    try {
+      await pedirTranscripcion({ variables: { id: ep._id, marcaId } });
+      void refetch();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo pedir la transcripción");
+    }
   }
 
   async function descartar(ep: Episodio) {
@@ -302,6 +343,7 @@ export default function EpisodiosPage() {
                   enEstaPestana={subida?.episodioId === ep._id}
                   puedeBorrar={opera}
                   onBorrar={() => void descartar(ep)}
+                  onTranscribir={opera ? () => void transcribir(ep) : undefined}
                 />
               ))}
             </ul>
@@ -391,13 +433,24 @@ function FilaEpisodio({
   enEstaPestana,
   puedeBorrar,
   onBorrar,
+  onTranscribir,
 }: {
   ep: Episodio;
   enEstaPestana: boolean;
   puedeBorrar: boolean;
   onBorrar: () => void;
+  /** Sin esto (rol que solo ve) no hay botón. */
+  onTranscribir?: () => void;
 }) {
-  const estilo = ESTILO_ESTADO[ep.estado];
+  const estilo = estiloDe(ep);
+  // Los nuevos entran solos a la fila. El botón es para los que quedaron
+  // listos antes de la transcripción, y para reintentar los que fallaron.
+  const botonTranscribir =
+    ep.estado === "LISTO" && (!ep.estadoTranscripcion || ep.estadoTranscripcion === "FALLIDA")
+      ? ep.estadoTranscripcion === "FALLIDA"
+        ? "Reintentar"
+        : "Transcribir"
+      : null;
   return (
     <li className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
       {/* Fondo y no <img>: next/image pediría registrar el dominio de Bunny, y
@@ -420,11 +473,29 @@ function FilaEpisodio({
           </p>
         )}
         {ep.error && <p className="mt-0.5 text-xs text-red-400">{ep.error}</p>}
+        {ep.estadoTranscripcion === "FALLIDA" && ep.errorTranscripcion && (
+          <p className="mt-0.5 text-xs text-red-400">{ep.errorTranscripcion}</p>
+        )}
+        {ep.estadoTranscripcion === "LISTA" && (
+          <p className="mt-0.5 text-xs text-white/45">
+            {(ep.palabrasTranscritas ?? 0).toLocaleString("es")} palabras
+            {ep.costoTranscripcionUsd != null &&
+              ` · costó US$${ep.costoTranscripcionUsd.toFixed(2)}`}
+          </p>
+        )}
         <SelloDeAutoria accion="Subido" autoria={ep.subidoPor} />
       </div>
       <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${estilo.clase}`}>
         {estilo.etiqueta}
       </span>
+      {botonTranscribir && onTranscribir && (
+        <button
+          onClick={onTranscribir}
+          className="shrink-0 rounded-lg bg-[#0FED9D] px-3 py-1.5 text-xs font-medium text-black"
+        >
+          {botonTranscribir}
+        </button>
+      )}
       {puedeBorrar && (
         <button
           onClick={onBorrar}
