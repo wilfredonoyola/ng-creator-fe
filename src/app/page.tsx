@@ -76,7 +76,7 @@ const PLANES = [
     incluye: [
       "1 persona",
       "1 marca",
-      "Hasta 8 episodios al mes",
+      "Hasta 12 episodios al mes (~3 por semana)",
       "Episodios de hasta 3 horas",
       "Clips y exportaciones ilimitados",
       "Editor completo y app para iPhone",
@@ -90,7 +90,7 @@ const PLANES = [
     incluye: [
       "Hasta 5 personas, con roles",
       "Hasta 3 marcas",
-      "Hasta 20 episodios al mes",
+      "Hasta 30 episodios al mes",
       "Episodios de hasta 3 horas",
       "Clips y exportaciones ilimitados",
       "Revisión y aprobación en equipo (pronto)",
