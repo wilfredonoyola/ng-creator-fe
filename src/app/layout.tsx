@@ -3,10 +3,24 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { RegistrarSW } from "@/components/RegistrarSW";
+import { URL_SITIO } from "@/lib/sitio";
 
 export const metadata: Metadata = {
-  title: "NG Creator",
+  metadataBase: new URL(URL_SITIO),
+  title: { default: "NG Creator", template: "%s — NG Creator" },
   description: "Create. Share. Grow. — Los clips de tus episodios, listos para publicar.",
+  keywords: [
+    "editar podcast",
+    "clips de podcast",
+    "podcast a TikTok",
+    "podcast a Reels",
+    "YouTube Shorts",
+    "subtítulos automáticos",
+    "editor de video vertical",
+    "clips virales con IA",
+  ],
+  openGraph: { type: "website", locale: "es_419", siteName: "NG Creator", url: "/" },
+  twitter: { card: "summary_large_image" },
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/favicon.png",
