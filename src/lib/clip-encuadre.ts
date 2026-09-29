@@ -73,7 +73,7 @@ export function medidasSubtitulo(
   diseno: "UNO" | "DIVIDIDO" = "UNO",
 ): { cuerpo: number; margenAbajo: number } {
   const lado = Math.min(lienzo.ancho, lienzo.alto);
-  const cuerpo = Math.round(lado * 0.075);
+  const cuerpo = Math.round(lado * 0.1);
   if (diseno === "DIVIDIDO" && lienzo.alto >= lienzo.ancho) {
     return { cuerpo, margenAbajo: Math.round(lienzo.alto / 2 - cuerpo * 0.6) };
   }
@@ -206,4 +206,67 @@ export function posicionEn(posiciones: PosicionEfectiva[], t: number): PosicionE
   let actual = posiciones[0];
   for (const p of posiciones) if (p.desdeSeg <= t) actual = p;
   return actual;
+}
+
+// ---- Textos sobre el clip (copiado del backend, igual) ----
+
+export type FuenteTexto = "NUNITO" | "ANTON" | "BEBAS";
+export type EfectoTexto = "NINGUNO" | "CONTORNO" | "SOMBRA" | "CAJA";
+
+/**
+ * Nombre de la familia y factor para CSS. libass mide la letra por la altura
+ * "win" de la fuente y CSS por el em: sin el factor la vista previa se ve
+ * hasta un 70% más grande que el MP4. Ver FUENTES en el backend.
+ */
+export const FUENTES: Record<FuenteTexto, { familia: string; factorCss: number }> = {
+  NUNITO: { familia: "Nunito Black", factorCss: 1000 / 1377 },
+  ANTON: { familia: "Anton", factorCss: 2048 / 3550 },
+  BEBAS: { familia: "Bebas Neue", factorCss: 1000 / 1300 },
+};
+
+export interface Texto {
+  contenido: string;
+  destacadas: string[];
+  fuente: FuenteTexto;
+  tamano: number;
+  color: string;
+  colorDestacado: string;
+  efecto: EfectoTexto;
+  colorEfecto: string;
+  mayusculas: boolean;
+  centroX: number;
+  centroY: number;
+  ancho: number;
+  desdeSeg: number;
+  hastaSeg?: number | null;
+}
+
+export function normalizarPalabra(p: string): string {
+  return p
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]/gu, "")
+    .toLowerCase();
+}
+
+export function palabrasDelTexto(t: Pick<Texto, "contenido" | "destacadas" | "mayusculas">) {
+  const destacadas = new Set(t.destacadas.map(normalizarPalabra).filter(Boolean));
+  const contenido = t.mayusculas ? t.contenido.toLocaleUpperCase("es") : t.contenido;
+  return contenido
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((texto) => ({ texto, destacada: destacadas.has(normalizarPalabra(texto)) }));
+}
+
+export function medidasEfecto(efecto: EfectoTexto, tamano: number) {
+  switch (efecto) {
+    case "CONTORNO":
+      return { borde: Math.max(3, Math.round(tamano * 0.08)), sombra: 0 };
+    case "SOMBRA":
+      return { borde: 0, sombra: Math.max(3, Math.round(tamano * 0.07)) };
+    case "CAJA":
+      return { borde: Math.max(6, Math.round(tamano * 0.22)), sombra: 0 };
+    default:
+      return { borde: 0, sombra: 0 };
+  }
 }

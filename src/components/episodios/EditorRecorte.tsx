@@ -4,8 +4,10 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { useHls } from "@/lib/use-hls";
 import {
   ajustarRegion,
-  GANCHO,
+  FUENTES,
   LIENZOS,
+  medidasEfecto,
+  palabrasDelTexto,
   medidasSubtitulo,
   panelesDe,
   posicionEn,
@@ -16,6 +18,7 @@ import {
   type FormatoClip,
   type PosicionEfectiva,
   type Region,
+  type Texto,
 } from "@/lib/clip-encuadre";
 
 export interface LineaSubtitulo {
@@ -59,7 +62,10 @@ export function EditorRecorte({
   posicionesGuardadas,
   onCambiarPosiciones,
   lineas,
-  gancho,
+  textos,
+  onCambiarTextos,
+  textoElegido,
+  onElegirTexto,
   estilo,
   puedeEditar,
   debajoDeLaVista,
@@ -81,7 +87,12 @@ export function EditorRecorte({
   /** Devuelve siempre la lista entera, ya efectiva. */
   onCambiarPosiciones: (p: PosicionEfectiva[]) => void;
   lineas: LineaSubtitulo[];
-  gancho: { texto: string; activo: boolean; seg: number };
+  /** Los textos sobre el clip. Se arrastran en la vista previa para moverlos. */
+  textos: Texto[];
+  onCambiarTextos: (t: Texto[]) => void;
+  /** El que se está editando en el panel: se marca en la vista previa. */
+  textoElegido: number | null;
+  onElegirTexto: (i: number) => void;
   estilo: EstiloClip;
   puedeEditar: boolean;
   debajoDeLaVista?: ReactNode;
@@ -264,7 +275,31 @@ export function EditorRecorte({
   });
   const { cuerpo, margenAbajo } = medidasSubtitulo(lienzo, diseno);
   const contorno = Math.max(3, Math.round(cuerpo * 0.14));
-  const verGancho = gancho.activo && gancho.texto.trim() && tc < gancho.seg;
+  const factorSub = FUENTES.NUNITO.factorCss;
+
+  /** Mover un texto arrastrándolo sobre la vista previa. */
+  function arrastrarTexto(e: React.PointerEvent, i: number) {
+    e.stopPropagation();
+    onElegirTexto(i);
+    if (!puedeEditar) return;
+    e.preventDefault();
+    const caja = vista.current?.getBoundingClientRect();
+    if (!caja) return;
+    const inicial = textos[i];
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    const mover = (ev: PointerEvent) => {
+      const cx = Math.min(1, Math.max(0, inicial.centroX + (ev.clientX - x0) / caja.width));
+      const cy = Math.min(1, Math.max(0, inicial.centroY + (ev.clientY - y0) / caja.height));
+      onCambiarTextos(textos.map((t, k) => (k === i ? { ...t, centroX: redondo3(cx), centroY: redondo3(cy) } : t)));
+    };
+    const soltar = () => {
+      window.removeEventListener("pointermove", mover);
+      window.removeEventListener("pointerup", soltar);
+    };
+    window.addEventListener("pointermove", mover);
+    window.addEventListener("pointerup", soltar);
+  }
 
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -456,24 +491,65 @@ export function EditorRecorte({
               height={Math.max(1, Math.round(altoVista * 2))}
               className="absolute inset-0 h-full w-full"
             />
-            {verGancho && (
-              <div
-                className="pointer-events-none absolute inset-x-0 text-center uppercase leading-[1.1]"
-                style={{
-                  top: GANCHO.centroY * altoVista,
-                  transform: "translateY(-50%)",
-                  padding: `0 ${lienzo.ancho * 0.05 * k}px`,
-                  fontFamily: "'Arial Black', 'Arial', sans-serif",
-                  fontWeight: 900,
-                  fontSize: GANCHO.tamano * k,
-                  color: estilo.colorGancho,
-                  WebkitTextStroke: `${GANCHO.grosorContorno * k}px ${estilo.colorContornoGancho}`,
-                  paintOrder: "stroke fill",
-                }}
-              >
-                {gancho.texto}
-              </div>
-            )}
+            {textos.map((tx, i) => {
+              const hasta = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : duracion;
+              const visible = tc >= tx.desdeSeg && tc < hasta;
+              const elegido = textoElegido === i;
+              if (!visible && !elegido) return null;
+              const f = FUENTES[tx.fuente] ?? FUENTES.ANTON;
+              const { borde, sombra } = medidasEfecto(tx.efecto, tx.tamano);
+              const palabras = palabrasDelTexto(tx);
+              const caja = tx.efecto === "CAJA";
+              return (
+                <div
+                  key={i}
+                  onPointerDown={(e) => arrastrarTexto(e, i)}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`absolute text-center ${puedeEditar ? "cursor-move" : ""} ${
+                    elegido ? "outline-dashed outline-1 outline-offset-4 outline-white/70" : ""
+                  } ${visible ? "" : "opacity-40"}`}
+                  style={{
+                    left: tx.centroX * anchoVista,
+                    top: tx.centroY * altoVista,
+                    transform: "translate(-50%, -50%)",
+                    width: "max-content",
+                    maxWidth: tx.ancho * anchoVista,
+                    fontFamily: `'${f.familia}', sans-serif`,
+                    fontWeight: tx.fuente === "NUNITO" ? 900 : 400,
+                    // libass mide por la altura "win": ver FUENTES.
+                    fontSize: tx.tamano * f.factorCss * k,
+                    lineHeight: `${tx.tamano * k}px`,
+                    color: tx.color,
+                    ...(tx.efecto === "CONTORNO"
+                      ? { WebkitTextStroke: `${2 * borde * k}px ${tx.colorEfecto}`, paintOrder: "stroke fill" }
+                      : {}),
+                    ...(tx.efecto === "SOMBRA"
+                      ? { textShadow: `${sombra * k}px ${sombra * k}px 0 ${tx.colorEfecto}` }
+                      : {}),
+                  }}
+                >
+                  <span
+                    style={
+                      caja
+                        ? {
+                            background: tx.colorEfecto,
+                            padding: `${borde * k * 0.35}px ${borde * k}px`,
+                            boxDecorationBreak: "clone",
+                            WebkitBoxDecorationBreak: "clone",
+                          }
+                        : undefined
+                    }
+                  >
+                    {palabras.map((w, j) => (
+                      <span key={j} style={w.destacada ? { color: tx.colorDestacado } : undefined}>
+                        {j > 0 ? " " : ""}
+                        {w.texto}
+                      </span>
+                    ))}
+                  </span>
+                </div>
+              );
+            })}
             {linea && (
               <div
                 className="pointer-events-none absolute inset-x-0 text-center"
@@ -482,8 +558,9 @@ export function EditorRecorte({
                   padding: `0 ${60 * k}px`,
                   fontFamily: "'Nunito Black', sans-serif",
                   fontWeight: 900,
-                  fontSize: cuerpo * k,
-                  lineHeight: 1.15,
+                  // Mismo factor que los textos: libass mide por la altura "win".
+                  fontSize: cuerpo * factorSub * k,
+                  lineHeight: `${cuerpo * k}px`,
                   color: estilo.colorSubtitulo,
                   WebkitTextStroke: `${2 * contorno * k}px #000`,
                   paintOrder: "stroke fill",
@@ -681,3 +758,5 @@ function reloj(seg: number): string {
   const r = String(s % 60).padStart(2, "0");
   return h ? `${h}:${String(m).padStart(2, "0")}:${r}` : `${m}:${r}`;
 }
+
+const redondo3 = (n: number) => Math.round(n * 1000) / 1000;
