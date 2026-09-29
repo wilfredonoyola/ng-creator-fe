@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
   ANALIZAR_MOMENTOS_EPISODIO,
   CLIPS_DE_EPISODIO,
+  CREAR_CLIP_EPISODIO,
   EPISODIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -28,6 +30,8 @@ interface Clip {
   explicacion: string;
   gancho?: string | null;
   texto: string;
+  origen?: "IA" | "MANUAL";
+  estadoRender?: "EN_COLA" | "RENDERIZANDO" | "LISTO" | "FALLIDO" | null;
 }
 
 const MOTIVOS: Record<string, string> = {
@@ -67,6 +71,8 @@ export default function DetalleEpisodioPage({
   const episodioQ = useQuery(EPISODIO, { variables, skip: !marcaId, errorPolicy: "all" });
   const clipsQ = useQuery(CLIPS_DE_EPISODIO, { variables, skip: !marcaId });
   const [analizar, { loading: pidiendo }] = useMutation(ANALIZAR_MOMENTOS_EPISODIO);
+  const [crearClip, { loading: creando }] = useMutation(CREAR_CLIP_EPISODIO);
+  const router = useRouter();
 
   const ep = episodioQ.data?.episodio;
   const clips: Clip[] = clipsQ.data?.clipsDeEpisodio ?? [];
@@ -105,6 +111,23 @@ export default function DetalleEpisodioPage({
       void episodioQ.refetch();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo pedir el análisis");
+    }
+  }
+
+  /** Un clip a mano: 30 s desde donde está el video, y al editor. */
+  async function nuevoClip() {
+    if (!marcaId) return;
+    setError(null);
+    const desde = Math.max(0, Math.floor(reproductor.current?.tiempoActual() ?? 0));
+    try {
+      const r = await crearClip({
+        variables: {
+          input: { marcaId, episodioId: id, desdeSeg: desde, hastaSeg: desde + 30 },
+        },
+      });
+      router.push(`/episodios/${id}/clips/${r.data.crearClipEpisodio._id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo crear el clip");
     }
   }
 
@@ -184,15 +207,26 @@ export default function DetalleEpisodioPage({
         </div>
 
         <div>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">
-            Clips sugeridos
-          </h2>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">Clips</h2>
+            {opera && ep.estadoTranscripcion === "LISTA" && (
+              <button
+                onClick={() => void nuevoClip()}
+                disabled={creando}
+                title="Crea un clip de 30 s desde donde está el video, y abre el editor"
+                className="rounded-lg border border-white/15 px-3 py-1 text-xs text-white/80 hover:bg-white/5 disabled:opacity-50"
+              >
+                + Nuevo clip desde aquí
+              </button>
+            )}
+          </div>
           <EstadoDelAnalisis ep={ep} />
           {clips.length > 0 && (
             <ol className="space-y-3">
               {clips.map((c, i) => (
                 <TarjetaClip
                   key={c._id}
+                  editar={`/episodios/${id}/clips/${c._id}`}
                   clip={c}
                   puesto={i + 1}
                   sonando={sonando === c._id}
@@ -255,12 +289,14 @@ function EstadoDelAnalisis({
 }
 
 function TarjetaClip({
+  editar,
   clip,
   puesto,
   sonando,
   puedeReproducir,
   onReproducir,
 }: {
+  editar: string;
   clip: Clip;
   puesto: number;
   sonando: boolean;
@@ -282,12 +318,19 @@ function TarjetaClip({
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-medium">{clip.titulo}</p>
             <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">
-              {MOTIVOS[clip.motivo] ?? clip.motivo}
+              {clip.origen === "MANUAL" ? "Hecho a mano" : (MOTIVOS[clip.motivo] ?? clip.motivo)}
             </span>
+            {clip.estadoRender === "LISTO" && (
+              <span className="rounded-full bg-[#0FED9D]/15 px-2 py-0.5 text-[11px] text-[#0FED9D]">MP4 listo</span>
+            )}
+            {(clip.estadoRender === "EN_COLA" || clip.estadoRender === "RENDERIZANDO") && (
+              <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">Renderizando</span>
+            )}
           </div>
           <p className="mt-0.5 text-xs tabular-nums text-white/45">
             {reloj(clip.desdeSeg)} – {reloj(clip.hastaSeg)} ·{" "}
-            {Math.round(clip.hastaSeg - clip.desdeSeg)} s · puntuación {clip.puntuacion}
+            {Math.round(clip.hastaSeg - clip.desdeSeg)} s
+            {clip.origen !== "MANUAL" && ` · puntuación ${clip.puntuacion}`}
           </p>
           <p className="mt-2 text-sm text-white/70">{clip.explicacion}</p>
           {clip.gancho && (
@@ -303,6 +346,13 @@ function TarjetaClip({
           </button>
           {verTexto && <p className="mt-1 text-sm leading-relaxed text-white/60">{clip.texto}</p>}
         </div>
+        <div className="flex shrink-0 flex-col gap-1.5">
+        <Link
+          href={editar}
+          className="rounded-lg border border-white/15 px-3 py-1.5 text-center text-xs text-white/80 hover:bg-white/5"
+        >
+          Editar
+        </Link>
         {puedeReproducir && (
           <button
             onClick={onReproducir}
@@ -312,6 +362,7 @@ function TarjetaClip({
             ▶ Escuchar
           </button>
         )}
+        </div>
       </div>
     </li>
   );

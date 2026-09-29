@@ -1,19 +1,20 @@
 "use client";
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
-import type Hls from "hls.js";
+import { useHls } from "@/lib/use-hls";
 
 /** Lo que la página le puede pedir al reproductor. */
 export interface ControlReproductor {
   /** Reproduce solo el tramo `desde`-`hasta` (segundos del episodio) y se frena al final. */
   reproducirTramo: (desde: number, hasta: number) => void;
+  /** Dónde está parado el video, en segundos del episodio. */
+  tiempoActual: () => number;
 }
 
 /**
  * El episodio desde Bunny, por HLS.
  *
- * Safari reproduce HLS solo; Chrome y Firefox no, y para esos va hls.js. Se
- * carga recién al montar porque pesa y solo lo usa esta pantalla.
+ * El HLS lo conecta `useHls`.
  *
  * Reproducir un clip es saltar a su inicio y frenar en su final: no hay un
  * archivo por clip todavía (eso lo hace el editor, #69). El tope lo vigila
@@ -27,27 +28,7 @@ export const ReproductorEpisodio = forwardRef<
   const video = useRef<HTMLVideoElement>(null);
   const tope = useRef<number | null>(null);
 
-  useEffect(() => {
-    const el = video.current;
-    if (!el) return;
-    let hls: Hls | null = null;
-    let cancelado = false;
-
-    if (el.canPlayType("application/vnd.apple.mpegurl")) {
-      el.src = url;
-    } else {
-      void import("hls.js").then(({ default: HlsJs }) => {
-        if (cancelado || !HlsJs.isSupported()) return;
-        hls = new HlsJs();
-        hls.loadSource(url);
-        hls.attachMedia(el);
-      });
-    }
-    return () => {
-      cancelado = true;
-      hls?.destroy();
-    };
-  }, [url]);
+  useHls(video, url);
 
   useEffect(() => {
     const el = video.current;
@@ -80,6 +61,9 @@ export const ReproductorEpisodio = forwardRef<
         // El navegador puede negar el play sin un gesto; el usuario le da play.
       });
       el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    },
+    tiempoActual() {
+      return video.current?.currentTime ?? 0;
     },
   }));
 

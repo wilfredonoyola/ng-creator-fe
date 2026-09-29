@@ -1256,6 +1256,10 @@ export const CLIPS_DE_EPISODIO = gql`
       explicacion
       gancho
       texto
+      origen
+      formato
+      estadoRender
+      urlPoster
     }
   }
 `;
@@ -1273,5 +1277,112 @@ export const ANALIZAR_MOMENTOS_EPISODIO = gql`
 export const BORRAR_EPISODIO = gql`
   mutation BorrarEpisodio($id: ID!, $marcaId: String!) {
     borrarEpisodio(id: $id, marcaId: $marcaId)
+  }
+`;
+
+// ---- Editor de clips (ng-creator-be#69) ----
+
+const CAMPOS_CLIP_EDITOR = gql`
+  fragment CamposClipEditor on ClipEpisodio {
+    _id
+    episodioId
+    marcaId
+    origen
+    desdeSeg
+    hastaSeg
+    titulo
+    texto
+    puntuacion
+    motivo
+    explicacion
+    formato
+    encuadre {
+      centroX
+      centroY
+      zoom
+    }
+    subtitulosActivos
+    correcciones {
+      desde
+      texto
+    }
+    gancho
+    ganchoActivo
+    ganchoSeg
+    estadoRender
+    progresoRender
+    errorRender
+    urlVideo
+    urlPoster
+    renderizadoEn
+    editadoEn
+    lineasSubtitulo {
+      desde
+      hasta
+      palabras {
+        texto
+        desde
+        hasta
+      }
+    }
+  }
+`;
+
+export const CLIP_EPISODIO = gql`
+  ${CAMPOS_CLIP_EDITOR}
+  query ClipEpisodio($id: ID!, $marcaId: String!) {
+    clipEpisodio(id: $id, marcaId: $marcaId) {
+      ...CamposClipEditor
+    }
+    estiloClipMarca(marcaId: $marcaId) {
+      colorSubtitulo
+      colorResaltado
+      colorGancho
+      colorContornoGancho
+    }
+  }
+`;
+
+/** Las palabras de un tramo del episodio, con su tiempo. */
+export const TRANSCRIPCION_EPISODIO = gql`
+  query TranscripcionEpisodio($id: ID!, $marcaId: String!, $desdeSeg: Float, $hastaSeg: Float) {
+    transcripcionEpisodio(id: $id, marcaId: $marcaId, desdeSeg: $desdeSeg, hastaSeg: $hastaSeg) {
+      texto
+      desde
+      hasta
+    }
+  }
+`;
+
+export const CREAR_CLIP_EPISODIO = gql`
+  ${CAMPOS_CLIP_EDITOR}
+  mutation CrearClipEpisodio($input: CrearClipEpisodioInput!) {
+    crearClipEpisodio(input: $input) {
+      ...CamposClipEditor
+    }
+  }
+`;
+
+export const ACTUALIZAR_CLIP_EPISODIO = gql`
+  ${CAMPOS_CLIP_EDITOR}
+  mutation ActualizarClipEpisodio($id: ID!, $marcaId: String!, $input: ActualizarClipEpisodioInput!) {
+    actualizarClipEpisodio(id: $id, marcaId: $marcaId, input: $input) {
+      ...CamposClipEditor
+    }
+  }
+`;
+
+export const RENDERIZAR_CLIP_EPISODIO = gql`
+  ${CAMPOS_CLIP_EDITOR}
+  mutation RenderizarClipEpisodio($id: ID!, $marcaId: String!) {
+    renderizarClipEpisodio(id: $id, marcaId: $marcaId) {
+      ...CamposClipEditor
+    }
+  }
+`;
+
+export const BORRAR_CLIP_EPISODIO = gql`
+  mutation BorrarClipEpisodio($id: ID!, $marcaId: String!) {
+    borrarClipEpisodio(id: $id, marcaId: $marcaId)
   }
 `;
