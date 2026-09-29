@@ -12,7 +12,7 @@ import { Clapperboard, LayoutDashboard, ListChecks, Menu, Recycle } from "lucide
  * y no merecen ocupar el pulgar.
  */
 const TABS = [
-  { href: "/", icon: LayoutDashboard, label: "Inicio" },
+  { href: "/panel", icon: LayoutDashboard, label: "Inicio" },
   { href: "/crear", icon: Clapperboard, label: "Crear" },
   { href: "/revision", icon: ListChecks, label: "Revisión" },
   { href: "/revival", icon: Recycle, label: "Revival" },
