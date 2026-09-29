@@ -1,5 +1,7 @@
 "use client";
 
+import { apolloClient } from "./apollo";
+
 /**
  * Autenticacion via backend GraphQL.
  * El backend habla con Cognito; el frontend guarda los tokens y los refresca automaticamente.
@@ -64,7 +66,7 @@ export async function iniciarSesion(
     return { tipo: "nueva-password", sesion: result.sesion };
   }
 
-  guardarSesion(result);
+  await guardarSesion(result);
   return { tipo: "sesion" };
 }
 
@@ -98,7 +100,7 @@ export async function establecerPassword(
     "establecerPassword"
   );
 
-  guardarSesion(result);
+  await guardarSesion(result);
 }
 
 /**
@@ -131,7 +133,7 @@ export async function confirmarPasswordNueva(
     { email, codigo, nuevaPassword },
     "confirmarPasswordNueva"
   );
-  guardarSesion(result);
+  await guardarSesion(result);
 }
 
 /** Manda una operacion sin sesion y devuelve su dato, o lanza el error. */
@@ -155,8 +157,16 @@ async function pedir<T>(
   return json.data[campo] as T;
 }
 
-/** Guarda los tokens de un ingreso completo y arranca el auto-refresh. */
-function guardarSesion(result: AuthResult): void {
+/**
+ * Guarda los tokens de un ingreso completo, arranca el auto-refresh y vuelve a
+ * pedir lo que la web ya había preguntado sin sesión.
+ *
+ * Los providers de la raíz (usuario, accesos, marcas) consultan apenas carga
+ * la página, también en /login y en la landing, y sin token esas respuestas
+ * vuelven vacías. Como el login navega sin recargar, sin este reset el panel
+ * abría sin marcas hasta refrescar a mano.
+ */
+async function guardarSesion(result: AuthResult): Promise<void> {
   if (!result.idToken || !result.accessToken || !result.refreshToken) {
     throw new Error("El servidor no devolvio una sesion valida");
   }
@@ -168,6 +178,7 @@ function guardarSesion(result: AuthResult): void {
     expiresIn
   );
   programarRefresh(expiresIn);
+  await apolloClient.resetStore().catch(() => {});
 }
 
 /**
@@ -304,6 +315,9 @@ export async function cerrarSesion(): Promise<void> {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("tokenExpiresAt");
+  // Que quien entre después en este navegador no vea, ni por un instante, las
+  // marcas y datos de la cuenta anterior.
+  await apolloClient.clearStore().catch(() => {});
 }
 
 export function haySesion(): boolean {
