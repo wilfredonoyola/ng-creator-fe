@@ -234,7 +234,7 @@ export default function RevivalPage() {
                     key={a.anio}
                     className={`rounded-xl border p-3 transition ${
                       seleccionado
-                        ? "border-[#0FED9D]/50 bg-[#0FED9D]/5"
+                        ? "border-ng-azul/50 bg-ng-teal/5"
                         : "border-white/10 bg-white/[0.02]"
                     }`}
                   >
@@ -256,10 +256,10 @@ export default function RevivalPage() {
                         }}
                         disabled={sincronizandoAnio !== null}
                         title={`Sincronizar ${a.anio}`}
-                        className="rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-[#0FED9D] disabled:cursor-not-allowed disabled:opacity-30"
+                        className="rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-ng-celeste disabled:cursor-not-allowed disabled:opacity-30"
                       >
                         {activo ? (
-                          <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+                          <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
                         ) : (
                           "↻"
                         )}
@@ -333,7 +333,7 @@ export default function RevivalPage() {
                 onClick={() => setOrden(valor)}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   orden === valor
-                    ? "bg-[#0FED9D]/10 text-[#0FED9D]"
+                    ? "bg-ng-teal/10 text-ng-teal"
                     : "text-white/50 hover:bg-white/5 hover:text-white"
                 }`}
               >
@@ -371,7 +371,7 @@ export default function RevivalPage() {
           {/* Galería */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
             </div>
           ) : posts.length === 0 ? (
             <Vacio
@@ -444,7 +444,7 @@ function Pestana({
       onClick={onClick}
       className={`shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-medium transition ${
         activa
-          ? "bg-[#0FED9D]/10 text-[#0FED9D]"
+          ? "bg-ng-teal/10 text-ng-teal"
           : "text-white/45 hover:bg-white/5 hover:text-white"
       }`}
     >

@@ -23,7 +23,7 @@ export function EstadoGuardado({
   if (guardando || sinGuardar) {
     return <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs text-white/60">Guardando…</span>;
   }
-  return <span className="rounded-full bg-[#0FED9D]/10 px-2.5 py-1 text-xs text-[#0FED9D]">✓ Cambios guardados</span>;
+  return <span className="rounded-full bg-ng-teal/10 px-2.5 py-1 text-xs text-ng-teal">✓ Cambios guardados</span>;
 }
 
 /**
@@ -124,7 +124,7 @@ export function PanelExportar({
             <div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
-                  className={`h-full bg-[#0FED9D] transition-[width] duration-700 ${estado === "EN_COLA" || pidiendo ? "animate-pulse" : ""}`}
+                  className={`h-full bg-marca transition-[width] duration-700 ${estado === "EN_COLA" || pidiendo ? "animate-pulse" : ""}`}
                   style={{ width: `${estado === "RENDERIZANDO" ? Math.max(3, progreso) : 3}%` }}
                 />
               </div>
@@ -146,7 +146,7 @@ export function PanelExportar({
                 <button
                   onClick={onProcesar}
                   disabled={pidiendo}
-                  className="w-full rounded-lg bg-[#0FED9D] px-3 py-2 text-sm font-semibold text-black disabled:opacity-50"
+                  className="w-full rounded-lg bg-marca px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
                 >
                   {estado === "FALLIDO" ? "Intentar de nuevo" : listo ? "Procesar de nuevo con los cambios" : "Procesar video"}
                 </button>
@@ -216,7 +216,7 @@ function Paso({
     <li className={`flex gap-3 ${activo || hecho ? "" : "opacity-45"}`}>
       <span
         className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-          hecho ? "bg-[#0FED9D] text-black" : "border border-white/25 text-white/70"
+          hecho ? "bg-marca text-white" : "border border-white/25 text-white/70"
         }`}
       >
         {hecho ? "✓" : numero}

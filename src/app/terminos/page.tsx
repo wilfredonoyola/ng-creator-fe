@@ -139,7 +139,7 @@ export default function TerminosPage() {
         <p>
           Podés solicitar la baja de tu cuenta escribiendo a {CONTACTO}. El
           tratamiento de tus datos tras la baja se rige por la{" "}
-          <a href="/privacidad" className="text-[#0FED9D] hover:underline">
+          <a href="/privacidad" className="text-ng-teal hover:underline">
             política de privacidad
           </a>
           .

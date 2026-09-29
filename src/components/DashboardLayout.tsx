@@ -39,10 +39,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }, [abierto]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-ng-fondo">
       {/* Barra superior: solo en pantallas chicas */}
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-white/10 bg-[#0a0a0a]/95 px-4 py-3 backdrop-blur lg:hidden"
+        className="sticky top-0 z-30 flex items-center gap-3 border-b border-white/10 bg-ng-fondo/95 px-4 py-3 backdrop-blur lg:hidden"
         style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
       >
         <button
@@ -56,7 +56,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <span className="mt-1 block h-0.5 w-5 bg-current" />
         </button>
 
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#0FED9D] text-[11px] font-bold text-black">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-marca text-[11px] font-bold text-white">
           NG
         </span>
 

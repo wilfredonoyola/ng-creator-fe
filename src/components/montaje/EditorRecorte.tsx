@@ -184,7 +184,7 @@ export function EditorRecorte({
         onPointerDown={(e) => empezar(e, "mover")}
         // Sin `touchAction: none`, arrastrar el recorte scrollea la pagina en
         // vez de mover el rectangulo.
-        className="absolute cursor-move border-2 border-[#0FED9D]"
+        className="absolute cursor-move border-2 border-ng-azul"
         style={{
           touchAction: "none",
           left: pct(recorte.x),
@@ -220,7 +220,7 @@ export function EditorRecorte({
             }`}
             style={{ touchAction: "none" }}
           >
-            <span className="h-3 w-3 rounded-sm bg-[#0FED9D] shadow-[0_0_0_2px_rgba(0,0,0,0.4)]" />
+            <span className="h-3 w-3 rounded-sm bg-marca shadow-[0_0_0_2px_rgba(0,0,0,0.4)]" />
           </span>
         ))}
       </div>

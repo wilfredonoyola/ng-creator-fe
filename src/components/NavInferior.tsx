@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { Clapperboard, LayoutDashboard, ListChecks, Menu, Recycle } from "lucide-react";
 
 /**
  * Los cuatro destinos del trabajo diario. El resto vive detrás de "Más".
@@ -11,10 +12,10 @@ import { usePathname, useRouter } from "next/navigation";
  * y no merecen ocupar el pulgar.
  */
 const TABS = [
-  { href: "/", icon: "📊", label: "Inicio" },
-  { href: "/crear", icon: "🎬", label: "Crear" },
-  { href: "/revision", icon: "✅", label: "Revisión" },
-  { href: "/revival", icon: "♻️", label: "Revival" },
+  { href: "/", icon: LayoutDashboard, label: "Inicio" },
+  { href: "/crear", icon: Clapperboard, label: "Crear" },
+  { href: "/revision", icon: ListChecks, label: "Revisión" },
+  { href: "/revival", icon: Recycle, label: "Revival" },
 ];
 
 /**
@@ -33,7 +34,7 @@ export function NavInferior({ onMas }: { onMas: () => void }) {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-white/10 bg-[#0a0a0a]/95 backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-white/10 bg-ng-fondo/95 backdrop-blur lg:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       {TABS.map((t) => {
@@ -43,16 +44,16 @@ export function NavInferior({ onMas }: { onMas: () => void }) {
             key={t.href}
             onClick={() => router.push(t.href)}
             className={`relative flex flex-col items-center gap-0.5 py-2 text-[10px] transition ${
-              activo ? "text-[#0FED9D]" : "text-white/45 active:bg-white/5"
+              activo ? "text-ng-celeste" : "text-ng-tenue active:bg-white/5"
             }`}
           >
-            <span className="text-lg leading-none">{t.icon}</span>
+            <t.icon size={20} strokeWidth={1.8} aria-hidden />
             <span className="font-medium">{t.label}</span>
             {/* Línea superior en vez de un punto: marca la pestaña sin robarle
                 altura al objetivo tocable. */}
             <span
               className={`absolute top-0 h-0.5 w-10 rounded-full ${
-                activo ? "bg-[#0FED9D]" : "bg-transparent"
+                activo ? "bg-marca" : "bg-transparent"
               }`}
             />
           </button>
@@ -63,7 +64,7 @@ export function NavInferior({ onMas }: { onMas: () => void }) {
         onClick={onMas}
         className="flex flex-col items-center gap-0.5 py-2 text-[10px] text-white/45 transition active:bg-white/5"
       >
-        <span className="text-lg leading-none">☰</span>
+        <Menu size={20} strokeWidth={1.8} aria-hidden />
         <span className="font-medium">Más</span>
       </button>
     </nav>

@@ -59,7 +59,7 @@ export function ColaRenders({
             <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  t.estado === "RENDERIZANDO" ? "bg-[#0FED9D]" : "bg-white/20"
+                  t.estado === "RENDERIZANDO" ? "bg-marca" : "bg-white/20"
                 }`}
                 style={{
                   width:

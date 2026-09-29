@@ -125,7 +125,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
         {/* Number Badge */}
         {exp.numero && (
           <div className="absolute right-3 top-3">
-            <span className="rounded-lg bg-[#0FED9D] px-2 py-1 text-xs font-bold text-black">
+            <span className="rounded-lg bg-marca px-2 py-1 text-xs font-bold text-white">
               #{exp.numero}
             </span>
           </div>
@@ -186,25 +186,25 @@ export function VideoCard({ exp }: { exp: Expediente }) {
             <div className="space-y-2 rounded-xl bg-black/30 p-3">
               {exp.guion?.apertura && (
                 <p className="text-sm">
-                  <span className="font-medium text-[#0FED9D]">[Hook]</span>{" "}
+                  <span className="font-medium text-ng-teal">[Hook]</span>{" "}
                   <span className="text-white/80">{exp.guion.apertura}</span>
                 </p>
               )}
               {exp.guion?.detalle && (
                 <p className="text-sm">
-                  <span className="font-medium text-[#0FED9D]">[Detalle]</span>{" "}
+                  <span className="font-medium text-ng-teal">[Detalle]</span>{" "}
                   <span className="text-white/80">{exp.guion.detalle}</span>
                 </p>
               )}
               {exp.guion?.revelacion && (
                 <p className="text-sm">
-                  <span className="font-medium text-[#0FED9D]">[Revelación]</span>{" "}
+                  <span className="font-medium text-ng-teal">[Revelación]</span>{" "}
                   <span className="text-white/80">{exp.guion.revelacion}</span>
                 </p>
               )}
               {exp.guion?.cierre && (
                 <p className="text-sm">
-                  <span className="font-medium text-[#0FED9D]">[Cierre]</span>{" "}
+                  <span className="font-medium text-ng-teal">[Cierre]</span>{" "}
                   <span className="text-white/80">{exp.guion.cierre}</span>
                 </p>
               )}
@@ -215,7 +215,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
               <div className="space-y-1">
                 {exp.validacion.checksPasados.map((c) => (
                   <div key={c} className="flex items-center gap-2 text-xs">
-                    <span className="text-[#0FED9D]">✓</span>
+                    <span className="text-ng-teal">✓</span>
                     <span className="text-white/60">{c}</span>
                   </div>
                 ))}
@@ -235,7 +235,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
                   value={nota}
                   onChange={(e) => setNota(e.target.value)}
                   placeholder="Describe qué quieres mejorar..."
-                  className="w-full rounded-xl border border-white/10 bg-black/50 p-3 text-sm outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+                  className="w-full rounded-xl border border-white/10 bg-black/50 p-3 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul/50"
                   rows={2}
                 />
                 <div className="flex gap-2">
@@ -248,7 +248,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
                   <button
                     onClick={handleRegenerate}
                     disabled={regenerando || !nota.trim()}
-                    className="flex-1 rounded-lg bg-[#0FED9D] py-2 text-sm font-medium text-black disabled:opacity-50"
+                    className="flex-1 rounded-lg bg-marca py-2 text-sm font-medium text-white disabled:opacity-50"
                   >
                     {regenerando ? "..." : "Regenerar"}
                   </button>
@@ -286,7 +286,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
               <button
                 onClick={() => aprobar({ variables: { id: exp._id } })}
                 disabled={aprobando}
-                className="rounded-lg bg-[#0FED9D] px-4 py-2.5 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="rounded-lg bg-marca px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 {aprobando ? "..." : "Aprobar ✓"}
               </button>

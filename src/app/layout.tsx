@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { RegistrarSW } from "@/components/RegistrarSW";
 
 export const metadata: Metadata = {
-  title: "NG Creator Studio",
-  description: "Crear, revisar y reciclar el contenido de tus fan pages",
+  title: "NG Creator",
+  description: "Create. Share. Grow. — Los clips de tus episodios, listos para publicar.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/favicon.png",
@@ -20,8 +21,11 @@ export const metadata: Metadata = {
   },
 };
 
+/** La letra de la marca. Servida por next/font: sin pedidos a Google en el navegador. */
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
+  themeColor: "#0B0F1A",
   // `viewportFit: cover` es lo que permite pintar bajo el notch; el padding
   // seguro lo pone el layout con env(safe-area-inset-*).
   viewportFit: "cover",
@@ -37,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body>
+    <html lang="es" className={inter.variable}>
+      <body className="font-sans">
         <Providers>{children}</Providers>
         <RegistrarSW />
       </body>

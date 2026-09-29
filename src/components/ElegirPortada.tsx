@@ -163,14 +163,14 @@ export function ElegirPortada({
               step={0.1}
               value={segundo}
               onChange={(e) => mover(Number(e.target.value))}
-              className="mt-1 w-full accent-[#0FED9D]"
+              className="mt-1 w-full accent-ng-azul"
             />
           </label>
 
           <button
             onClick={confirmarCuadro}
             disabled={guardando || !!guardada}
-            className="mt-2 w-full rounded-lg bg-[#0FED9D] py-2 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-50"
+            className="mt-2 w-full rounded-lg bg-marca py-2 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
           >
             {guardando
               ? "Guardando…"
@@ -191,7 +191,7 @@ export function ElegirPortada({
             />
           )}
 
-          <label className="mt-2 block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-[#0FED9D]/50 hover:bg-white/5">
+          <label className="mt-2 block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-ng-azul/50 hover:bg-white/5">
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
@@ -219,8 +219,8 @@ export function ElegirPortada({
       )}
 
       {guardada && (
-        <div className="mt-3 rounded-lg border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-2">
-          <p className="mb-1.5 text-[11px] font-medium text-[#0FED9D]">
+        <div className="mt-3 rounded-lg border border-ng-azul/30 bg-ng-teal/5 p-2">
+          <p className="mb-1.5 text-[11px] font-medium text-ng-teal">
             ✓ Así va a salir la portada
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -255,7 +255,7 @@ function Pestana({
       onClick={onClick}
       className={`flex-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition ${
         activa
-          ? "bg-[#0FED9D] text-black"
+          ? "bg-marca text-white"
           : "border border-white/10 text-white/50 hover:bg-white/5"
       }`}
     >

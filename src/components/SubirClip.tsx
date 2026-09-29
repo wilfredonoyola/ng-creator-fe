@@ -100,7 +100,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="rounded-lg bg-[#0FED9D] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90"
+        className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
       >
         + Subir clip
       </button>
@@ -194,7 +194,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
 
       {/* Progress */}
       {progress && (
-        <p className="mb-4 text-sm text-[#0FED9D]">{progress}</p>
+        <p className="mb-4 text-sm text-ng-teal">{progress}</p>
       )}
 
       {/* Actions */}
@@ -209,7 +209,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
         <button
           onClick={handleUpload}
           disabled={uploading || !clipFile}
-          className="flex-1 rounded-lg bg-[#0FED9D] py-2 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+          className="flex-1 rounded-lg bg-marca py-2 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
         >
           {uploading ? "Subiendo..." : "Subir"}
         </button>

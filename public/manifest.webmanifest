@@ -1,13 +1,13 @@
 {
-  "name": "NG Creator Studio",
+  "name": "NG Creator",
   "short_name": "NG Creator",
   "description": "Crear, revisar y reciclar el contenido de tus fan pages",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#0B0F1A",
+  "theme_color": "#0B0F1A",
   "lang": "es",
   "icons": [
     {

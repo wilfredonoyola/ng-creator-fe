@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { cerrarSesion } from "@/lib/auth";
+import { LogoNG } from "./LogoNG";
 
 export function TopBar() {
   const router = useRouter();
@@ -13,15 +14,7 @@ export function TopBar() {
 
   return (
     <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
-      <div className="flex items-center gap-2">
-        <span
-          className="inline-block h-4 w-4 rounded-sm"
-          style={{ background: "#0FED9D" }}
-        />
-        <span className="text-sm font-medium tracking-wide">
-          NG VIDEO CREATOR
-        </span>
-      </div>
+      <LogoNG tamano={28} />
       <button
         onClick={salir}
         className="text-xs text-white/50 hover:text-white/80"

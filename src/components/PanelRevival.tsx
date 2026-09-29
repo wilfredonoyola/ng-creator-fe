@@ -110,10 +110,10 @@ export function PanelRevival({
           deja el comparador en una ventana chica, y comparar dos imágenes es
           justamente lo que se viene a hacer acá. */}
       <div
-        className="min-h-[100dvh] w-full max-w-4xl border-white/10 bg-[#0a0a0a] sm:min-h-0 sm:rounded-2xl sm:border"
+        className="min-h-[100dvh] w-full max-w-4xl border-white/10 bg-ng-fondo sm:min-h-0 sm:rounded-2xl sm:border"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-[#0a0a0a] px-4 py-3 sm:px-5 sm:py-4">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-ng-fondo px-4 py-3 sm:px-5 sm:py-4">
           <div>
             <h2 className="font-bold">Revivir publicación</h2>
             <p className="text-xs text-white/40">
@@ -187,7 +187,7 @@ export function PanelRevival({
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <button
                       onClick={copiarPrompt}
-                      className="rounded-lg bg-[#0FED9D] px-4 py-1.5 text-xs font-semibold text-black transition hover:brightness-110"
+                      className="rounded-lg bg-marca px-4 py-1.5 text-xs font-semibold text-white transition hover:brightness-110"
                     >
                       {copiado ? "✓ Copiado" : "Copiar prompt"}
                     </button>
@@ -231,12 +231,12 @@ export function PanelRevival({
                   value={mensaje}
                   onChange={(e) => setMensaje(e.target.value)}
                   rows={3}
-                  className="w-full rounded-lg border border-white/10 bg-black/40 p-3 text-sm text-white/80 outline-none focus:border-[#0FED9D]/40"
+                  className="w-full rounded-lg border border-white/10 bg-black/40 p-3 text-sm text-white/80 outline-none focus:border-ng-azul/40"
                   placeholder="Arranca con el texto del original; editalo a gusto."
                 />
               </div>
 
-              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 py-4 text-sm text-white/50 transition hover:border-[#0FED9D]/40 hover:text-white/80">
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 py-4 text-sm text-white/50 transition hover:border-ng-azul/40 hover:text-white/80">
                 <input
                   type="file"
                   accept="image/*"
@@ -305,7 +305,7 @@ export function PanelRevival({
                     onClick={() => setModo(valor)}
                     className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                       modo === valor
-                        ? "bg-[#0FED9D]/10 text-[#0FED9D]"
+                        ? "bg-ng-teal/10 text-ng-teal"
                         : "text-white/50 hover:bg-white/5 hover:text-white"
                     }`}
                   >
@@ -321,7 +321,7 @@ export function PanelRevival({
                     value={cuando}
                     min={minimoProgramable()}
                     onChange={(e) => setCuando(e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-black/40 p-2.5 text-sm text-white/80 outline-none focus:border-[#0FED9D]/40"
+                    className="w-full rounded-lg border border-white/10 bg-black/40 p-2.5 text-sm text-white/80 outline-none focus:border-ng-azul/40"
                   />
                   <p className="mt-1 text-[11px] text-white/25">
                     Facebook exige al menos 10 minutos de anticipación. La hora
@@ -347,7 +347,7 @@ export function PanelRevival({
                   publicando ||
                   (modo === "programar" && !cuando)
                 }
-                className="w-full rounded-lg bg-[#0FED9D] py-2.5 text-sm font-semibold text-black transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+                className="w-full rounded-lg bg-marca py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
               >
                 {publicando
                   ? modo === "programar"
@@ -393,7 +393,7 @@ export function PanelRevival({
                       publicarHistoria({ variables: { postId: post.postId } })
                     }
                     disabled={subiendoHistoria}
-                    className="rounded-lg border border-white/15 px-4 py-1.5 text-xs font-medium text-white/70 transition hover:border-[#0FED9D]/40 hover:text-[#0FED9D] disabled:opacity-40"
+                    className="rounded-lg border border-white/15 px-4 py-1.5 text-xs font-medium text-white/70 transition hover:border-ng-azul/40 hover:text-ng-celeste disabled:opacity-40"
                   >
                     {subiendoHistoria
                       ? "Subiendo…"

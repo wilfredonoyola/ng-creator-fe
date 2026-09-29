@@ -35,7 +35,7 @@ export interface EstiloClip {
 }
 
 /** Colores de los recuadros, uno por panel, como en la vista previa. */
-const COLORES = ["#0FED9D", "#A78BFA"];
+const COLORES = ["#60A5FA", "#A78BFA"];
 
 /**
  * El recorte de un clip, como se trabaja en los editores de video: el cuadro
@@ -392,7 +392,7 @@ export function EditorRecorte({
         <div className="mt-3 flex items-center gap-3">
           <button
             onClick={alternar}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0FED9D] text-black"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-marca text-white"
             title={sonando ? "Pausa" : "Reproducir"}
           >
             {sonando ? "❚❚" : "▶"}
@@ -613,7 +613,7 @@ function Pestanas<T extends string>({
           disabled={deshabilitado}
           onClick={() => o.valor !== valor && onCambio(o.valor)}
           className={`rounded-md px-2.5 py-1 text-xs transition ${
-            o.valor === valor ? "bg-[#0FED9D] font-medium text-black" : "text-white/60 hover:text-white"
+            o.valor === valor ? "bg-marca font-medium text-white" : "text-white/60 hover:text-white"
           }`}
         >
           {o.etiqueta}
@@ -713,17 +713,17 @@ function BarraDelTramo({
         </div>
         <div ref={barra} className="relative h-9 flex-1 touch-none select-none rounded-md bg-white/[0.06]">
           <div
-            className="absolute inset-y-0 rounded-md border-2 border-[#0FED9D] bg-[#0FED9D]/15"
+            className="absolute inset-y-0 rounded-md border-2 border-ng-azul bg-ng-teal/15"
             style={{ left: `${pct(desde)}%`, width: `${pct(hasta) - pct(desde)}%` }}
           >
             <div
               onPointerDown={(e) => arrastrar(e, "desde")}
-              className="absolute -left-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-[#0FED9D]"
+              className="absolute -left-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
               title="Arrastrá para mover el inicio"
             />
             <div
               onPointerDown={(e) => arrastrar(e, "hasta")}
-              className="absolute -right-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-[#0FED9D]"
+              className="absolute -right-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
               title="Arrastrá para mover el final"
             />
           </div>

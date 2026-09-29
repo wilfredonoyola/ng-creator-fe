@@ -47,7 +47,7 @@ export function disenosDeTexto(colorMarca: string) {
     {
       id: "limpio",
       nombre: "Limpio",
-      estilo: { fuente: "NUNITO", tamano: 72, color: "#FFFFFF", colorDestacado: "#0FED9D", efecto: "NINGUNO", colorEfecto: "#000000", mayusculas: false },
+      estilo: { fuente: "NUNITO", tamano: 72, color: "#FFFFFF", colorDestacado: "#14D8C4", efecto: "NINGUNO", colorEfecto: "#000000", mayusculas: false },
     },
   ] satisfies {
     id: string;
@@ -139,7 +139,7 @@ export function PanelTextos({
             key={i}
             onClick={() => onElegir(elegido === i ? null : i)}
             className={`max-w-[12rem] truncate rounded-lg border px-2.5 py-1 text-xs ${
-              elegido === i ? "border-[#0FED9D] text-white" : "border-white/15 text-white/60"
+              elegido === i ? "border-ng-azul text-white" : "border-white/15 text-white/60"
             }`}
           >
             {i + 1}. {tx.contenido || "(vacío)"}
@@ -160,7 +160,7 @@ export function PanelTextos({
                 key={d.id}
                 onClick={() => agregar(d)}
                 title={d.nombre}
-                className="flex h-16 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-[#1b1b1b] hover:border-white/30"
+                className="flex h-16 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-ng-elevada hover:border-white/30"
               >
                 <MuestraDiseno estilo={d.estilo} />
                 <span className="text-[10px] text-white/45">{d.nombre}</span>

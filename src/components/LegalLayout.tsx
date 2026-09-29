@@ -20,10 +20,10 @@ export function LegalLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white/80">
+    <div className="min-h-screen bg-ng-fondo text-white/80">
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0FED9D] text-sm font-bold text-black">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-marca text-sm font-bold text-white">
             NG
           </span>
           <div>
@@ -44,10 +44,10 @@ export function LegalLayout({
         <div className="mt-10 space-y-10 leading-relaxed">{children}</div>
 
         <footer className="mt-16 flex flex-wrap gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm">
-          <Link href="/privacidad" className="text-white/50 hover:text-[#0FED9D]">
+          <Link href="/privacidad" className="text-white/50 hover:text-ng-celeste">
             Política de privacidad
           </Link>
-          <Link href="/terminos" className="text-white/50 hover:text-[#0FED9D]">
+          <Link href="/terminos" className="text-white/50 hover:text-ng-celeste">
             Términos del servicio
           </Link>
         </footer>

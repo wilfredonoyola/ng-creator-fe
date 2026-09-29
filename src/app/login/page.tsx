@@ -1,5 +1,6 @@
 "use client";
 
+import { LogoNG } from "@/components/LogoNG";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { establecerPassword, iniciarSesion } from "@/lib/auth";
@@ -95,19 +96,25 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ng-hondo px-4">
+      {/* La luz azul/violeta detrás de la tarjeta: sutil, como pide la marca. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.22), rgba(139,92,246,0.10) 45%, transparent 70%)" }}
+      />
       <form
         onSubmit={sesionDesafio ? definir : entrar}
-        className="w-full max-w-sm rounded-2xl border border-white/10 bg-black/40 p-8"
+        className="relative w-full max-w-sm rounded-ng-xl border border-white/10 bg-ng-tarjeta/80 p-8 backdrop-blur"
       >
-        <div className="mb-6 flex items-center gap-2">
-          <span
-            className="inline-block h-4 w-4 rounded-sm"
-            style={{ background: "#0FED9D" }}
-          />
-          <span className="text-sm font-medium tracking-wide">
-            NG VIDEO CREATOR
-          </span>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <LogoNG tamano={56} soloIcono />
+          {!sesionDesafio && (
+            <>
+              <h1 className="mt-4 text-2xl font-bold tracking-tight">Bienvenido a NG Creator</h1>
+              <p className="mt-1 text-sm text-ng-secundario">Creá, colaborá y publicá más rápido.</p>
+            </>
+          )}
         </div>
 
         {sesionDesafio ? (
@@ -127,7 +134,7 @@ export default function LoginPage() {
               onChange={(e) => setNueva(e.target.value)}
               autoFocus
               autoComplete="new-password"
-              className="mb-3 w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm outline-none focus:border-[#0FED9D]"
+              className="mb-3 w-full rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul"
               required
             />
 
@@ -140,7 +147,7 @@ export default function LoginPage() {
                   <li
                     key={r.etiqueta}
                     className={`flex items-center gap-2 text-[11px] transition-colors ${
-                      ok ? "text-[#0FED9D]" : "text-white/35"
+                      ok ? "text-ng-teal" : "text-white/35"
                     }`}
                   >
                     <span className="w-3 shrink-0 text-center">
@@ -160,7 +167,7 @@ export default function LoginPage() {
               value={repetida}
               onChange={(e) => setRepetida(e.target.value)}
               autoComplete="new-password"
-              className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm outline-none focus:border-[#0FED9D]"
+              className="w-full rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul"
               required
             />
             <p className="mb-6 mt-1 h-4 text-[11px] text-white/35">
@@ -176,7 +183,7 @@ export default function LoginPage() {
               type="email"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
-              className="mb-4 w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm outline-none focus:border-[#0FED9D]"
+              className="mb-4 w-full rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul"
               placeholder="tu@correo.com"
               required
             />
@@ -188,7 +195,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mb-6 w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-sm outline-none focus:border-[#0FED9D]"
+              className="mb-6 w-full rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul"
               required
             />
           </>
@@ -201,8 +208,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={cargando || (!!sesionDesafio && !puedeGuardar)}
-          className="w-full rounded-lg py-2 text-sm font-medium text-black disabled:opacity-50"
-          style={{ background: "#0FED9D" }}
+          className="w-full rounded-ng-md bg-marca py-2.5 text-sm font-semibold text-white brillo-marca transition hover:brightness-110 disabled:opacity-50"
         >
           {cargando
             ? sesionDesafio
@@ -215,10 +221,10 @@ export default function LoginPage() {
 
         {/* Enlaces públicos: Meta espera encontrarlos accesibles sin sesión. */}
         <div className="mt-6 flex justify-center gap-4 border-t border-white/10 pt-4 text-xs">
-          <a href="/privacidad" className="text-white/40 hover:text-[#0FED9D]">
+          <a href="/privacidad" className="text-white/40 hover:text-ng-celeste">
             Privacidad
           </a>
-          <a href="/terminos" className="text-white/40 hover:text-[#0FED9D]">
+          <a href="/terminos" className="text-white/40 hover:text-ng-celeste">
             Términos
           </a>
         </div>

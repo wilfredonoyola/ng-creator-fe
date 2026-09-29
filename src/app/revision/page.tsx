@@ -210,7 +210,7 @@ export default function RevisionPage() {
           y usarlo acá haría desaparecer la lista cada 15 segundos. */}
       {primeraCarga ? (
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
         </div>
       ) : cola.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">

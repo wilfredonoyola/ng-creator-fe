@@ -185,7 +185,7 @@ export function PublicarEnFacebook({
           <span className="font-medium text-white/80">{activa.nombre}</span>
         </p>
         {publicadas.length > 0 && (
-          <span className="rounded bg-[#0FED9D]/15 px-2 py-0.5 text-[10px] font-medium text-[#0FED9D]">
+          <span className="rounded bg-ng-teal/15 px-2 py-0.5 text-[10px] font-medium text-ng-teal">
             {publicadas.length} publicada{publicadas.length !== 1 ? "s" : ""}
           </span>
         )}
@@ -208,13 +208,13 @@ export function PublicarEnFacebook({
               }
               className={`rounded-lg border px-2.5 py-2 text-left transition disabled:cursor-not-allowed disabled:opacity-35 ${
                 seleccionado
-                  ? "border-[#0FED9D]/50 bg-[#0FED9D]/10"
+                  ? "border-ng-azul/50 bg-ng-teal/10"
                   : "border-white/10 hover:bg-white/5"
               }`}
             >
               <span
                 className={`block text-xs font-medium ${
-                  seleccionado ? "text-[#0FED9D]" : "text-white/80"
+                  seleccionado ? "text-ng-teal" : "text-white/80"
                 }`}
               >
                 {f.label}
@@ -230,7 +230,7 @@ export function PublicarEnFacebook({
         onChange={(e) => setDescripcion(e.target.value)}
         placeholder="Descripción (opcional)"
         rows={2}
-        className="w-full rounded-lg border border-white/10 bg-black/40 p-2.5 text-xs outline-none placeholder:text-white/25 focus:border-[#0FED9D]/50"
+        className="w-full rounded-lg border border-white/10 bg-black/40 p-2.5 text-xs outline-none placeholder:text-white/25 focus:border-ng-azul/50"
       />
 
       {yaEnEsteFormato && (
@@ -260,7 +260,7 @@ export function PublicarEnFacebook({
                 value={fecha}
                 min={minimo}
                 onChange={(e) => setFecha(e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-2 text-xs outline-none focus:border-[#0FED9D]/50"
+                className="w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-2 text-xs outline-none focus:border-ng-azul/50"
               />
               {/* Quién tiene la hora cambia lo que hay que esperar de esto, y
                   no se puede prometer lo mismo en los dos casos. */}
@@ -317,7 +317,7 @@ const ICONO: Record<string, string> = {
 };
 
 const COLOR: Record<string, string> = {
-  PUBLICADA: "text-[#0FED9D]",
+  PUBLICADA: "text-ng-teal",
   FALLIDA: "text-red-400",
   CANCELADA: "text-white/30",
 };
@@ -460,7 +460,7 @@ function FilaPublicacion({
               value={nuevaHora}
               min={aInputLocal(new Date(Date.now() + MINUTOS_MINIMOS_COLA * 60_000))}
               onChange={(e) => setNuevaHora(e.target.value)}
-              className="rounded border border-white/10 bg-black/40 px-1.5 py-1 text-[11px] outline-none focus:border-[#0FED9D]/50"
+              className="rounded border border-white/10 bg-black/40 px-1.5 py-1 text-[11px] outline-none focus:border-ng-azul/50"
             />
             <button
               disabled={guardando || !nuevaHora}
@@ -475,7 +475,7 @@ function FilaPublicacion({
                   }),
                 )
               }
-              className="text-[#0FED9D] hover:underline disabled:opacity-50"
+              className="text-ng-teal hover:underline disabled:opacity-50"
             >
               {guardando ? "Guardando…" : "Guardar"}
             </button>
@@ -496,7 +496,7 @@ function FilaPublicacion({
           href={p.permalink}
           target="_blank"
           rel="noopener noreferrer"
-          className="shrink-0 text-[#0FED9D] hover:underline"
+          className="shrink-0 text-ng-teal hover:underline"
         >
           ver
         </a>

@@ -8,7 +8,7 @@ interface StatsCardProps {
   color?: string;
 }
 
-export function StatsCard({ icon, label, value, trend, color = "#0FED9D" }: StatsCardProps) {
+export function StatsCard({ icon, label, value, trend, color = "#3B82F6" }: StatsCardProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
       <div className="mb-4 flex items-center justify-between">
@@ -19,7 +19,7 @@ export function StatsCard({ icon, label, value, trend, color = "#0FED9D" }: Stat
           <span className="text-xl">{icon}</span>
         </div>
         {trend && (
-          <span className="text-xs text-[#0FED9D]">{trend}</span>
+          <span className="text-xs text-ng-teal">{trend}</span>
         )}
       </div>
       <p className="text-3xl font-bold" style={{ color }}>{value}</p>

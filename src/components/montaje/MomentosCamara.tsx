@@ -367,7 +367,7 @@ export function MomentosCamara({
                 >
                   <span
                     className={
-                      m.tipo === "PAUSA" ? "text-indigo-300" : "text-[#0FED9D]"
+                      m.tipo === "PAUSA" ? "text-indigo-300" : "text-ng-teal"
                     }
                   >
                     {m.tipo === "PAUSA" ? "⏸ Pausa" : "🔵 Aparición"}
@@ -453,7 +453,7 @@ export function MomentosCamara({
                             }}
                           />
                         )}
-                        <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 py-2 text-center text-white/50 transition hover:border-[#0FED9D]/50">
+                        <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 py-2 text-center text-white/50 transition hover:border-ng-azul/50">
                           <input
                             type="file"
                             accept="video/*"
@@ -548,7 +548,7 @@ export function MomentosCamara({
                       onClick={() => onCamara({ ...camara, posicion: valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         camara.posicion === valor
-                          ? "bg-[#0FED9D] text-black"
+                          ? "bg-marca text-white"
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
@@ -567,7 +567,7 @@ export function MomentosCamara({
                       onClick={() => onCamara({ ...camara, volumen: v.valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         Math.abs((camara.volumen ?? 1) - v.valor) < 0.05
-                          ? "bg-[#0FED9D] text-black"
+                          ? "bg-marca text-white"
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
@@ -584,7 +584,7 @@ export function MomentosCamara({
                       onClick={() => onCamara({ ...camara, suavizado: s.valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         Math.abs((camara.suavizado ?? 0) - s.valor) < 0.05
-                          ? "bg-[#0FED9D] text-black"
+                          ? "bg-marca text-white"
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
@@ -611,7 +611,7 @@ export function MomentosCamara({
                     onChange={(e) =>
                       onCamara({ ...camara, tamano: Number(e.target.value) })
                     }
-                    className="mt-1 w-full accent-[#0FED9D]"
+                    className="mt-1 w-full accent-ng-azul"
                   />
                 </label>
               </div>
@@ -637,7 +637,7 @@ export function MomentosCamara({
                 {enComputadora && (
                   <GrabarConTelefono marcaId={marcaId} onVideo={usarVideo} />
                 )}
-                <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-[#0FED9D]/50 hover:bg-white/5">
+                <label className="block cursor-pointer rounded-lg border border-dashed border-white/20 px-3 py-4 text-center transition hover:border-ng-azul/50 hover:bg-white/5">
                   <input
                     type="file"
                     accept="video/*"

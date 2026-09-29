@@ -47,7 +47,7 @@ export function ControlesTexto({
         onChange={(e) => onCambio({ ...texto, contenido: e.target.value })}
         rows={2}
         placeholder="Escribí el titular…"
-        className="w-full resize-none rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none transition focus:border-[#0FED9D]/50"
+        className="w-full resize-none rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none transition focus:border-ng-azul/50"
       />
 
       {palabras.length > 0 && (
@@ -89,7 +89,7 @@ export function ControlesTexto({
             onChange={(e) =>
               onCambio({ ...texto, tamano: Number(e.target.value) })
             }
-            className="w-24 accent-[#0FED9D]"
+            className="w-24 accent-ng-azul"
           />
           <span className="w-8 text-white/60">{texto.tamano}</span>
         </label>
@@ -105,7 +105,7 @@ export function ControlesTexto({
             onChange={(e) =>
               onCambio({ ...texto, centroY: Number(e.target.value) })
             }
-            className="w-24 accent-[#0FED9D]"
+            className="w-24 accent-ng-azul"
           />
         </label>
 

@@ -110,7 +110,7 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, vide
   // Show recorded audio
   if (hasRecording && audioUrl) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-[#0FED9D]/30 bg-[#0FED9D]/5 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-lg border border-ng-azul/30 bg-ng-teal/5 px-3 py-2">
         <span className="text-sm">🎙️</span>
         <audio src={audioUrl} controls className="h-8 flex-1" />
         <span className="text-xs text-white/40">{formatTime(duration)}</span>
@@ -145,7 +145,7 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, vide
   return (
     <button
       onClick={startRecording}
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-white/5 py-3 text-sm text-white/60 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/5 hover:text-[#0FED9D]"
+      className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-white/5 py-3 text-sm text-white/60 transition hover:border-ng-azul/50 hover:bg-ng-teal/5 hover:text-ng-celeste"
     >
       <span className="text-lg">🎙️</span>
       <span>Grabar nota de voz</span>

@@ -122,25 +122,25 @@ export default function PrivacidadPage() {
         </p>
         <ul className="ml-5 list-disc space-y-1.5">
           <li>
-            <code className="text-[13px] text-[#0FED9D]">pages_show_list</code> —
+            <code className="text-[13px] text-ng-teal">pages_show_list</code> —
             listar las páginas que administrás, para que puedas elegir cuáles
             habilitar como destino.
           </li>
           <li>
-            <code className="text-[13px] text-[#0FED9D]">
+            <code className="text-[13px] text-ng-teal">
               pages_read_engagement
             </code>{" "}
             — leer los datos básicos de esas páginas, como nombre, categoría e
             imagen.
           </li>
           <li>
-            <code className="text-[13px] text-[#0FED9D]">
+            <code className="text-[13px] text-ng-teal">
               pages_manage_posts
             </code>{" "}
             — publicar el contenido que apruebes, como reel, historia o imagen.
           </li>
           <li>
-            <code className="text-[13px] text-[#0FED9D]">read_insights</code> —
+            <code className="text-[13px] text-ng-teal">read_insights</code> —
             leer las estadísticas de las publicaciones de esas páginas (alcance e
             impresiones), para ordenar el historial por rendimiento y ver qué
             contenido funcionó mejor. Es opcional: si no lo concedés, todo lo

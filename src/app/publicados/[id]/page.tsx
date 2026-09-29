@@ -60,7 +60,7 @@ export default function DetalleVideoPage({
           </p>
           <Link
             href="/publicados"
-            className="mt-4 inline-block text-sm text-[#0FED9D] hover:underline"
+            className="mt-4 inline-block text-sm text-ng-teal hover:underline"
           >
             ← Volver a la lista
           </Link>

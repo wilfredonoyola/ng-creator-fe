@@ -280,12 +280,12 @@ function FormularioInvitar({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="persona@ejemplo.com"
           autoComplete="off"
-          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-[#0FED9D]/50"
+          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
         />
         <select
           value={rol}
           onChange={(e) => setRol(e.target.value as RolPagina)}
-          className="rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-[#0FED9D]/50"
+          className="rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
         >
           {ROLES.map((r) => (
             <option key={r} value={r} className="bg-[#111]">
@@ -296,7 +296,7 @@ function FormularioInvitar({
         <button
           type="submit"
           disabled={!email.trim() || invitando}
-          className="rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-40"
+          className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40"
         >
           {invitando ? "Enviando…" : "Invitar"}
         </button>
@@ -363,7 +363,7 @@ function FilaMiembro({
           value={miembro.rol}
           onChange={(e) => onCambiarRol(e.target.value as RolPagina)}
           title={ESTILO_ROL[miembro.rol].ayuda}
-          className="rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs outline-none transition focus:border-[#0FED9D]/50"
+          className="rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs outline-none transition focus:border-ng-azul/50"
         >
           {ROLES.map((r) => (
             <option key={r} value={r} className="bg-[#111]">
