@@ -147,7 +147,7 @@ export default function PublicadosPage() {
             <Link
               key={pub._id}
               href={`/publicados/${pub.expedienteId}`}
-              className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition hover:border-[#0FED9D]/40"
+              className="group overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition hover:border-ng-azul/40"
             >
               <div className="relative bg-black">
                 {/* La portada como imagen y no un <video>: la grilla no
@@ -166,7 +166,7 @@ export default function PublicadosPage() {
                   </div>
                 )}
 
-                <span className="pointer-events-none absolute left-1.5 top-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[11px] font-bold text-[#0FED9D]">
+                <span className="pointer-events-none absolute left-1.5 top-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[11px] font-bold text-ng-teal">
                   #{pub.expedienteNum}
                 </span>
 
@@ -175,7 +175,7 @@ export default function PublicadosPage() {
                     {publicados.get(pub.expedienteId)!.map((f) => (
                       <span
                         key={f}
-                        className="rounded bg-[#0FED9D] px-1.5 py-0.5 text-[10px] font-semibold text-black"
+                        className="rounded bg-marca px-1.5 py-0.5 text-[10px] font-semibold text-white"
                       >
                         {ETIQUETA_FORMATO[f] ?? f}
                       </span>
@@ -240,7 +240,7 @@ function Tab({
       onClick={onClick}
       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
         activa
-          ? "bg-[#0FED9D] text-black"
+          ? "bg-marca text-white"
           : "border border-white/10 text-white/60 hover:bg-white/5"
       }`}
     >

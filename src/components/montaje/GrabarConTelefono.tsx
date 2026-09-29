@@ -190,7 +190,7 @@ export function GrabarConTelefono({
         </p>
       ) : (
         <p className="mt-2 flex items-center justify-center gap-2 text-[11px] text-white/40">
-          <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
           Esperando la grabación…
         </p>
       )}

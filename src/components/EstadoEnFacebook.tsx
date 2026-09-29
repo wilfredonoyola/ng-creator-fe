@@ -64,7 +64,7 @@ export function EstadoEnFacebook({
       {formatos.map((f) => (
         <span
           key={f}
-          className="rounded-md bg-[#0FED9D] px-2 py-0.5 text-[10px] font-semibold text-black"
+          className="rounded-md bg-marca px-2 py-0.5 text-[10px] font-semibold text-white"
         >
           {ETIQUETA[f] ?? f}
         </span>

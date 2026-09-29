@@ -437,7 +437,7 @@ export default function EditorClipPage({
                     onClick={() => tocarPalabra(p)}
                     title={`${p.desde.toFixed(2)} s`}
                     className={`mr-1 rounded px-0.5 transition ${
-                      dentro ? "bg-[#0FED9D]/20 text-white" : "text-white/35"
+                      dentro ? "bg-ng-teal/20 text-white" : "text-white/35"
                     } hover:bg-white/20 ${corregida !== undefined ? "underline decoration-amber-400" : ""}`}
                   >
                     {corregida !== undefined ? corregida || "∅" : p.texto}

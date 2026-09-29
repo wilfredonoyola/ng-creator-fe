@@ -152,7 +152,7 @@ export default function DetalleEpisodioPage({
           <p className="mt-1 text-sm text-white/40">
             Puede ser de otra marca: revisá cuál tenés elegida.
           </p>
-          <Link href="/episodios" className="mt-4 inline-block text-sm text-[#0FED9D]">
+          <Link href="/episodios" className="mt-4 inline-block text-sm text-ng-teal">
             ← Volver a Episodios
           </Link>
         </div>
@@ -307,7 +307,7 @@ function TarjetaClip({
   return (
     <li
       className={`rounded-xl border p-3 transition ${
-        sonando ? "border-[#0FED9D]/60 bg-[#0FED9D]/[0.04]" : "border-white/10 bg-white/[0.03]"
+        sonando ? "border-ng-azul/60 bg-ng-teal/[0.04]" : "border-white/10 bg-white/[0.03]"
       }`}
     >
       <div className="flex items-start gap-3">
@@ -321,7 +321,7 @@ function TarjetaClip({
               {clip.origen === "MANUAL" ? "Hecho a mano" : (MOTIVOS[clip.motivo] ?? clip.motivo)}
             </span>
             {clip.estadoRender === "LISTO" && (
-              <span className="rounded-full bg-[#0FED9D]/15 px-2 py-0.5 text-[11px] text-[#0FED9D]">MP4 listo</span>
+              <span className="rounded-full bg-ng-teal/15 px-2 py-0.5 text-[11px] text-ng-teal">MP4 listo</span>
             )}
             {(clip.estadoRender === "EN_COLA" || clip.estadoRender === "RENDERIZANDO") && (
               <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">Renderizando</span>
@@ -357,7 +357,7 @@ function TarjetaClip({
           <button
             onClick={onReproducir}
             title="Reproducir este tramo"
-            className="shrink-0 rounded-lg bg-[#0FED9D] px-3 py-1.5 text-xs font-medium text-black"
+            className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-white"
           >
             ▶ Escuchar
           </button>

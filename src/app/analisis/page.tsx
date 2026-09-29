@@ -109,7 +109,7 @@ export default function AnalisisPage() {
             onClick={() => setDias(p.id)}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
               dias === p.id
-                ? "bg-[#0FED9D] text-black"
+                ? "bg-marca text-white"
                 : "border border-white/10 text-white/60 hover:bg-white/5"
             }`}
           >
@@ -148,8 +148,8 @@ export default function AnalisisPage() {
 
           {/* La conclusión antes que los gráficos: es lo que se viene a buscar. */}
           {(mejorHora || mejorDia) && (
-            <div className="rounded-2xl border border-[#0FED9D]/25 bg-[#0FED9D]/[0.04] p-5">
-              <h2 className="text-sm font-semibold text-[#0FED9D]">
+            <div className="rounded-2xl border border-ng-azul/25 bg-ng-teal/[0.04] p-5">
+              <h2 className="text-sm font-semibold text-ng-teal">
                 Lo que dice tu historial
               </h2>
               <ul className="mt-2 space-y-1 text-sm text-white/70">
@@ -316,7 +316,7 @@ function Cifra({
       {cambio != null && (
         <p
           className={`mt-0.5 text-xs ${
-            cambio >= 0 ? "text-[#0FED9D]" : "text-red-400"
+            cambio >= 0 ? "text-ng-teal" : "text-red-400"
           }`}
         >
           {cambio >= 0 ? "▲" : "▼"} {Math.abs(cambio).toFixed(0)}% vs período

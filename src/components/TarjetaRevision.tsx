@@ -74,8 +74,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
       <div>
         <div className="mb-2 flex items-center justify-between">
           <span
-            className="rounded px-2 py-0.5 text-xs font-bold text-black"
-            style={{ background: "#0FED9D" }}
+            className="rounded bg-marca px-2 py-0.5 text-xs font-bold text-white"
           >
             {exp.numero ? `EXPEDIENTE #${exp.numero}` : "SIN NUMERAR"}
           </span>
@@ -94,25 +93,25 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
         <div className="mb-3 space-y-1 rounded-lg border border-white/10 bg-black/40 p-3 text-sm">
           {exp.guion?.apertura && (
             <p>
-              <span style={{ color: "#0FED9D" }}>[hook] </span>
+              <span className="text-ng-teal">[hook] </span>
               {exp.guion.apertura}
             </p>
           )}
           {exp.guion?.detalle && (
             <p>
-              <span style={{ color: "#0FED9D" }}>[detalle] </span>
+              <span className="text-ng-teal">[detalle] </span>
               {exp.guion.detalle}
             </p>
           )}
           {exp.guion?.revelacion && (
             <p>
-              <span style={{ color: "#0FED9D" }}>[revelación] </span>
+              <span className="text-ng-teal">[revelación] </span>
               {exp.guion.revelacion}
             </p>
           )}
           {exp.guion?.cierre && (
             <p>
-              <span style={{ color: "#0FED9D" }}>[cierre] </span>
+              <span className="text-ng-teal">[cierre] </span>
               {exp.guion.cierre}
             </p>
           )}
@@ -123,7 +122,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
           <div className="mb-4 space-y-1">
             {exp.validacion.checksPasados.map((c) => (
               <div key={c} className="flex items-center gap-2 text-xs text-white/70">
-                <span style={{ color: "#0FED9D" }}>✓</span> {c}
+                <span className="text-ng-teal">✓</span> {c}
               </div>
             ))}
             {exp.validacion.fallas.map((f) => (
@@ -140,7 +139,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
             value={nota}
             onChange={(e) => setNota(e.target.value)}
             placeholder="El hook está flojo, hazlo más directo…"
-            className="mb-3 w-full rounded-lg border border-white/10 bg-black/50 p-2 text-sm outline-none focus:border-[#0FED9D]"
+            className="mb-3 w-full rounded-lg border border-white/10 bg-black/50 p-2 text-sm outline-none focus:border-ng-azul"
             rows={2}
           />
         )}
@@ -150,8 +149,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
           <button
             onClick={() => aprobar({ variables: { id: exp._id } })}
             disabled={aprobando}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
-            style={{ background: "#0FED9D" }}
+            className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-white brillo-marca disabled:opacity-50"
           >
             {aprobando ? "Publicando…" : "Aprobar y publicar"}
           </button>

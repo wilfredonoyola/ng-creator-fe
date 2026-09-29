@@ -113,7 +113,7 @@ export const ESTILO_ROL: Record<
 > = {
   PROPIETARIO: {
     etiqueta: "Propietario",
-    clase: "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]",
+    clase: "border-ng-azul/40 bg-ng-teal/10 text-ng-teal",
     ayuda:
       "Configura la página, la reconecta en Meta y decide quién más entra.",
   },

@@ -44,7 +44,7 @@ export function SelectorDeMarca() {
         {esAdmin ? (
           <Link
             href="/admin/facebook"
-            className="mt-0.5 inline-block text-xs font-medium text-[#0FED9D] hover:underline"
+            className="mt-0.5 inline-block text-xs font-medium text-ng-teal hover:underline"
           >
             Conectar Facebook →
           </Link>
@@ -92,7 +92,7 @@ export function SelectorDeMarca() {
                   setAbierto(false);
                 }}
                 className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition ${
-                  esActiva ? "bg-[#0FED9D]/10" : "hover:bg-white/5"
+                  esActiva ? "bg-ng-teal/10" : "hover:bg-white/5"
                 }`}
               >
                 <span
@@ -104,7 +104,7 @@ export function SelectorDeMarca() {
                 <span className="min-w-0 flex-1">
                   <span
                     className={`block truncate text-sm ${
-                      esActiva ? "font-medium text-[#0FED9D]" : "text-white/80"
+                      esActiva ? "font-medium text-ng-teal" : "text-white/80"
                     }`}
                   >
                     {m.nombre}
@@ -113,7 +113,7 @@ export function SelectorDeMarca() {
                     Espacio de trabajo propio
                   </span>
                 </span>
-                {esActiva && <span className="text-xs text-[#0FED9D]">✓</span>}
+                {esActiva && <span className="text-xs text-ng-teal">✓</span>}
               </button>
             );
           })}

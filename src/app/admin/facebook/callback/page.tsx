@@ -64,7 +64,7 @@ function Callback() {
         <p className="mt-2 break-words text-sm text-white/60">{error}</p>
         <button
           onClick={() => router.replace("/admin/facebook")}
-          className="mt-5 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90"
+          className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
         >
           Volver a intentar
         </button>
@@ -74,7 +74,7 @@ function Callback() {
 
   return (
     <div className="flex flex-col items-center justify-center py-24">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
       <p className="mt-4 text-sm text-white/60">Conectando con Facebook…</p>
       <p className="mt-1 text-xs text-white/35">
         Canjeando el código y trayendo tus páginas
@@ -90,7 +90,7 @@ export default function CallbackPage() {
       <Suspense
         fallback={
           <div className="flex justify-center py-24">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
           </div>
         }
       >

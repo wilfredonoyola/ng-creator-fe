@@ -51,7 +51,7 @@ export const ETIQUETA_ESTADO: Record<EstadoRevival, string> = {
 
 const COLOR_ESTADO: Record<EstadoRevival, string> = {
   NUEVO: "bg-white/10 text-white/50",
-  PARA_TRABAJAR: "bg-[#0FED9D]/15 text-[#0FED9D]",
+  PARA_TRABAJAR: "bg-ng-teal/15 text-ng-teal",
   EN_TRABAJO: "bg-amber-500/15 text-amber-300",
   EN_REVISION: "bg-sky-500/15 text-sky-300",
   PROGRAMADO: "bg-indigo-500/15 text-indigo-300",
@@ -145,7 +145,7 @@ export function TarjetaRevival({
         >
           {ETIQUETA_ESTADO[post.estado]}
         </span>
-        <span className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-bold text-[#0FED9D]">
+        <span className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-bold text-ng-teal">
           {numero(post.score)}
         </span>
 
@@ -162,7 +162,7 @@ export function TarjetaRevival({
             }
             className={`absolute bottom-2 left-2 rounded-md px-2 py-0.5 text-[10px] font-medium ${
               post.historiaPublicadaEn
-                ? "bg-black/70 text-[#0FED9D]"
+                ? "bg-black/70 text-ng-teal"
                 : "bg-amber-500/25 text-amber-200"
             }`}
           >
@@ -198,7 +198,7 @@ export function TarjetaRevival({
               href={post.permalink}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#0FED9D]"
+              className="hover:text-ng-celeste"
             >
               ver original
             </a>
@@ -223,7 +223,7 @@ export function TarjetaRevival({
           {ABRE_PANEL.includes(post.estado) ? (
             <button
               onClick={() => onAbrirPanel(post)}
-              className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-xs font-semibold text-black transition hover:brightness-110"
+              className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-white transition hover:brightness-110"
             >
               {TEXTO_PANEL[post.estado]}
             </button>
@@ -231,7 +231,7 @@ export function TarjetaRevival({
             <button
               onClick={() => onCambiarEstado(post.postId, siguiente.estado)}
               disabled={ocupado}
-              className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-xs font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
+              className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
             >
               {siguiente.texto}
             </button>

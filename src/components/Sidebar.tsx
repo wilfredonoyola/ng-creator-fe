@@ -1,21 +1,38 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import {
+  BarChart3,
+  Clapperboard,
+  Link2,
+  LayoutDashboard,
+  ListChecks,
+  Mic,
+  MonitorPlay,
+  Recycle,
+  Scissors,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { cerrarSesion } from "@/lib/auth";
+import { LogoNG } from "./LogoNG";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 
-const navItems = [
-  { href: "/", icon: "📊", label: "Dashboard" },
-  { href: "/crear", icon: "🎬", label: "Crear Video" },
-  { href: "/montaje", icon: "✂️", label: "Montaje" },
-  { href: "/episodios", icon: "🎙️", label: "Episodios" },
-  { href: "/revision", icon: "✅", label: "Revisión" },
-  { href: "/publicados", icon: "📺", label: "Publicados" },
-  { href: "/revival", icon: "♻️", label: "Revival" },
-  { href: "/analisis", icon: "📊", label: "Análisis" },
-  { href: "/creators", icon: "👤", label: "Creators" },
+// Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
+// sola familia de íconos, no emojis.
+const navItems: { href: string; icon: LucideIcon; label: string }[] = [
+  { href: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/crear", icon: Clapperboard, label: "Crear Video" },
+  { href: "/montaje", icon: Scissors, label: "Montaje" },
+  { href: "/episodios", icon: Mic, label: "Episodios" },
+  { href: "/revision", icon: ListChecks, label: "Revisión" },
+  { href: "/publicados", icon: MonitorPlay, label: "Publicados" },
+  { href: "/revival", icon: Recycle, label: "Revival" },
+  { href: "/analisis", icon: BarChart3, label: "Análisis" },
+  { href: "/creators", icon: UserRound, label: "Creators" },
 ];
 
 /**
@@ -23,9 +40,9 @@ const navItems = [
  * acceso a la página (adentro, quien no es propietario solo mira);
  * "Integraciones" es de ADMIN, porque es donde se suman cuentas nuevas.
  */
-const navEquipo = { href: "/admin/equipo", icon: "👥", label: "Equipo" };
+const navEquipo = { href: "/admin/equipo", icon: Users, label: "Equipo" };
 const navAdmin = [
-  { href: "/admin/facebook", icon: "🔗", label: "Integraciones" },
+  { href: "/admin/facebook", icon: Link2, label: "Integraciones" },
 ];
 
 /**
@@ -61,19 +78,15 @@ export function Sidebar({
 
   return (
     <aside
-      className={`fixed left-0 top-0 z-50 flex h-[100dvh] w-64 flex-col border-r border-white/10 bg-[#0a0a0a] transition-transform duration-200 lg:translate-x-0 ${
+      className={`fixed left-0 top-0 z-50 flex h-[100dvh] w-64 flex-col border-r border-white/10 bg-ng-fondo transition-transform duration-200 lg:translate-x-0 ${
         abierto ? "translate-x-0" : "-translate-x-full"
       }`}
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
       {/* Logo */}
       <div className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#0FED9D]">
-          <span className="text-lg font-bold text-black">NG</span>
-        </div>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-sm font-bold tracking-wide">NG VIDEO</h1>
-          <p className="truncate text-xs text-white/50">Creator Studio</p>
+          <LogoNG tamano={34} lema />
         </div>
         <button
           onClick={onCerrar}
@@ -162,12 +175,12 @@ export function Sidebar({
 }
 
 function BotonNav({
-  icon,
+  icon: Icono,
   label,
   activo,
   onClick,
 }: {
-  icon: string;
+  icon: LucideIcon;
   label: string;
   activo: boolean;
   onClick: () => void;
@@ -179,13 +192,13 @@ function BotonNav({
       // tocar, y 44px es el mínimo razonable.
       className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sm transition-all ${
         activo
-          ? "bg-[#0FED9D]/10 text-[#0FED9D]"
-          : "text-white/60 hover:bg-white/5 hover:text-white active:bg-white/10"
+          ? "bg-ng-azul/10 text-white"
+          : "text-ng-secundario hover:bg-white/5 hover:text-white active:bg-white/10"
       }`}
     >
-      <span className="text-lg">{icon}</span>
+      <Icono size={18} strokeWidth={1.8} className={activo ? "text-ng-celeste" : ""} aria-hidden />
       <span className="font-medium">{label}</span>
-      {activo && <div className="ml-auto h-2 w-2 rounded-full bg-[#0FED9D]" />}
+      {activo && <div className="ml-auto h-2 w-2 rounded-full bg-marca" />}
     </button>
   );
 }

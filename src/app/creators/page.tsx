@@ -260,7 +260,7 @@ export default function CreatorsPage() {
           </button>
           <button
             onClick={() => setShowCreatorModal(true)}
-            className="rounded-xl bg-[#0FED9D] px-4 py-2 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90"
+            className="rounded-xl bg-marca px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
           >
             + Creator
           </button>
@@ -270,7 +270,7 @@ export default function CreatorsPage() {
       {/* Stats */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
-          <p className="text-3xl font-bold text-[#0FED9D]">{creators.length}</p>
+          <p className="text-3xl font-bold text-ng-teal">{creators.length}</p>
           <p className="mt-1 text-sm text-white/50">Creators totales</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
@@ -290,7 +290,7 @@ export default function CreatorsPage() {
       {/* Content */}
       {loadingCreators || loadingLicenses ? (
         <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
         </div>
       ) : creators.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -303,7 +303,7 @@ export default function CreatorsPage() {
               >
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0FED9D]/20 text-xl">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ng-teal/20 text-xl">
                       👤
                     </div>
                     <div>
@@ -341,7 +341,7 @@ export default function CreatorsPage() {
                           <div className="flex items-center gap-2">
                             <span className="text-sm">{lic.scope}</span>
                             {evidences.length > 0 && (
-                              <span className="rounded bg-[#0FED9D]/20 px-1.5 py-0.5 text-xs text-[#0FED9D]">
+                              <span className="rounded bg-ng-teal/20 px-1.5 py-0.5 text-xs text-ng-teal">
                                 {evidences.length}
                               </span>
                             )}
@@ -460,7 +460,7 @@ export default function CreatorsPage() {
           </p>
           <button
             onClick={() => setShowCreatorModal(true)}
-            className="mt-4 rounded-xl bg-[#0FED9D] px-6 py-3 font-medium text-black transition hover:bg-[#0FED9D]/90"
+            className="mt-4 rounded-xl bg-marca px-6 py-3 font-medium text-white transition hover:brightness-110"
           >
             Crear Creator
           </button>
@@ -470,7 +470,7 @@ export default function CreatorsPage() {
       {/* Create Creator Modal */}
       {showCreatorModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-ng-fondo p-6">
             <h2 className="mb-6 text-xl font-bold">Nuevo Creator</h2>
 
             <div className="space-y-4">
@@ -481,7 +481,7 @@ export default function CreatorsPage() {
                   value={creatorName}
                   onChange={(e) => setCreatorName(e.target.value)}
                   placeholder="Nombre del creator"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
                 />
               </div>
               <div>
@@ -491,7 +491,7 @@ export default function CreatorsPage() {
                   value={creatorHandle}
                   onChange={(e) => setCreatorHandle(e.target.value)}
                   placeholder="@usuario (opcional)"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
                 />
               </div>
             </div>
@@ -506,7 +506,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleCreateCreator}
                 disabled={creandoCreator || !creatorName.trim()}
-                className="flex-1 rounded-xl bg-[#0FED9D] py-3 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 {creandoCreator ? "Creando..." : "Crear"}
               </button>
@@ -518,7 +518,7 @@ export default function CreatorsPage() {
       {/* Create License Modal */}
       {showLicenseModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-ng-fondo p-6">
             <h2 className="mb-6 text-xl font-bold">Nueva Licencia</h2>
 
             <div className="space-y-4">
@@ -527,7 +527,7 @@ export default function CreatorsPage() {
                 <select
                   value={selectedCreator}
                   onChange={(e) => setSelectedCreator(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-[#0FED9D]/50"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-ng-azul/50"
                 >
                   <option value="">Seleccionar creator</option>
                   {creators.map((c) => (
@@ -542,7 +542,7 @@ export default function CreatorsPage() {
                 <select
                   value={licenseScope}
                   onChange={(e) => setLicenseScope(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-[#0FED9D]/50"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-ng-azul/50"
                 >
                   <option value="">Seleccionar tipo</option>
                   <option value="PROPIO">Propio - Material nuestro</option>
@@ -562,7 +562,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleCreateLicense}
                 disabled={creandoLicense || !selectedCreator || !licenseScope.trim()}
-                className="flex-1 rounded-xl bg-[#0FED9D] py-3 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 {creandoLicense ? "Creando..." : "Crear"}
               </button>
@@ -574,7 +574,7 @@ export default function CreatorsPage() {
       {/* Add Message Modal */}
       {showMessageModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-ng-fondo p-6">
             <h2 className="mb-4 text-xl font-bold">Agregar Mensaje</h2>
             <p className="mb-4 text-sm text-white/50">
               Para: {showMessageModal.creator.nombre}
@@ -591,7 +591,7 @@ export default function CreatorsPage() {
                     onClick={() => handleTemplateSelect(t)}
                     className={`rounded-lg px-3 py-1.5 text-xs transition ${
                       selectedTemplate?.id === t.id
-                        ? "bg-[#0FED9D] text-black"
+                        ? "bg-marca text-white"
                         : "bg-white/10 text-white/70 hover:bg-white/20"
                     }`}
                   >
@@ -609,7 +609,7 @@ export default function CreatorsPage() {
                 onChange={(e) => setMessageText(e.target.value)}
                 rows={8}
                 placeholder="Escribe o selecciona un template..."
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
               />
             </div>
 
@@ -627,14 +627,14 @@ export default function CreatorsPage() {
               <button
                 onClick={handleCopyMessage}
                 disabled={!messageText.trim()}
-                className="rounded-xl border border-[#0FED9D]/50 px-4 py-3 font-medium text-[#0FED9D] transition hover:bg-[#0FED9D]/10 disabled:opacity-50"
+                className="rounded-xl border border-ng-azul/50 px-4 py-3 font-medium text-ng-teal transition hover:bg-ng-teal/10 disabled:opacity-50"
               >
                 Copiar
               </button>
               <button
                 onClick={handleSaveMessage}
                 disabled={agregandoEvidencia || !messageText.trim()}
-                className="flex-1 rounded-xl bg-[#0FED9D] py-3 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 {agregandoEvidencia ? "Guardando..." : "Guardar"}
               </button>
@@ -646,7 +646,7 @@ export default function CreatorsPage() {
       {/* Upload Screenshot Modal */}
       {showScreenshotModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-ng-fondo p-6">
             <h2 className="mb-6 text-xl font-bold">Subir Captura</h2>
 
             {/* File input */}
@@ -678,7 +678,7 @@ export default function CreatorsPage() {
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="mb-4 cursor-pointer rounded-xl border-2 border-dashed border-white/20 p-8 text-center transition hover:border-[#0FED9D]/50"
+                className="mb-4 cursor-pointer rounded-xl border-2 border-dashed border-white/20 p-8 text-center transition hover:border-ng-azul/50"
               >
                 <div className="mb-2 text-4xl opacity-50">📷</div>
                 <p className="text-sm text-white/50">
@@ -695,7 +695,7 @@ export default function CreatorsPage() {
                 value={screenshotNota}
                 onChange={(e) => setScreenshotNota(e.target.value)}
                 placeholder="Ej: Confirmación por DM"
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-[#0FED9D]/50"
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
               />
             </div>
 
@@ -714,7 +714,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleUploadScreenshot}
                 disabled={uploadingScreenshot || agregandoEvidencia || !screenshotFile}
-                className="flex-1 rounded-xl bg-[#0FED9D] py-3 font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 {uploadingScreenshot || agregandoEvidencia ? "Subiendo..." : "Subir"}
               </button>

@@ -713,12 +713,12 @@ export default function MontajePage() {
 
       <div className="pb-20 lg:pb-0">
       {montando && (
-        <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
+        <div className="mb-4 rounded-xl border border-ng-azul/30 bg-ng-teal/5 p-4">
           <div className="flex items-center justify-between text-sm">
             {/* Arriba del 95% ffmpeg ya termino y lo que queda es subir a
                 Bunny, que son varias decenas de megas y no reporta avance.
                 Decirlo evita que el ultimo tramo se lea como un cuelgue. */}
-            <span className="font-medium text-[#0FED9D]">
+            <span className="font-medium text-ng-teal">
               {/* Esperando turno no es lo mismo que armandose: con la cola, un
                   0% quieto es normal, y decir "componiendo" lo haria parecer
                   colgado justo cuando todo esta bien. */}
@@ -737,7 +737,7 @@ export default function MontajePage() {
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
             <div
-              className="h-full rounded-full bg-[#0FED9D] transition-all duration-500"
+              className="h-full rounded-full bg-marca transition-all duration-500"
               style={{ width: `${Math.max(2, trabajo?.progreso ?? 0)}%` }}
             />
           </div>
@@ -751,8 +751,8 @@ export default function MontajePage() {
       {activa && <ColaRenders marcaId={activa._id} excluir={trabajo?._id} />}
 
       {trabajo?.estado === "LISTO" && (
-        <div className="mb-4 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
-          <p className="text-sm text-[#0FED9D]">Video generado.</p>
+        <div className="mb-4 rounded-xl border border-ng-azul/30 bg-ng-teal/5 p-4">
+          <p className="text-sm text-ng-teal">Video generado.</p>
           <Link
             href="/revision"
             className="mt-1 inline-block text-xs text-white/60 underline hover:text-white"
@@ -770,12 +770,12 @@ export default function MontajePage() {
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://www.tiktok.com/@usuario/video/..."
 
-          className="min-w-0 flex-1 disabled:opacity-40 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-[#0FED9D]/50"
+          className="min-w-0 flex-1 disabled:opacity-40 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
         />
         <button
           onClick={cargar}
           disabled={cargando || !url.trim()}
-          className="rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-medium text-black transition hover:brightness-110 disabled:opacity-40"
+          className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40"
         >
           {cargando ? "Descargando…" : "Cargar video"}
         </button>
@@ -840,7 +840,7 @@ export default function MontajePage() {
                       onClick={() => setPaso(x.n)}
                       aria-label={x.titulo}
                       className={`h-1 flex-1 rounded-full transition ${
-                        x.n <= paso ? "bg-[#0FED9D]" : "bg-white/15"
+                        x.n <= paso ? "bg-marca" : "bg-white/15"
                       }`}
                     />
                   ))}
@@ -1043,13 +1043,13 @@ export default function MontajePage() {
                       onClick={() => aplicarFormato(f.id)}
                       className={`rounded-xl border p-3 text-left transition ${
                         formatoElegido === f.id
-                          ? "border-[#0FED9D]/60 bg-[#0FED9D]/10"
+                          ? "border-ng-azul/60 bg-ng-teal/10"
                           : "border-white/10 hover:border-white/25 hover:bg-white/5"
                       }`}
                     >
                       <span
                         className={`block text-xs font-semibold ${
-                          formatoElegido === f.id ? "text-[#0FED9D]" : "text-white/80"
+                          formatoElegido === f.id ? "text-ng-teal" : "text-white/80"
                         }`}
                       >
                         {f.nombre}
@@ -1082,7 +1082,7 @@ export default function MontajePage() {
                           },
                         })
                       }
-                      className="mt-0.5 h-4 w-4 shrink-0 accent-[#0FED9D]"
+                      className="mt-0.5 h-4 w-4 shrink-0 accent-ng-azul"
                     />
                     <span>
                       <span className="block text-xs font-medium text-white/80">
@@ -1284,7 +1284,7 @@ export default function MontajePage() {
                 lienzo 9:16 daba 533px y el preview terminaba siendo lo mas alto
                 de la pantalla, justo lo que se venia a achicar. */}
             <div
-              className="mx-auto w-full lg:static lg:bg-transparent lg:py-0 sticky top-0 z-20 bg-[#0a0a0a] py-2"
+              className="mx-auto w-full lg:static lg:bg-transparent lg:py-0 sticky top-0 z-20 bg-ng-fondo py-2"
               style={{
                 // El preview heredaba el tope de alto del editor —400px— y en
                 // 9:16 eso lo dejaba en 225 de ancho: una miniatura para juzgar
@@ -1332,7 +1332,7 @@ export default function MontajePage() {
                 aria-label={sonido ? "Silenciar" : "Activar el sonido"}
                 className={`rounded-lg border px-3 py-2 text-xs transition ${
                   sonido
-                    ? "border-[#0FED9D]/40 bg-[#0FED9D]/10 text-[#0FED9D]"
+                    ? "border-ng-azul/40 bg-ng-teal/10 text-ng-teal"
                     : "border-white/10 text-white/60 hover:bg-white/5"
                 }`}
               >
@@ -1346,7 +1346,7 @@ export default function MontajePage() {
           <button
             onClick={generar}
             disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
-            className="rounded-lg bg-[#0FED9D] px-6 py-3 text-sm font-semibold text-black transition hover:brightness-110 disabled:opacity-40"
+            className="rounded-lg bg-marca px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
           >
             {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar video"}
           </button>
@@ -1401,7 +1401,7 @@ export default function MontajePage() {
           subir a comprobarla antes de generar. */}
       {fuente && (
         <div
-          className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-white/10 bg-[#0a0a0a]/95 px-4 py-3 backdrop-blur lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-3 border-t border-white/10 bg-ng-fondo/95 px-4 py-3 backdrop-blur lg:hidden"
           style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
         >
           <div className="min-w-0 flex-1 text-[11px] leading-tight">
@@ -1415,7 +1415,7 @@ export default function MontajePage() {
           <button
             onClick={generar}
             disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
-            className="shrink-0 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black transition disabled:opacity-40"
+            className="shrink-0 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-white transition disabled:opacity-40"
           >
             {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar"}
           </button>
@@ -1448,7 +1448,7 @@ export default function MontajePage() {
             <select
               value={licenciaId}
               onChange={(e) => setLicenciaId(e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#0FED9D]/50"
+              className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-ng-azul/50"
             >
               <option value="">Sin verificar (no pedí permiso)</option>
               {licencias.map((l) => (
@@ -1465,7 +1465,7 @@ export default function MontajePage() {
                   Se registra una licencia marcada{" "}
                   <span className="text-amber-400/70">sin verificar</span> con el
                   link de origen guardado. Podés regularizarla después desde{" "}
-                  <Link href="/creators" className="text-[#0FED9D] hover:underline">
+                  <Link href="/creators" className="text-ng-teal hover:underline">
                     Creators
                   </Link>
                   .
@@ -1611,7 +1611,7 @@ function Chip({
       onClick={onClick}
       className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
         activo
-          ? "bg-[#0FED9D] text-black"
+          ? "bg-marca text-white"
           : "border border-white/10 text-white/60 hover:bg-white/5"
       }`}
     >
@@ -1650,7 +1650,7 @@ function Deslizador({
         step={paso}
         value={valor}
         onChange={(e) => onCambio(Number(e.target.value))}
-        className="mt-1 w-full accent-[#0FED9D]"
+        className="mt-1 w-full accent-ng-azul"
       />
     </label>
   );

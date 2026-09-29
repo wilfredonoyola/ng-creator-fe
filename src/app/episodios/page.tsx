@@ -61,7 +61,7 @@ interface SubidaActiva {
 const ESTILO_ESTADO: Record<EstadoEpisodio, { etiqueta: string; clase: string }> = {
   SUBIENDO: { etiqueta: "A medio subir", clase: "bg-amber-500/15 text-amber-300" },
   PROCESANDO: { etiqueta: "Procesando en Bunny", clase: "bg-sky-500/15 text-sky-300" },
-  LISTO: { etiqueta: "Listo para transcribir", clase: "bg-[#0FED9D]/15 text-[#0FED9D]" },
+  LISTO: { etiqueta: "Listo para transcribir", clase: "bg-ng-teal/15 text-ng-teal" },
   FALLIDO: { etiqueta: "Falló", clase: "bg-red-500/15 text-red-400" },
 };
 
@@ -85,12 +85,12 @@ function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
         case "LISTO":
           return {
             etiqueta: `${ep.clipsSugeridos ?? 0} clips sugeridos`,
-            clase: "bg-[#0FED9D]/15 text-[#0FED9D]",
+            clase: "bg-ng-teal/15 text-ng-teal",
           };
         case "FALLIDO":
           return { etiqueta: "Falló la búsqueda de clips", clase: "bg-red-500/15 text-red-400" };
         default:
-          return { etiqueta: "Transcrito", clase: "bg-[#0FED9D]/15 text-[#0FED9D]" };
+          return { etiqueta: "Transcrito", clase: "bg-ng-teal/15 text-ng-teal" };
       }
     case "FALLIDA":
       return { etiqueta: "Falló la transcripción", clase: "bg-red-500/15 text-red-400" };
@@ -325,7 +325,7 @@ export default function EpisodiosPage() {
               ) : (
                 <button
                   onClick={() => input.current?.click()}
-                  className="w-full rounded-xl border-2 border-dashed border-white/20 py-10 text-sm text-white/60 transition hover:border-[#0FED9D]/60 hover:text-white"
+                  className="w-full rounded-xl border-2 border-dashed border-white/20 py-10 text-sm text-white/60 transition hover:border-ng-azul/60 hover:text-white"
                 >
                   <span className="block text-3xl">🎙️</span>
                   <span className="mt-2 block font-medium">Subir un episodio</span>
@@ -336,7 +336,7 @@ export default function EpisodiosPage() {
               )}
 
               {subida?.estado === "terminada" && (
-                <p className="mt-3 text-sm text-[#0FED9D]">
+                <p className="mt-3 text-sm text-ng-teal">
                   “{subida.nombre}” subido. Bunny lo está procesando; en unos
                   minutos aparece con su duración.
                 </p>
@@ -347,7 +347,7 @@ export default function EpisodiosPage() {
 
           {loading && !data ? (
             <div className="flex justify-center py-16">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
             </div>
           ) : episodios.length === 0 ? (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-white/50">
@@ -406,7 +406,7 @@ function PanelSubida({
       <div className="h-2 overflow-hidden rounded-full bg-white/10">
         <div
           className={`h-full transition-[width] duration-500 ${
-            frenada ? "bg-amber-400" : "bg-[#0FED9D]"
+            frenada ? "bg-amber-400" : "bg-marca"
           }`}
           style={{ width: `${pct}%` }}
         />
@@ -423,7 +423,7 @@ function PanelSubida({
         {frenada ? (
           <button
             onClick={onReanudar}
-            className="rounded-lg bg-[#0FED9D] px-3 py-1.5 font-medium text-black"
+            className="rounded-lg bg-marca px-3 py-1.5 font-medium text-white"
           >
             Reanudar
           </button>
@@ -484,7 +484,7 @@ function FilaEpisodio({
         {ep.estado === "LISTO" ? (
           <Link
             href={`/episodios/${ep._id}`}
-            className="block truncate font-medium hover:text-[#0FED9D]"
+            className="block truncate font-medium hover:text-ng-celeste"
           >
             {ep.titulo}
           </Link>
@@ -519,7 +519,7 @@ function FilaEpisodio({
       {botonTranscribir && onTranscribir && (
         <button
           onClick={onTranscribir}
-          className="shrink-0 rounded-lg bg-[#0FED9D] px-3 py-1.5 text-xs font-medium text-black"
+          className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-white"
         >
           {botonTranscribir}
         </button>

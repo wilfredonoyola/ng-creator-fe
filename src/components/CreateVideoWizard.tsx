@@ -184,9 +184,9 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               <div
                 className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-all ${
                   isComplete
-                    ? "bg-[#0FED9D] text-black"
+                    ? "bg-marca text-white"
                     : isActive
-                    ? "bg-[#0FED9D]/20 text-[#0FED9D] ring-2 ring-[#0FED9D]"
+                    ? "bg-ng-teal/20 text-ng-teal ring-2 ring-ng-azul"
                     : "bg-white/10 text-white/40"
                 }`}
               >
@@ -195,7 +195,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               {i < 3 && (
                 <div
                   className={`h-0.5 w-8 transition-all ${
-                    isComplete ? "bg-[#0FED9D]" : "bg-white/10"
+                    isComplete ? "bg-marca" : "bg-white/10"
                   }`}
                 />
               )}
@@ -217,7 +217,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                   inputMode === "file"
-                    ? "bg-[#0FED9D] text-black"
+                    ? "bg-marca text-white"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -231,7 +231,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                   inputMode === "link"
-                    ? "bg-[#0FED9D] text-black"
+                    ? "bg-marca text-white"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -270,7 +270,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               ) : (
                 <button
                   onClick={() => clipInputRef.current?.click()}
-                  className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/5"
+                  className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 transition hover:border-ng-azul/50 hover:bg-ng-teal/5"
                 >
                   <div className="mb-1 text-3xl opacity-50">📁</div>
                   <p className="text-sm font-medium">Arrastra o selecciona video</p>
@@ -307,14 +307,14 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 {/* Loading state */}
                 {loadingPreview && (
                   <div className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-6">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
                     <span className="text-xs text-white/50">Obteniendo preview...</span>
                   </div>
                 )}
 
                 {/* Preview */}
                 {tiktokPreview && !loadingPreview && (
-                  <div className="rounded-lg border border-[#0FED9D]/30 bg-black/50 overflow-hidden">
+                  <div className="rounded-lg border border-ng-azul/30 bg-black/50 overflow-hidden">
                     {/* Video player or thumbnail */}
                     {tiktokPreview.videoUrl ? (
                       <video
@@ -340,7 +340,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                     )}
                     {/* Info */}
                     <div className="p-3">
-                      <p className="text-sm font-medium text-[#0FED9D]">@{tiktokPreview.author}</p>
+                      <p className="text-sm font-medium text-ng-teal">@{tiktokPreview.author}</p>
                       <p className="mt-0.5 line-clamp-2 text-xs text-white/60">{tiktokPreview.title}</p>
                     </div>
                   </div>
@@ -366,7 +366,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             <button
               onClick={() => setStep("config")}
               disabled={!hasClipSource}
-              className="w-full rounded-lg bg-[#0FED9D] py-3 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+              className="w-full rounded-lg bg-marca py-3 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
             >
               Continuar →
             </button>
@@ -388,7 +388,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 <select
                   value={selectedLicense}
                   onChange={(e) => setSelectedLicense(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-[#0FED9D]/50"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-ng-azul/50"
                 >
                   <option value="">Seleccionar licencia</option>
                   {licenses.map((license) => (
@@ -402,7 +402,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                   <p className="text-xs text-white/40">No hay licencias activas.</p>
                   <Link
                     href="/creators"
-                    className="text-xs text-[#0FED9D] hover:underline"
+                    className="text-xs text-ng-teal hover:underline"
                   >
                     Crear una →
                   </Link>
@@ -456,7 +456,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                     onClick={() => setTipoDeValor(t.value)}
                     className={`rounded-lg border py-2 text-xs transition ${
                       tipoDeValor === t.value
-                        ? "border-[#0FED9D] bg-[#0FED9D]/10 text-[#0FED9D]"
+                        ? "border-ng-azul bg-ng-teal/10 text-ng-teal"
                         : "border-white/10 text-white/60 hover:border-white/20"
                     }`}
                   >
@@ -481,7 +481,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                     ? "No hay página activa: habilitá una en Administrar páginas"
                     : undefined
                 }
-                className="flex-1 rounded-lg bg-[#0FED9D] py-2.5 text-sm font-medium text-black transition hover:bg-[#0FED9D]/90 disabled:opacity-50"
+                className="flex-1 rounded-lg bg-marca py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
               >
                 Crear 🚀
               </button>
@@ -491,8 +491,8 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
         {step === "processing" && (
           <div className="space-y-4 py-6 text-center">
-            <div className="mx-auto h-14 w-14 animate-pulse rounded-full bg-[#0FED9D]/20 p-3">
-              <div className="flex h-full w-full items-center justify-center rounded-full bg-[#0FED9D]/30">
+            <div className="mx-auto h-14 w-14 animate-pulse rounded-full bg-ng-teal/20 p-3">
+              <div className="flex h-full w-full items-center justify-center rounded-full bg-ng-teal/30">
                 <span className="text-xl">⚡</span>
               </div>
             </div>
@@ -504,7 +504,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             </div>
             <div className="mx-auto h-1.5 w-48 overflow-hidden rounded-full bg-white/10">
               <div
-                className="h-full rounded-full bg-[#0FED9D] transition-all duration-500"
+                className="h-full rounded-full bg-marca transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -513,11 +513,11 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
         {step === "done" && (
           <div className="space-y-4 py-6 text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#0FED9D]/20">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-ng-teal/20">
               <span className="text-2xl">✓</span>
             </div>
             <div>
-              <h2 className="font-bold text-[#0FED9D]">¡Video creado!</h2>
+              <h2 className="font-bold text-ng-teal">¡Video creado!</h2>
               <p className="mt-0.5 text-xs text-white/50">
                 Aparecerá en la cola de revisión
               </p>

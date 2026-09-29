@@ -43,7 +43,7 @@ export default function DashboardPage() {
           icon="📹"
           label="En revisión"
           value={cola.length}
-          color="#0FED9D"
+          color="#3B82F6"
         />
         <StatsCard
           icon="📺"
@@ -71,13 +71,13 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Link
             href="/crear"
-            className="flex items-center gap-4 rounded-2xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-5 transition hover:border-[#0FED9D]/50 hover:bg-[#0FED9D]/10"
+            className="flex items-center gap-4 rounded-2xl border border-ng-azul/30 bg-ng-teal/5 p-5 transition hover:border-ng-azul/50 hover:bg-ng-teal/10"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0FED9D]/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-ng-teal/20">
               <span className="text-2xl">🎬</span>
             </div>
             <div>
-              <p className="font-medium text-[#0FED9D]">Crear Video</p>
+              <p className="font-medium text-ng-teal">Crear Video</p>
               <p className="text-sm text-white/40">Sube un clip y genera contenido</p>
             </div>
           </Link>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           {cola.length > 3 && (
             <Link
               href="/revision"
-              className="text-sm text-[#0FED9D] hover:underline"
+              className="text-sm text-ng-teal hover:underline"
             >
               Ver todos ({cola.length}) →
             </Link>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
             </p>
             <Link
               href="/crear"
-              className="mt-4 inline-block rounded-xl bg-[#0FED9D] px-6 py-3 font-medium text-black transition hover:bg-[#0FED9D]/90"
+              className="mt-4 inline-block rounded-xl bg-marca px-6 py-3 font-medium text-white transition hover:brightness-110"
             >
               Crear Video
             </Link>

@@ -288,7 +288,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   if (!montado) {
     return (
       <Marco>
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
       </Marco>
     );
   }
@@ -305,7 +305,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             login no se guardaba nunca. */}
         <a
           href={`/login?volverA=${encodeURIComponent(`/grabar/${id}`)}`}
-          className="mt-4 inline-block rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black"
+          className="mt-4 inline-block rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-white"
         >
           Iniciar sesión
         </a>
@@ -317,7 +317,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     return (
       <Marco>
         <div className="text-5xl">✓</div>
-        <p className="mt-3 text-lg font-semibold text-[#0FED9D]">Video enviado</p>
+        <p className="mt-3 text-lg font-semibold text-ng-teal">Video enviado</p>
         <p className="mt-1 text-sm text-white/50">
           Seguí en la computadora: ya te aparece cargado.
         </p>
@@ -334,7 +334,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   if (sesion.tipo === "verificando") {
     return (
       <Marco>
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#0FED9D] border-t-transparent" />
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
         <p className="mt-3 text-xs text-white/40">Verificando el código…</p>
       </Marco>
     );
@@ -348,7 +348,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         {sesion.reintentable && (
           <button
             onClick={() => setIntento((n) => n + 1)}
-            className="mt-5 rounded-lg bg-[#0FED9D] px-5 py-2.5 text-sm font-semibold text-black"
+            className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-white"
           >
             Reintentar
           </button>
@@ -363,7 +363,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
        notch y los botones de abajo —los únicos que se tocan— quedaban tapados
        por la barra de home del iPhone. */
     <main
-      className="flex min-h-[100dvh] flex-col bg-[#0a0a0a] px-4"
+      className="flex min-h-[100dvh] flex-col bg-ng-fondo px-4"
       style={{
         paddingTop: "max(1.5rem, env(safe-area-inset-top))",
         paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
@@ -380,7 +380,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           video. Encuadrar sobre un rectángulo y descubrir después que el
           círculo te cortó la frente es el error que esto evita. */}
       <div className="relative mx-auto mt-6 w-full max-w-[300px]">
-        <div className="relative aspect-square overflow-hidden rounded-full border-2 border-[#0FED9D]/60 bg-black">
+        <div className="relative aspect-square overflow-hidden rounded-full border-2 border-ng-azul/60 bg-black">
           {estado === "revisando" && grabado ? (
             /* Sin `controls`: la barra nativa vive abajo del video y el recorte
                circular le come las puntas, asi que quedaba media barra inutil.
@@ -422,7 +422,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               aria-label="Reproducir la toma"
               className="absolute inset-0 flex items-center justify-center bg-black/30"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0FED9D] text-xl text-black">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-marca text-xl text-white">
                 ▶
               </span>
             </button>
@@ -453,7 +453,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           <>
             <button
               onClick={empezar}
-              className="w-full rounded-xl bg-[#0FED9D] py-4 text-base font-semibold text-black"
+              className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-white"
             >
               ● Grabar acá
             </button>
@@ -491,7 +491,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             )}
             <button
               onClick={enviar}
-              className="w-full rounded-xl bg-[#0FED9D] py-4 text-base font-semibold text-black"
+              className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-white"
             >
               Usar esta
             </button>
@@ -521,7 +521,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
                 colgado. */}
             <div className="h-2 overflow-hidden rounded-full bg-white/10">
               <div
-                className="h-full rounded-full bg-[#0FED9D] transition-all duration-300"
+                className="h-full rounded-full bg-marca transition-all duration-300"
                 style={{ width: `${Math.max(avance, 2)}%` }}
               />
             </div>
@@ -601,7 +601,7 @@ function elegirFormato(): MediaRecorderOptions {
 function Marco({ children }: { children: React.ReactNode }) {
   return (
     <main
-      className="flex min-h-[100dvh] flex-col items-center justify-center bg-[#0a0a0a] px-6 text-center"
+      className="flex min-h-[100dvh] flex-col items-center justify-center bg-ng-fondo px-6 text-center"
       style={{
         paddingTop: "env(safe-area-inset-top)",
         paddingBottom: "env(safe-area-inset-bottom)",

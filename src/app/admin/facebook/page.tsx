@@ -309,7 +309,7 @@ FACEBOOK_TOKEN_KEY=`}
                 onChange={(e) => setIdManual(e.target.value)}
                 placeholder="1887745564803724"
                 inputMode="numeric"
-                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-xs outline-none focus:border-[#0FED9D]/50"
+                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-xs outline-none focus:border-ng-azul/50"
               />
               <button
                 onClick={() =>
@@ -331,8 +331,8 @@ FACEBOOK_TOKEN_KEY=`}
       </Paso>
 
       {habilitadas > 0 && (
-        <div className="mt-6 rounded-xl border border-[#0FED9D]/30 bg-[#0FED9D]/5 p-4">
-          <p className="text-sm text-[#0FED9D]">
+        <div className="mt-6 rounded-xl border border-ng-azul/30 bg-ng-teal/5 p-4">
+          <p className="text-sm text-ng-teal">
             Listo: {habilitadas} página{habilitadas !== 1 ? "s" : ""} habilitada
             {habilitadas !== 1 ? "s" : ""}.
           </p>
@@ -367,7 +367,7 @@ function Paso({
         deshabilitado
           ? "border-white/5 bg-white/[0.02] opacity-50"
           : completo
-            ? "border-[#0FED9D]/25 bg-[#0FED9D]/[0.03]"
+            ? "border-ng-azul/25 bg-ng-teal/[0.03]"
             : "border-white/10 bg-white/5"
       }`}
     >
@@ -375,7 +375,7 @@ function Paso({
         <span
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
             completo
-              ? "bg-[#0FED9D] text-black"
+              ? "bg-marca text-white"
               : "border border-white/20 text-white/50"
           }`}
         >
@@ -458,7 +458,7 @@ function FilaPagina({
         }
         className={`rounded-lg px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
           pagina.activa
-            ? "bg-[#0FED9D] text-black hover:bg-[#0FED9D]/90"
+            ? "bg-marca text-white hover:brightness-110"
             : "border border-white/15 text-white/60 hover:bg-white/5"
         }`}
       >
