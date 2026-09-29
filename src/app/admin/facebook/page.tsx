@@ -1,5 +1,6 @@
 "use client";
 
+import { FotoMarca } from "@/components/FotoMarca";
 import { useState } from "react";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { uploadLogoPagina } from "@/lib/upload";
@@ -415,14 +416,7 @@ function FilaPagina({
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-3">
-      {pagina.fotoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={pagina.fotoUrl} alt="" className="h-9 w-9 rounded-full object-cover" />
-      ) : (
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-sm font-bold">
-          {pagina.nombre[0]?.toUpperCase()}
-        </span>
-      )}
+      <FotoMarca nombre={pagina.nombre} pageId={pagina.pageId} fotoUrl={pagina.fotoUrl} className="h-9 w-9" />
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{pagina.nombre}</p>

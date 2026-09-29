@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FotoMarca } from "./FotoMarca";
 import Link from "next/link";
 import { colorDeMarca, useMarcaActiva, type Marca } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
@@ -133,22 +134,14 @@ export function SelectorDeMarca() {
   );
 }
 
-/** La foto de su página de Facebook, que es la que se veía antes de las marcas. */
+/** El logo de la marca, o la foto de su página de Facebook. */
 function Avatar({ marca }: { marca: Marca | null }) {
-  const foto = marca?.paginaFacebook?.fotoUrl;
-  if (foto) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={foto}
-        alt=""
-        className="h-7 w-7 shrink-0 rounded-full object-cover"
-      />
-    );
-  }
   return (
-    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-xs font-bold">
-      {marca?.nombre?.[0]?.toUpperCase() ?? "?"}
-    </span>
+    <FotoMarca
+      nombre={marca?.nombre}
+      logoUrl={marca?.logoUrl}
+      pageId={marca?.paginaFacebook?.pageId}
+      fotoUrl={marca?.paginaFacebook?.fotoUrl}
+    />
   );
 }
