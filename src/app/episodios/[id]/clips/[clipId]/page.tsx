@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
   ACTUALIZAR_CLIP_EPISODIO,
@@ -20,6 +20,7 @@ import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 import type { DisenoClip, Encuadre, FormatoClip, Region, Texto } from "@/lib/clip-encuadre";
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
+import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
 
 interface Palabra {
   texto: string;
@@ -145,14 +146,16 @@ export default function EditorClipPage({
   }, [clip, b, estilo]);
 
   // Guardado automático, medio segundo después del último cambio.
-  const primera = useRef(true);
-  useEffect(() => {
-    if (!b || !marcaId || !opera) return;
-    if (primera.current) {
-      primera.current = false;
-      return;
-    }
-    const t = setTimeout(async () => {
+  //
+  // El guardado vive en una función aparte para poder forzarlo: "Procesar
+  // video" guarda lo pendiente ANTES de pedir el render. Sin eso, un cambio
+  // hecho medio segundo antes de tocar el botón salía del render sin estar.
+  const [sinGuardar, setSinGuardar] = useState(false);
+  const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const ultimo = useRef<Borrador | null>(null);
+  const guardar = useCallback(
+    async (borrador: Borrador) => {
+      if (!marcaId) return;
       setGuardando(true);
       setError(null);
       try {
@@ -161,32 +164,61 @@ export default function EditorClipPage({
             id: clipId,
             marcaId,
             input: {
-              desdeSeg: b.desdeSeg,
-              hastaSeg: b.hastaSeg,
-              titulo: b.titulo,
-              formato: b.formato,
-              encuadre: b.encuadre,
-              diseno: b.diseno,
-              posiciones: b.posiciones,
-              subtitulosActivos: b.subtitulosActivos,
-              correcciones: b.correcciones,
-              gancho: b.gancho,
+              desdeSeg: borrador.desdeSeg,
+              hastaSeg: borrador.hastaSeg,
+              titulo: borrador.titulo,
+              formato: borrador.formato,
+              encuadre: borrador.encuadre,
+              diseno: borrador.diseno,
+              posiciones: borrador.posiciones,
+              subtitulosActivos: borrador.subtitulosActivos,
+              correcciones: borrador.correcciones,
+              gancho: borrador.gancho,
               // Los textos reemplazan al gancho viejo: si no, borrar todos los
               // textos haría reaparecer el gancho en el render.
               ganchoActivo: false,
-              ganchoSeg: b.ganchoSeg,
-              textos: b.textos.map((t) => ({ ...t, hastaSeg: t.hastaSeg ?? null })),
+              ganchoSeg: borrador.ganchoSeg,
+              textos: borrador.textos.map((t) => ({ ...t, hastaSeg: t.hastaSeg ?? null })),
             },
           },
         });
+        if (ultimo.current === borrador) setSinGuardar(false);
       } catch (e) {
         setError(e instanceof Error ? e.message : "No se pudo guardar");
+        throw e;
       } finally {
         setGuardando(false);
       }
+    },
+    [marcaId, clipId, actualizar],
+  );
+
+  const primera = useRef(true);
+  useEffect(() => {
+    if (!b || !marcaId || !opera) return;
+    if (primera.current) {
+      primera.current = false;
+      return;
+    }
+    ultimo.current = b;
+    setSinGuardar(true);
+    temporizador.current = setTimeout(() => {
+      temporizador.current = null;
+      void guardar(b).catch(() => undefined);
     }, 500);
-    return () => clearTimeout(t);
-  }, [b, marcaId, opera, clipId, actualizar]);
+    return () => {
+      if (temporizador.current) clearTimeout(temporizador.current);
+    };
+  }, [b, marcaId, opera, guardar]);
+
+  /** Guarda ya lo que esté pendiente, sin esperar el medio segundo. */
+  async function guardarAhora() {
+    if (temporizador.current) {
+      clearTimeout(temporizador.current);
+      temporizador.current = null;
+    }
+    if (sinGuardar && ultimo.current) await guardar(ultimo.current);
+  }
 
   // La transcripción alrededor del clip. Se vuelve a pedir cuando el tramo se
   // corre fuera de la ventana que ya se tiene.
@@ -298,9 +330,10 @@ export default function EditorClipPage({
     if (!marcaId) return;
     setError(null);
     try {
+      await guardarAhora();
       await renderizar({ variables: { id: clipId, marcaId } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo pedir el render");
+      setError(e instanceof Error ? e.message : "No se pudo procesar el video");
     }
   }
 
@@ -319,9 +352,7 @@ export default function EditorClipPage({
           disabled={!opera}
           className="min-w-0 flex-1 bg-transparent text-2xl font-bold outline-none focus:underline"
         />
-        <span className="text-xs text-white/40">
-          {guardando ? "Guardando…" : error ? "" : "Guardado"}
-        </span>
+        <EstadoGuardado guardando={guardando} sinGuardar={sinGuardar} error={Boolean(error)} />
       </div>
       {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
 
@@ -347,51 +378,25 @@ export default function EditorClipPage({
           onCambiarFormato={(formato) => cambiar({ formato })}
           onCambiarDiseno={cambiarDiseno}
           debajoDeLaVista={
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-sm">
-                  {estadoRender === "LISTO" && <span className="text-[#0FED9D]">MP4 listo</span>}
-                  {estadoRender === "EN_COLA" && <span className="text-sky-300">En la fila de renders…</span>}
-                  {estadoRender === "RENDERIZANDO" && (
-                    <span className="text-sky-300">Renderizando · {clip.progresoRender ?? 0}%</span>
-                  )}
-                  {estadoRender === "FALLIDO" && <span className="text-red-400">El render falló</span>}
-                  {!estadoRender && <span className="text-white/50">Todavía no se renderizó</span>}
-                </div>
-                {opera && (
-                  <button
-                    onClick={() => void pedirRender()}
-                    disabled={renderEnCurso || pidiendoRender || guardando}
-                    className="rounded-lg bg-[#0FED9D] px-3 py-1.5 text-sm font-medium text-black disabled:opacity-50"
-                  >
-                    {estadoRender === "LISTO" ? "Renderizar de nuevo" : "Renderizar MP4"}
-                  </button>
-                )}
-              </div>
-              {estadoRender === "FALLIDO" && clip.errorRender && (
-                <p className="mt-2 text-xs text-red-400">{clip.errorRender}</p>
-              )}
-              {estadoRender === "LISTO" && clip.urlVideo && (
-                <div className="mt-3 space-y-2">
-                  {clip.editadoEn &&
-                    clip.renderizadoEn &&
-                    new Date(clip.editadoEn) > new Date(clip.renderizadoEn) && (
-                      <p className="text-xs text-amber-300">
-                        Cambiaste el clip después del último render: el MP4 no tiene esos cambios.
-                      </p>
-                    )}
-                  <video
-                    src={clip.urlVideo}
-                    poster={clip.urlPoster ?? undefined}
-                    controls
-                    className="max-h-[50vh] w-full rounded-lg bg-black"
-                  />
-                  <a href={clip.urlVideo} target="_blank" rel="noreferrer" className="text-xs text-[#0FED9D]">
-                    Abrir el MP4
-                  </a>
-                </div>
-              )}
-            </div>
+            <PanelExportar
+              titulo={b.titulo}
+              estado={estadoRender ?? null}
+              progreso={clip.progresoRender ?? 0}
+              error={clip.errorRender}
+              urlVideo={clip.urlVideo}
+              urlPoster={clip.urlPoster}
+              // Hay cambios que el MP4 no tiene: sin guardar todavía, o
+              // guardados después del último render.
+              desactualizado={
+                estadoRender === "LISTO" &&
+                (sinGuardar ||
+                  Boolean(clip.editadoEn && clip.renderizadoEn && new Date(clip.editadoEn) > new Date(clip.renderizadoEn)))
+              }
+              guardando={guardando || sinGuardar}
+              pidiendo={pidiendoRender}
+              puedeProcesar={opera}
+              onProcesar={() => void pedirRender()}
+            />
           }
         />
       ) : (
