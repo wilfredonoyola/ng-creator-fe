@@ -12,13 +12,13 @@ import {
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import {
-  VistaPreviaClip,
+  EditorRecorte,
   type EstiloClip,
   type LineaSubtitulo,
-} from "@/components/episodios/VistaPreviaClip";
+} from "@/components/episodios/EditorRecorte";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import { ZOOM_MAXIMO, type Encuadre, type FormatoClip } from "@/lib/clip-encuadre";
+import type { DisenoClip, Encuadre, FormatoClip, Region } from "@/lib/clip-encuadre";
 
 interface Palabra {
   texto: string;
@@ -32,12 +32,19 @@ interface Borrador {
   titulo: string;
   formato: FormatoClip;
   encuadre: Encuadre;
+  diseno: DisenoClip;
+  posiciones: { desdeSeg: number; regiones: Region[] }[];
   subtitulosActivos: boolean;
   correcciones: { desde: number; texto: string }[];
   gancho: string;
   ganchoActivo: boolean;
   ganchoSeg: number;
 }
+
+const DISENOS: { valor: DisenoClip; etiqueta: string; detalle: string }[] = [
+  { valor: "UNO", etiqueta: "Un recuadro", detalle: "una persona o el plano" },
+  { valor: "DIVIDIDO", etiqueta: "Dividido", detalle: "dos recuadros, uno encima del otro" },
+];
 
 const FORMATOS: { valor: FormatoClip; etiqueta: string; para: string }[] = [
   { valor: "VERTICAL", etiqueta: "9:16", para: "Reels, TikTok, Shorts" },
@@ -104,6 +111,11 @@ export default function EditorClipPage({
         centroY: clip.encuadre.centroY,
         zoom: clip.encuadre.zoom,
       },
+      diseno: clip.diseno,
+      posiciones: clip.posiciones.map((p: { desdeSeg: number; regiones: Region[] }) => ({
+        desdeSeg: p.desdeSeg,
+        regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
+      })),
       subtitulosActivos: clip.subtitulosActivos,
       correcciones: clip.correcciones.map((c: { desde: number; texto: string }) => ({
         desde: c.desde,
@@ -137,6 +149,8 @@ export default function EditorClipPage({
               titulo: b.titulo,
               formato: b.formato,
               encuadre: b.encuadre,
+              diseno: b.diseno,
+              posiciones: b.posiciones,
               subtitulosActivos: b.subtitulosActivos,
               correcciones: b.correcciones,
               gancho: b.gancho,
@@ -259,69 +273,73 @@ export default function EditorClipPage({
       </div>
       {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        {/* ---- Vista previa y render ---- */}
-        <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          {ep.urlReproduccion && (
-            <VistaPreviaClip
-              url={ep.urlReproduccion}
-              desde={b.desdeSeg}
-              hasta={b.hastaSeg}
-              formato={b.formato}
-              encuadre={b.encuadre}
-              lineas={lineas}
-              gancho={{ texto: b.gancho, activo: b.ganchoActivo, seg: b.ganchoSeg }}
-              estilo={estilo}
-            />
-          )}
-
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="text-sm">
-                {estadoRender === "LISTO" && <span className="text-[#0FED9D]">MP4 listo</span>}
-                {estadoRender === "EN_COLA" && <span className="text-sky-300">En la fila de renders…</span>}
-                {estadoRender === "RENDERIZANDO" && (
-                  <span className="text-sky-300">Renderizando · {clip.progresoRender ?? 0}%</span>
+      {ep.urlReproduccion ? (
+        <EditorRecorte
+          url={ep.urlReproduccion}
+          desde={b.desdeSeg}
+          hasta={b.hastaSeg}
+          formato={b.formato}
+          diseno={b.diseno}
+          encuadre={b.encuadre}
+          posicionesGuardadas={b.posiciones}
+          onCambiarPosiciones={(posiciones) => cambiar({ posiciones })}
+          lineas={lineas}
+          gancho={{ texto: b.gancho, activo: b.ganchoActivo, seg: b.ganchoSeg }}
+          estilo={estilo}
+          puedeEditar={opera}
+          debajoDeLaVista={
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="text-sm">
+                  {estadoRender === "LISTO" && <span className="text-[#0FED9D]">MP4 listo</span>}
+                  {estadoRender === "EN_COLA" && <span className="text-sky-300">En la fila de renders…</span>}
+                  {estadoRender === "RENDERIZANDO" && (
+                    <span className="text-sky-300">Renderizando · {clip.progresoRender ?? 0}%</span>
+                  )}
+                  {estadoRender === "FALLIDO" && <span className="text-red-400">El render falló</span>}
+                  {!estadoRender && <span className="text-white/50">Todavía no se renderizó</span>}
+                </div>
+                {opera && (
+                  <button
+                    onClick={() => void pedirRender()}
+                    disabled={renderEnCurso || pidiendoRender || guardando}
+                    className="rounded-lg bg-[#0FED9D] px-3 py-1.5 text-sm font-medium text-black disabled:opacity-50"
+                  >
+                    {estadoRender === "LISTO" ? "Renderizar de nuevo" : "Renderizar MP4"}
+                  </button>
                 )}
-                {estadoRender === "FALLIDO" && <span className="text-red-400">El render falló</span>}
-                {!estadoRender && <span className="text-white/50">Todavía no se renderizó</span>}
               </div>
-              {opera && (
-                <button
-                  onClick={() => void pedirRender()}
-                  disabled={renderEnCurso || pidiendoRender || guardando}
-                  className="rounded-lg bg-[#0FED9D] px-3 py-1.5 text-sm font-medium text-black disabled:opacity-50"
-                >
-                  {estadoRender === "LISTO" ? "Renderizar de nuevo" : "Renderizar MP4"}
-                </button>
+              {estadoRender === "FALLIDO" && clip.errorRender && (
+                <p className="mt-2 text-xs text-red-400">{clip.errorRender}</p>
+              )}
+              {estadoRender === "LISTO" && clip.urlVideo && (
+                <div className="mt-3 space-y-2">
+                  {clip.editadoEn &&
+                    clip.renderizadoEn &&
+                    new Date(clip.editadoEn) > new Date(clip.renderizadoEn) && (
+                      <p className="text-xs text-amber-300">
+                        Cambiaste el clip después del último render: el MP4 no tiene esos cambios.
+                      </p>
+                    )}
+                  <video
+                    src={clip.urlVideo}
+                    poster={clip.urlPoster ?? undefined}
+                    controls
+                    className="max-h-[50vh] w-full rounded-lg bg-black"
+                  />
+                  <a href={clip.urlVideo} target="_blank" rel="noreferrer" className="text-xs text-[#0FED9D]">
+                    Abrir el MP4
+                  </a>
+                </div>
               )}
             </div>
-            {estadoRender === "FALLIDO" && clip.errorRender && (
-              <p className="mt-2 text-xs text-red-400">{clip.errorRender}</p>
-            )}
-            {estadoRender === "LISTO" && clip.urlVideo && (
-              <div className="mt-3 space-y-2">
-                {clip.editadoEn &&
-                  clip.renderizadoEn &&
-                  new Date(clip.editadoEn) > new Date(clip.renderizadoEn) && (
-                    <p className="text-xs text-amber-300">
-                      Cambiaste el clip después del último render: el MP4 no tiene esos cambios.
-                    </p>
-                  )}
-                <video
-                  src={clip.urlVideo}
-                  poster={clip.urlPoster ?? undefined}
-                  controls
-                  className="max-h-[50vh] w-full rounded-lg bg-black"
-                />
-                <a href={clip.urlVideo} target="_blank" rel="noreferrer" className="text-xs text-[#0FED9D]">
-                  Abrir el MP4
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
+          }
+        />
+      ) : (
+        <p className="text-sm text-white/50">El video todavía no está listo en Bunny.</p>
+      )}
 
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {/* ---- Controles ---- */}
         <div className="space-y-5">
           <Seccion titulo="Tramo">
@@ -387,8 +405,10 @@ export default function EditorClipPage({
             </div>
             <p className="mt-2 text-xs text-white/45">Dura {duracion.toFixed(2)} s</p>
           </Seccion>
+        </div>
 
-          <Seccion titulo="Formato y encuadre">
+        <div className="space-y-5">
+          <Seccion titulo="Formato y diseño">
             <div className="mb-3 flex flex-wrap gap-2">
               {FORMATOS.map((f) => (
                 <button
@@ -403,32 +423,29 @@ export default function EditorClipPage({
                 </button>
               ))}
             </div>
-            <Deslizador
-              etiqueta="Izquierda ↔ derecha"
-              valor={b.encuadre.centroX}
-              min={0}
-              max={1}
-              onCambio={(v) => cambiar({ encuadre: { ...b.encuadre, centroX: v } })}
-              disabled={!opera}
-            />
-            <Deslizador
-              etiqueta="Arriba ↕ abajo"
-              valor={b.encuadre.centroY}
-              min={0}
-              max={1}
-              onCambio={(v) => cambiar({ encuadre: { ...b.encuadre, centroY: v } })}
-              disabled={!opera}
-            />
-            <Deslizador
-              etiqueta={`Zoom ${b.encuadre.zoom.toFixed(2)}×`}
-              valor={b.encuadre.zoom}
-              min={1}
-              max={ZOOM_MAXIMO}
-              onCambio={(v) => cambiar({ encuadre: { ...b.encuadre, zoom: v } })}
-              disabled={!opera}
-            />
-            <p className="mt-1 text-xs text-white/40">
-              El encuadre es fijo durante todo el clip. Que siga solo a quien habla viene después.
+            <p className="mb-2 mt-1 text-xs text-white/50">Diseño</p>
+            <div className="flex flex-wrap gap-2">
+              {DISENOS.map((d) => (
+                <button
+                  key={d.valor}
+                  onClick={() => {
+                    if (d.valor === b.diseno) return;
+                    // Otro diseño tiene otra cantidad de recuadros: se arranca de cero.
+                    if (b.posiciones.length > 1 && !window.confirm("Cambiar el diseño borra los cambios de encuadre. ¿Seguir?")) return;
+                    cambiar({ diseno: d.valor, posiciones: [] });
+                  }}
+                  disabled={!opera}
+                  className={`rounded-lg px-3 py-1.5 text-left text-xs ${
+                    b.diseno === d.valor ? "bg-white text-black" : "border border-white/15 text-white/70"
+                  }`}
+                >
+                  <span className="font-semibold">{d.etiqueta}</span> · {d.detalle}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-white/40">
+              El encuadre se mueve arriba, arrastrando los recuadros. Para cambiarlo a mitad del
+              clip: “+ Cambiar encuadre aquí”.
             </p>
           </Seccion>
 

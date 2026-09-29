@@ -1301,6 +1301,16 @@ const CAMPOS_CLIP_EDITOR = gql`
       centroY
       zoom
     }
+    diseno
+    posiciones {
+      desdeSeg
+      regiones {
+        x
+        y
+        ancho
+        alto
+      }
+    }
     subtitulosActivos
     correcciones {
       desde
