@@ -1319,6 +1319,22 @@ const CAMPOS_CLIP_EDITOR = gql`
     gancho
     ganchoActivo
     ganchoSeg
+    textos {
+      contenido
+      destacadas
+      fuente
+      tamano
+      color
+      colorDestacado
+      efecto
+      colorEfecto
+      mayusculas
+      centroX
+      centroY
+      ancho
+      desdeSeg
+      hastaSeg
+    }
     estadoRender
     progresoRender
     errorRender

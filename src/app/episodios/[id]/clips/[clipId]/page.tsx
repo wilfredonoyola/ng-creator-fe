@@ -18,7 +18,8 @@ import {
 } from "@/components/episodios/EditorRecorte";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import type { DisenoClip, Encuadre, FormatoClip, Region } from "@/lib/clip-encuadre";
+import type { DisenoClip, Encuadre, FormatoClip, Region, Texto } from "@/lib/clip-encuadre";
+import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
 
 interface Palabra {
   texto: string;
@@ -39,6 +40,7 @@ interface Borrador {
   gancho: string;
   ganchoActivo: boolean;
   ganchoSeg: number;
+  textos: Texto[];
 }
 
 /** Cuánto contexto se muestra alrededor del clip en la transcripción. */
@@ -85,11 +87,36 @@ export default function EditorClipPage({
   const [error, setError] = useState<string | null>(null);
   const [modo, setModo] = useState<"inicio" | "fin" | "corregir">("inicio");
   const [corrigiendo, setCorrigiendo] = useState<Palabra | null>(null);
+  const [textoElegido, setTextoElegido] = useState<number | null>(null);
 
   // El borrador arranca del clip UNA vez. Después manda lo que se edita acá:
   // pisarlo con cada respuesta del servidor borraría lo que se está tipeando.
   useEffect(() => {
-    if (!clip || b) return;
+    if (!clip || b || !estilo) return;
+    const textos: Texto[] = (clip.textos ?? []).map((t: Texto) => ({
+      contenido: t.contenido,
+      destacadas: [...t.destacadas],
+      fuente: t.fuente,
+      tamano: t.tamano,
+      color: t.color,
+      colorDestacado: t.colorDestacado,
+      efecto: t.efecto,
+      colorEfecto: t.colorEfecto,
+      mayusculas: t.mayusculas,
+      centroX: t.centroX,
+      centroY: t.centroY,
+      ancho: t.ancho,
+      desdeSeg: t.desdeSeg,
+      hastaSeg: t.hastaSeg ?? null,
+    }));
+    // El gancho de la primera versión pasa a ser el primer texto, con el
+    // diseño "Impacto": desde acá, todo texto sobre el clip es uno de estos.
+    if (!textos.length && clip.ganchoActivo && clip.gancho?.trim()) {
+      textos.push({
+        ...textoNuevo(disenosDeTexto(estilo.colorResaltado)[0].estilo, clip.gancho.trim(), 0.15),
+        hastaSeg: clip.ganchoSeg ?? 3,
+      });
+    }
     setB({
       desdeSeg: clip.desdeSeg,
       hastaSeg: clip.hastaSeg,
@@ -113,8 +140,9 @@ export default function EditorClipPage({
       gancho: clip.gancho ?? "",
       ganchoActivo: clip.ganchoActivo,
       ganchoSeg: clip.ganchoSeg,
+      textos,
     });
-  }, [clip, b]);
+  }, [clip, b, estilo]);
 
   // Guardado automático, medio segundo después del último cambio.
   const primera = useRef(true);
@@ -143,8 +171,11 @@ export default function EditorClipPage({
               subtitulosActivos: b.subtitulosActivos,
               correcciones: b.correcciones,
               gancho: b.gancho,
-              ganchoActivo: b.ganchoActivo,
+              // Los textos reemplazan al gancho viejo: si no, borrar todos los
+              // textos haría reaparecer el gancho en el render.
+              ganchoActivo: false,
               ganchoSeg: b.ganchoSeg,
+              textos: b.textos.map((t) => ({ ...t, hastaSeg: t.hastaSeg ?? null })),
             },
           },
         });
@@ -305,7 +336,10 @@ export default function EditorClipPage({
           posicionesGuardadas={b.posiciones}
           onCambiarPosiciones={(posiciones) => cambiar({ posiciones })}
           lineas={lineas}
-          gancho={{ texto: b.gancho, activo: b.ganchoActivo, seg: b.ganchoSeg }}
+          textos={b.textos}
+          onCambiarTextos={(textos) => cambiar({ textos })}
+          textoElegido={textoElegido}
+          onElegirTexto={setTextoElegido}
           estilo={estilo}
           puedeEditar={opera}
           duracionEpisodio={ep.duracionSeg ?? 0}
@@ -451,32 +485,15 @@ export default function EditorClipPage({
             </p>
           </Seccion>
 
-          <Seccion titulo="Gancho">
-            <label className="mb-2 flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={b.ganchoActivo}
-                onChange={(e) => cambiar({ ganchoActivo: e.target.checked })}
-                disabled={!opera}
-              />
-              Texto en pantalla al principio
-            </label>
-            <input
-              value={b.gancho}
-              onChange={(e) => cambiar({ gancho: e.target.value })}
-              placeholder="Lo que tiene que leer quien pasa deslizando"
-              maxLength={140}
-              disabled={!opera}
-              className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm"
-            />
-            <Deslizador
-              etiqueta={`Dura ${b.ganchoSeg.toFixed(1)} s`}
-              valor={b.ganchoSeg}
-              min={0.5}
-              max={10}
-              paso={0.5}
-              onCambio={(v) => cambiar({ ganchoSeg: v })}
-              disabled={!opera}
+          <Seccion titulo="Textos">
+            <PanelTextos
+              textos={b.textos}
+              onCambiar={(textos) => cambiar({ textos })}
+              elegido={textoElegido}
+              onElegir={setTextoElegido}
+              duracion={duracion}
+              colorMarca={estilo.colorResaltado}
+              deshabilitado={!opera}
             />
           </Seccion>
         </div>
@@ -531,40 +548,6 @@ function AjusteFino({
         </button>
       </div>
     </div>
-  );
-}
-
-function Deslizador({
-  etiqueta,
-  valor,
-  min,
-  max,
-  paso = 0.01,
-  onCambio,
-  disabled,
-}: {
-  etiqueta: string;
-  valor: number;
-  min: number;
-  max: number;
-  paso?: number;
-  onCambio: (v: number) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <label className="mt-2 block text-xs text-white/60">
-      {etiqueta}
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={paso}
-        value={valor}
-        disabled={disabled}
-        onChange={(e) => onCambio(parseFloat(e.target.value))}
-        className="mt-1 block w-full"
-      />
-    </label>
   );
 }
 
