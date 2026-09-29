@@ -1145,6 +1145,11 @@ const CAMPOS_EPISODIO = gql`
     urlReproduccion
     urlOriginal
     error
+    estadoTranscripcion
+    progresoTranscripcion
+    errorTranscripcion
+    palabrasTranscritas
+    costoTranscripcionUsd
     createdAt
     subidoPor {
       nombre
@@ -1206,6 +1211,19 @@ export const CONFIRMAR_SUBIDA_EPISODIO = gql`
   ${CAMPOS_EPISODIO}
   mutation ConfirmarSubidaEpisodio($id: ID!, $marcaId: String!) {
     confirmarSubidaEpisodio(id: $id, marcaId: $marcaId) {
+      ...CamposEpisodio
+    }
+  }
+`;
+
+/**
+ * Pone el episodio a transcribir, o reintenta una transcripción fallida. Los
+ * nuevos entran solos a la fila al quedar listos en Bunny (ng-creator-be#67).
+ */
+export const TRANSCRIBIR_EPISODIO = gql`
+  ${CAMPOS_EPISODIO}
+  mutation TranscribirEpisodio($id: ID!, $marcaId: String!) {
+    transcribirEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposEpisodio
     }
   }
