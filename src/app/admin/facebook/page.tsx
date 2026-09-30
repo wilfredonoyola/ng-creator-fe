@@ -6,6 +6,7 @@ import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { uploadLogoPagina } from "@/lib/upload";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { CanalesYoutube } from "@/components/CanalesYoutube";
+import { CuentasTiktok } from "@/components/CuentasTiktok";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import {
@@ -346,6 +347,7 @@ FACEBOOK_TOKEN_KEY=`}
       )}
 
       <CanalesYoutube />
+      <CuentasTiktok />
     </DashboardLayout>
   );
 }
