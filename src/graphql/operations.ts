@@ -1461,6 +1461,13 @@ const CAMPOS_CLIP_EDITOR = gql`
       }
     }
     subtitulosActivos
+    subtitulo {
+      fuente
+      tamano
+      centroY
+      efecto
+      mayusculas
+    }
     correcciones {
       desde
       texto
