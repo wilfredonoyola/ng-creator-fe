@@ -8,6 +8,7 @@ import {
   CLIP_EPISODIO,
   EPISODIO,
   RENDERIZAR_CLIP_EPISODIO,
+  AUTO_ENCUADRAR_CLIP_EPISODIO,
   TRANSCRIPCION_EPISODIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -82,6 +83,7 @@ export default function EditorClipPage({
   });
   const [actualizar] = useMutation(ACTUALIZAR_CLIP_EPISODIO);
   const [renderizar, { loading: pidiendoRender }] = useMutation(RENDERIZAR_CLIP_EPISODIO);
+  const [autoEncuadrar, { loading: pidiendoAuto }] = useMutation(AUTO_ENCUADRAR_CLIP_EPISODIO);
 
   const clip = clipQ.data?.clipEpisodio;
   const estilo: EstiloClip | undefined = clipQ.data?.estiloClipMarca;
@@ -262,12 +264,40 @@ export default function EditorClipPage({
   // Mientras renderiza, a mirar el progreso.
   const estadoRender = clip?.estadoRender as string | null | undefined;
   const renderEnCurso = estadoRender === "EN_COLA" || estadoRender === "RENDERIZANDO";
+  // El auto-encuadre (ng-creator-be#105): mientras el worker mira quién
+  // habla, también se pregunta seguido; al terminar, sus tramos pasan al borrador.
+  const estadoAuto: string | undefined = clipQ.data?.clipEpisodio?.estadoAutoEncuadre ?? undefined;
+  const analizando = estadoAuto === "EN_COLA" || estadoAuto === "ANALIZANDO";
+  const estadoAutoAntes = useRef(estadoAuto);
+  useEffect(() => {
+    const antes = estadoAutoAntes.current;
+    estadoAutoAntes.current = estadoAuto;
+    if (antes !== "EN_COLA" && antes !== "ANALIZANDO") return;
+    const c = clipQ.data?.clipEpisodio;
+    if (estadoAuto === "LISTO" && c) {
+      setB((prev) =>
+        prev
+          ? {
+              ...prev,
+              diseno: c.diseno,
+              posiciones: c.posiciones.map((p: { desdeSeg: number; regiones: Region[] }) => ({
+                desdeSeg: p.desdeSeg,
+                regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
+              })),
+            }
+          : prev,
+      );
+    } else if (estadoAuto === "FALLIDO") {
+      setError(c?.errorAutoEncuadre ?? "No se pudo auto-encuadrar");
+    }
+  }, [estadoAuto, clipQ.data]);
+
   const { startPolling, stopPolling } = clipQ;
   useEffect(() => {
-    if (renderEnCurso) startPolling(4000);
+    if (renderEnCurso || analizando) startPolling(analizando ? 2500 : 4000);
     else stopPolling();
     return () => stopPolling();
-  }, [renderEnCurso, startPolling, stopPolling]);
+  }, [renderEnCurso, analizando, startPolling, stopPolling]);
 
   const correccionDe = useMemo(() => {
     const m = new Map<number, string>();
@@ -342,6 +372,21 @@ export default function EditorClipPage({
     setCorrigiendo(null);
   }
 
+  async function pedirAutoEncuadre() {
+    if (!marcaId || !b) return;
+    if (b.posiciones.length > 1 && !window.confirm("El auto-encuadre reemplaza los cambios de encuadre por los suyos. ¿Seguir?")) {
+      return;
+    }
+    setError(null);
+    try {
+      // El worker mira el tramo guardado: primero lo pendiente.
+      await guardarAhora();
+      await autoEncuadrar({ variables: { id: clipId, marcaId } });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo auto-encuadrar");
+    }
+  }
+
   async function pedirRender() {
     if (!marcaId) return;
     setError(null);
@@ -380,6 +425,14 @@ export default function EditorClipPage({
           formato={b.formato}
           diseno={b.diseno}
           fondo={b.fondo}
+          autoEncuadre={{
+            analizando: analizando || pidiendoAuto,
+            resumen:
+              estadoAuto === "LISTO" && clip.personasAutoEncuadre != null
+                ? `${clip.personasAutoEncuadre} persona${clip.personasAutoEncuadre === 1 ? "" : "s"}`
+                : null,
+            onPedir: () => void pedirAutoEncuadre(),
+          }}
           subtitulo={b.subtitulo}
           onCambiarSubtitulo={(subtitulo) => cambiar({ subtitulo })}
           onCambiarFondo={(fondo) => cambiar({ fondo })}

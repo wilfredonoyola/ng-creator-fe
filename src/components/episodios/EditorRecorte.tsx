@@ -83,6 +83,7 @@ export function EditorRecorte({
   onCambiarFondo,
   subtitulo = null,
   onCambiarSubtitulo,
+  autoEncuadre,
 }: {
   url: string;
   /** Segundos del episodio. */
@@ -117,6 +118,8 @@ export function EditorRecorte({
   /** Letra, tamaño y altura propios de los subtítulos (null = los de siempre). */
   subtitulo?: SubtituloClip | null;
   onCambiarSubtitulo?: (s: SubtituloClip) => void;
+  /** El botón que sigue al que habla (ng-creator-be#105). */
+  autoEncuadre?: { analizando: boolean; resumen?: string | null; onPedir: () => void };
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
@@ -513,6 +516,16 @@ export function EditorRecorte({
             <p className="text-xs font-medium uppercase tracking-wide text-white/50">
               Posiciones del recorte · {posiciones.length}
             </p>
+            {puedeEditar && autoEncuadre && (
+              <button
+                onClick={autoEncuadre.onPedir}
+                disabled={autoEncuadre.analizando}
+                className="ml-auto mr-2 rounded-lg bg-ng-violeta px-2.5 py-1 text-xs font-medium text-white hover:brightness-110 disabled:opacity-70"
+                title="Mira quién habla y arma los cambios de encuadre solo. Después los ajustás."
+              >
+                {autoEncuadre.analizando ? "Mirando quién habla…" : `✨ Auto-encuadre${autoEncuadre.resumen ? ` · ${autoEncuadre.resumen}` : ""}`}
+              </button>
+            )}
             {puedeEditar && (
               <button
                 onClick={nuevaPosicion}
