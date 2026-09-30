@@ -40,7 +40,8 @@ interface Borrador {
   encuadre: Encuadre;
   diseno: DisenoClip;
   fondo: FondoClip;
-  posiciones: { desdeSeg: number; regiones: Region[] }[];
+  /** Cada tramo con su diseño (be#105, etapa 2); sin diseño, el del clip. */
+  posiciones: { desdeSeg: number; regiones: Region[]; diseno?: DisenoClip | null }[];
   subtitulosActivos: boolean;
   /** Letra, tamaño y altura propios (null = los de siempre). */
   subtitulo: SubtituloClip | null;
@@ -144,8 +145,9 @@ export default function EditorClipPage({
       },
       diseno: clip.diseno,
       fondo: clip.fondo ?? "DESENFOCADO",
-      posiciones: clip.posiciones.map((p: { desdeSeg: number; regiones: Region[] }) => ({
+      posiciones: clip.posiciones.map((p: { desdeSeg: number; regiones: Region[]; diseno?: DisenoClip | null }) => ({
         desdeSeg: p.desdeSeg,
+        diseno: p.diseno ?? null,
         regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
       })),
       subtitulosActivos: clip.subtitulosActivos,
@@ -292,7 +294,7 @@ export default function EditorClipPage({
   }, [estadoAuto, clipQ.data]);
 
   /** El diseño y los encuadres que dejó el servidor pasan al borrador. */
-  function tomarEncuadres(c: { diseno: DisenoClip; posiciones: { desdeSeg: number; regiones: Region[] }[] }) {
+  function tomarEncuadres(c: { diseno: DisenoClip; posiciones: { desdeSeg: number; regiones: Region[]; diseno?: DisenoClip | null }[] }) {
     setB((prev) =>
       prev
         ? {
@@ -300,6 +302,7 @@ export default function EditorClipPage({
             diseno: c.diseno,
             posiciones: c.posiciones.map((p) => ({
               desdeSeg: p.desdeSeg,
+              diseno: p.diseno ?? null,
               regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
             })),
           }
@@ -357,15 +360,6 @@ export default function EditorClipPage({
       ];
     }
     cambiar({ desdeSeg: redondo(desde), hastaSeg: redondo(hasta), posiciones });
-  }
-
-  function cambiarDiseno(d: DisenoClip) {
-    if (!b || d === b.diseno) return;
-    // Otro diseño tiene otra cantidad de recuadros: se arranca de cero.
-    if (b.posiciones.length > 1 && !window.confirm("Cambiar el diseño borra los cambios de encuadre. ¿Seguir?")) {
-      return;
-    }
-    cambiar({ diseno: d, posiciones: [] });
   }
 
   function tocarPalabra(p: Palabra) {
@@ -491,7 +485,8 @@ export default function EditorClipPage({
           onCambiarFondo={(fondo) => cambiar({ fondo })}
           encuadre={b.encuadre}
           posicionesGuardadas={b.posiciones}
-          onCambiarPosiciones={(posiciones) => cambiar({ posiciones })}
+          // El diseño del clip sigue al del primer tramo (lo usan los subtítulos).
+          onCambiarPosiciones={(posiciones) => cambiar({ posiciones, diseno: posiciones[0]?.diseno ?? b.diseno })}
           lineas={lineas}
           textos={b.textos}
           onCambiarTextos={(textos) => cambiar({ textos })}
@@ -502,7 +497,6 @@ export default function EditorClipPage({
           duracionEpisodio={ep.duracionSeg ?? 0}
           onCambiarTramo={cambiarTramo}
           onCambiarFormato={(formato) => cambiar({ formato })}
-          onCambiarDiseno={cambiarDiseno}
           debajoDeLaVista={
             <PanelExportar
               titulo={b.titulo}

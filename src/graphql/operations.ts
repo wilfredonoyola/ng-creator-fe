@@ -1453,6 +1453,7 @@ const CAMPOS_CLIP_EDITOR = gql`
     fondo
     posiciones {
       desdeSeg
+      diseno
       regiones {
         x
         y
