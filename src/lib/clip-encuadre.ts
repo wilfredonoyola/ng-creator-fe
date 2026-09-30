@@ -320,3 +320,40 @@ export function medidasEfecto(efecto: EfectoTexto, tamano: number) {
       return { borde: 0, sombra: 0 };
   }
 }
+
+// ---- Subtítulos propios del clip (ng-creator-be#104) ----
+
+/** Letra, tamaño, altura y efecto de los subtítulos de un clip. Null = los de siempre. */
+export interface SubtituloClip {
+  fuente: FuenteTexto;
+  /** Cuerpo en píxeles del lienzo. */
+  tamano: number;
+  /** Centro vertical de la línea, en fracción del lienzo. */
+  centroY: number;
+  efecto: EfectoTexto;
+  mayusculas: boolean;
+}
+
+export const SUBTITULO_TAMANO_MIN = 40;
+export const SUBTITULO_TAMANO_MAX = 220;
+
+/**
+ * Los subtítulos de siempre expresados como estilo propio: Nunito con
+ * contorno, del cuerpo y a la altura que decide el diseño. Es de donde se
+ * arranca cuando se empieza a mover o a cambiar el subtítulo.
+ */
+export function subtituloPorDefecto(lienzo: Lienzo, diseno: DisenoClip): SubtituloClip {
+  const { cuerpo, margenAbajo } = medidasSubtitulo(lienzo, diseno);
+  return {
+    fuente: "NUNITO",
+    tamano: cuerpo,
+    centroY: Math.round(((lienzo.alto - margenAbajo - cuerpo * 0.5) / lienzo.alto) * 1000) / 1000,
+    efecto: "CONTORNO",
+    mayusculas: false,
+  };
+}
+
+/** El que vale: el propio, o el de siempre. */
+export function subtituloEfectivo(lienzo: Lienzo, diseno: DisenoClip, propio?: SubtituloClip | null): SubtituloClip {
+  return propio ?? subtituloPorDefecto(lienzo, diseno);
+}

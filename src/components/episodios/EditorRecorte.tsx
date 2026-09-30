@@ -8,6 +8,9 @@ import {
   LIENZOS,
   llevaFondo,
   medidasEfecto,
+  SUBTITULO_TAMANO_MAX,
+  SUBTITULO_TAMANO_MIN,
+  subtituloPorDefecto,
   palabrasDelTexto,
   medidasSubtitulo,
   panelesDe,
@@ -17,6 +20,7 @@ import {
   type DisenoClip,
   type Encuadre,
   type FondoClip,
+  type SubtituloClip,
   type FormatoClip,
   type PosicionEfectiva,
   type Region,
@@ -77,6 +81,8 @@ export function EditorRecorte({
   onCambiarDiseno,
   fondo = "DESENFOCADO",
   onCambiarFondo,
+  subtitulo = null,
+  onCambiarSubtitulo,
 }: {
   url: string;
   /** Segundos del episodio. */
@@ -108,6 +114,9 @@ export function EditorRecorte({
   /** Alrededor del recuadro en HORIZONTAL y CENTRADO. */
   fondo?: FondoClip;
   onCambiarFondo?: (f: FondoClip) => void;
+  /** Letra, tamaño y altura propios de los subtítulos (null = los de siempre). */
+  subtitulo?: SubtituloClip | null;
+  onCambiarSubtitulo?: (s: SubtituloClip) => void;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
@@ -294,6 +303,38 @@ export function EditorRecorte({
   const { cuerpo, margenAbajo } = medidasSubtitulo(lienzo, diseno);
   const contorno = Math.max(3, Math.round(cuerpo * 0.14));
   const factorSub = FUENTES.NUNITO.factorCss;
+
+  /**
+   * Mover el subtítulo arrastrándolo (arriba o abajo), o cambiarle el tamaño
+   * con la manija de la derecha. El primer toque convierte el de siempre en
+   * uno propio, en el mismo lugar y del mismo tamaño.
+   */
+  function arrastrarSubtitulo(e: React.PointerEvent, que: "mover" | "tamano") {
+    if (!puedeEditar || !onCambiarSubtitulo) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const caja = vista.current?.getBoundingClientRect();
+    if (!caja) return;
+    const inicial = subtitulo ?? subtituloPorDefecto(lienzo, diseno);
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    const mover = (ev: PointerEvent) => {
+      if (que === "mover") {
+        const cy = Math.min(0.95, Math.max(0.05, inicial.centroY + (ev.clientY - y0) / caja.height));
+        onCambiarSubtitulo({ ...inicial, centroY: redondo3(cy) });
+      } else {
+        const f = Math.max(0.2, 1 + (ev.clientX - x0) / 150);
+        const t = Math.round(Math.min(SUBTITULO_TAMANO_MAX, Math.max(SUBTITULO_TAMANO_MIN, inicial.tamano * f)));
+        onCambiarSubtitulo({ ...inicial, tamano: t });
+      }
+    };
+    const soltar = () => {
+      window.removeEventListener("pointermove", mover);
+      window.removeEventListener("pointerup", soltar);
+    };
+    window.addEventListener("pointermove", mover);
+    window.addEventListener("pointerup", soltar);
+  }
 
   /** Mover un texto arrastrándolo sobre la vista previa. */
   function arrastrarTexto(e: React.PointerEvent, i: number) {
@@ -588,30 +629,62 @@ export function EditorRecorte({
                 </div>
               );
             })}
-            {linea && (
-              <div
-                className="pointer-events-none absolute inset-x-0 text-center"
-                style={{
-                  bottom: margenAbajo * k,
-                  padding: `0 ${60 * k}px`,
-                  fontFamily: "'Nunito Black', sans-serif",
-                  fontWeight: 900,
-                  // Mismo factor que los textos: libass mide por la altura "win".
-                  fontSize: cuerpo * factorSub * k,
-                  lineHeight: `${cuerpo * k}px`,
-                  color: estilo.colorSubtitulo,
-                  WebkitTextStroke: `${2 * contorno * k}px #000`,
-                  paintOrder: "stroke fill",
-                }}
-              >
-                {linea.palabras.map((p, i) => (
-                  <span key={`${p.desde}-${i}`} style={i === palabraActiva ? { color: estilo.colorResaltado } : undefined}>
-                    {i > 0 ? " " : ""}
-                    {p.texto}
+            {linea && (() => {
+              // Con subtítulo propio: su letra, cuerpo, efecto y altura (centrado
+              // en centroY, como el \\an5\\pos del render). Sin él, el de siempre.
+              const sp = subtitulo;
+              const f = FUENTES[sp?.fuente ?? "NUNITO"] ?? FUENTES.NUNITO;
+              const c = sp ? sp.tamano : cuerpo;
+              const efecto = sp?.efecto ?? "CONTORNO";
+              const borde = efecto === "CONTORNO" ? Math.max(3, Math.round(c * 0.14)) : efecto === "CAJA" ? Math.max(6, Math.round(c * 0.22)) : 0;
+              const sombra = efecto === "SOMBRA" ? Math.max(3, Math.round(c * 0.07)) : 0;
+              const editable = puedeEditar && !!onCambiarSubtitulo;
+              return (
+                <div
+                  onPointerDown={(e) => arrastrarSubtitulo(e, "mover")}
+                  onClick={(e) => e.stopPropagation()}
+                  title={editable ? "Arrastrá para subir o bajar el subtítulo" : undefined}
+                  className={`group absolute inset-x-0 text-center ${editable ? "cursor-ns-resize hover:outline-dashed hover:outline-1 hover:outline-white/50" : "pointer-events-none"}`}
+                  style={{
+                    ...(sp
+                      ? { top: sp.centroY * altoVista, transform: "translateY(-50%)" }
+                      : { bottom: margenAbajo * k }),
+                    padding: `0 ${60 * k}px`,
+                    fontFamily: `'${f.familia}', sans-serif`,
+                    fontWeight: (sp?.fuente ?? "NUNITO") === "NUNITO" ? 900 : 400,
+                    // Mismo factor que los textos: libass mide por la altura "win".
+                    fontSize: c * f.factorCss * k,
+                    lineHeight: `${c * k}px`,
+                    color: estilo.colorSubtitulo,
+                    textTransform: sp?.mayusculas ? "uppercase" : undefined,
+                    ...(efecto === "CONTORNO" ? { WebkitTextStroke: `${2 * borde * k}px #000`, paintOrder: "stroke fill" } : {}),
+                    ...(efecto === "SOMBRA" ? { textShadow: `${sombra * k}px ${sombra * k}px 0 #000` } : {}),
+                  }}
+                >
+                  <span
+                    style={
+                      efecto === "CAJA"
+                        ? { background: "#000", padding: `${borde * k * 0.35}px ${borde * k}px`, boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone" }
+                        : undefined
+                    }
+                  >
+                    {linea.palabras.map((p, i) => (
+                      <span key={`${p.desde}-${i}`} style={i === palabraActiva ? { color: estilo.colorResaltado } : undefined}>
+                        {i > 0 ? " " : ""}
+                        {p.texto}
+                      </span>
+                    ))}
                   </span>
-                ))}
-              </div>
-            )}
+                  {editable && (
+                    <span
+                      onPointerDown={(e) => arrastrarSubtitulo(e, "tamano")}
+                      title="Arrastrá a los lados para agrandar o achicar"
+                      className="absolute right-2 top-1/2 hidden h-4 w-4 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-ng-azul bg-white group-hover:block"
+                    />
+                  )}
+                </div>
+              );
+            })()}
           </div>
         </div>
         {debajoDeLaVista}

@@ -18,7 +18,8 @@ import {
 } from "@/components/episodios/EditorRecorte";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import type { DisenoClip, Encuadre, FondoClip, FormatoClip, Region, Texto } from "@/lib/clip-encuadre";
+import type { DisenoClip, Encuadre, FondoClip, FormatoClip, Region, SubtituloClip, Texto } from "@/lib/clip-encuadre";
+import { LIENZOS, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, subtituloPorDefecto } from "@/lib/clip-encuadre";
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
 import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
 
@@ -38,6 +39,8 @@ interface Borrador {
   fondo: FondoClip;
   posiciones: { desdeSeg: number; regiones: Region[] }[];
   subtitulosActivos: boolean;
+  /** Letra, tamaño y altura propios (null = los de siempre). */
+  subtitulo: SubtituloClip | null;
   correcciones: { desde: number; texto: string }[];
   gancho: string;
   ganchoActivo: boolean;
@@ -136,6 +139,15 @@ export default function EditorClipPage({
         regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
       })),
       subtitulosActivos: clip.subtitulosActivos,
+      subtitulo: clip.subtitulo
+        ? {
+            fuente: clip.subtitulo.fuente,
+            tamano: clip.subtitulo.tamano,
+            centroY: clip.subtitulo.centroY,
+            efecto: clip.subtitulo.efecto,
+            mayusculas: clip.subtitulo.mayusculas,
+          }
+        : null,
       correcciones: clip.correcciones.map((c: { desde: number; texto: string }) => ({
         desde: c.desde,
         texto: c.texto,
@@ -175,6 +187,7 @@ export default function EditorClipPage({
               fondo: borrador.fondo,
               posiciones: borrador.posiciones,
               subtitulosActivos: borrador.subtitulosActivos,
+              subtitulo: borrador.subtitulo,
               correcciones: borrador.correcciones,
               gancho: borrador.gancho,
               // Los textos reemplazan al gancho viejo: si no, borrar todos los
@@ -367,6 +380,8 @@ export default function EditorClipPage({
           formato={b.formato}
           diseno={b.diseno}
           fondo={b.fondo}
+          subtitulo={b.subtitulo}
+          onCambiarSubtitulo={(subtitulo) => cambiar({ subtitulo })}
           onCambiarFondo={(fondo) => cambiar({ fondo })}
           encuadre={b.encuadre}
           posicionesGuardadas={b.posiciones}
@@ -488,6 +503,14 @@ export default function EditorClipPage({
               />
               Subtítulos con la palabra resaltada
             </label>
+            {b.subtitulosActivos && (
+              <EstiloSubtitulos
+                valor={b.subtitulo}
+                porDefecto={subtituloPorDefecto(LIENZOS[b.formato], b.diseno)}
+                onCambiar={(subtitulo) => cambiar({ subtitulo })}
+                deshabilitado={!opera}
+              />
+            )}
             <p className="mt-1 text-xs text-white/40">
               Para arreglar una palabra mal transcrita: “Tocar = corregir palabra” y tocala en el
               texto. Cambia el subtítulo, no el tiempo.
@@ -600,6 +623,103 @@ function Correccion({
       <button onClick={onCancelar} className="text-xs text-white/40">
         Cancelar
       </button>
+    </div>
+  );
+}
+
+/**
+ * La letra, el tamaño, el efecto y la altura de los subtítulos. Mover y
+ * agrandar también se hace sobre la vista previa; acá están los atajos. El
+ * primer cambio arranca del subtítulo de siempre, en su lugar.
+ */
+function EstiloSubtitulos({
+  valor,
+  porDefecto,
+  onCambiar,
+  deshabilitado,
+}: {
+  valor: SubtituloClip | null;
+  porDefecto: SubtituloClip;
+  onCambiar: (s: SubtituloClip | null) => void;
+  deshabilitado: boolean;
+}) {
+  const s = valor ?? porDefecto;
+  const poner = (parcial: Partial<SubtituloClip>) => onCambiar({ ...s, ...parcial });
+  const boton = (activo: boolean) =>
+    `rounded-md px-2.5 py-1 text-xs transition ${activo ? "bg-marca font-medium text-white" : "border border-white/10 text-white/60 hover:text-white"}`;
+  return (
+    <div className="mt-3 space-y-3 rounded-lg border border-white/10 bg-black/20 p-3">
+      <p className="text-xs text-white/45">Arrastrá el subtítulo en la vista previa para subirlo o bajarlo; la bolita de la derecha lo agranda.</p>
+      <Fila etiqueta="Letra">
+        {(
+          [
+            ["NUNITO", "Nunito"],
+            ["ANTON", "Anton"],
+            ["BEBAS", "Bebas"],
+          ] as const
+        ).map(([f, t]) => (
+          <button key={f} disabled={deshabilitado} onClick={() => poner({ fuente: f })} className={boton(s.fuente === f)}>
+            {t}
+          </button>
+        ))}
+      </Fila>
+      <Fila etiqueta="Efecto">
+        {(
+          [
+            ["CONTORNO", "Contorno"],
+            ["SOMBRA", "Sombra"],
+            ["CAJA", "Caja"],
+            ["NINGUNO", "Nada"],
+          ] as const
+        ).map(([e, t]) => (
+          <button key={e} disabled={deshabilitado} onClick={() => poner({ efecto: e })} className={boton(s.efecto === e)}>
+            {t}
+          </button>
+        ))}
+      </Fila>
+      <Fila etiqueta={`Tamaño · ${Math.round(s.tamano)}`}>
+        <input
+          type="range"
+          min={SUBTITULO_TAMANO_MIN}
+          max={SUBTITULO_TAMANO_MAX}
+          step={2}
+          value={s.tamano}
+          disabled={deshabilitado}
+          onChange={(e) => poner({ tamano: Number(e.target.value) })}
+          className="w-full accent-[#3B82F6]"
+        />
+      </Fila>
+      <Fila etiqueta="Lugar">
+        {(
+          [
+            ["Arriba", 0.2],
+            ["Centro", 0.5],
+            ["Abajo", porDefecto.centroY],
+          ] as const
+        ).map(([t, y]) => (
+          <button key={t} disabled={deshabilitado} onClick={() => poner({ centroY: y })} className={boton(Math.abs(s.centroY - y) < 0.01)}>
+            {t}
+          </button>
+        ))}
+        <label className="ml-2 flex items-center gap-1.5 text-xs text-white/70">
+          <input type="checkbox" checked={s.mayusculas} disabled={deshabilitado} onChange={(e) => poner({ mayusculas: e.target.checked })} />
+          MAYÚSCULAS
+        </label>
+      </Fila>
+      {valor && (
+        <button disabled={deshabilitado} onClick={() => onCambiar(null)} className="text-xs text-ng-celeste hover:underline">
+          Volver al subtítulo de siempre
+        </button>
+      )}
+    </div>
+  );
+}
+
+function Fila({ etiqueta, children }: { etiqueta: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span className="w-24 shrink-0 text-xs text-white/50">{etiqueta}</span>
+      {children}
     </div>
   );
 }
