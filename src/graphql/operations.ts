@@ -1491,6 +1491,9 @@ const CAMPOS_CLIP_EDITOR = gql`
       desdeSeg
       hastaSeg
     }
+    estadoAutoEncuadre
+    errorAutoEncuadre
+    personasAutoEncuadre
     estadoRender
     progresoRender
     errorRender
@@ -1566,5 +1569,15 @@ export const RENDERIZAR_CLIP_EPISODIO = gql`
 export const BORRAR_CLIP_EPISODIO = gql`
   mutation BorrarClipEpisodio($id: ID!, $marcaId: String!) {
     borrarClipEpisodio(id: $id, marcaId: $marcaId)
+  }
+`;
+
+/** Que el clip siga al que habla (ng-creator-be#105): lo hace el worker y deja los tramos en `posiciones`. */
+export const AUTO_ENCUADRAR_CLIP_EPISODIO = gql`
+  ${CAMPOS_CLIP_EDITOR}
+  mutation AutoEncuadrarClipEpisodio($id: ID!, $marcaId: String!) {
+    autoEncuadrarClipEpisodio(id: $id, marcaId: $marcaId) {
+      ...CamposClipEditor
+    }
   }
 `;
