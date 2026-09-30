@@ -17,6 +17,7 @@ import {
   posicionEn,
   posicionesEfectivas,
   REGION_MINIMA,
+  regionPorDefecto,
   type DisenoClip,
   type Encuadre,
   type FondoClip,
@@ -78,7 +79,6 @@ export function EditorRecorte({
   duracionEpisodio,
   onCambiarTramo,
   onCambiarFormato,
-  onCambiarDiseno,
   fondo = "DESENFOCADO",
   onCambiarFondo,
   subtitulo = null,
@@ -111,7 +111,6 @@ export function EditorRecorte({
   duracionEpisodio: number;
   onCambiarTramo: (desde: number, hasta: number) => void;
   onCambiarFormato: (f: FormatoClip) => void;
-  onCambiarDiseno: (d: DisenoClip) => void;
   /** Alrededor del recuadro en HORIZONTAL y CENTRADO. */
   fondo?: FondoClip;
   onCambiarFondo?: (f: FondoClip) => void;
@@ -148,15 +147,18 @@ export function EditorRecorte({
     duracion,
   );
   const tc = Math.min(Math.max(0, t - desde), duracion);
-  const paneles = panelesDe(formato, diseno);
   const lienzo = LIENZOS[formato];
   const activa = posicionEn(posiciones, tc);
   const indiceActiva = posiciones.indexOf(activa);
+  // Cada tramo tiene su diseño (be#105, etapa 2): los recuadros son los del
+  // tramo donde está parado el video.
+  const disenoActivo = activa.diseno;
+  const paneles = panelesDe(formato, disenoActivo);
 
   // Lo último, para leerlo desde el bucle de dibujo sin reiniciarlo.
-  const conFondo = llevaFondo(formato, diseno);
-  const estado = useRef({ posiciones, paneles, lienzo, desde, hasta, desenfocado: conFondo && fondo === "DESENFOCADO" });
-  estado.current = { posiciones, paneles, lienzo, desde, hasta, desenfocado: conFondo && fondo === "DESENFOCADO" };
+  const conFondo = posiciones.some((p) => llevaFondo(formato, p.diseno));
+  const estado = useRef({ posiciones, formato, lienzo, desde, hasta, fondo });
+  estado.current = { posiciones, formato, lienzo, desde, hasta, fondo };
 
   useLayoutEffect(() => {
     const el = vista.current;
@@ -193,11 +195,12 @@ export function EditorRecorte({
         if (ctx) {
           const escala = c.width / e.lienzo.ancho;
           const pos = posicionEn(e.posiciones, v.currentTime - e.desde);
+          const panelesPos = panelesDe(e.formato, pos.diseno);
           ctx.fillStyle = "#000";
           ctx.fillRect(0, 0, c.width, c.height);
           // El fondo desenfocado de HORIZONTAL y CENTRADO: el mismo video
           // cubriendo el lienzo, como en el render (boxblur 20:3, brillo −0.05).
-          if (e.desenfocado) {
+          if (e.fondo === "DESENFOCADO" && llevaFondo(e.formato, pos.diseno)) {
             const k = Math.max(c.width / v.videoWidth, c.height / v.videoHeight);
             const w = v.videoWidth * k;
             const h = v.videoHeight * k;
@@ -205,7 +208,7 @@ export function EditorRecorte({
             ctx.drawImage(v, (c.width - w) / 2, (c.height - h) / 2, w, h);
             ctx.filter = "none";
           }
-          e.paneles.forEach((panel, i) => {
+          panelesPos.forEach((panel, i) => {
             const r = pos.regiones[i];
             if (!r) return;
             ctx.drawImage(
@@ -301,11 +304,26 @@ export function EditorRecorte({
     window.addEventListener("pointerup", soltar);
   }
 
+  /**
+   * El diseño del tramo donde está parado el video. Con la misma cantidad de
+   * recuadros, cada uno conserva su lugar; si cambia, se arranca de los de
+   * siempre (en Uno, centrado en donde estaba el primero).
+   */
+  function cambiarDisenoTramo(d: DisenoClip) {
+    if (d === disenoActivo) return;
+    const nuevos = panelesDe(formato, d);
+    const regiones = nuevos.map((panel, i) => {
+      const previa = activa.regiones.length === nuevos.length ? activa.regiones[i] : nuevos.length === 1 ? activa.regiones[0] : null;
+      return previa ? ajustarRegion(previa, fuente, panel) : regionPorDefecto(fuente, panel, i, nuevos.length);
+    });
+    onCambiarPosiciones(posiciones.map((p, k) => (k === indiceActiva ? { ...p, diseno: d, regiones } : p)));
+  }
+
   /** Un cambio de encuadre donde está parado el video, copiando el actual. */
   function nuevaPosicion() {
     const seg = Math.round(tc * 100) / 100;
     if (posiciones.some((p) => Math.abs(p.desdeSeg - seg) < 0.2)) return;
-    const nuevas = [...posiciones, { desdeSeg: seg, regiones: activa.regiones.map((r) => ({ ...r })) }].sort(
+    const nuevas = [...posiciones, { desdeSeg: seg, diseno: activa.diseno, regiones: activa.regiones.map((r) => ({ ...r })) }].sort(
       (a, b) => a.desdeSeg - b.desdeSeg,
     );
     onCambiarPosiciones(nuevas);
@@ -401,18 +419,24 @@ export function EditorRecorte({
             />
           </div>
         </div>
-        {/* El diseño, con su dibujito, como en la app. */}
+        {/* El diseño del tramo donde está el video, con su dibujito, como en la app. */}
+        {posiciones.length > 1 && (
+          <p className="mb-1.5 text-xs text-white/50">
+            Diseño de este tramo ({activa.desdeSeg.toFixed(1)}–
+            {(indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1)} s)
+          </p>
+        )}
         <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {DISENOS.map((d) => (
             <button
               key={d.valor}
               disabled={!puedeEditar}
-              onClick={() => d.valor !== diseno && onCambiarDiseno(d.valor)}
+              onClick={() => cambiarDisenoTramo(d.valor)}
               className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-center transition disabled:opacity-50 ${
-                d.valor === diseno ? "border-ng-azul bg-ng-azul/10" : "border-white/10 bg-black/20 hover:border-white/25"
+                d.valor === disenoActivo ? "border-ng-azul bg-ng-azul/10" : "border-white/10 bg-black/20 hover:border-white/25"
               }`}
             >
-              <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === diseno} />
+              <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === disenoActivo} />
               <span className="text-xs font-medium">{d.etiqueta}</span>
               <span className="text-[11px] leading-tight text-white/45">{d.titulo}</span>
             </button>
@@ -578,6 +602,9 @@ export function EditorRecorte({
                 >
                   <button onClick={() => ir(p.desdeSeg)}>
                     {p.desdeSeg.toFixed(1)}–{fin.toFixed(1)} s
+                    {posiciones.some((x) => x.diseno !== posiciones[0].diseno) && (
+                      <span className="ml-1 text-white/45">· {DISENOS.find((d) => d.valor === p.diseno)?.etiqueta}</span>
+                    )}
                   </button>
                   {puedeEditar && i > 0 && (
                     <button onClick={() => quitarPosicion(i)} className="text-white/40 hover:text-red-400" title="Quitar">

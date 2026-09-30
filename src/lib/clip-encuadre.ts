@@ -195,6 +195,8 @@ export function regionPorDefecto(
 
 export interface PosicionEfectiva {
   desdeSeg: number;
+  /** El de este tramo: el suyo o, si no tiene, el del clip (be#105, etapa 2). */
+  diseno: DisenoClip;
   regiones: Region[];
 }
 
@@ -203,14 +205,13 @@ export function posicionesEfectivas(
     formato: FormatoClip;
     diseno?: DisenoClip | null;
     encuadre?: Encuadre | null;
-    posiciones?: { desdeSeg: number; regiones: Region[] }[] | null;
+    posiciones?: { desdeSeg: number; regiones: Region[]; diseno?: DisenoClip | null }[] | null;
   },
   fuente: { ancho: number; alto: number },
   duracionSeg: number,
 ): PosicionEfectiva[] {
-  const diseno = clip.diseno ?? "UNO";
-  const paneles = panelesDe(clip.formato, diseno);
-  const defecto = (i: number) =>
+  const delClip: DisenoClip = clip.diseno ?? "UNO";
+  const defecto = (diseno: DisenoClip, paneles: Panel[], i: number) =>
     diseno === "UNO" && clip.encuadre
       ? recorteDelCuadro(fuente, clip.formato, clip.encuadre)
       : regionPorDefecto(fuente, paneles[i], i, paneles.length);
@@ -219,19 +220,22 @@ export function posicionesEfectivas(
     .filter((p) => Number.isFinite(p.desdeSeg) && p.desdeSeg < duracionSeg)
     .sort((a, b) => a.desdeSeg - b.desdeSeg);
   if (!validas.length) {
-    return [{ desdeSeg: 0, regiones: paneles.map((_, i) => defecto(i)) }];
+    const paneles = panelesDe(clip.formato, delClip);
+    return [{ desdeSeg: 0, diseno: delClip, regiones: paneles.map((_, i) => defecto(delClip, paneles, i)) }];
   }
 
   const salida: PosicionEfectiva[] = [];
   for (const p of validas) {
     const desdeSeg = salida.length ? Math.max(0, p.desdeSeg) : 0;
+    const diseno: DisenoClip = p.diseno ?? delClip;
+    const paneles = panelesDe(clip.formato, diseno);
     const regiones = paneles.map((panel, i) =>
-      p.regiones?.[i] ? ajustarRegion(p.regiones[i], fuente, panel) : defecto(i),
+      p.regiones?.[i] ? ajustarRegion(p.regiones[i], fuente, panel) : defecto(diseno, paneles, i),
     );
     if (salida.length && Math.abs(salida[salida.length - 1].desdeSeg - desdeSeg) < 0.001) {
-      salida[salida.length - 1] = { desdeSeg, regiones };
+      salida[salida.length - 1] = { desdeSeg, diseno, regiones };
     } else {
-      salida.push({ desdeSeg, regiones });
+      salida.push({ desdeSeg, diseno, regiones });
     }
   }
   return salida;
