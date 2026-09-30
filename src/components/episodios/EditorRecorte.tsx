@@ -542,7 +542,7 @@ export function EditorRecorte({
                   >
                     {palabras.map((w, j) => (
                       <span key={j} style={w.destacada ? { color: tx.colorDestacado } : undefined}>
-                        {j > 0 ? " " : ""}
+                        {j > 0 ? w.salto ? <br /> : " " : ""}
                         {w.texto}
                       </span>
                     ))}
