@@ -9,6 +9,17 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacidad" },
 };
 
+/** Un permiso tal como lo nombra la red. */
+const Permiso = ({ children }: { children: React.ReactNode }) => (
+  <code className="text-[13px] text-ng-teal">{children}</code>
+);
+
+const Enlace = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="text-ng-celeste hover:underline">
+    {children}
+  </a>
+);
+
 const Correo = () => (
   <a href={`mailto:${CONTACTO}`} className="text-ng-celeste hover:underline">
     {CONTACTO}
@@ -55,8 +66,15 @@ export default function PrivacidadPage() {
           <strong className="text-white">Datos de las redes conectadas.</strong> Cuando un administrador conecta una
           cuenta de Facebook, recibimos su identificador y nombre de usuario, los permisos concedidos, un token de
           acceso de usuario y, por cada página que administra, su identificador, nombre, categoría, imagen y un
-          token de acceso de página. Los tokens se guardan cifrados. Cuando el servicio sume otras redes, esta
-          política se actualizará con lo que se recibe de cada una antes de habilitarlas.
+          token de acceso de página. Cuando el propietario de una marca conecta un canal de YouTube, recibimos
+          de Google el identificador, el nombre y la imagen del canal, los permisos concedidos y un token de
+          actualización. Cuando conecta una cuenta de TikTok, recibimos de TikTok su identificador para nuestra
+          app (open_id), el nombre visible, el nombre de usuario, la imagen de perfil, los permisos concedidos, un
+          token de acceso y uno de actualización, y lo que la cuenta permite al publicar (opciones de privacidad,
+          si admite comentarios, dúos y stitch, y la duración máxima de sus videos). Todos los tokens se guardan
+          cifrados. No leemos los videos, los comentarios, los seguidores ni los mensajes de esas cuentas. Si el
+          servicio suma otras redes, esta política se actualizará con lo que se recibe de cada una antes de
+          habilitarlas.
         </p>
         <p>
           <strong className="text-white">Datos de uso y operación.</strong> Registros de cada episodio, trabajo de
@@ -122,6 +140,15 @@ export default function PrivacidadPage() {
             autorizadas.
           </li>
           <li>
+            <strong className="text-white">Google (YouTube API Services)</strong> — publicación en los canales de
+            YouTube autorizados. Google trata esos datos según su{" "}
+            <Enlace href="https://policies.google.com/privacy">política de privacidad</Enlace>.
+          </li>
+          <li>
+            <strong className="text-white">TikTok</strong> — publicación en las cuentas de TikTok autorizadas, según
+            su <Enlace href="https://www.tiktok.com/legal/privacy-policy">política de privacidad</Enlace>.
+          </li>
+          <li>
             <strong className="text-white">Expo</strong> — distribución de las actualizaciones de la app móvil.
           </li>
         </ul>
@@ -141,35 +168,67 @@ export default function PrivacidadPage() {
         </p>
       </Seccion>
 
-      <Seccion titulo="6. Permisos de Facebook y para qué se usan">
+      <Seccion titulo="6. Permisos de las redes y para qué se usan">
         <p>
-          Al conectar una cuenta de Facebook solicitamos estos permisos, y los usamos exclusivamente para lo
-          indicado:
+          Al conectar cada red solicitamos estos permisos, y los usamos exclusivamente para lo indicado.
+        </p>
+        <p>
+          <strong className="text-white">Facebook</strong>
         </p>
         <ul className="ml-5 list-disc space-y-1.5">
           <li>
-            <code className="text-[13px] text-ng-teal">pages_show_list</code> — listar las páginas que administrás,
-            para que puedas elegir cuáles habilitar como destino.
+            <Permiso>pages_show_list</Permiso> — listar las páginas que administrás, para que puedas elegir cuáles
+            habilitar como destino.
           </li>
           <li>
-            <code className="text-[13px] text-ng-teal">pages_read_engagement</code> — leer los datos básicos de esas
-            páginas, como nombre, categoría e imagen.
+            <Permiso>pages_read_engagement</Permiso> — leer los datos básicos de esas páginas, como nombre,
+            categoría e imagen.
           </li>
           <li>
-            <code className="text-[13px] text-ng-teal">pages_manage_posts</code> — publicar el contenido que
-            apruebes, como reel, historia o imagen.
+            <Permiso>pages_manage_posts</Permiso> — publicar el contenido que apruebes, como reel, historia o
+            imagen.
           </li>
           <li>
-            <code className="text-[13px] text-ng-teal">read_insights</code> — leer las estadísticas de las
-            publicaciones de esas páginas (alcance e impresiones), para ordenar el historial por rendimiento. Es
-            opcional: si no lo concedés, todo lo demás sigue funcionando.
+            <Permiso>read_insights</Permiso> — leer las estadísticas de las publicaciones de esas páginas (alcance e
+            impresiones), para ordenar el historial por rendimiento. Es opcional: si no lo concedés, todo lo demás
+            sigue funcionando.
           </li>
         </ul>
         <p>
-          Solo publicamos en las páginas que un administrador habilitó de forma explícita, y solo cuando alguien del
-          equipo lo indica. El servicio nunca publica por su cuenta: todo contenido pasa por una persona antes de
-          salir. Una publicación aprobada puede programarse para más tarde; en ese caso la agenda queda del lado de
-          Facebook, con su función nativa de programación.
+          <strong className="text-white">YouTube</strong>
+        </p>
+        <ul className="ml-5 list-disc space-y-1.5">
+          <li>
+            <Permiso>youtube.upload</Permiso> — subir al canal los videos que publiques, con el título, la
+            descripción, las etiquetas y la visibilidad que elijas.
+          </li>
+          <li>
+            <Permiso>youtube.readonly</Permiso> — saber qué canal elegiste al conectar (su identificador, nombre e
+            imagen). No lo usamos para leer otros videos, comentarios ni estadísticas del canal.
+          </li>
+        </ul>
+        <p>
+          El servicio usa los YouTube API Services. Al publicar en YouTube a través del servicio, aceptás los{" "}
+          <Enlace href="https://www.youtube.com/t/terms">Términos del servicio de YouTube</Enlace>.
+        </p>
+        <p>
+          <strong className="text-white">TikTok</strong>
+        </p>
+        <ul className="ml-5 list-disc space-y-1.5">
+          <li>
+            <Permiso>user.info.basic</Permiso> — saber qué cuenta conectaste (identificador, nombre visible e imagen
+            de perfil), para mostrarla como destino.
+          </li>
+          <li>
+            <Permiso>video.publish</Permiso> — publicar en la cuenta los videos que indiques, con el texto, la
+            privacidad, las interacciones y la declaración de contenido comercial que elijas en cada publicación.
+          </li>
+        </ul>
+        <p>
+          En todas las redes, solo publicamos en las cuentas y páginas que el propietario de la marca habilitó de
+          forma explícita, y solo cuando alguien del equipo lo indica. El servicio nunca publica por su cuenta: cada
+          publicación la confirma una persona. Si esa persona elige una fecha y hora, la publicación queda
+          programada y sale a esa hora; hasta entonces se puede cancelar o cambiar.
         </p>
       </Seccion>
 
@@ -198,16 +257,28 @@ export default function PrivacidadPage() {
         </p>
       </Seccion>
 
-      <Seccion titulo="9. Cómo revocar el acceso a Facebook">
-        <p>Podés cortar el acceso de dos maneras, y conviene usar las dos:</p>
+      <Seccion titulo="9. Cómo revocar el acceso a las redes">
+        <p>
+          Desde el servicio, en <em>Redes conectadas</em>, la opción «Desconectar» de cada página, canal o cuenta
+          borra sus tokens y la deja de usar como destino; en YouTube y TikTok, además, le pide a la red que revoque
+          el acceso. También podés revocarlo directamente en cada red, y conviene hacer las dos cosas:
+        </p>
         <ul className="ml-5 list-disc space-y-1.5">
           <li>
-            Desde el servicio, en <em>Integraciones</em>, con la opción «Desconectar»: dejan de haber tokens
-            utilizables y se deshabilitan las páginas como destino.
+            <strong className="text-white">Facebook:</strong>{" "}
+            <em>Configuración y privacidad → Configuración → Apps y sitios web</em>, eliminando la app.
           </li>
           <li>
-            Desde Facebook, en <em>Configuración y privacidad → Configuración → Apps y sitios web</em>, eliminando la
-            app. Esto invalida los tokens del lado de Meta.
+            <strong className="text-white">YouTube:</strong> en la{" "}
+            <Enlace href="https://myaccount.google.com/permissions">
+              página de permisos de tu cuenta de Google
+            </Enlace>
+            , quitando el acceso de NG Creator.
+          </li>
+          <li>
+            <strong className="text-white">TikTok:</strong> en la app,{" "}
+            <em>Perfil → Configuración y privacidad → Seguridad y permisos → Apps y servicios</em>, quitando NG
+            Creator.
           </li>
         </ul>
       </Seccion>
