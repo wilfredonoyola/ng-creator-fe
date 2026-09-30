@@ -249,13 +249,28 @@ export function normalizarPalabra(p: string): string {
     .toLowerCase();
 }
 
+/**
+ * Las palabras de un texto, con si van destacadas y si empiezan renglón (el
+ * Enter). La misma cuenta que el render (ng-creator-be clip-render.ts): lo que
+ * se ve partido acá es lo que sale partido en el MP4.
+ */
 export function palabrasDelTexto(t: Pick<Texto, "contenido" | "destacadas" | "mayusculas">) {
   const destacadas = new Set(t.destacadas.map(normalizarPalabra).filter(Boolean));
   const contenido = t.mayusculas ? t.contenido.toLocaleUpperCase("es") : t.contenido;
-  return contenido
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((texto) => ({ texto, destacada: destacadas.has(normalizarPalabra(texto)) }));
+  const palabras: { texto: string; destacada: boolean; salto: boolean }[] = [];
+  for (const renglon of contenido.split(/\r?\n/)) {
+    renglon
+      .split(/\s+/)
+      .filter(Boolean)
+      .forEach((texto, i) =>
+        palabras.push({
+          texto,
+          destacada: destacadas.has(normalizarPalabra(texto)),
+          salto: i === 0 && palabras.length > 0,
+        }),
+      );
+  }
+  return palabras;
 }
 
 export function medidasEfecto(efecto: EfectoTexto, tamano: number) {

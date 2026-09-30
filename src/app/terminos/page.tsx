@@ -10,6 +10,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terminos" },
 };
 
+const Enlace = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="text-ng-celeste hover:underline">
+    {children}
+  </a>
+);
+
 const Correo = () => (
   <a href={`mailto:${CONTACTO}`} className="text-ng-celeste hover:underline">
     {CONTACTO}
@@ -136,6 +142,27 @@ export default function TerminosPage() {
           sobre ella. Solo se publica en las cuentas y páginas habilitadas de forma explícita. El uso de cada
           integración está sujeto además a los términos de esa red, que puede modificar, limitar o revocar el acceso a
           su API en cualquier momento, lo que puede interrumpir la publicación sin que dependa de nosotros.
+        </p>
+        <p>
+          Al publicar en YouTube a través del servicio aceptás los{" "}
+          <Enlace href="https://www.youtube.com/t/terms">Términos del servicio de YouTube</Enlace>, y tus datos se
+          tratan también según la{" "}
+          <Enlace href="https://policies.google.com/privacy">política de privacidad de Google</Enlace>.
+        </p>
+        <p>
+          Al publicar en TikTok aceptás los{" "}
+          <Enlace href="https://www.tiktok.com/legal/terms-of-service">Términos del servicio de TikTok</Enlace> y su{" "}
+          <Enlace href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en">
+            Confirmación de uso de música
+          </Enlace>
+          ; si declarás el video como contenido de marca, también su{" "}
+          <Enlace href="https://www.tiktok.com/legal/page/global/bc-policy/en">Política de contenido de marca</Enlace>
+          . Declarar con exactitud si un video es contenido comercial es responsabilidad de quien lo publica.
+        </p>
+        <p>
+          Las redes pueden limitar cuánto se publica por día y por cuenta, y mientras una integración no esté
+          aprobada por la red, puede publicar solo de forma privada. Esos límites son de cada red y no dependen de
+          nosotros.
         </p>
       </Seccion>
 
