@@ -584,6 +584,89 @@ export const YOUTUBE_DESCONECTAR = gql`
   }
 `;
 
+// ---- TikTok (ng-creator-be#62) ----
+
+export const TIKTOK_CONFIGURADO = gql`
+  query TiktokConfigurado {
+    tiktokConfigurado
+  }
+`;
+
+export const TIKTOK_URL_DE_CONEXION = gql`
+  query TiktokUrlDeConexion($marcaId: ID!) {
+    tiktokUrlDeConexion(marcaId: $marcaId)
+  }
+`;
+
+const CAMPOS_CUENTA_TIKTOK = gql`
+  fragment CamposCuentaTiktok on TiktokCuenta {
+    _id
+    marcaId
+    openId
+    nombre
+    usuario
+    avatarUrl
+    activa
+    requiereReconexion
+  }
+`;
+
+export const TIKTOK_CUENTAS = gql`
+  query TiktokCuentas($marcaId: ID!) {
+    tiktokCuentas(marcaId: $marcaId) {
+      ...CamposCuentaTiktok
+    }
+  }
+  ${CAMPOS_CUENTA_TIKTOK}
+`;
+
+/**
+ * Lo que la cuenta permite hoy. TikTok exige pedirlo al abrir la pantalla de
+ * publicar y armar las opciones con esto.
+ */
+export const TIKTOK_INFO_CREADOR = gql`
+  query TiktokInfoCreador($marcaId: ID!, $openId: String!) {
+    tiktokInfoCreador(marcaId: $marcaId, openId: $openId) {
+      usuario
+      apodo
+      avatarUrl
+      opcionesDePrivacidad
+      comentariosDeshabilitados
+      duoDeshabilitado
+      stitchDeshabilitado
+      duracionMaxSeg
+    }
+  }
+`;
+
+export const TIKTOK_CONECTAR = gql`
+  mutation TiktokConectar($code: String!, $state: String!) {
+    tiktokConectar(code: $code, state: $state) {
+      ...CamposCuentaTiktok
+    }
+  }
+  ${CAMPOS_CUENTA_TIKTOK}
+`;
+
+export const TIKTOK_SET_CUENTA_ACTIVA = gql`
+  mutation TiktokSetCuentaActiva(
+    $marcaId: ID!
+    $openId: String!
+    $activa: Boolean!
+  ) {
+    tiktokSetCuentaActiva(marcaId: $marcaId, openId: $openId, activa: $activa) {
+      ...CamposCuentaTiktok
+    }
+  }
+  ${CAMPOS_CUENTA_TIKTOK}
+`;
+
+export const TIKTOK_DESCONECTAR = gql`
+  mutation TiktokDesconectar($marcaId: ID!, $openId: String!) {
+    tiktokDesconectar(marcaId: $marcaId, openId: $openId)
+  }
+`;
+
 // ---- Revival: historial de la fan page ----
 
 /**

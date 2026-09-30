@@ -6,6 +6,7 @@ import { EXPEDIENTE } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
 import { PublicarEnYoutube } from "@/components/PublicarEnYoutube";
+import { PublicarEnTiktok } from "@/components/PublicarEnTiktok";
 import { ElegirPortada } from "@/components/ElegirPortada";
 import { EstadoEnFacebook } from "@/components/EstadoEnFacebook";
 import { SelloDeAutoria } from "@/components/SelloDeAutoria";
@@ -192,6 +193,17 @@ export default function DetalleVideoPage({
             <PublicarEnYoutube
               expedienteId={exp._id}
               marcaIdDelVideo={exp.marcaId}
+            />
+          </Seccion>
+
+          <Seccion
+            titulo="Publicar en TikTok"
+            detalle="Publica el video final en una cuenta de la marca activa."
+          >
+            <PublicarEnTiktok
+              expedienteId={exp._id}
+              marcaIdDelVideo={exp.marcaId}
+              videoUrl={exp.videoFinalUrl}
             />
           </Seccion>
         </div>
