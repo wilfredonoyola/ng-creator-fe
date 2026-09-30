@@ -119,7 +119,17 @@ export function EditorRecorte({
   subtitulo?: SubtituloClip | null;
   onCambiarSubtitulo?: (s: SubtituloClip) => void;
   /** El botón que sigue al que habla (ng-creator-be#105). */
-  autoEncuadre?: { analizando: boolean; resumen?: string | null; onPedir: () => void };
+  autoEncuadre?: {
+    analizando: boolean;
+    /** 0-1 mientras analiza. */
+    progreso?: number | null;
+    resumen?: string | null;
+    onPedir: () => void;
+    /** El panel de avance y resultado; recibe cómo llevar la vista previa a un segundo del clip. */
+    panel?: (ir: (segDelClip: number) => void) => ReactNode;
+    /** Cambia cuando llegan encuadres nuevos: se resaltan y la vista previa va al primer cambio. */
+    resaltar?: number;
+  };
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
@@ -233,6 +243,18 @@ export function EditorRecorte({
     const v = video.current;
     if (v) v.currentTime = desde + Math.min(Math.max(0, segDelClip), duracion - 0.05);
   }
+
+  // Encuadres nuevos del auto-encuadre: la vista previa va un segundo antes del
+  // primer cambio, para verlo pasar.
+  const resaltar = autoEncuadre?.resaltar ?? 0;
+  const primerCambio = posiciones[1]?.desdeSeg;
+  useEffect(() => {
+    if (!resaltar) return;
+    const v = video.current;
+    if (v) v.currentTime = desde + Math.max(0, (primerCambio ?? 1) - 1);
+    // Solo cuando llega un resultado nuevo, no cada vez que se mueve un tramo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resaltar]);
 
   // ---- Arrastrar recuadros ----
 
@@ -491,9 +513,12 @@ export function EditorRecorte({
             />
             {posiciones.map((p, i) => (
               <span
-                key={i}
+                key={`${resaltar}-${i}`}
                 className="pointer-events-none absolute top-0 h-2 w-0.5 bg-amber-300"
-                style={{ left: `${(p.desdeSeg / duracion) * 100}%` }}
+                style={{
+                  left: `${(p.desdeSeg / duracion) * 100}%`,
+                  animation: resaltar ? `aparecer 0.4s ease-out ${i * 0.08}s both, resaltar 2.4s ease-out ${i * 0.08}s` : undefined,
+                }}
               />
             ))}
           </div>
@@ -523,7 +548,9 @@ export function EditorRecorte({
                 className="ml-auto mr-2 rounded-lg bg-ng-violeta px-2.5 py-1 text-xs font-medium text-white hover:brightness-110 disabled:opacity-70"
                 title="Mira quién habla y arma los cambios de encuadre solo. Después los ajustás."
               >
-                {autoEncuadre.analizando ? "Mirando quién habla…" : `✨ Auto-encuadre${autoEncuadre.resumen ? ` · ${autoEncuadre.resumen}` : ""}`}
+                {autoEncuadre.analizando
+                  ? `Mirando quién habla… ${autoEncuadre.progreso ? `${Math.round(autoEncuadre.progreso * 100)}%` : ""}`
+                  : `✨ Auto-encuadre${autoEncuadre.resumen ? ` · ${autoEncuadre.resumen}` : ""}`}
               </button>
             )}
             {puedeEditar && (
@@ -541,10 +568,13 @@ export function EditorRecorte({
               const fin = i + 1 < posiciones.length ? posiciones[i + 1].desdeSeg : duracion;
               return (
                 <div
-                  key={i}
+                  key={`${resaltar}-${i}`}
                   className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-xs tabular-nums ${
                     i === indiceActiva ? "border-amber-300 text-white" : "border-white/15 text-white/60"
                   }`}
+                  style={{
+                    animation: resaltar ? `aparecer 0.4s ease-out ${i * 0.08}s both, resaltar 2.4s ease-out ${i * 0.08}s` : undefined,
+                  }}
                 >
                   <button onClick={() => ir(p.desdeSeg)}>
                     {p.desdeSeg.toFixed(1)}–{fin.toFixed(1)} s
@@ -558,6 +588,7 @@ export function EditorRecorte({
               );
             })}
           </div>
+          {autoEncuadre?.panel?.(ir)}
         </div>
       </div>
 
