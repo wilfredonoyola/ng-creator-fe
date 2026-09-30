@@ -18,7 +18,7 @@ import {
 } from "@/components/episodios/EditorRecorte";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import type { DisenoClip, Encuadre, FormatoClip, Region, Texto } from "@/lib/clip-encuadre";
+import type { DisenoClip, Encuadre, FondoClip, FormatoClip, Region, Texto } from "@/lib/clip-encuadre";
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
 import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
 
@@ -35,6 +35,7 @@ interface Borrador {
   formato: FormatoClip;
   encuadre: Encuadre;
   diseno: DisenoClip;
+  fondo: FondoClip;
   posiciones: { desdeSeg: number; regiones: Region[] }[];
   subtitulosActivos: boolean;
   correcciones: { desde: number; texto: string }[];
@@ -129,6 +130,7 @@ export default function EditorClipPage({
         zoom: clip.encuadre.zoom,
       },
       diseno: clip.diseno,
+      fondo: clip.fondo ?? "DESENFOCADO",
       posiciones: clip.posiciones.map((p: { desdeSeg: number; regiones: Region[] }) => ({
         desdeSeg: p.desdeSeg,
         regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
@@ -170,6 +172,7 @@ export default function EditorClipPage({
               formato: borrador.formato,
               encuadre: borrador.encuadre,
               diseno: borrador.diseno,
+              fondo: borrador.fondo,
               posiciones: borrador.posiciones,
               subtitulosActivos: borrador.subtitulosActivos,
               correcciones: borrador.correcciones,
@@ -363,6 +366,8 @@ export default function EditorClipPage({
           hasta={b.hastaSeg}
           formato={b.formato}
           diseno={b.diseno}
+          fondo={b.fondo}
+          onCambiarFondo={(fondo) => cambiar({ fondo })}
           encuadre={b.encuadre}
           posicionesGuardadas={b.posiciones}
           onCambiarPosiciones={(posiciones) => cambiar({ posiciones })}

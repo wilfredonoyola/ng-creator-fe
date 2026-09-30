@@ -1450,6 +1450,7 @@ const CAMPOS_CLIP_EDITOR = gql`
       zoom
     }
     diseno
+    fondo
     posiciones {
       desdeSeg
       regiones {

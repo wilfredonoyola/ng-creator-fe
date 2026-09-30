@@ -70,12 +70,18 @@ export function recorteDelCuadro(
  */
 export function medidasSubtitulo(
   lienzo: Lienzo,
-  diseno: "UNO" | "DIVIDIDO" = "UNO",
+  diseno: DisenoClip = "UNO",
 ): { cuerpo: number; margenAbajo: number } {
   const lado = Math.min(lienzo.ancho, lienzo.alto);
   const cuerpo = Math.round(lado * 0.1);
   if (diseno === "DIVIDIDO" && lienzo.alto >= lienzo.ancho) {
     return { cuerpo, margenAbajo: Math.round(lienzo.alto / 2 - cuerpo * 0.6) };
+  }
+  // Con el video en un recuadro centrado, en la franja de abajo (ng-creator-be#99).
+  const proporcion = PROPORCION_RECUADRO[diseno];
+  if (proporcion && lienzo.alto > lienzo.ancho / proporcion) {
+    const franja = (lienzo.alto - lienzo.ancho / proporcion) / 2;
+    return { cuerpo, margenAbajo: Math.round(Math.max(cuerpo * 0.4, franja / 2 - cuerpo * 0.5)) };
   }
   return {
     cuerpo,
@@ -93,7 +99,25 @@ export const GANCHO = { tamano: 64, centroY: 0.2, grosorContorno: 8 };
 
 // ---- Diseño y posiciones en el tiempo (copiado del backend, igual) ----
 
-export type DisenoClip = "UNO" | "DIVIDIDO";
+/**
+ * UNO: un encuadre. DIVIDIDO: dos recuadros. HORIZONTAL: el 16:9 entero,
+ * centrado. CENTRADO: un cuadrado centrado. Los dos últimos llevan fondo
+ * (ng-creator-be#99 y #100).
+ */
+export type DisenoClip = "UNO" | "DIVIDIDO" | "HORIZONTAL" | "CENTRADO";
+
+/** Qué va alrededor del recuadro en HORIZONTAL y CENTRADO. */
+export type FondoClip = "DESENFOCADO" | "NEGRO";
+
+/** Ancho / alto del recuadro de los diseños que no llenan el lienzo. */
+const PROPORCION_RECUADRO: Partial<Record<DisenoClip, number>> = { HORIZONTAL: 16 / 9, CENTRADO: 1 };
+
+/** Si el diseño deja lugar alrededor del video (y ahí va el fondo). */
+export function llevaFondo(formato: FormatoClip, diseno: DisenoClip): boolean {
+  const l = LIENZOS[formato];
+  const p = panelesDe(formato, diseno);
+  return p.length === 1 && (p[0].ancho < l.ancho || p[0].alto < l.alto);
+}
 
 export interface Panel {
   x: number;
@@ -104,6 +128,17 @@ export interface Panel {
 
 export function panelesDe(formato: FormatoClip, diseno: DisenoClip): Panel[] {
   const l = LIENZOS[formato];
+  const proporcion = PROPORCION_RECUADRO[diseno];
+  if (proporcion) {
+    const par = (n: number) => Math.round(n / 2) * 2;
+    let ancho = l.ancho;
+    let alto = par(ancho / proporcion);
+    if (alto > l.alto) {
+      alto = l.alto;
+      ancho = par(alto * proporcion);
+    }
+    return [{ x: par((l.ancho - ancho) / 2), y: par((l.alto - alto) / 2), ancho, alto }];
+  }
   if (diseno !== "DIVIDIDO") return [{ x: 0, y: 0, ancho: l.ancho, alto: l.alto }];
   if (l.alto >= l.ancho) {
     const mitad = Math.floor(l.alto / 2);

@@ -6,6 +6,7 @@ import {
   ajustarRegion,
   FUENTES,
   LIENZOS,
+  llevaFondo,
   medidasEfecto,
   palabrasDelTexto,
   medidasSubtitulo,
@@ -15,6 +16,7 @@ import {
   REGION_MINIMA,
   type DisenoClip,
   type Encuadre,
+  type FondoClip,
   type FormatoClip,
   type PosicionEfectiva,
   type Region,
@@ -73,6 +75,8 @@ export function EditorRecorte({
   onCambiarTramo,
   onCambiarFormato,
   onCambiarDiseno,
+  fondo = "DESENFOCADO",
+  onCambiarFondo,
 }: {
   url: string;
   /** Segundos del episodio. */
@@ -101,6 +105,9 @@ export function EditorRecorte({
   onCambiarTramo: (desde: number, hasta: number) => void;
   onCambiarFormato: (f: FormatoClip) => void;
   onCambiarDiseno: (d: DisenoClip) => void;
+  /** Alrededor del recuadro en HORIZONTAL y CENTRADO. */
+  fondo?: FondoClip;
+  onCambiarFondo?: (f: FondoClip) => void;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
@@ -125,8 +132,9 @@ export function EditorRecorte({
   const indiceActiva = posiciones.indexOf(activa);
 
   // Lo último, para leerlo desde el bucle de dibujo sin reiniciarlo.
-  const estado = useRef({ posiciones, paneles, lienzo, desde, hasta });
-  estado.current = { posiciones, paneles, lienzo, desde, hasta };
+  const conFondo = llevaFondo(formato, diseno);
+  const estado = useRef({ posiciones, paneles, lienzo, desde, hasta, desenfocado: conFondo && fondo === "DESENFOCADO" });
+  estado.current = { posiciones, paneles, lienzo, desde, hasta, desenfocado: conFondo && fondo === "DESENFOCADO" };
 
   useLayoutEffect(() => {
     const el = vista.current;
@@ -165,6 +173,16 @@ export function EditorRecorte({
           const pos = posicionEn(e.posiciones, v.currentTime - e.desde);
           ctx.fillStyle = "#000";
           ctx.fillRect(0, 0, c.width, c.height);
+          // El fondo desenfocado de HORIZONTAL y CENTRADO: el mismo video
+          // cubriendo el lienzo, como en el render (boxblur 20:3, brillo −0.05).
+          if (e.desenfocado) {
+            const k = Math.max(c.width / v.videoWidth, c.height / v.videoHeight);
+            const w = v.videoWidth * k;
+            const h = v.videoHeight * k;
+            ctx.filter = `blur(${Math.round(c.width / 30)}px) brightness(0.95) saturate(0.9)`;
+            ctx.drawImage(v, (c.width - w) / 2, (c.height - h) / 2, w, h);
+            ctx.filter = "none";
+          }
           e.paneles.forEach((panel, i) => {
             const r = pos.regiones[i];
             if (!r) return;
@@ -315,14 +333,34 @@ export function EditorRecorte({
               onCambio={onCambiarFormato}
               deshabilitado={!puedeEditar}
             />
-            <Pestanas
-              opciones={DISENOS}
-              valor={diseno}
-              onCambio={onCambiarDiseno}
-              deshabilitado={!puedeEditar}
-            />
           </div>
         </div>
+        {/* El diseño, con su dibujito, como en la app. */}
+        <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          {DISENOS.map((d) => (
+            <button
+              key={d.valor}
+              disabled={!puedeEditar}
+              onClick={() => d.valor !== diseno && onCambiarDiseno(d.valor)}
+              className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-center transition disabled:opacity-50 ${
+                d.valor === diseno ? "border-ng-azul bg-ng-azul/10" : "border-white/10 bg-black/20 hover:border-white/25"
+              }`}
+            >
+              <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === diseno} />
+              <span className="text-xs font-medium">{d.etiqueta}</span>
+              <span className="text-[11px] leading-tight text-white/45">{d.titulo}</span>
+            </button>
+          ))}
+        </div>
+        {conFondo && onCambiarFondo && (
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-white/50">Fondo</span>
+            <Pestanas opciones={FONDOS} valor={fondo} onCambio={onCambiarFondo} deshabilitado={!puedeEditar} />
+            <span className="text-[11px] text-white/40">
+              {fondo === "NEGRO" ? "Franjas limpias para poner textos." : "El mismo video, suave, detrás."}
+            </span>
+          </div>
+        )}
         <div
           ref={cuadro}
           className="relative w-full touch-none select-none overflow-hidden rounded-lg bg-black"
@@ -589,9 +627,35 @@ const FORMATOS: { valor: FormatoClip; etiqueta: string; titulo: string }[] = [
 ];
 
 const DISENOS: { valor: DisenoClip; etiqueta: string; titulo: string }[] = [
-  { valor: "UNO", etiqueta: "Un recuadro", titulo: "Una persona o el plano" },
-  { valor: "DIVIDIDO", etiqueta: "Dividido", titulo: "Dos recuadros, uno encima del otro" },
+  { valor: "UNO", etiqueta: "Uno", titulo: "Un solo encuadre" },
+  { valor: "DIVIDIDO", etiqueta: "Dividido", titulo: "Dos, uno arriba del otro" },
+  { valor: "HORIZONTAL", etiqueta: "Horizontal", titulo: "El 16:9 entero, centrado" },
+  { valor: "CENTRADO", etiqueta: "Centrado", titulo: "Un cuadrado al medio" },
 ];
+
+const FONDOS: { valor: FondoClip; etiqueta: string; titulo: string }[] = [
+  { valor: "DESENFOCADO", etiqueta: "Desenfocado", titulo: "El mismo video, suave" },
+  { valor: "NEGRO", etiqueta: "Negro", titulo: "Franjas limpias para textos" },
+];
+
+/** El dibujito del diseño en su botón, el mismo que en la app. */
+function MiniDiseno({ diseno, horizontal, activo }: { diseno: DisenoClip; horizontal: boolean; activo: boolean }) {
+  const borde = activo ? "border-ng-celeste" : "border-white/40";
+  const relleno = activo ? "bg-ng-celeste/80" : "bg-white/40";
+  return (
+    <div className={`flex gap-0.5 ${horizontal ? "h-6 w-10 flex-row" : "h-10 w-6 flex-col"}`}>
+      {diseno === "DIVIDIDO" ? (
+        [0, 1].map((i) => <div key={i} className={`flex-1 rounded-[3px] border-[1.5px] ${borde}`} />)
+      ) : diseno === "UNO" ? (
+        <div className={`flex-1 rounded-[3px] border-[1.5px] ${borde}`} />
+      ) : (
+        <div className={`flex flex-1 flex-col justify-center rounded-[3px] border-[1.5px] border-dashed ${borde}`}>
+          <div className={`${relleno} ${diseno === "HORIZONTAL" ? "h-[32%]" : "h-[56%]"}`} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function Pestanas<T extends string>({
   opciones,
