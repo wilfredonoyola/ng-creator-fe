@@ -1494,6 +1494,15 @@ const CAMPOS_CLIP_EDITOR = gql`
     estadoAutoEncuadre
     errorAutoEncuadre
     personasAutoEncuadre
+    etapaAutoEncuadre
+    progresoAutoEncuadre
+    autoEncuadreEmpezoEn
+    autoEncuadreDeshacible
+    resumenAutoEncuadre {
+      cx
+      segundos
+      retrato
+    }
     estadoRender
     progresoRender
     errorRender
@@ -1577,6 +1586,16 @@ export const AUTO_ENCUADRAR_CLIP_EPISODIO = gql`
   ${CAMPOS_CLIP_EDITOR}
   mutation AutoEncuadrarClipEpisodio($id: ID!, $marcaId: String!) {
     autoEncuadrarClipEpisodio(id: $id, marcaId: $marcaId) {
+      ...CamposClipEditor
+    }
+  }
+`;
+
+/** "Volver a como estaba": el diseño y los encuadres de antes del último auto-encuadre. */
+export const DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO = gql`
+  ${CAMPOS_CLIP_EDITOR}
+  mutation DeshacerAutoEncuadreClipEpisodio($id: ID!, $marcaId: String!) {
+    deshacerAutoEncuadreClipEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposClipEditor
     }
   }

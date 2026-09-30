@@ -49,3 +49,24 @@ body {
   src: url("/fonts/BebasNeue-Regular.ttf") format("truetype");
   font-display: swap;
 }
+
+/* Lo nuevo del auto-encuadre (ng-creator-be#105): aparece y brilla un momento. */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes resaltar {
+  0%,
+  60% {
+    box-shadow: 0 0 0 3px rgb(167 139 250 / 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(167 139 250 / 0);
+  }
+}

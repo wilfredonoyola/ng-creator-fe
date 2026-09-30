@@ -9,6 +9,7 @@ import {
   EPISODIO,
   RENDERIZAR_CLIP_EPISODIO,
   AUTO_ENCUADRAR_CLIP_EPISODIO,
+  DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO,
   TRANSCRIPCION_EPISODIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -23,6 +24,7 @@ import type { DisenoClip, Encuadre, FondoClip, FormatoClip, Region, SubtituloCli
 import { LIENZOS, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, subtituloPorDefecto } from "@/lib/clip-encuadre";
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
 import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
+import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 
 interface Palabra {
   texto: string;
@@ -84,6 +86,12 @@ export default function EditorClipPage({
   const [actualizar] = useMutation(ACTUALIZAR_CLIP_EPISODIO);
   const [renderizar, { loading: pidiendoRender }] = useMutation(RENDERIZAR_CLIP_EPISODIO);
   const [autoEncuadrar, { loading: pidiendoAuto }] = useMutation(AUTO_ENCUADRAR_CLIP_EPISODIO);
+  const [deshacerAuto, { loading: deshaciendo }] = useMutation(DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO);
+  // Al terminar el auto-encuadre en esta visita: se abre el resumen y se
+  // resaltan los encuadres nuevos (cada resultado suma uno).
+  const [resaltarAuto, setResaltarAuto] = useState(0);
+  const [resumenAbierto, setResumenAbierto] = useState(false);
+  const [falloCerrado, setFalloCerrado] = useState(false);
 
   const clip = clipQ.data?.clipEpisodio;
   const estilo: EstiloClip | undefined = clipQ.data?.estiloClipMarca;
@@ -275,22 +283,29 @@ export default function EditorClipPage({
     if (antes !== "EN_COLA" && antes !== "ANALIZANDO") return;
     const c = clipQ.data?.clipEpisodio;
     if (estadoAuto === "LISTO" && c) {
-      setB((prev) =>
-        prev
-          ? {
-              ...prev,
-              diseno: c.diseno,
-              posiciones: c.posiciones.map((p: { desdeSeg: number; regiones: Region[] }) => ({
-                desdeSeg: p.desdeSeg,
-                regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
-              })),
-            }
-          : prev,
-      );
+      tomarEncuadres(c);
+      setResaltarAuto((n) => n + 1);
+      setResumenAbierto(true);
     } else if (estadoAuto === "FALLIDO") {
-      setError(c?.errorAutoEncuadre ?? "No se pudo auto-encuadrar");
+      setFalloCerrado(false);
     }
   }, [estadoAuto, clipQ.data]);
+
+  /** El diseño y los encuadres que dejó el servidor pasan al borrador. */
+  function tomarEncuadres(c: { diseno: DisenoClip; posiciones: { desdeSeg: number; regiones: Region[] }[] }) {
+    setB((prev) =>
+      prev
+        ? {
+            ...prev,
+            diseno: c.diseno,
+            posiciones: c.posiciones.map((p) => ({
+              desdeSeg: p.desdeSeg,
+              regiones: p.regiones.map(({ x, y, ancho, alto }) => ({ x, y, ancho, alto })),
+            })),
+          }
+        : prev,
+    );
+  }
 
   const { startPolling, stopPolling } = clipQ;
   useEffect(() => {
@@ -378,12 +393,27 @@ export default function EditorClipPage({
       return;
     }
     setError(null);
+    setResumenAbierto(false);
     try {
       // El worker mira el tramo guardado: primero lo pendiente.
       await guardarAhora();
       await autoEncuadrar({ variables: { id: clipId, marcaId } });
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo auto-encuadrar");
+    }
+  }
+
+  async function deshacerAutoEncuadre() {
+    if (!marcaId) return;
+    setError(null);
+    try {
+      await guardarAhora();
+      const r = await deshacerAuto({ variables: { id: clipId, marcaId } });
+      const c = r.data?.deshacerAutoEncuadreClipEpisodio;
+      if (c) tomarEncuadres(c);
+      setResumenAbierto(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo volver a como estaba");
     }
   }
 
@@ -431,7 +461,30 @@ export default function EditorClipPage({
               estadoAuto === "LISTO" && clip.personasAutoEncuadre != null
                 ? `${clip.personasAutoEncuadre} persona${clip.personasAutoEncuadre === 1 ? "" : "s"}`
                 : null,
+            progreso: clip.progresoAutoEncuadre,
             onPedir: () => void pedirAutoEncuadre(),
+            resaltar: resaltarAuto,
+            panel: (ir) => (
+              <PanelAutoEncuadre
+                estado={pidiendoAuto && !analizando ? "EN_COLA" : estadoAuto}
+                etapa={clip.etapaAutoEncuadre}
+                progreso={clip.progresoAutoEncuadre}
+                empezoEn={clip.autoEncuadreEmpezoEn}
+                error={falloCerrado ? null : clip.errorAutoEncuadre}
+                personas={(clip.resumenAutoEncuadre ?? []) as PersonaAuto[]}
+                cambios={b.posiciones.length}
+                mostrarResumen={resumenAbierto}
+                deshacible={Boolean(clip.autoEncuadreDeshacible)}
+                deshaciendo={deshaciendo}
+                onVerPrimerCambio={() => ir(Math.max(0, (b.posiciones[1]?.desdeSeg ?? 1) - 1))}
+                onDeshacer={() => void deshacerAutoEncuadre()}
+                onReintentar={() => void pedirAutoEncuadre()}
+                onCerrar={() => {
+                  setResumenAbierto(false);
+                  setFalloCerrado(true);
+                }}
+              />
+            ),
           }}
           subtitulo={b.subtitulo}
           onCambiarSubtitulo={(subtitulo) => cambiar({ subtitulo })}
