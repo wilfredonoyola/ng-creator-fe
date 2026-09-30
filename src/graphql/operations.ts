@@ -519,6 +519,71 @@ export const PUBLICACIONES_DE_EXPEDIENTE = gql`
   ${CAMPOS_PUBLICACION}
 `;
 
+// ---- YouTube (ng-creator-be#61) ----
+
+/** Si el backend tiene las credenciales de Google cargadas. */
+export const YOUTUBE_CONFIGURADO = gql`
+  query YoutubeConfigurado {
+    youtubeConfigurado
+  }
+`;
+
+/** URL del diálogo de Google para colgarle un canal a la marca. */
+export const YOUTUBE_URL_DE_CONEXION = gql`
+  query YoutubeUrlDeConexion($marcaId: ID!) {
+    youtubeUrlDeConexion(marcaId: $marcaId)
+  }
+`;
+
+const CAMPOS_CANAL_YOUTUBE = gql`
+  fragment CamposCanalYoutube on YoutubeCanal {
+    _id
+    marcaId
+    canalId
+    nombre
+    miniaturaUrl
+    activa
+    requiereReconexion
+  }
+`;
+
+export const YOUTUBE_CANALES = gql`
+  query YoutubeCanales($marcaId: ID!) {
+    youtubeCanales(marcaId: $marcaId) {
+      ...CamposCanalYoutube
+    }
+  }
+  ${CAMPOS_CANAL_YOUTUBE}
+`;
+
+export const YOUTUBE_CONECTAR = gql`
+  mutation YoutubeConectar($code: String!, $state: String!) {
+    youtubeConectar(code: $code, state: $state) {
+      ...CamposCanalYoutube
+    }
+  }
+  ${CAMPOS_CANAL_YOUTUBE}
+`;
+
+export const YOUTUBE_SET_CANAL_ACTIVO = gql`
+  mutation YoutubeSetCanalActivo(
+    $marcaId: ID!
+    $canalId: String!
+    $activa: Boolean!
+  ) {
+    youtubeSetCanalActivo(marcaId: $marcaId, canalId: $canalId, activa: $activa) {
+      ...CamposCanalYoutube
+    }
+  }
+  ${CAMPOS_CANAL_YOUTUBE}
+`;
+
+export const YOUTUBE_DESCONECTAR = gql`
+  mutation YoutubeDesconectar($marcaId: ID!, $canalId: String!) {
+    youtubeDesconectar(marcaId: $marcaId, canalId: $canalId)
+  }
+`;
+
 // ---- Revival: historial de la fan page ----
 
 /**

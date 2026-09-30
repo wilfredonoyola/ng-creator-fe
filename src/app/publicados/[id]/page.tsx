@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client";
 import { EXPEDIENTE } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
+import { PublicarEnYoutube } from "@/components/PublicarEnYoutube";
 import { ElegirPortada } from "@/components/ElegirPortada";
 import { EstadoEnFacebook } from "@/components/EstadoEnFacebook";
 import { SelloDeAutoria } from "@/components/SelloDeAutoria";
@@ -181,6 +182,16 @@ export default function DetalleVideoPage({
               expedienteId={exp._id}
               marcaIdDelVideo={exp.marcaId}
               tienePoster={!!exp.posterUrl}
+            />
+          </Seccion>
+
+          <Seccion
+            titulo="Publicar en YouTube"
+            detalle="Sube el video final como Short a un canal de la marca activa."
+          >
+            <PublicarEnYoutube
+              expedienteId={exp._id}
+              marcaIdDelVideo={exp.marcaId}
             />
           </Seccion>
         </div>

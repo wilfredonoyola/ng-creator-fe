@@ -99,7 +99,10 @@ export function PublicarEnFacebook({
     PUBLICACIONES_DE_EXPEDIENTE,
     { variables, errorPolicy: "all" },
   );
-  const previas: Publicacion[] = data?.publicacionesDeExpediente ?? [];
+  // Las de las otras redes tienen su propio recuadro (PublicarEnYoutube).
+  const previas: Publicacion[] = (data?.publicacionesDeExpediente ?? []).filter(
+    (p: Publicacion) => p.red === "FACEBOOK",
+  );
   const refetchQueries = [{ query: PUBLICACIONES_DE_EXPEDIENTE, variables }];
 
   // Con la cola, publicar ya no espera a Meta dentro de la petición: vuelve al
@@ -329,7 +332,7 @@ const COLOR: Record<string, string> = {
  * Lo agendado en Meta (AGENDADA_EN_RED) sale solo y no se toca desde acá: el
  * backend lo rechazaría, así que no se ofrece.
  */
-function FilaPublicacion({
+export function FilaPublicacion({
   p,
   refetchQueries,
 }: {
@@ -505,7 +508,7 @@ function FilaPublicacion({
   );
 }
 
-function Opcion({
+export function Opcion({
   activa,
   onClick,
   children,

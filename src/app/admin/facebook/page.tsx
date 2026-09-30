@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { uploadLogoPagina } from "@/lib/upload";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { CanalesYoutube } from "@/components/CanalesYoutube";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import {
@@ -343,6 +344,8 @@ FACEBOOK_TOKEN_KEY=`}
           </p>
         </div>
       )}
+
+      <CanalesYoutube />
     </DashboardLayout>
   );
 }
