@@ -34,8 +34,8 @@ interface Episodio {
   importadoDe?: string | null;
   /** 0-100 mientras Bunny lo procesa. */
   progresoBunny?: number | null;
-  /** El live que trae el worker por partes: bajar 0-50 %, subir 50-100 %. */
-  estadoImportacion?: "EN_COLA" | "BAJANDO" | "SUBIENDO" | "LISTA" | "FALLIDA" | null;
+  /** El live que trae el worker por partes: bajar 0-40 %, comprimir 40-75 %, subir 75-100 %. */
+  estadoImportacion?: "EN_COLA" | "BAJANDO" | "COMPRIMIENDO" | "SUBIENDO" | "LISTA" | "FALLIDA" | null;
   progresoImportacion?: number | null;
   errorImportacion?: string | null;
   nombreArchivo: string;
@@ -83,6 +83,8 @@ function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
         return { etiqueta: "Falló la importación", clase: "bg-red-500/15 text-red-400" };
       case "BAJANDO":
         return { etiqueta: `Bajando de Restream · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
+      case "COMPRIMIENDO":
+        return { etiqueta: `Comprimiendo · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
       case "SUBIENDO":
         return { etiqueta: `Subiendo a Bunny · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
       case "LISTA":
@@ -157,6 +159,7 @@ export default function EpisodiosPage() {
       e.estado === "SUBIENDO" ||
       e.estadoImportacion === "EN_COLA" ||
       e.estadoImportacion === "BAJANDO" ||
+      e.estadoImportacion === "COMPRIMIENDO" ||
       e.estadoImportacion === "SUBIENDO" ||
       e.estado === "PROCESANDO" ||
       e.estadoTranscripcion === "EN_COLA" ||
@@ -622,10 +625,12 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
   }
   const paso =
     ep.estadoImportacion === "SUBIENDO"
-      ? "② Subiendo a Bunny"
-      : ep.estadoImportacion === "BAJANDO"
-        ? "① Bajando de Restream"
-        : "En fila: arranca en unos segundos";
+      ? "③ Subiendo a Bunny"
+      : ep.estadoImportacion === "COMPRIMIENDO"
+        ? "② Comprimiendo a 1440p y 30 fps (pesa ~la mitad)"
+        : ep.estadoImportacion === "BAJANDO"
+          ? "① Bajando de Restream"
+          : "En fila: arranca en unos segundos";
   return (
     <div className="mt-1.5 max-w-md">
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
