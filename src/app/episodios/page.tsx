@@ -31,6 +31,8 @@ interface Episodio {
   titulo: string;
   /** "restream:…" si Bunny lo trajo de una URL en vez de subirse. */
   importadoDe?: string | null;
+  /** 0-100 mientras Bunny lo procesa. */
+  progresoBunny?: number | null;
   nombreArchivo: string;
   tamanoBytes: number;
   estado: EstadoEpisodio;
@@ -500,11 +502,8 @@ function FilaEpisodio({
           {ep.duracionSeg ? `${duracion(ep.duracionSeg)} · ` : ""}
           {gb(ep.tamanoBytes)}
         </p>
-        {ep.estado === "SUBIENDO" && ep.importadoDe && (
-          <p className="mt-0.5 text-xs text-sky-300/80">
-            Bunny lo está trayendo de Restream. Un live largo tarda unos minutos; no hace falta dejar la página abierta.
-          </p>
-        )}
+        {ep.estado === "SUBIENDO" && ep.importadoDe && <BarraTrayendo desde={ep.createdAt} />}
+        {ep.estado === "PROCESANDO" && <BarraProcesando progreso={ep.progresoBunny ?? 0} />}
         {ep.estado === "SUBIENDO" && !ep.importadoDe && !enEstaPestana && (
           <p className="mt-0.5 text-xs text-amber-300/80">
             Quedó a medias. Elegí “{ep.nombreArchivo}” otra vez para retomarlo.
@@ -544,6 +543,53 @@ function FilaEpisodio({
         </button>
       )}
     </li>
+  );
+}
+
+/** Hace cuánto, en palabras: "2 min", "1 h 5 min". */
+function haceCuanto(desde: string, ahora: number): string {
+  const min = Math.max(0, Math.floor((ahora - new Date(desde).getTime()) / 60_000));
+  if (min < 1) return "menos de un minuto";
+  return min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60} min`;
+}
+
+function useAhora(ms: number): number {
+  const [ahora, setAhora] = useState(() => Date.now());
+  useEffect(() => {
+    const i = setInterval(() => setAhora(Date.now()), ms);
+    return () => clearInterval(i);
+  }, [ms]);
+  return ahora;
+}
+
+/**
+ * Mientras Bunny baja el live de Restream no dice cuánto lleva: barra que se
+ * mueve, el tiempo que pasó y qué viene después.
+ */
+function BarraTrayendo({ desde }: { desde: string }) {
+  const ahora = useAhora(15_000);
+  return (
+    <div className="mt-1.5 max-w-md">
+      <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div className="h-full w-1/3 animate-[trayendo_1.6s_ease-in-out_infinite] rounded-full bg-sky-400" />
+      </div>
+      <p className="mt-1 text-xs text-sky-300/80">
+        ① Bunny lo baja de Restream · hace {haceCuanto(desde, ahora)} → ② procesa → ③ transcribe. Un live largo puede tardar
+        varios minutos en bajar; no hace falta dejar la página abierta.
+      </p>
+    </div>
+  );
+}
+
+/** Bunny procesando: acá sí informa el porcentaje. */
+function BarraProcesando({ progreso }: { progreso: number }) {
+  return (
+    <div className="mt-1.5 max-w-md">
+      <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div className="h-full rounded-full bg-sky-400 transition-all duration-700" style={{ width: `${Math.max(3, progreso)}%` }} />
+      </div>
+      <p className="mt-1 text-xs text-sky-300/80">Bunny lo está procesando · {progreso}%. Después se transcribe solo.</p>
+    </div>
   );
 }
 
