@@ -15,6 +15,7 @@ import {
 } from "@/components/ReproductorEpisodio";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
+import { TomarClip, type Autoria } from "@/components/episodios/TomarClip";
 import { useSesion } from "@/lib/sesion";
 
 type EstadoMomentos = "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO";
@@ -31,6 +32,8 @@ interface Clip {
   texto: string;
   origen?: "IA" | "MANUAL";
   estadoRender?: "EN_COLA" | "RENDERIZANDO" | "LISTO" | "FALLIDO" | null;
+  /** Quién lo está haciendo (#70); null = libre. */
+  tomadoPor?: Autoria | null;
 }
 
 const MOTIVOS: Record<string, string> = {
@@ -219,6 +222,8 @@ export default function DetalleEpisodioPage({
                   key={c._id}
                   editar={`/episodios/${id}/clips/${c._id}`}
                   clip={c}
+                  marcaId={marcaId ?? ""}
+                  opera={opera}
                   puesto={i + 1}
                   sonando={sonando === c._id}
                   puedeReproducir={Boolean(ep.urlReproduccion)}
@@ -282,6 +287,8 @@ function EstadoDelAnalisis({
 function TarjetaClip({
   editar,
   clip,
+  marcaId,
+  opera,
   puesto,
   sonando,
   puedeReproducir,
@@ -289,6 +296,8 @@ function TarjetaClip({
 }: {
   editar: string;
   clip: Clip;
+  marcaId: string;
+  opera: boolean;
   puesto: number;
   sonando: boolean;
   puedeReproducir: boolean;
@@ -323,6 +332,9 @@ function TarjetaClip({
             {Math.round(clip.hastaSeg - clip.desdeSeg)} s
             {clip.origen !== "MANUAL" && ` · puntuación ${clip.puntuacion}`}
           </p>
+          <div className="mt-1.5">
+            <TomarClip clipId={clip._id} marcaId={marcaId} tomadoPor={clip.tomadoPor} puedeOperar={opera} />
+          </div>
           <p className="mt-2 text-sm text-white/70">{clip.explicacion}</p>
           {clip.gancho && (
             <p className="mt-1 text-sm text-white/50">

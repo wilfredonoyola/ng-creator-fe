@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import {
   ACTUALIZAR_CLIP_EPISODIO,
   CLIP_EPISODIO,
@@ -25,6 +25,7 @@ import { LIENZOS, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, subtituloPorDefect
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
 import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
+import { AvisoCruces, buscarCruces, TomarClip, type CruceClip } from "@/components/episodios/TomarClip";
 
 interface Palabra {
   texto: string;
@@ -72,7 +73,8 @@ export default function EditorClipPage({
 }) {
   const { id: episodioId, clipId } = params;
   const { activa } = useMarcaActiva();
-  const { puedeOperar } = useSesion();
+  const { puedeOperar, usuario } = useSesion();
+  const cliente = useApolloClient();
   const marcaId = activa?._id ?? null;
   const opera = puedeOperar(marcaId);
 
@@ -104,6 +106,12 @@ export default function EditorClipPage({
   const [modo, setModo] = useState<"inicio" | "fin" | "corregir">("inicio");
   const [corrigiendo, setCorrigiendo] = useState<Palabra | null>(null);
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
+  // El tramo que está guardado, y el aviso de cruces (#70) cuando el nuevo pisa
+  // otro clip. Lo que ya se aceptó con "Guardar igual" no se vuelve a preguntar
+  // a cada ajuste fino; solo si aparece un clip nuevo en el cruce.
+  const tramoGuardado = useRef<{ desdeSeg: number; hastaSeg: number } | null>(null);
+  const crucesAceptados = useRef(new Set<string>());
+  const [cruces, setCruces] = useState<CruceClip[] | null>(null);
 
   // El borrador arranca del clip UNA vez. Después manda lo que se edita acá:
   // pisarlo con cada respuesta del servidor borraría lo que se está tipeando.
@@ -133,6 +141,7 @@ export default function EditorClipPage({
         hastaSeg: clip.ganchoSeg ?? 3,
       });
     }
+    tramoGuardado.current = { desdeSeg: clip.desdeSeg, hastaSeg: clip.hastaSeg };
     setB({
       desdeSeg: clip.desdeSeg,
       hastaSeg: clip.hastaSeg,
@@ -179,9 +188,32 @@ export default function EditorClipPage({
   const [sinGuardar, setSinGuardar] = useState(false);
   const temporizador = useRef<ReturnType<typeof setTimeout> | null>(null);
   const ultimo = useRef<Borrador | null>(null);
+  /**
+   * Guarda el borrador. Devuelve false si no guardó porque el tramo nuevo pisa
+   * otro clip y falta que la persona diga "Guardar igual" (o porque llegó un
+   * cambio más nuevo mientras se revisaba).
+   */
   const guardar = useCallback(
-    async (borrador: Borrador) => {
-      if (!marcaId) return;
+    async (borrador: Borrador, sinRevisar = false): Promise<boolean> => {
+      if (!marcaId) return false;
+      const antes = tramoGuardado.current;
+      const tramoNuevo = !antes || antes.desdeSeg !== borrador.desdeSeg || antes.hastaSeg !== borrador.hastaSeg;
+      if (tramoNuevo && !sinRevisar) {
+        const encontrados = await buscarCruces(cliente, {
+          episodioId,
+          marcaId,
+          desdeSeg: borrador.desdeSeg,
+          hastaSeg: borrador.hastaSeg,
+          excluirClipId: clipId,
+        });
+        if (ultimo.current !== borrador) return false;
+        const sinAceptar = encontrados.filter((c) => !crucesAceptados.current.has(c.clipId));
+        if (sinAceptar.length) {
+          setCruces(encontrados);
+          return false;
+        }
+      }
+      setCruces(null);
       setGuardando(true);
       setError(null);
       try {
@@ -210,7 +242,9 @@ export default function EditorClipPage({
             },
           },
         });
+        tramoGuardado.current = { desdeSeg: borrador.desdeSeg, hastaSeg: borrador.hastaSeg };
         if (ultimo.current === borrador) setSinGuardar(false);
+        return true;
       } catch (e) {
         setError(e instanceof Error ? e.message : "No se pudo guardar");
         throw e;
@@ -218,7 +252,7 @@ export default function EditorClipPage({
         setGuardando(false);
       }
     },
-    [marcaId, clipId, actualizar],
+    [marcaId, clipId, episodioId, actualizar, cliente],
   );
 
   const primera = useRef(true);
@@ -239,13 +273,24 @@ export default function EditorClipPage({
     };
   }, [b, marcaId, opera, guardar]);
 
-  /** Guarda ya lo que esté pendiente, sin esperar el medio segundo. */
-  async function guardarAhora() {
+  /**
+   * Guarda ya lo que esté pendiente, sin esperar el medio segundo. Devuelve
+   * false si quedó esperando el aviso de cruces.
+   */
+  async function guardarAhora(): Promise<boolean> {
     if (temporizador.current) {
       clearTimeout(temporizador.current);
       temporizador.current = null;
     }
-    if (sinGuardar && ultimo.current) await guardar(ultimo.current);
+    if (sinGuardar && ultimo.current) return guardar(ultimo.current);
+    return true;
+  }
+
+  /** "Guardar igual": se acepta el cruce y se guarda el tramo como está. */
+  function guardarIgual() {
+    cruces?.forEach((c) => crucesAceptados.current.add(c.clipId));
+    setCruces(null);
+    if (ultimo.current) void guardar(ultimo.current, true).catch(() => undefined);
   }
 
   // La transcripción alrededor del clip. Se vuelve a pedir cuando el tramo se
@@ -390,7 +435,7 @@ export default function EditorClipPage({
     setResumenAbierto(false);
     try {
       // El worker mira el tramo guardado: primero lo pendiente.
-      await guardarAhora();
+      if (!(await guardarAhora())) return;
       await autoEncuadrar({ variables: { id: clipId, marcaId } });
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo auto-encuadrar");
@@ -401,7 +446,7 @@ export default function EditorClipPage({
     if (!marcaId) return;
     setError(null);
     try {
-      await guardarAhora();
+      if (!(await guardarAhora())) return;
       const r = await deshacerAuto({ variables: { id: clipId, marcaId } });
       const c = r.data?.deshacerAutoEncuadreClipEpisodio;
       if (c) tomarEncuadres(c);
@@ -415,7 +460,7 @@ export default function EditorClipPage({
     if (!marcaId) return;
     setError(null);
     try {
-      await guardarAhora();
+      if (!(await guardarAhora())) return;
       await renderizar({ variables: { id: clipId, marcaId } });
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo procesar el video");
@@ -439,7 +484,26 @@ export default function EditorClipPage({
         />
         <EstadoGuardado guardando={guardando} sinGuardar={sinGuardar} error={Boolean(error)} />
       </div>
+      <div className="-mt-3 mb-4">
+        <TomarClip clipId={clipId} marcaId={marcaId ?? ""} tomadoPor={clip.tomadoPor} puedeOperar={opera} />
+      </div>
       {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
+      {cruces && (
+        <div className="mb-4">
+          <AvisoCruces
+            cruces={cruces}
+            usuarioId={usuario?._id}
+            textoSeguir="Guardar igual"
+            onSeguir={guardarIgual}
+            onCancelar={() => {
+              // Vuelve al tramo guardado; lo demás que se cambió se guarda igual.
+              setCruces(null);
+              const t = tramoGuardado.current;
+              if (t) cambiarTramo(t.desdeSeg, t.hastaSeg);
+            }}
+          />
+        </div>
+      )}
 
       {ep.urlReproduccion ? (
         <EditorRecorte
