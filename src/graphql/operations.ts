@@ -360,6 +360,9 @@ export const MARCAS_ACTIVAS = gql`
         pageId
         nombre
         fotoUrl
+        instagramId
+        instagramUsuario
+        instagramFotoUrl
       }
     }
   }
@@ -514,6 +517,37 @@ export const PUBLICACIONES_DE_EXPEDIENTE = gql`
   query PublicacionesDeExpediente($marcaId: ID!, $expedienteId: ID!) {
     publicacionesDeExpediente(marcaId: $marcaId, expedienteId: $expedienteId) {
       ...CamposPublicacion
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
+/** Las de un clip de episodio (#71), en todas las redes. */
+export const PUBLICACIONES_DE_CLIP = gql`
+  query PublicacionesDeClip($marcaId: ID!, $clipId: ID!) {
+    publicacionesDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposPublicacion
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
+/**
+ * El calendario (#63, #70): lo de la marca en un rango, con el clip de cada
+ * una para la tarjeta. `clip` es null en las de expedientes.
+ */
+export const PUBLICACIONES_DE_MARCA = gql`
+  query PublicacionesDeMarca($marcaId: ID!, $desde: DateTime, $hasta: DateTime) {
+    publicacionesDeMarca(marcaId: $marcaId, desde: $desde, hasta: $hasta) {
+      ...CamposPublicacion
+      descripcion
+      portadaUrl
+      clip {
+        _id
+        episodioId
+        titulo
+        urlPoster
+      }
     }
   }
   ${CAMPOS_PUBLICACION}
@@ -1395,6 +1429,20 @@ export const EPISODIO = gql`
   }
 `;
 
+/**
+ * Si el clip ya se programó o ya salió (#70): lo que dice la tarjeta del clip
+ * ("Programado · vie 3, 18:00"). Las canceladas no cuentan.
+ */
+const RESUMEN_PUBLICACION_CLIP = gql`
+  fragment ResumenPublicacionClip on ResumenPublicacionClip {
+    programadas
+    publicadas
+    fallidas
+    proximaEn
+    ultimaPublicadaEn
+  }
+`;
+
 /** Los clips que propuso la IA, de mejor a peor (ng-creator-be#68). */
 export const CLIPS_DE_EPISODIO = gql`
   query ClipsDeEpisodio($id: ID!, $marcaId: String!) {
@@ -1412,14 +1460,24 @@ export const CLIPS_DE_EPISODIO = gql`
       origen
       formato
       estadoRender
+      urlVideo
       urlPoster
       tomadoPor {
         usuarioId
         nombre
         en
       }
+      listoPor {
+        usuarioId
+        nombre
+        en
+      }
+      publicacion {
+        ...ResumenPublicacionClip
+      }
     }
   }
+  ${RESUMEN_PUBLICACION_CLIP}
 `;
 
 /** Busca momentos otra vez: reintentar un análisis fallido o rehacerlo. */
@@ -1526,6 +1584,14 @@ const CAMPOS_CLIP_EDITOR = gql`
       nombre
       en
     }
+    listoPor {
+      usuarioId
+      nombre
+      en
+    }
+    publicacion {
+      ...ResumenPublicacionClip
+    }
     lineasSubtitulo {
       desde
       hasta
@@ -1536,6 +1602,7 @@ const CAMPOS_CLIP_EDITOR = gql`
       }
     }
   }
+  ${RESUMEN_PUBLICACION_CLIP}
 `;
 
 export const CLIP_EPISODIO = gql`
@@ -1639,6 +1706,43 @@ export const SOLTAR_CLIP_EPISODIO = gql`
     soltarClipEpisodio(id: $id, marcaId: $marcaId) {
       _id
       tomadoPor {
+        usuarioId
+        nombre
+        en
+      }
+    }
+  }
+`;
+
+/**
+ * "Listo" (#70, ng-creator-be#129): quien lo editó lo da por terminado y
+ * cualquiera del equipo lo puede programar. `listo: false` lo vuelve a "en
+ * trabajo". Pide el MP4 procesado.
+ */
+export const MARCAR_CLIP_LISTO = gql`
+  mutation MarcarClipListo($id: ID!, $marcaId: String!, $listo: Boolean!) {
+    marcarClipListo(id: $id, marcaId: $marcaId, listo: $listo) {
+      _id
+      listoPor {
+        usuarioId
+        nombre
+        en
+      }
+    }
+  }
+`;
+
+/** Los listos de toda la marca que nadie programó todavía: lo que le queda a quien programa. */
+export const CLIPS_LISTOS_SIN_PROGRAMAR = gql`
+  query ClipsListosSinProgramar($marcaId: String!) {
+    clipsListosSinProgramar(marcaId: $marcaId) {
+      _id
+      episodioId
+      titulo
+      desdeSeg
+      hastaSeg
+      urlPoster
+      listoPor {
         usuarioId
         nombre
         en

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Clapperboard, House, Menu, Mic, MonitorPlay, type LucideIcon } from "lucide-react";
+import { CalendarDays, Clapperboard, House, Menu, Mic, MonitorPlay, type LucideIcon } from "lucide-react";
 import { useSesion } from "@/lib/sesion";
 
 /**
@@ -22,6 +22,7 @@ interface Tab {
 const TABS: Tab[] = [
   { href: "/panel", icon: House, label: "Inicio" },
   { href: "/episodios", icon: Mic, label: "Episodios" },
+  { href: "/calendario", icon: CalendarDays, label: "Calendario" },
   { href: "/publicados", icon: MonitorPlay, label: "Publicaciones", tambien: ["/analisis"] },
 ];
 const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, label: "Crear" };

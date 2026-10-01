@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import {
+  CalendarDays,
   Clapperboard,
   House,
   Link2,
@@ -36,6 +37,7 @@ interface ItemNav {
 export const NAV_PRINCIPAL: ItemNav[] = [
   { href: "/panel", icon: House, label: "Inicio" },
   { href: "/episodios", icon: Mic, label: "Episodios" },
+  { href: "/calendario", icon: CalendarDays, label: "Calendario" },
   { href: "/publicados", icon: MonitorPlay, label: "Publicaciones", tambien: ["/analisis"] },
 ];
 
