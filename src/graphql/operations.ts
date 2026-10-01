@@ -1285,6 +1285,7 @@ const CAMPOS_EPISODIO = gql`
     _id
     marcaId
     titulo
+    importadoDe
     nombreArchivo
     tamanoBytes
     estado
@@ -1611,6 +1612,69 @@ export const BUSCAR_EN_EPISODIO = gql`
       antes
       frase
       despues
+    }
+  }
+`;
+
+// ---- Restream: importar la grabación de un live como episodio ----
+
+export const RESTREAM_CONFIGURADO = gql`
+  query RestreamConfigurado {
+    restreamConfigurado
+  }
+`;
+
+export const RESTREAM_CUENTA = gql`
+  query RestreamCuenta($marcaId: ID!) {
+    restreamCuenta(marcaId: $marcaId) {
+      _id
+      nombre
+      email
+      requiereReconexion
+    }
+  }
+`;
+
+export const RESTREAM_URL_DE_CONEXION = gql`
+  query RestreamUrlDeConexion($marcaId: ID!) {
+    restreamUrlDeConexion(marcaId: $marcaId)
+  }
+`;
+
+export const RESTREAM_CONECTAR = gql`
+  mutation RestreamConectar($code: String!, $state: String!) {
+    restreamConectar(code: $code, state: $state) {
+      _id
+      nombre
+    }
+  }
+`;
+
+export const RESTREAM_DESCONECTAR = gql`
+  mutation RestreamDesconectar($marcaId: ID!) {
+    restreamDesconectar(marcaId: $marcaId)
+  }
+`;
+
+export const RESTREAM_EVENTOS = gql`
+  query RestreamEventos($marcaId: ID!) {
+    restreamEventos(marcaId: $marcaId) {
+      id
+      titulo
+      portadaUrl
+      empezoEn
+      duracionSeg
+      archivo
+      grabacionVenceEn
+      episodioId
+    }
+  }
+`;
+
+export const IMPORTAR_DE_RESTREAM = gql`
+  mutation ImportarDeRestream($marcaId: ID!, $eventoId: String!) {
+    importarDeRestream(marcaId: $marcaId, eventoId: $eventoId) {
+      _id
     }
   }
 `;
