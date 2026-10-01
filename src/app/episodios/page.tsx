@@ -546,7 +546,12 @@ function FilaEpisodio({
         {ep.importadoDe && ((ep.estadoImportacion && ep.estadoImportacion !== "LISTA") || ep.estado === "FALLIDO") && (
           <BarraImportando ep={ep} onReintentar={onReintentarImportacion} />
         )}
-        {ep.estado === "PROCESANDO" && <BarraProcesando progreso={ep.progresoBunny ?? 0} />}
+        {ep.estado === "PROCESANDO" && (
+          <BarraProcesando
+            progreso={ep.progresoBunny ?? 0}
+            transcripcion={ep.estadoTranscripcion === "TRANSCRIBIENDO" ? (ep.progresoTranscripcion ?? 0) : ep.estadoTranscripcion}
+          />
+        )}
         {ep.estado === "SUBIENDO" && !ep.importadoDe && !enEstaPestana && (
           <p className="mt-0.5 text-xs text-amber-300/80">
             Quedó a medias. Elegí “{ep.nombreArchivo}” otra vez para retomarlo.
@@ -645,13 +650,22 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
 }
 
 /** Bunny procesando: acá sí informa el porcentaje. */
-function BarraProcesando({ progreso }: { progreso: number }) {
+function BarraProcesando({ progreso, transcripcion }: { progreso: number; transcripcion?: number | string | null }) {
   return (
     <div className="mt-1.5 max-w-md">
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full bg-sky-400 transition-all duration-700" style={{ width: `${Math.max(3, progreso)}%` }} />
       </div>
-      <p className="mt-1 text-xs text-sky-300/80">Bunny lo está procesando · {progreso}%. Después se transcribe solo.</p>
+      <p className="mt-1 text-xs text-sky-300/80">
+        Bunny lo está procesando · {progreso}%.{" "}
+        {typeof transcripcion === "number"
+          ? `Mientras, ya se está transcribiendo · ${transcripcion}%.`
+          : transcripcion === "EN_COLA"
+            ? "Mientras, ya está en fila para transcribir."
+            : transcripcion === "LISTA"
+              ? "La transcripción ya está; los clips aparecen cuando Bunny termine."
+              : "Después se transcribe solo."}
+      </p>
     </div>
   );
 }
