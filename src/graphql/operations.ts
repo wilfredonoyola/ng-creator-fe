@@ -1601,3 +1601,16 @@ export const DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO = gql`
     }
   }
 `;
+
+/** Dónde se dice una frase en el episodio: el paso 1 del "Crear clip" guiado. */
+export const BUSCAR_EN_EPISODIO = gql`
+  query BuscarEnEpisodio($id: ID!, $marcaId: String!, $texto: String!) {
+    buscarEnEpisodio(id: $id, marcaId: $marcaId, texto: $texto) {
+      desdeSeg
+      hastaSeg
+      antes
+      frase
+      despues
+    }
+  }
+`;

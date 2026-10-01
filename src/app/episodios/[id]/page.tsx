@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import {
   ANALIZAR_MOMENTOS_EPISODIO,
   CLIPS_DE_EPISODIO,
-  CREAR_CLIP_EPISODIO,
   EPISODIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -16,6 +14,7 @@ import {
   type ControlReproductor,
 } from "@/components/ReproductorEpisodio";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
 import { useSesion } from "@/lib/sesion";
 
 type EstadoMomentos = "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO";
@@ -66,13 +65,12 @@ export default function DetalleEpisodioPage({
   const reproductor = useRef<ControlReproductor>(null);
   const [sonando, setSonando] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [creandoClip, setCreandoClip] = useState(false);
 
   const variables = { id, marcaId: marcaId ?? "" };
   const episodioQ = useQuery(EPISODIO, { variables, skip: !marcaId, errorPolicy: "all" });
   const clipsQ = useQuery(CLIPS_DE_EPISODIO, { variables, skip: !marcaId });
   const [analizar, { loading: pidiendo }] = useMutation(ANALIZAR_MOMENTOS_EPISODIO);
-  const [crearClip, { loading: creando }] = useMutation(CREAR_CLIP_EPISODIO);
-  const router = useRouter();
 
   const ep = episodioQ.data?.episodio;
   const clips: Clip[] = clipsQ.data?.clipsDeEpisodio ?? [];
@@ -111,23 +109,6 @@ export default function DetalleEpisodioPage({
       void episodioQ.refetch();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo pedir el análisis");
-    }
-  }
-
-  /** Un clip a mano: 30 s desde donde está el video, y al editor. */
-  async function nuevoClip() {
-    if (!marcaId) return;
-    setError(null);
-    const desde = Math.max(0, Math.floor(reproductor.current?.tiempoActual() ?? 0));
-    try {
-      const r = await crearClip({
-        variables: {
-          input: { marcaId, episodioId: id, desdeSeg: desde, hastaSeg: desde + 30 },
-        },
-      });
-      router.push(`/episodios/${id}/clips/${r.data.crearClipEpisodio._id}`);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo crear el clip");
     }
   }
 
@@ -209,17 +190,27 @@ export default function DetalleEpisodioPage({
         <div>
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">Clips</h2>
-            {opera && ep.estadoTranscripcion === "LISTA" && (
+            {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && (
               <button
-                onClick={() => void nuevoClip()}
-                disabled={creando}
-                title="Crea un clip de 30 s desde donde está el video, y abre el editor"
-                className="rounded-lg border border-white/15 px-3 py-1 text-xs text-white/80 hover:bg-white/5 disabled:opacity-50"
+                onClick={() => setCreandoClip(true)}
+                title="Buscá el momento, marcá inicio y fin, y al editor"
+                className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-white hover:brightness-110"
               >
-                + Nuevo clip desde aquí
+                + Crear clip
               </button>
             )}
           </div>
+          {creandoClip && marcaId && (
+            <div className="mb-4">
+              <CrearClipGuiado
+                episodioId={id}
+                marcaId={marcaId}
+                duracionEpisodio={ep.duracionSeg ?? 0}
+                reproductor={reproductor}
+                onCerrar={() => setCreandoClip(false)}
+              />
+            </div>
+          )}
           <EstadoDelAnalisis ep={ep} />
           {clips.length > 0 && (
             <ol className="space-y-3">
