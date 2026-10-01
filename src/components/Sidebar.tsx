@@ -179,7 +179,13 @@ export function Sidebar({
         className="border-t border-white/10 p-4"
         style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
       >
-        <div className="mb-3 flex items-center gap-3">
+        {/* Lleva al perfil: ahí están los datos de la cuenta y eliminarla (be#95). */}
+        <button
+          onClick={() => ir("/perfil")}
+          className={`mb-3 flex w-full items-center gap-3 rounded-lg p-1 text-left transition hover:bg-white/5 ${
+            pathname.startsWith("/perfil") ? "bg-white/5" : ""
+          }`}
+        >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
             <span className="text-sm">👤</span>
           </div>
@@ -197,7 +203,8 @@ export function Sidebar({
                   : "Sin acceso a páginas"}
             </p>
           </div>
-        </div>
+          <span className="shrink-0 text-xs text-white/30">Perfil</span>
+        </button>
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"

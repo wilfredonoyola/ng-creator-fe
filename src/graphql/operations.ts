@@ -289,6 +289,35 @@ export const YO = gql`
   }
 `;
 
+/**
+ * Lo que pasa si la persona elimina su cuenta (be#95): qué marcas se archivan
+ * con ella y cuáles la frenan hasta que haga propietaria a otra persona.
+ */
+export const RESUMEN_ELIMINAR_CUENTA = gql`
+  query ResumenEliminarCuenta {
+    resumenEliminarCuenta {
+      email
+      marcasQueSeArchivan {
+        marcaId
+        nombre
+        otrosMiembros
+      }
+      marcasQueBloquean {
+        marcaId
+        nombre
+        otrosMiembros
+      }
+    }
+  }
+`;
+
+/** Elimina la cuenta de la sesión. `confirmacion` tiene que ser "ELIMINAR". */
+export const ELIMINAR_MI_CUENTA = gql`
+  mutation EliminarMiCuenta($confirmacion: String!) {
+    eliminarMiCuenta(confirmacion: $confirmacion)
+  }
+`;
+
 export const USUARIOS = gql`
   query Usuarios {
     usuarios {

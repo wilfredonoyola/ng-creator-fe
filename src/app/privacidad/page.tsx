@@ -286,18 +286,29 @@ export default function PrivacidadPage() {
       <Seccion titulo="10. Tus derechos y cómo eliminar tu cuenta">
         <p>
           Podés pedir acceso a tus datos, corregirlos, llevártelos (los clips terminados se descargan como MP4 en
-          cualquier momento) o eliminarlos. Para eliminar tu cuenta, escribí a <Correo /> desde el correo asociado a
-          ella. En un plazo de 30 días:
+          cualquier momento) o eliminarlos.
+        </p>
+        <p>
+          Tu cuenta la podés eliminar vos mismo, desde la app o desde la web, en <em>Perfil → Eliminar mi cuenta</em>.
+          Antes de confirmar te mostramos qué marcas se ven afectadas. Al eliminarla:
         </p>
         <ul className="ml-5 list-disc space-y-1.5">
-          <li>eliminamos tu usuario del servicio y de AWS Cognito, junto con tus roles;</li>
-          <li>eliminamos las conexiones con redes y todos sus tokens;</li>
+          <li>eliminamos tu usuario del servicio y de AWS Cognito, junto con tu acceso a todas las marcas;</li>
           <li>
-            si sos propietario de una marca, eliminamos su contenido, salvo que antes le pases la marca a otra persona
-            del equipo;
+            las marcas de las que sos el único miembro se archivan: se desconectan sus redes (borrando sus tokens) y
+            se cancelan sus publicaciones programadas. Su contenido queda guardado y se puede recuperar pidiéndolo a{" "}
+            <Correo /> por 30 días;
           </li>
-          <li>cancelamos tu suscripción en Wompi para que no haya más cobros.</li>
+          <li>en el historial de las marcas en las que trabajaste, tu nombre pasa a «Cuenta eliminada»;</li>
+          <li>
+            si sos el único propietario de una marca en la que hay más personas, primero tenés que hacer propietaria
+            a otra persona en <em>Equipo</em>: la marca y su contenido siguen siendo de su equipo.
+          </li>
         </ul>
+        <p>
+          También podés pedir la eliminación escribiendo a <Correo /> desde el correo asociado a tu cuenta; la
+          hacemos en un plazo de 30 días.
+        </p>
         <p>
           Conservamos solo lo que la ley nos obligue a guardar, como los registros de pago. El contenido ya publicado
           en una red social no se elimina desde acá: hay que borrarlo en esa red, porque desde la publicación queda

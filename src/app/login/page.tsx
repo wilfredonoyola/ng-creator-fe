@@ -1,7 +1,7 @@
 "use client";
 
 import { LogoNG } from "@/components/LogoNG";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   confirmarPasswordNueva,
@@ -65,6 +65,14 @@ export default function LoginPage() {
   const [recuperando, setRecuperando] = useState<null | "pedir" | "confirmar">(null);
   const [codigo, setCodigo] = useState("");
   const [aviso, setAviso] = useState<string | null>(null);
+
+  // Quien acaba de eliminar su cuenta llega acá con el aviso en la URL. Se lee
+  // después del montaje, como volverA, para no romper la hidratación.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("aviso") === "cuenta-eliminada") {
+      setAviso("Tu cuenta se eliminó.");
+    }
+  }, []);
 
   const modo = sesionDesafio ? "desafio" : (recuperando ?? "entrar");
 
@@ -239,6 +247,9 @@ export default function LoginPage() {
 
         {(modo === "entrar" || modo === "pedir") && (
           <>
+            {modo === "entrar" && aviso && (
+              <p className="mb-4 rounded-ng-md bg-ng-teal/10 px-3 py-2 text-xs text-ng-teal">{aviso}</p>
+            )}
             <label className="mb-1 block text-xs text-white/50">Correo</label>
             <input
               type="email"
