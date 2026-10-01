@@ -53,7 +53,7 @@ export default function TerminosPage() {
             episodios por periodo de cobro.
           </li>
           <li>
-            <strong className="text-white">Equipo — US$49.99 al mes:</strong> hasta 5 personas, 3 marcas y hasta 30
+            <strong className="text-white">Equipo — US$49.99 al mes:</strong> hasta 5 personas, 1 marca y hasta 16
             episodios por periodo de cobro.
           </li>
         </ul>

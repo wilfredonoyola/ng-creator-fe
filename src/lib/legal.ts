@@ -2,4 +2,4 @@
 export const RESPONSABLE = "NG Studios";
 export const CONTACTO = "soporte@ngstudios.co";
 export const JURISDICCION = "la República de El Salvador";
-export const ACTUALIZADO = "29 de septiembre de 2026";
+export const ACTUALIZADO = "1 de octubre de 2026";
