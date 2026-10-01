@@ -10,6 +10,7 @@ import {
   Download,
   LayoutPanelTop,
   ListChecks,
+  Mic,
   Send,
   Smartphone,
   Sparkles,
@@ -22,6 +23,7 @@ import { LogoNG } from "@/components/LogoNG";
 import { Cabecera, ENLACE_EMPEZAR, Pie } from "@/components/landing/Marco";
 import { MaquetaTelefono } from "@/components/landing/MaquetaTelefono";
 import { MaquetaProducto } from "@/components/landing/MaquetaProducto";
+import { MaquetaAutoEncuadre } from "@/components/landing/MaquetaAutoEncuadre";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 
 export const metadata: Metadata = {
@@ -51,7 +53,7 @@ const PASOS: { icono: LucideIcon; titulo: string; texto: string }[] = [
   {
     icono: Crop,
     titulo: "Editás en minutos",
-    texto: "Vertical, dividido, subtítulos con la palabra resaltada y textos con diseño. Lo que ves es lo que sale.",
+    texto: "El auto-encuadre sigue a quien habla; vos sumás subtítulos con la palabra resaltada y textos con diseño. Lo que ves es lo que sale.",
   },
   {
     icono: Users,
@@ -73,11 +75,35 @@ const REDES: { nombre: string; hoy: boolean }[] = [
   { nombre: "YouTube", hoy: false },
 ];
 
+/** Lo que hace el auto-encuadre (#105), dicho para quien edita a mano. */
+const AUTO_ENCUADRE: { titulo: string; texto: string }[] = [
+  {
+    titulo: "Sabe quién habla",
+    texto: "Reconoce cada voz y la une con la cara que mueve los labios. Quien gesticula, asiente o se tapa la cara no le roba el plano a quien habla.",
+  },
+  {
+    titulo: "Divide la pantalla cuando discuten",
+    texto: "Si hablan tres a la vez, en vez de saltar de cara en cara cada segundo, muestra la mesa partida: dos arriba y dos abajo.",
+  },
+  {
+    titulo: "Suma reacciones",
+    texto: "En una toma larga, corta un par de segundos a quien se ríe o reacciona, y vuelve. El clip se ve editado, no grabado de corrido.",
+  },
+  {
+    titulo: "Vos tenés la última palabra",
+    texto: "Cada plano queda en el editor para moverlo o cambiarlo. Ves cuánto salió cada persona y, si no te convence, volvés a como estaba.",
+  },
+  {
+    titulo: "En la web y en la app",
+    texto: "Lo pedís desde la computadora o el celular y sigue trabajando aunque cierres la pantalla.",
+  },
+];
+
 /** Lo que hoy hace falta para lo mismo, sin NG Creator. */
 const ANTES = [
   "Pasar el archivo de dos horas por Drive o WeTransfer",
   "Ver el episodio entero buscando los momentos",
-  "Cortar en Premiere o CapCut",
+  "Cortar en Premiere o CapCut y reencuadrar a mano quién habla",
   "Otra app para los subtítulos",
   "Mandar los clips a un grupo de WhatsApp para que los aprueben",
   "Descargar y subir red por red",
@@ -86,6 +112,7 @@ const ANTES = [
 const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: boolean }[] = [
   { icono: AudioLines, titulo: "Transcripción con tiempos", texto: "Cada palabra en su segundo exacto, en episodios de horas." },
   { icono: Sparkles, titulo: "Momentos con IA", texto: "Hasta 15 clips por episodio, ordenados por potencial viral." },
+  { icono: Mic, titulo: "Auto-encuadre", texto: "Sigue a quien habla, divide la pantalla cuando discuten y suma reacciones de los demás." },
   { icono: Crop, titulo: "Recorte arrastrable", texto: "Mové y agrandá el encuadre sobre el cuadro entero, y cambialo a mitad del clip." },
   { icono: LayoutPanelTop, titulo: "Diseño dividido", texto: "Dos recuadros apilados para que entren los cuatro de la mesa." },
   { icono: Captions, titulo: "Subtítulos que se leen", texto: "Grandes, con la palabra que se dice resaltada. Corregí una palabra sin tocar tiempos." },
@@ -139,6 +166,10 @@ const PREGUNTAS = [
   {
     p: "¿Tengo que descargar el episodio para editar?",
     r: "No. El original queda en la nube; la edición y el render pasan en nuestros servidores. Solo bajás el MP4 terminado, si querés.",
+  },
+  {
+    p: "¿El clip sigue a la persona que habla?",
+    r: "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula o se tapa la cara. Cuando discuten varios, divide la pantalla; en una toma larga, corta un par de segundos a la reacción de otro. Cada plano se puede corregir, y si no te convence, volvés a como estaba.",
   },
   {
     p: "¿Pone subtítulos automáticos?",
@@ -260,6 +291,32 @@ export default function Producto() {
               );
             })}
           </ol>
+        </div>
+      </section>
+
+      {/* ---- Auto-encuadre ---- */}
+      <section id="auto-encuadre" className="border-t border-white/5 bg-ng-fondo">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">Auto-encuadre</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">La cámara sigue a quien habla. Sola.</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
+              Tu podcast se graba con una cámara abierta sobre toda la mesa. Para vertical hay que elegir a quién mostrar en cada
+              segundo, y a mano eso es lo que más tiempo lleva. Con un botón, NG Creator mira el clip y arma los cambios de plano como
+              lo haría un editor.
+            </p>
+            <ul className="mt-6 space-y-3 text-sm">
+              {AUTO_ENCUADRE.map((t) => (
+                <li key={t.titulo} className="flex items-start gap-2.5">
+                  <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden />
+                  <span>
+                    <span className="font-semibold">{t.titulo}.</span> <span className="text-ng-secundario">{t.texto}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <MaquetaAutoEncuadre />
         </div>
       </section>
 
