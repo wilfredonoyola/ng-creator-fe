@@ -12,6 +12,7 @@ import {
   TRANSCRIBIR_EPISODIO,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
@@ -28,6 +29,8 @@ type EstadoTranscripcion = "EN_COLA" | "TRANSCRIBIENDO" | "LISTA" | "FALLIDA";
 interface Episodio {
   _id: string;
   titulo: string;
+  /** "restream:…" si Bunny lo trajo de una URL en vez de subirse. */
+  importadoDe?: string | null;
   nombreArchivo: string;
   tamanoBytes: number;
   estado: EstadoEpisodio;
@@ -67,6 +70,7 @@ const ESTILO_ESTADO: Record<EstadoEpisodio, { etiqueta: string; clase: string }>
 
 /** Un episodio LISTO en Bunny se muestra por el estado de su transcripción. */
 function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
+  if (ep.estado === "SUBIENDO" && ep.importadoDe) return { etiqueta: "Trayendo de Restream", clase: "bg-sky-500/15 text-sky-300" };
   if (ep.estado !== "LISTO" || !ep.estadoTranscripcion) return ESTILO_ESTADO[ep.estado];
   switch (ep.estadoTranscripcion) {
     case "EN_COLA":
@@ -342,6 +346,7 @@ export default function EpisodiosPage() {
                 </p>
               )}
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+              <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />
             </section>
           )}
 
@@ -495,7 +500,12 @@ function FilaEpisodio({
           {ep.duracionSeg ? `${duracion(ep.duracionSeg)} · ` : ""}
           {gb(ep.tamanoBytes)}
         </p>
-        {ep.estado === "SUBIENDO" && !enEstaPestana && (
+        {ep.estado === "SUBIENDO" && ep.importadoDe && (
+          <p className="mt-0.5 text-xs text-sky-300/80">
+            Bunny lo está trayendo de Restream. Un live largo tarda unos minutos; no hace falta dejar la página abierta.
+          </p>
+        )}
+        {ep.estado === "SUBIENDO" && !ep.importadoDe && !enEstaPestana && (
           <p className="mt-0.5 text-xs text-amber-300/80">
             Quedó a medias. Elegí “{ep.nombreArchivo}” otra vez para retomarlo.
           </p>
