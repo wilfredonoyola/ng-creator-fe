@@ -16,6 +16,11 @@ import {
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
 import { TomarClip, type Autoria } from "@/components/episodios/TomarClip";
+import {
+  EstadoPublicacionClip,
+  ListoClip,
+  type ResumenPublicacionClip,
+} from "@/components/episodios/ListoClip";
 import { useSesion } from "@/lib/sesion";
 
 type EstadoMomentos = "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO";
@@ -34,6 +39,10 @@ interface Clip {
   estadoRender?: "EN_COLA" | "RENDERIZANDO" | "LISTO" | "FALLIDO" | null;
   /** Quién lo está haciendo (#70); null = libre. */
   tomadoPor?: Autoria | null;
+  urlVideo?: string | null;
+  /** Quién lo dio por terminado (#70); null = en trabajo. */
+  listoPor?: Autoria | null;
+  publicacion?: ResumenPublicacionClip | null;
 }
 
 const MOTIVOS: Record<string, string> = {
@@ -304,6 +313,7 @@ function TarjetaClip({
   onReproducir: () => void;
 }) {
   const [verTexto, setVerTexto] = useState(false);
+  const tieneVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
   return (
     <li
       className={`rounded-xl border p-3 transition ${
@@ -326,14 +336,22 @@ function TarjetaClip({
             {(clip.estadoRender === "EN_COLA" || clip.estadoRender === "RENDERIZANDO") && (
               <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">Renderizando</span>
             )}
+            <EstadoPublicacionClip publicacion={clip.publicacion} />
           </div>
           <p className="mt-0.5 text-xs tabular-nums text-white/45">
             {reloj(clip.desdeSeg)} – {reloj(clip.hastaSeg)} ·{" "}
             {Math.round(clip.hastaSeg - clip.desdeSeg)} s
             {clip.origen !== "MANUAL" && ` · puntuación ${clip.puntuacion}`}
           </p>
-          <div className="mt-1.5">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <TomarClip clipId={clip._id} marcaId={marcaId} tomadoPor={clip.tomadoPor} puedeOperar={opera} />
+            <ListoClip
+              clipId={clip._id}
+              marcaId={marcaId}
+              listoPor={clip.listoPor}
+              tieneVideo={tieneVideo}
+              puedeOperar={opera}
+            />
           </div>
           <p className="mt-2 text-sm text-white/70">{clip.explicacion}</p>
           {clip.gancho && (
@@ -356,6 +374,14 @@ function TarjetaClip({
         >
           Editar
         </Link>
+        {opera && tieneVideo && (
+          <Link
+            href={`${editar}/publicar`}
+            className="rounded-lg border border-indigo-400/40 px-3 py-1.5 text-center text-xs text-indigo-200 hover:bg-indigo-400/10"
+          >
+            Programar
+          </Link>
+        )}
         {puedeReproducir && (
           <button
             onClick={onReproducir}

@@ -10,6 +10,13 @@ export interface PaginaFacebook {
   pageId: string;
   nombre: string;
   fotoUrl?: string | null;
+  /**
+   * La cuenta de Instagram ligada a la página, si Meta dio el permiso al
+   * conectar (ng-creator-be#60). Sale con la misma conexión que Facebook.
+   */
+  instagramId?: string | null;
+  instagramUsuario?: string | null;
+  instagramFotoUrl?: string | null;
 }
 
 /**

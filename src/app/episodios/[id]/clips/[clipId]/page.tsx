@@ -26,6 +26,7 @@ import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/
 import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces, buscarCruces, TomarClip, type CruceClip } from "@/components/episodios/TomarClip";
+import { EstadoPublicacionClip, ListoClip } from "@/components/episodios/ListoClip";
 
 interface Palabra {
   texto: string;
@@ -484,8 +485,24 @@ export default function EditorClipPage({
         />
         <EstadoGuardado guardando={guardando} sinGuardar={sinGuardar} error={Boolean(error)} />
       </div>
-      <div className="-mt-3 mb-4">
+      <div className="-mt-3 mb-4 flex flex-wrap items-center gap-1.5">
         <TomarClip clipId={clipId} marcaId={marcaId ?? ""} tomadoPor={clip.tomadoPor} puedeOperar={opera} />
+        <ListoClip
+          clipId={clipId}
+          marcaId={marcaId ?? ""}
+          listoPor={clip.listoPor}
+          tieneVideo={estadoRender === "LISTO" && Boolean(clip.urlVideo)}
+          puedeOperar={opera}
+        />
+        <EstadoPublicacionClip publicacion={clip.publicacion} />
+        {opera && estadoRender === "LISTO" && clip.urlVideo && (
+          <Link
+            href={`/episodios/${episodioId}/clips/${clipId}/publicar`}
+            className="ml-auto rounded-lg bg-indigo-500 px-3 py-1.5 text-xs font-medium text-white hover:brightness-110"
+          >
+            Programar
+          </Link>
+        )}
       </div>
       {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
       {cruces && (
