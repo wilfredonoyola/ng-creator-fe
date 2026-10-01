@@ -1286,6 +1286,7 @@ const CAMPOS_EPISODIO = gql`
     marcaId
     titulo
     importadoDe
+    progresoBunny
     nombreArchivo
     tamanoBytes
     estado

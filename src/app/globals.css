@@ -70,3 +70,13 @@ body {
     box-shadow: 0 0 0 0 rgb(167 139 250 / 0);
   }
 }
+
+/* La barra de "trayendo de Restream": Bunny no dice cuánto lleva, va y viene. */
+@keyframes trayendo {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
