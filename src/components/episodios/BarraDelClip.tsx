@@ -12,10 +12,9 @@ import type { ResumenPublicacionClip } from "./ListoClip";
 
 /**
  * El camino del clip en el equipo, arriba del editor (#70): quién lo está
- * haciendo, si ya está terminado y qué pasó en las redes. Antes eran chips
- * sueltos ("Lo tenés vos", "Soltar", "Marcar listo", "Falló") y no se
- * entendía para qué era cada uno: acá cada bloque dice qué es, en qué está y
- * qué pasa al tocar su botón.
+ * haciendo, si ya está terminado y qué pasó en las redes, en una sola línea
+ * fina para que lo principal sean las herramientas. Cada parte dice en qué
+ * está, y al pasar el mouse, qué significa y qué hace su botón.
  */
 export function BarraDelClip({
   clipId,
@@ -62,14 +61,26 @@ export function BarraDelClip({
 
   const { programadas = 0, publicadas = 0, fallidas = 0, proximaEn } = publicacion ?? {};
 
+  // Una sola línea fina: lo principal del editor son las herramientas, no
+  // esto. Lo que significa cada parte y qué hace su botón va en el título.
+  const redes = fallidas
+    ? { texto: "Falló en redes", tono: "error" as const, ayuda: "Una red rechazó la publicación. Entrá a Programar para ver el motivo y reintentar." }
+    : programadas
+      ? {
+          texto: `Programado${proximaEn ? ` · ${diaYHora(new Date(proximaEn))}` : ""}`,
+          tono: "listo" as const,
+          ayuda: programadas > 1 ? `${programadas} publicaciones en camino.` : "Sale sola a esa hora.",
+        }
+      : publicadas
+        ? { texto: `Publicado en ${publicadas} ${publicadas === 1 ? "red" : "redes"}`, tono: "listo" as const, ayuda: "Podés programarlo en otra red o a otra hora." }
+        : { texto: "Sin programar", tono: "tenue" as const, ayuda: tieneVideo ? "Elegí redes y hora en Programar." : "Primero procesá el video." };
+
   return (
-    <div className="mb-4">
-      <div className="grid gap-px overflow-hidden rounded-ng-xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]">
-        {/* ---- Quién lo hace ---- */}
-        <Bloque
-          icono={<UserRound size={16} aria-hidden />}
-          etiqueta="Quién lo edita"
-          estado={!tomadoPor ? "Nadie todavía" : mio ? "Vos" : tomadoPor.nombre}
+    <div className="mb-3">
+      <div className="flex flex-wrap items-center gap-x-1 gap-y-1.5 text-xs">
+        <Dato
+          icono={<UserRound size={13} aria-hidden />}
+          texto={!tomadoPor ? "Nadie lo tomó" : mio ? "Lo editás vos" : `Lo edita ${tomadoPor.nombre}`}
           tono={!tomadoPor ? "tenue" : mio ? "marca" : "aviso"}
           ayuda={
             !tomadoPor
@@ -86,73 +97,44 @@ export function BarraDelClip({
               : undefined
           }
         />
-
-        {/* ---- Terminado ---- */}
-        <Bloque
-          icono={listoPor ? <CheckCircle2 size={16} aria-hidden /> : <CircleDashed size={16} aria-hidden />}
-          etiqueta="Estado"
-          estado={listoPor ? `Terminado · ${listoPor.nombre}` : "En edición"}
+        <Separador />
+        <Dato
+          icono={listoPor ? <CheckCircle2 size={13} aria-hidden /> : <CircleDashed size={13} aria-hidden />}
+          texto={listoPor ? `Terminado · ${listoPor.nombre}` : "En edición"}
           tono={listoPor ? "listo" : "tenue"}
           ayuda={
             listoPor
               ? "Ya aparece en el calendario, en “Listos para programar”."
               : tieneVideo
                 ? "Cuando esté como querés, marcalo: el equipo lo ve para programarlo."
-                : "Procesá el video (abajo, en Exportar) para poder marcarlo terminado."
+                : "Procesá el video (en Exportar) para poder marcarlo terminado."
           }
           accion={
             puedeOperar && (listoPor || tieneVideo)
               ? listoPor
                 ? { texto: "Volver a editar", onClick: () => terminar(false), cargando: marcando }
-                : { texto: "Marcar terminado", onClick: () => terminar(true), cargando: marcando, destacada: true }
+                : { texto: "Marcar terminado", onClick: () => terminar(true), cargando: marcando }
               : undefined
           }
         />
-
-        {/* ---- Redes ---- */}
-        <Bloque
-          icono={<CalendarClock size={16} aria-hidden />}
-          etiqueta="En redes"
-          estado={
-            fallidas
-              ? `Falló la publicación${fallidas > 1 ? ` (${fallidas})` : ""}`
-              : programadas
-                ? `Programado${proximaEn ? ` · ${diaYHora(new Date(proximaEn))}` : ""}`
-                : publicadas
-                  ? `Publicado en ${publicadas} ${publicadas === 1 ? "red" : "redes"}`
-                  : "Sin programar"
-          }
-          tono={fallidas ? "error" : programadas || publicadas ? "listo" : "tenue"}
-          ayuda={
-            fallidas
-              ? "Una red rechazó el video. Entrá a Programar para ver el motivo y reintentar."
-              : programadas
-                ? `${programadas > 1 ? `${programadas} publicaciones en camino.` : "Sale sola a esa hora."}${publicadas ? ` Ya salió en ${publicadas}.` : ""}`
-                : publicadas
-                  ? "Podés programarlo en otra red o a otra hora."
-                  : tieneVideo
-                    ? "Elegí redes y hora en Programar."
-                    : "Primero procesá el video."
-          }
-        />
-
-        {/* ---- Programar ---- */}
-        <div className="flex items-center bg-ng-tarjeta p-4">
-          {puedeOperar && tieneVideo ? (
-            <Link
-              href={hrefProgramar}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-ng-md bg-marca px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110 lg:w-auto"
-            >
-              <Send size={15} aria-hidden /> {fallidas ? "Ver y reintentar" : "Programar"}
-            </Link>
-          ) : (
-            <p className="text-xs text-ng-tenue lg:max-w-[9rem]">Para programar, primero procesá el video.</p>
-          )}
-        </div>
+        <Separador />
+        <Dato icono={<CalendarClock size={13} aria-hidden />} texto={redes.texto} tono={redes.tono} ayuda={redes.ayuda} />
+        {puedeOperar && tieneVideo && (
+          <Link
+            href={hrefProgramar}
+            className="ml-auto inline-flex items-center gap-1.5 rounded-ng-md bg-marca px-3 py-1.5 text-xs font-semibold text-white hover:brightness-110"
+          >
+            <Send size={13} aria-hidden /> {fallidas ? "Ver y reintentar" : "Programar"}
+          </Link>
+        )}
       </div>
-      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
     </div>
   );
+}
+
+function Separador() {
+  return <span className="mx-1.5 h-3 w-px bg-white/15" aria-hidden />;
 }
 
 const TONOS = {
@@ -163,44 +145,35 @@ const TONOS = {
   error: "text-red-400",
 } as const;
 
-function Bloque({
+function Dato({
   icono,
-  etiqueta,
-  estado,
+  texto,
   tono,
   ayuda,
   accion,
 }: {
   icono: ReactNode;
-  etiqueta: string;
-  estado: string;
+  texto: string;
   tono: keyof typeof TONOS;
   ayuda: string;
-  accion?: { texto: string; onClick: () => void; cargando?: boolean; destacada?: boolean };
+  accion?: { texto: string; onClick: () => void; cargando?: boolean };
 }) {
   return (
-    <div className="flex flex-col gap-1 bg-ng-tarjeta p-4">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-ng-tenue">{etiqueta}</p>
-      <div className="flex items-center justify-between gap-3">
-        <p className={`flex min-w-0 items-center gap-1.5 text-sm font-semibold ${TONOS[tono]}`}>
-          {icono}
-          <span className="truncate">{estado}</span>
-        </p>
-        {accion && (
-          <button
-            onClick={accion.onClick}
-            disabled={accion.cargando}
-            className={`shrink-0 rounded-ng-md px-2.5 py-1 text-xs font-medium disabled:opacity-50 ${
-              accion.destacada
-                ? "bg-ng-teal/15 text-ng-teal hover:bg-ng-teal/25"
-                : "border border-white/15 text-white/80 hover:bg-white/5"
-            }`}
-          >
-            {accion.cargando ? "…" : accion.texto}
-          </button>
-        )}
-      </div>
-      <p className="text-xs leading-snug text-ng-tenue">{ayuda}</p>
-    </div>
+    <span className="inline-flex items-center gap-1.5" title={ayuda}>
+      <span className={`inline-flex items-center gap-1 ${TONOS[tono]}`}>
+        {icono}
+        {texto}
+      </span>
+      {accion && (
+        <button
+          onClick={accion.onClick}
+          disabled={accion.cargando}
+          title={ayuda}
+          className="rounded px-1 text-ng-celeste underline-offset-2 hover:underline disabled:opacity-50"
+        >
+          {accion.cargando ? "…" : accion.texto}
+        </button>
+      )}
+    </span>
   );
 }

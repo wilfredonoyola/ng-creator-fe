@@ -415,54 +415,51 @@ export function EditorRecorte({
     <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
       {/* ---- El cuadro entero, con los recuadros ---- */}
       <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-        {/* Formato y diseño arriba, a mano: es lo primero que se decide. */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm font-medium">Posicioná el recorte</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <Pestanas
-              opciones={FORMATOS}
-              valor={formato}
-              onCambio={onCambiarFormato}
-              deshabilitado={!puedeEditar}
-            />
+        {/* Formato, diseño y fondo en una sola fila de botones chicos: lo que
+            más se toca es el recuadro y el video, no esto. Lo que hace cada
+            uno va en su título (al pasar el mouse). */}
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          <Pestanas opciones={FORMATOS} valor={formato} onCambio={onCambiarFormato} deshabilitado={!puedeEditar} />
+          <div
+            className="flex rounded-lg border border-white/10 bg-black/30 p-0.5"
+            role="group"
+            aria-label={posiciones.length > 1 ? "Diseño de este tramo" : "Diseño"}
+          >
+            {DISENOS.map((d) => (
+              <button
+                key={d.valor}
+                disabled={!puedeEditar}
+                onClick={() => cambiarDisenoTramo(d.valor)}
+                title={`${d.titulo}${posiciones.length > 1 ? " (en este tramo)" : ""}`}
+                className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition disabled:opacity-50 ${
+                  d.valor === disenoActivo ? "bg-ng-azul/20 font-medium text-white" : "text-white/60 hover:text-white"
+                }`}
+              >
+                <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === disenoActivo} chico />
+                {d.etiqueta}
+              </button>
+            ))}
           </div>
-        </div>
-        {/* El diseño del tramo donde está el video, con su dibujito, como en la app. */}
-        {posiciones.length > 1 && (
-          <p className="mb-1.5 text-xs text-white/50">
-            Diseño de este tramo ({activa.desdeSeg.toFixed(1)}–
-            {(indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1)} s)
-          </p>
-        )}
-        <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {DISENOS.map((d) => (
-            <button
-              key={d.valor}
-              disabled={!puedeEditar}
-              onClick={() => cambiarDisenoTramo(d.valor)}
-              className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-center transition disabled:opacity-50 ${
-                d.valor === disenoActivo ? "border-ng-azul bg-ng-azul/10" : "border-white/10 bg-black/20 hover:border-white/25"
-              }`}
-            >
-              <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === disenoActivo} />
-              <span className="text-xs font-medium">{d.etiqueta}</span>
-              <span className="text-[11px] leading-tight text-white/45">{d.titulo}</span>
-            </button>
-          ))}
-        </div>
-        {conFondo && onCambiarFondo && (
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-white/50">Fondo</span>
+          {conFondo && onCambiarFondo && (
             <Pestanas opciones={FONDOS} valor={fondo} onCambio={onCambiarFondo} deshabilitado={!puedeEditar} />
-            <span className="text-[11px] text-white/40">
-              {fondo === "NEGRO" ? "Franjas limpias para poner textos." : "El mismo video, suave, detrás."}
+          )}
+          {posiciones.length > 1 && (
+            <span className="text-[11px] tabular-nums text-white/40">
+              Tramo {activa.desdeSeg.toFixed(1)}–
+              {(indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1)} s
             </span>
-          </div>
-        )}
+          )}
+        </div>
+        {/* El cuadro entero, con un tope de alto: así entran abajo el
+            reproductor y los encuadres sin tener que bajar. */}
         <div
           ref={cuadro}
-          className="relative w-full touch-none select-none overflow-hidden rounded-lg bg-black"
-          style={{ aspectRatio: `${fuente.ancho} / ${fuente.alto}` }}
+          className="relative mx-auto w-full touch-none select-none overflow-hidden rounded-lg bg-black"
+          style={{
+            aspectRatio: `${fuente.ancho} / ${fuente.alto}`,
+            maxHeight: "42vh",
+            maxWidth: `calc(42vh * ${fuente.ancho / fuente.alto})`,
+          }}
         >
           <video
             ref={video}
@@ -627,8 +624,8 @@ export function EditorRecorte({
         </div>
       </div>
 
-      {/* ---- La vista previa ---- */}
-      <div className="space-y-4">
+      {/* ---- La vista previa: queda a la vista mientras se baja por las herramientas ---- */}
+      <div className="space-y-4 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:self-start xl:overflow-y-auto">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
           <p className="mb-2 text-sm font-medium">
             Vista previa ({formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"})
@@ -639,8 +636,8 @@ export function EditorRecorte({
             className="relative mx-auto cursor-pointer overflow-hidden rounded-lg bg-black"
             style={{
               aspectRatio: `${lienzo.ancho} / ${lienzo.alto}`,
-              maxHeight: "62vh",
-              maxWidth: `calc(62vh * ${lienzo.ancho / lienzo.alto})`,
+              maxHeight: "56vh",
+              maxWidth: `calc(56vh * ${lienzo.ancho / lienzo.alto})`,
             }}
           >
             <canvas
@@ -798,11 +795,23 @@ const FONDOS: { valor: FondoClip; etiqueta: string; titulo: string }[] = [
 ];
 
 /** El dibujito del diseño en su botón, el mismo que en la app. */
-function MiniDiseno({ diseno, horizontal, activo }: { diseno: DisenoClip; horizontal: boolean; activo: boolean }) {
+function MiniDiseno({
+  diseno,
+  horizontal,
+  activo,
+  chico = false,
+}: {
+  diseno: DisenoClip;
+  horizontal: boolean;
+  activo: boolean;
+  /** El de la fila de botones: del alto de una letra. */
+  chico?: boolean;
+}) {
   const borde = activo ? "border-ng-celeste" : "border-white/40";
   const relleno = activo ? "bg-ng-celeste/80" : "bg-white/40";
+  const tamano = chico ? (horizontal ? "h-2.5 w-4" : "h-4 w-2.5") : horizontal ? "h-6 w-10" : "h-10 w-6";
   return (
-    <div className={`flex gap-0.5 ${horizontal ? "h-6 w-10 flex-row" : "h-10 w-6 flex-col"}`}>
+    <div className={`flex gap-px ${tamano} ${horizontal ? "flex-row" : "flex-col"}`}>
       {diseno === "DIVIDIDO" ? (
         [0, 1].map((i) => <div key={i} className={`flex-1 rounded-[3px] border-[1.5px] ${borde}`} />)
       ) : diseno === "UNO" ? (
