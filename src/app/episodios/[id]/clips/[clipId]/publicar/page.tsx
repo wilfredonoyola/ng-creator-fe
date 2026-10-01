@@ -212,6 +212,7 @@ function Formulario({
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; texto: string } | null>(null);
 
+  const elegidosEnOrden = destinos.filter((d) => elegidos.has(d.clave));
   const conYoutube = destinos.some((d) => d.red === "YOUTUBE" && elegidos.has(d.clave));
   const editadoSinProcesar =
     clip.editadoEn &&
@@ -302,6 +303,41 @@ function Formulario({
 
       {opera ? (
         <>
+          {/* Dónde y cuándo sale, al día con lo que se marca abajo, y el botón
+              arriba: no hace falta bajar hasta el final para programar. */}
+          <div className="sticky top-2 z-10 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-ng-fondo/95 p-3 backdrop-blur">
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/55"}`}>
+                {!fecha ? "Elegí el día y la hora" : yaPaso ? "Esa hora ya pasó" : `Sale el ${diaYHora(cuando!)}`}
+              </p>
+              {elegidosEnOrden.length ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {elegidosEnOrden.map((d) => (
+                    <span
+                      key={d.clave}
+                      className="flex max-w-full items-center gap-1.5 rounded-full border border-ng-azul/60 bg-ng-azul/10 py-0.5 pl-0.5 pr-2 text-xs"
+                    >
+                      <IconoRed url={d.foto} red={d.red} chico />
+                      <span className="truncate">
+                        {REDES[d.red]?.nombre ?? d.red} · {d.nombre}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-amber-300">Marcá al menos una red en Dónde.</p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => void enviar()}
+              disabled={enviando || elegidos.size === 0 || yaPaso}
+              className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+            >
+              {enviando ? "Programando…" : elegidos.size > 1 ? `Programar en ${elegidos.size} redes` : "Programar"}
+            </button>
+          </div>
+
           <Seccion titulo="Dónde">
             {destinos.length === 0 ? (
               <p className="text-sm text-white/60">
@@ -432,14 +468,6 @@ function Formulario({
             </p>
           )}
 
-          <button
-            type="button"
-            onClick={() => void enviar()}
-            disabled={enviando || elegidos.size === 0 || yaPaso}
-            className="w-full rounded-xl bg-indigo-500 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-          >
-            {enviando ? "Programando…" : elegidos.size > 1 ? `Programar en ${elegidos.size} redes` : "Programar"}
-          </button>
         </>
       ) : (
         <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/50">
