@@ -18,6 +18,8 @@ import {
   Type,
   Upload,
   Users,
+  Video,
+  Clapperboard,
   type LucideIcon,
 } from "lucide-react";
 import { LogoNG } from "@/components/LogoNG";
@@ -31,7 +33,7 @@ import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion"
 export const metadata: Metadata = {
   title: { absolute: "NG Creator — De tu podcast a clips publicados en TikTok, Reels, Shorts y Facebook" },
   description:
-    "El flujo completo en un solo lugar: subí el episodio, se transcribe solo, la IA encuentra los mejores momentos, tu equipo los edita con subtítulos y los aprueba, y los publicás en todas tus redes. Web y app para iPhone y Android.",
+    "Para podcasts, lives de TikTok y streams. El flujo completo en un solo lugar: subí el episodio, se transcribe solo, la IA encuentra los mejores momentos, tu equipo los edita con subtítulos y los aprueba, y los publicás en todas tus redes. Web y app para iPhone y Android.",
   alternates: { canonical: "/" },
 };
 
@@ -122,6 +124,30 @@ const LIVES: { titulo: string; texto: string }[] = [
     titulo: "Terminás y los clips ya están",
     texto: "Transcripción, los mejores momentos con IA, auto-encuadre y subtítulos. Los revisás y los publicás.",
   },
+];
+
+/**
+ * Para quien es. Lo nuestro son los podcasts de mesa (#121); el resto es lo
+ * mismo con otra entrada: cualquier video largo donde la gente habla.
+ */
+const PARA_QUIEN: { icono: LucideIcon; titulo: string; texto: string; principal?: boolean }[] = [
+  {
+    icono: Mic,
+    titulo: "Podcasts",
+    texto: "Episodios de dos o tres horas con toda la mesa: sigue a quien habla, divide la pantalla cuando discuten y subtitula en español.",
+    principal: true,
+  },
+  { icono: Radio, titulo: "Lives de TikTok", texto: "Con TikTok LIVE Studio, OBS o Streamlabs: del live de dos horas a los diez momentos que valen." },
+  { icono: Video, titulo: "Streams", texto: "Tus lives de YouTube, Facebook o Twitch, traídos desde Restream sin descargar nada." },
+  { icono: Clapperboard, titulo: "Entrevistas, clases y webinars", texto: "Cualquier video largo donde alguien habla: la IA encuentra lo que se entiende solo." },
+];
+
+/** De donde llega el video. `pronto` es lo que todavia no existe. */
+const ENTRADAS: { titulo: string; texto: string; pronto?: boolean }[] = [
+  { titulo: "Subí el archivo", texto: "mp4, mov, webm o mkv, hasta 50 GB" },
+  { titulo: "Conectá Restream", texto: "tus lives, sin descargarlos" },
+  { titulo: "Grabación de TikTok LIVE Studio", texto: "en mejor calidad que la repetición" },
+  { titulo: "OBS y Streamlabs", texto: "grabamos el live mientras sale al aire", pronto: true },
 ];
 
 /** Lo que hoy hace falta para lo mismo, sin NG Creator. */
@@ -232,7 +258,7 @@ const DATOS_ESTRUCTURADOS = [
     applicationCategory: "MultimediaApplication",
     operatingSystem: "Web, iOS, Android",
     inLanguage: "es",
-    description: "Convertí episodios de podcast en clips verticales con subtítulos para TikTok, Reels y Shorts. La IA encuentra los mejores momentos y tu equipo los edita y publica.",
+    description: "Convertí episodios de podcast, lives de TikTok y streams en clips verticales con subtítulos para TikTok, Reels y Shorts. La IA encuentra los mejores momentos y tu equipo los edita y publica.",
     offers: PLANES.map((p) => ({ "@type": "Offer", name: p.nombre, price: p.precio, priceCurrency: "USD" })),
   },
   {
@@ -260,7 +286,7 @@ export default function Producto() {
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
           <div>
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ng-secundario">
-              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Del podcast a tus redes, en un solo lugar
+              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Del podcast o el live a tus redes, en un solo lugar
             </p>
             <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
               Subí el episodio. <span className="texto-marca">Publicá los clips.</span> Todo en un solo lugar.
@@ -321,6 +347,41 @@ export default function Producto() {
               );
             })}
           </ol>
+        </div>
+      </section>
+
+      {/* ---- Para quien ---- */}
+      <section id="para-quien" className="border-t border-white/5">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">Para quién es</p>
+          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Hecho para podcasts. Sirve para cualquier video largo.</h2>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {PARA_QUIEN.map((c) => (
+              <div
+                key={c.titulo}
+                className={`rounded-ng-lg border p-5 ${c.principal ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-superficie/50"}`}
+              >
+                <div className="flex items-center justify-between">
+                  <c.icono size={20} className="text-ng-celeste" aria-hidden />
+                  {c.principal && <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-semibold text-white">Lo nuestro</span>}
+                </div>
+                <h3 className="mt-3 font-semibold">{c.titulo}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{c.texto}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-10 text-sm font-semibold">Traé tu video como te quede más cómodo</p>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {ENTRADAS.map((e) => (
+              <li
+                key={e.titulo}
+                className={`rounded-full border px-3 py-1.5 text-xs ${e.pronto ? "border-white/10 text-ng-secundario" : "border-ng-teal/40 bg-ng-teal/10 text-ng-texto"}`}
+              >
+                <span className="font-semibold">{e.titulo}</span> <span className="text-ng-secundario">· {e.texto}</span>
+                {e.pronto && <span className="ml-1 text-ng-lila">· pronto</span>}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
