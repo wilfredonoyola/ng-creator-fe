@@ -10,6 +10,7 @@ import {
   PREPARAR_SUBIDA_EPISODIO,
   RENOVAR_SUBIDA_EPISODIO,
   TRANSCRIBIR_EPISODIO,
+  IMPORTAR_DE_RESTREAM,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
@@ -33,6 +34,10 @@ interface Episodio {
   importadoDe?: string | null;
   /** 0-100 mientras Bunny lo procesa. */
   progresoBunny?: number | null;
+  /** El live que trae el worker por partes: bajar 0-50 %, subir 50-100 %. */
+  estadoImportacion?: "EN_COLA" | "BAJANDO" | "SUBIENDO" | "LISTA" | "FALLIDA" | null;
+  progresoImportacion?: number | null;
+  errorImportacion?: string | null;
   nombreArchivo: string;
   tamanoBytes: number;
   estado: EstadoEpisodio;
@@ -72,7 +77,20 @@ const ESTILO_ESTADO: Record<EstadoEpisodio, { etiqueta: string; clase: string }>
 
 /** Un episodio LISTO en Bunny se muestra por el estado de su transcripción. */
 function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
-  if (ep.estado === "SUBIENDO" && ep.importadoDe) return { etiqueta: "Trayendo de Restream", clase: "bg-sky-500/15 text-sky-300" };
+  if (ep.estado === "SUBIENDO" && ep.importadoDe) {
+    switch (ep.estadoImportacion) {
+      case "FALLIDA":
+        return { etiqueta: "Falló la importación", clase: "bg-red-500/15 text-red-400" };
+      case "BAJANDO":
+        return { etiqueta: `Bajando de Restream · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
+      case "SUBIENDO":
+        return { etiqueta: `Subiendo a Bunny · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
+      case "LISTA":
+        return ESTILO_ESTADO.PROCESANDO;
+      default:
+        return { etiqueta: "En fila para traer", clase: "bg-sky-500/15 text-sky-300" };
+    }
+  }
   if (ep.estado !== "LISTO" || !ep.estadoTranscripcion) return ESTILO_ESTADO[ep.estado];
   switch (ep.estadoTranscripcion) {
     case "EN_COLA":
@@ -128,6 +146,7 @@ export default function EpisodiosPage() {
   const [confirmar] = useMutation(CONFIRMAR_SUBIDA_EPISODIO);
   const [borrar] = useMutation(BORRAR_EPISODIO);
   const [pedirTranscripcion] = useMutation(TRANSCRIBIR_EPISODIO);
+  const [importarDeRestream] = useMutation(IMPORTAR_DE_RESTREAM);
 
   // Se consulta seguido solo mientras haya algo pendiente. Consultar es lo que
   // hace que el backend le pregunte a Bunny, así que es lo que mueve un
@@ -136,6 +155,9 @@ export default function EpisodiosPage() {
   const hayPendientes = episodios.some(
     (e) =>
       e.estado === "SUBIENDO" ||
+      e.estadoImportacion === "EN_COLA" ||
+      e.estadoImportacion === "BAJANDO" ||
+      e.estadoImportacion === "SUBIENDO" ||
       e.estado === "PROCESANDO" ||
       e.estadoTranscripcion === "EN_COLA" ||
       e.estadoTranscripcion === "TRANSCRIBIENDO" ||
@@ -247,6 +269,19 @@ export default function EpisodiosPage() {
       // No es grave: la lista le pregunta a Bunny sola en la próxima consulta.
     }
     void refetch();
+  }
+
+  /** Pide otra vez el live a Restream (link nuevo) y vuelve a la fila. */
+  async function reintentarImportacion(ep: Episodio) {
+    const eventoId = ep.importadoDe?.split(":")[1];
+    if (!marcaId || !eventoId) return;
+    setError(null);
+    try {
+      await importarDeRestream({ variables: { marcaId, eventoId } });
+      void refetch();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo reintentar");
+    }
   }
 
   async function transcribir(ep: Episodio) {
@@ -370,6 +405,7 @@ export default function EpisodiosPage() {
                   puedeBorrar={opera}
                   onBorrar={() => void descartar(ep)}
                   onTranscribir={opera ? () => void transcribir(ep) : undefined}
+                  onReintentarImportacion={opera && marcaId ? () => void reintentarImportacion(ep) : undefined}
                 />
               ))}
             </ul>
@@ -460,6 +496,7 @@ function FilaEpisodio({
   puedeBorrar,
   onBorrar,
   onTranscribir,
+  onReintentarImportacion,
 }: {
   ep: Episodio;
   enEstaPestana: boolean;
@@ -467,6 +504,7 @@ function FilaEpisodio({
   onBorrar: () => void;
   /** Sin esto (rol que solo ve) no hay botón. */
   onTranscribir?: () => void;
+  onReintentarImportacion?: () => void;
 }) {
   const estilo = estiloDe(ep);
   // Los nuevos entran solos a la fila. El botón es para los que quedaron
@@ -502,14 +540,16 @@ function FilaEpisodio({
           {ep.duracionSeg ? `${duracion(ep.duracionSeg)} · ` : ""}
           {gb(ep.tamanoBytes)}
         </p>
-        {ep.estado === "SUBIENDO" && ep.importadoDe && <BarraTrayendo desde={ep.createdAt} />}
+        {ep.importadoDe && ((ep.estadoImportacion && ep.estadoImportacion !== "LISTA") || ep.estado === "FALLIDO") && (
+          <BarraImportando ep={ep} onReintentar={onReintentarImportacion} />
+        )}
         {ep.estado === "PROCESANDO" && <BarraProcesando progreso={ep.progresoBunny ?? 0} />}
         {ep.estado === "SUBIENDO" && !ep.importadoDe && !enEstaPestana && (
           <p className="mt-0.5 text-xs text-amber-300/80">
             Quedó a medias. Elegí “{ep.nombreArchivo}” otra vez para retomarlo.
           </p>
         )}
-        {ep.error && <p className="mt-0.5 text-xs text-red-400">{ep.error}</p>}
+        {ep.error && !ep.importadoDe && <p className="mt-0.5 text-xs text-red-400">{ep.error}</p>}
         {ep.estadoTranscripcion === "FALLIDA" && ep.errorTranscripcion && (
           <p className="mt-0.5 text-xs text-red-400">{ep.errorTranscripcion}</p>
         )}
@@ -546,13 +586,6 @@ function FilaEpisodio({
   );
 }
 
-/** Hace cuánto, en palabras: "2 min", "1 h 5 min". */
-function haceCuanto(desde: string, ahora: number): string {
-  const min = Math.max(0, Math.floor((ahora - new Date(desde).getTime()) / 60_000));
-  if (min < 1) return "menos de un minuto";
-  return min < 60 ? `${min} min` : `${Math.floor(min / 60)} h ${min % 60} min`;
-}
-
 function useAhora(ms: number): number {
   const [ahora, setAhora] = useState(() => Date.now());
   useEffect(() => {
@@ -563,19 +596,44 @@ function useAhora(ms: number): number {
 }
 
 /**
- * Mientras Bunny baja el live de Restream no dice cuánto lleva: barra que se
- * mueve, el tiempo que pasó y qué viene después.
+ * El live de Restream que trae el worker por partes: cuánto lleva (bajar es
+ * 0-50 %, subir 50-100 %), cuánto falta según cómo viene avanzando, y si
+ * falló, el motivo y "Reintentar" (sigue desde lo que ya bajó).
  */
-function BarraTrayendo({ desde }: { desde: string }) {
-  const ahora = useAhora(15_000);
+function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: () => void }) {
+  const ahora = useAhora(5_000);
+  const p = ep.progresoImportacion ?? 0;
+  // La primera vez que se ve avanzar: con eso se calcula cuánto falta.
+  const [inicio, setInicio] = useState<{ p: number; t: number } | null>(null);
+  if (ep.estadoImportacion !== "FALLIDA" && p > 0 && (!inicio || p < inicio.p)) setInicio({ p, t: ahora });
+  const falta =
+    inicio && p - inicio.p >= 1 ? Math.round((((ahora - inicio.t) / (p - inicio.p)) * (100 - p)) / 60_000) : null;
+  if (ep.estadoImportacion === "FALLIDA" || ep.estado === "FALLIDO") {
+    return (
+      <div className="mt-1.5 max-w-md text-xs">
+        <p className="text-red-400">No se pudo traer: {ep.errorImportacion ?? ep.error ?? "error desconocido"}</p>
+        {onReintentar && (
+          <button onClick={onReintentar} className="mt-1 rounded-lg bg-marca px-2.5 py-1 font-medium text-white">
+            Reintentar (sigue desde lo que ya bajó)
+          </button>
+        )}
+      </div>
+    );
+  }
+  const paso =
+    ep.estadoImportacion === "SUBIENDO"
+      ? "② Subiendo a Bunny"
+      : ep.estadoImportacion === "BAJANDO"
+        ? "① Bajando de Restream"
+        : "En fila: arranca en unos segundos";
   return (
     <div className="mt-1.5 max-w-md">
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-        <div className="h-full w-1/3 animate-[trayendo_1.6s_ease-in-out_infinite] rounded-full bg-sky-400" />
+        <div className="h-full rounded-full bg-sky-400 transition-all duration-700" style={{ width: `${Math.max(3, p)}%` }} />
       </div>
       <p className="mt-1 text-xs text-sky-300/80">
-        ① Bunny lo baja de Restream · hace {haceCuanto(desde, ahora)} → ② procesa → ③ transcribe. Un live largo puede tardar
-        varios minutos en bajar; no hace falta dejar la página abierta.
+        {paso} · {p}%{falta != null ? ` · faltan ~${Math.max(1, falta)} min` : ""}. Después Bunny lo procesa y se transcribe
+        solo; no hace falta dejar la página abierta.
       </p>
     </div>
   );
