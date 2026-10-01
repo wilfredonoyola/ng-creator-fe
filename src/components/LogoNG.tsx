@@ -25,7 +25,7 @@ export function LogoNG({
         width={tamano}
         height={tamano}
         priority
-        className="shrink-0 drop-shadow-[0_0_14px_rgba(59,130,246,0.35)]"
+        className="shrink-0 drop-shadow-[0_0_14px_rgba(168,85,247,0.35)]"
       />
       {!soloIcono && (
         <span className="flex flex-col leading-none">

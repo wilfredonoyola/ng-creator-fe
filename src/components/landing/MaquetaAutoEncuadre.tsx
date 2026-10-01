@@ -59,7 +59,7 @@ export function MaquetaAutoEncuadre() {
       <div
         aria-hidden
         className="absolute -inset-10 -z-10 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(20,184,166,0.22), rgba(59,130,246,0.14) 45%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, rgba(20,184,166,0.22), rgba(168,85,247,0.14) 45%, transparent 70%)" }}
       />
       <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta/90 p-4 shadow-2xl backdrop-blur">
         <p className="text-[11px] text-ng-tenue">Lo que grabó la cámara · 16:9</p>

@@ -281,7 +281,7 @@ export default function Producto() {
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 opacity-60 blur-3xl"
-          style={{ background: "radial-gradient(ellipse at top, rgba(59,130,246,0.22), rgba(139,92,246,0.10) 40%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse at top, rgba(168,85,247,0.22), rgba(139,92,246,0.10) 40%, transparent 70%)" }}
         />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
           <div>
@@ -617,7 +617,7 @@ export default function Producto() {
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-50"
-          style={{ background: "radial-gradient(ellipse at center, rgba(59,130,246,0.18), transparent 60%)" }}
+          style={{ background: "radial-gradient(ellipse at center, rgba(168,85,247,0.18), transparent 60%)" }}
         />
         <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
           <LogoNG tamano={56} soloIcono />

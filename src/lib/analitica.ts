@@ -17,7 +17,7 @@ export interface Tramo {
   compartidosPromedio: number;
 }
 
-export const COLOR_SERIE = "#3B82F6";
+export const COLOR_SERIE = "#A855F7";
 /** Validado: separación CVD 20.9 y contraste ≥3:1 sobre el fondo de la app. */
 export const COLOR_POCA_MUESTRA = "#8A8A8A";
 
