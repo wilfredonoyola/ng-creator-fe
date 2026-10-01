@@ -117,8 +117,8 @@ const PLANES = [
     para: "Para el podcast con productor, editores y redes.",
     incluye: [
       "Hasta 5 personas, con roles",
-      "Hasta 3 marcas",
-      "Hasta 30 episodios al mes",
+      "1 marca",
+      "Hasta 16 episodios al mes (~4 por semana)",
       "Episodios de hasta 3 horas",
       "Clips y exportaciones ilimitados",
       "Revisión y aprobación en equipo (pronto)",
