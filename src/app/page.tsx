@@ -102,18 +102,21 @@ const AUTO_ENCUADRE: { titulo: string; texto: string }[] = [
 ];
 
 /**
- * Lo que viene para quien transmite desde la computadora (OBS, Streamlabs):
- * NG Creator como un destino mas, que graba el live mientras sale al aire.
- * Todavia no existe: la seccion va como "Proximamente".
+ * Lo que viene para quien transmite desde la computadora: con OBS o
+ * Streamlabs, NG Creator como un destino mas, que graba el live mientras sale
+ * al aire (todavia no existe: la seccion va como "Proximamente"). TikTok LIVE
+ * Studio no manda a un segundo destino, pero graba el lienzo en un archivo
+ * (MP4, MOV o MKV) de mejor calidad que la repeticion de TikTok: ese archivo
+ * ya se puede subir hoy.
  */
 const LIVES: { titulo: string; texto: string }[] = [
   {
     titulo: "Transmitís como siempre",
-    texto: "Desde OBS o Streamlabs a TikTok, y sumás NG Creator como un destino más. Tu live no cambia.",
+    texto: "Con TikTok LIVE Studio, OBS o Streamlabs. Tu live no cambia.",
   },
   {
-    titulo: "Lo grabamos mientras sale al aire",
-    texto: "En calidad completa, sin depender de que TikTok guarde la repetición ni de bajarla del celular.",
+    titulo: "Tu live llega a NG Creator",
+    texto: "Con OBS o Streamlabs, sumás NG Creator como un destino más y lo grabamos mientras sale al aire. Con TikTok LIVE Studio, activás Grabar y subís el archivo: sale en mejor calidad que la repetición de TikTok.",
   },
   {
     titulo: "Terminás y los clips ya están",
@@ -141,7 +144,7 @@ const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: bo
   { icono: Type, titulo: "Textos con diseño", texto: "Hasta cuatro por clip, con contorno, sombra o caja, y palabras destacadas." },
   { icono: Download, titulo: "MP4 listo para redes", texto: "1080×1920 en H.264, procesado en la nube. Descargalo o publicalo." },
   { icono: Smartphone, titulo: "App para iPhone y Android", texto: "Revisá los clips que encontró la IA desde el celular." },
-  { icono: Radio, titulo: "Clips de tus lives", texto: "Para streamers de TikTok: grabamos el live desde OBS y al terminar tenés los clips.", pronto: true },
+  { icono: Radio, titulo: "Clips de tus lives", texto: "Para streamers de TikTok, con LIVE Studio, OBS o Streamlabs: terminás el live y tenés los clips.", pronto: true },
   { icono: ListChecks, titulo: "Revisión en equipo", texto: "Asignar, editar, enviar a revisión y aprobar.", pronto: true },
   { icono: CalendarClock, titulo: "Publicar y programar", texto: "Facebook hoy; Instagram, TikTok y YouTube en camino, todo desde el mismo lugar." },
 ];
@@ -196,7 +199,7 @@ const PREGUNTAS = [
   },
   {
     p: "¿Sirve para mis lives de TikTok?",
-    r: "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Pronto va a ser automático para quien transmite desde la computadora: sumás NG Creator como un destino más en OBS o Streamlabs, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch.",
+    r: "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Si transmitís con TikTok LIVE Studio, activá Grabar: el archivo sale en mejor calidad que la repetición que guarda TikTok. Pronto va a ser automático con OBS o Streamlabs: sumás NG Creator como un destino más, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch.",
   },
   {
     p: "¿Pone subtítulos automáticos?",
@@ -358,8 +361,8 @@ export default function Producto() {
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Terminás el live. Los clips ya están listos.</h2>
             <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
               Un live de dos horas tiene diez clips buenos adentro, y casi nadie tiene tiempo de buscarlos. Si transmitís desde la
-              computadora, NG Creator va a grabar tu live mientras sale al aire y lo va a convertir en clips verticales, sin que
-              tengas que descargar ni subir nada.
+              computadora, con TikTok LIVE Studio, OBS o Streamlabs, NG Creator convierte tu live en clips verticales con
+              subtítulos, listos para publicar.
             </p>
             <ol className="mt-6 space-y-4">
               {LIVES.map((p, i) => (

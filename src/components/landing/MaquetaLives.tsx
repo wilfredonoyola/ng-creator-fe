@@ -21,7 +21,7 @@ export function MaquetaLives() {
         style={{ background: "radial-gradient(circle, rgba(239,68,68,0.18), rgba(139,92,246,0.14) 45%, transparent 70%)" }}
       />
       <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta/90 p-4 shadow-2xl backdrop-blur">
-        <p className="text-[11px] text-ng-tenue">OBS · transmitiendo a</p>
+        <p className="text-[11px] text-ng-tenue">OBS o Streamlabs · transmitiendo a</p>
         <ul className="mt-2 space-y-2">
           {DESTINOS.map((d) => (
             <li key={d.nombre} className="flex items-center justify-between rounded-ng-lg border border-white/10 bg-ng-superficie/60 px-3 py-2.5">
