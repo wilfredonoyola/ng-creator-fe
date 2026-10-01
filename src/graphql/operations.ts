@@ -1544,6 +1544,7 @@ const CAMPOS_CLIP_EDITOR = gql`
     gancho
     ganchoActivo
     ganchoSeg
+    plantillaActiva
     textos {
       contenido
       destacadas
@@ -1605,17 +1606,53 @@ const CAMPOS_CLIP_EDITOR = gql`
   ${RESUMEN_PUBLICACION_CLIP}
 `;
 
+/** Los colores de la marca para los clips, su logo y su plantilla (be#117). */
+const CAMPOS_ESTILO_CLIP_MARCA = gql`
+  fragment CamposEstiloClipMarca on EstiloClipMarca {
+    colorSubtitulo
+    colorResaltado
+    colorGancho
+    colorContornoGancho
+    logoUrl
+    plantilla {
+      logoActivo
+      logoPosicion
+      logoTamano
+      logoOpacidad
+      ctaActivo
+      ctaTexto
+      ctaSeg
+    }
+  }
+`;
+
 export const CLIP_EPISODIO = gql`
   ${CAMPOS_CLIP_EDITOR}
+  ${CAMPOS_ESTILO_CLIP_MARCA}
   query ClipEpisodio($id: ID!, $marcaId: String!) {
     clipEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposClipEditor
     }
     estiloClipMarca(marcaId: $marcaId) {
-      colorSubtitulo
-      colorResaltado
-      colorGancho
-      colorContornoGancho
+      ...CamposEstiloClipMarca
+    }
+  }
+`;
+
+/** La plantilla de clips de la marca y su logo (be#117), para la pantalla donde se arma. */
+export const PLANTILLA_CLIP_MARCA = gql`
+  ${CAMPOS_ESTILO_CLIP_MARCA}
+  query PlantillaClipMarca($marcaId: String!) {
+    estiloClipMarca(marcaId: $marcaId) {
+      ...CamposEstiloClipMarca
+    }
+  }
+`;
+
+export const GUARDAR_PLANTILLA_CLIP = gql`
+  mutation GuardarPlantillaClip($marcaId: ID!, $plantilla: PlantillaClipInput!) {
+    guardarPlantillaClip(marcaId: $marcaId, plantilla: $plantilla) {
+      _id
     }
   }
 `;

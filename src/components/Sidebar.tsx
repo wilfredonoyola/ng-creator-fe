@@ -7,6 +7,7 @@ import {
   House,
   Link2,
   ListChecks,
+  Stamp,
   Mic,
   MonitorPlay,
   Scissors,
@@ -63,6 +64,8 @@ export const NAV_REACCION: ItemNav[] = [
  * conectadas" es de ADMIN, porque es donde se suman cuentas nuevas.
  */
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, label: "Equipo" };
+/** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
+const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, label: "Plantilla de clips" };
 const navAdmin: ItemNav[] = [{ href: "/admin/facebook", icon: Link2, label: "Redes conectadas" }];
 
 export function esActivo(item: ItemNav, pathname: string): boolean {
@@ -149,6 +152,13 @@ export function Sidebar({
                 {...navEquipo}
                 activo={pathname.startsWith(navEquipo.href)}
                 onClick={() => ir(navEquipo.href)}
+              />
+            )}
+            {rolAqui && (
+              <BotonNav
+                {...navPlantilla}
+                activo={pathname.startsWith(navPlantilla.href)}
+                onClick={() => ir(navPlantilla.href)}
               />
             )}
             {esAdmin &&

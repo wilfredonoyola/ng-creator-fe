@@ -52,6 +52,8 @@ interface Borrador {
   ganchoActivo: boolean;
   ganchoSeg: number;
   textos: Texto[];
+  /** Si lleva el logo y la llamada a la acción de la plantilla de la marca (be#117). */
+  plantillaActiva: boolean;
 }
 
 /** Cuánto contexto se muestra alrededor del clip en la transcripción. */
@@ -178,6 +180,7 @@ export default function EditorClipPage({
       ganchoActivo: clip.ganchoActivo,
       ganchoSeg: clip.ganchoSeg,
       textos,
+      plantillaActiva: clip.plantillaActiva ?? true,
     });
   }, [clip, b, estilo]);
 
@@ -240,6 +243,7 @@ export default function EditorClipPage({
               ganchoActivo: false,
               ganchoSeg: borrador.ganchoSeg,
               textos: borrador.textos.map((t) => ({ ...t, hastaSeg: t.hastaSeg ?? null })),
+              plantillaActiva: borrador.plantillaActiva,
             },
           },
         });
@@ -562,6 +566,7 @@ export default function EditorClipPage({
             ),
           }}
           subtitulo={b.subtitulo}
+          plantillaActiva={b.plantillaActiva}
           onCambiarSubtitulo={(subtitulo) => cambiar({ subtitulo })}
           onCambiarFondo={(fondo) => cambiar({ fondo })}
           encuadre={b.encuadre}
@@ -709,6 +714,43 @@ export default function EditorClipPage({
               colorMarca={estilo.colorResaltado}
               deshabilitado={!opera}
             />
+          </Seccion>
+
+          <Seccion titulo="Plantilla de la marca">
+            {estilo.plantilla && (estilo.plantilla.logoActivo || estilo.plantilla.ctaActivo) ? (
+              <>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={b.plantillaActiva}
+                    onChange={(e) => cambiar({ plantillaActiva: e.target.checked })}
+                    disabled={!opera}
+                  />
+                  {[
+                    estilo.plantilla.logoActivo && (estilo.logoUrl ? "Logo" : null),
+                    estilo.plantilla.ctaActivo && estilo.plantilla.ctaTexto.trim() ? "llamada a la acción al final" : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" y ") || "Plantilla"}{" "}
+                  de la marca en este clip
+                </label>
+                <p className="mt-1 text-xs text-white/40">
+                  Se configura una vez para todos los clips, en{" "}
+                  <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+                    Plantilla de clips
+                  </Link>
+                  .
+                </p>
+              </>
+            ) : (
+              <p className="text-xs text-white/50">
+                La marca no tiene plantilla. Con una, cada clip sale con su logo y una llamada a la acción al final:{" "}
+                <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+                  armala en Plantilla de clips
+                </Link>
+                .
+              </p>
+            )}
           </Seccion>
         </div>
       </div>

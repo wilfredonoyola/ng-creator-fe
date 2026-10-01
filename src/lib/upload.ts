@@ -455,3 +455,33 @@ export function uploadCamara(
     xhr.send(formData);
   });
 }
+
+/**
+ * Sube el logo de una marca (be#117): el que lleva la plantilla de sus clips.
+ * El backend le recorta el fondo y lo deja en la marca. Devuelve su URL.
+ */
+export async function uploadMarcaLogo(file: File, marcaId: string): Promise<string> {
+  const token = getAuthToken();
+  if (!token) throw new Error("Sesión requerida para subir el logo");
+  if (!file.type.startsWith("image/")) throw new Error("El logo tiene que ser una imagen (PNG o JPG)");
+  if (file.size > 10 * 1024 * 1024) throw new Error("El logo debe pesar menos de 10 MB");
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("marcaId", marcaId);
+  const response = await fetch(`${API_BASE_URL}/uploads/marca-logo`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!response.ok) {
+    let mensaje = `No se pudo subir el logo (${response.status})`;
+    try {
+      mensaje = (await response.json()).message || mensaje;
+    } catch {
+      // sin cuerpo
+    }
+    throw new Error(mensaje);
+  }
+  return (await response.json()).url as string;
+}
