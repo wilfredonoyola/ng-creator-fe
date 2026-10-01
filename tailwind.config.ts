@@ -16,10 +16,13 @@ const config: Config = {
           superficie: "#111827",
           elevada: "#161D2E",
           tarjeta: "#121827",
-          azul: "#3B82F6",
-          // El azul de la marca, más claro para texto sobre fondo oscuro.
-          celeste: "#60A5FA",
-          cian: "#18A8FF",
+          // El principal de la marca (desde el 1/10/2026, rosa → violeta): los
+          // nombres quedan por compatibilidad, los valores ya no son azules.
+          azul: "#A855F7",
+          // El principal, más claro para texto y links sobre fondo oscuro.
+          celeste: "#C084FC",
+          // El arranque del degradado de la marca.
+          cian: "#F43F8E",
           violeta: "#8B5CF6",
           lila: "#A78BFA",
           // Lo que está listo, guardado o bien: el verde de antes pasa a teal.

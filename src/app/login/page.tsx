@@ -231,7 +231,7 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.22), rgba(139,92,246,0.10) 45%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.22), rgba(139,92,246,0.10) 45%, transparent 70%)" }}
       />
       <form
         onSubmit={alEnviar}

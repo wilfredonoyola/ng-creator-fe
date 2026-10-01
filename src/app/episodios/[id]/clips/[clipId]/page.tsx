@@ -909,7 +909,7 @@ function EstiloSubtitulos({
           value={s.tamano}
           disabled={deshabilitado}
           onChange={(e) => poner({ tamano: Number(e.target.value) })}
-          className="w-full accent-[#3B82F6]"
+          className="w-full accent-[#A855F7]"
         />
       </Fila>
       <Fila etiqueta="Lugar">

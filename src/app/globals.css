@@ -9,20 +9,20 @@ body {
 }
 
 @layer utilities {
-  /* El degradado de la marca: azul eléctrico → violeta. Para la acción
+  /* El degradado de la marca: rosa → fucsia → violeta. Para la acción
      principal de cada pantalla, no para todo. */
   .bg-marca {
-    background-image: linear-gradient(135deg, #18A8FF 0%, #3B82F6 45%, #8B5CF6 100%);
+    background-image: linear-gradient(135deg, #F43F8E 0%, #C847E8 50%, #8B5CF6 100%);
   }
   .texto-marca {
-    background-image: linear-gradient(135deg, #18A8FF 0%, #3B82F6 45%, #8B5CF6 100%);
+    background-image: linear-gradient(135deg, #F43F8E 0%, #C847E8 50%, #8B5CF6 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   /* El brillo, sutil: CTA principal, lo elegido, momentos de IA. */
   .brillo-marca {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.14), 0 0 80px rgba(139, 92, 246, 0.08);
+    box-shadow: 0 0 40px rgba(244, 63, 142, 0.14), 0 0 80px rgba(139, 92, 246, 0.10);
   }
 }
 

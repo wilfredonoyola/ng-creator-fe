@@ -11,7 +11,7 @@ export function MaquetaTelefono({ pantalla = "clip", className = "" }: { pantall
       <div
         aria-hidden
         className="absolute -inset-12 -z-10 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(59,130,246,0.26), rgba(139,92,246,0.14) 45%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.26), rgba(139,92,246,0.14) 45%, transparent 70%)" }}
       />
       <div className="rounded-[42px] border border-white/15 bg-[#05070d] p-2.5 shadow-2xl">
         <div className="relative h-[520px] overflow-hidden rounded-[34px] bg-ng-hondo">

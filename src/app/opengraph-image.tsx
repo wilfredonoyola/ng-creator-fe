@@ -21,7 +21,7 @@ export default function Imagen() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 34, color: "#60A5FA", letterSpacing: 6 }}>NG CREATOR</div>
+        <div style={{ fontSize: 34, color: "#C084FC", letterSpacing: 6 }}>NG CREATOR</div>
         <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, marginTop: 24, maxWidth: 950 }}>
           Subí el episodio. Publicá los clips. Todo en un solo lugar.
         </div>
