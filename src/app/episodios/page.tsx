@@ -540,7 +540,7 @@ function FilaEpisodio({
           {ep.duracionSeg ? `${duracion(ep.duracionSeg)} · ` : ""}
           {gb(ep.tamanoBytes)}
         </p>
-        {ep.importadoDe && ep.estadoImportacion && ep.estadoImportacion !== "LISTA" && (
+        {ep.importadoDe && ((ep.estadoImportacion && ep.estadoImportacion !== "LISTA") || ep.estado === "FALLIDO") && (
           <BarraImportando ep={ep} onReintentar={onReintentarImportacion} />
         )}
         {ep.estado === "PROCESANDO" && <BarraProcesando progreso={ep.progresoBunny ?? 0} />}
@@ -549,7 +549,7 @@ function FilaEpisodio({
             Quedó a medias. Elegí “{ep.nombreArchivo}” otra vez para retomarlo.
           </p>
         )}
-        {ep.error && <p className="mt-0.5 text-xs text-red-400">{ep.error}</p>}
+        {ep.error && !ep.importadoDe && <p className="mt-0.5 text-xs text-red-400">{ep.error}</p>}
         {ep.estadoTranscripcion === "FALLIDA" && ep.errorTranscripcion && (
           <p className="mt-0.5 text-xs text-red-400">{ep.errorTranscripcion}</p>
         )}
@@ -608,10 +608,10 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
   if (ep.estadoImportacion !== "FALLIDA" && p > 0 && (!inicio || p < inicio.p)) setInicio({ p, t: ahora });
   const falta =
     inicio && p - inicio.p >= 1 ? Math.round((((ahora - inicio.t) / (p - inicio.p)) * (100 - p)) / 60_000) : null;
-  if (ep.estadoImportacion === "FALLIDA") {
+  if (ep.estadoImportacion === "FALLIDA" || ep.estado === "FALLIDO") {
     return (
       <div className="mt-1.5 max-w-md text-xs">
-        <p className="text-red-400">No se pudo traer: {ep.errorImportacion ?? "error desconocido"}</p>
+        <p className="text-red-400">No se pudo traer: {ep.errorImportacion ?? ep.error ?? "error desconocido"}</p>
         {onReintentar && (
           <button onClick={onReintentar} className="mt-1 rounded-lg bg-marca px-2.5 py-1 font-medium text-white">
             Reintentar (sigue desde lo que ya bajó)
