@@ -11,6 +11,7 @@ import {
   LayoutPanelTop,
   ListChecks,
   Mic,
+  Radio,
   Send,
   Smartphone,
   Sparkles,
@@ -24,6 +25,7 @@ import { Cabecera, ENLACE_EMPEZAR, Pie } from "@/components/landing/Marco";
 import { MaquetaTelefono } from "@/components/landing/MaquetaTelefono";
 import { MaquetaProducto } from "@/components/landing/MaquetaProducto";
 import { MaquetaAutoEncuadre } from "@/components/landing/MaquetaAutoEncuadre";
+import { MaquetaLives } from "@/components/landing/MaquetaLives";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 
 export const metadata: Metadata = {
@@ -99,6 +101,26 @@ const AUTO_ENCUADRE: { titulo: string; texto: string }[] = [
   },
 ];
 
+/**
+ * Lo que viene para quien transmite desde la computadora (OBS, Streamlabs):
+ * NG Creator como un destino mas, que graba el live mientras sale al aire.
+ * Todavia no existe: la seccion va como "Proximamente".
+ */
+const LIVES: { titulo: string; texto: string }[] = [
+  {
+    titulo: "Transmitís como siempre",
+    texto: "Desde OBS o Streamlabs a TikTok, y sumás NG Creator como un destino más. Tu live no cambia.",
+  },
+  {
+    titulo: "Lo grabamos mientras sale al aire",
+    texto: "En calidad completa, sin depender de que TikTok guarde la repetición ni de bajarla del celular.",
+  },
+  {
+    titulo: "Terminás y los clips ya están",
+    texto: "Transcripción, los mejores momentos con IA, auto-encuadre y subtítulos. Los revisás y los publicás.",
+  },
+];
+
 /** Lo que hoy hace falta para lo mismo, sin NG Creator. */
 const ANTES = [
   "Pasar el archivo de dos horas por Drive o WeTransfer",
@@ -119,6 +141,7 @@ const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: bo
   { icono: Type, titulo: "Textos con diseño", texto: "Hasta cuatro por clip, con contorno, sombra o caja, y palabras destacadas." },
   { icono: Download, titulo: "MP4 listo para redes", texto: "1080×1920 en H.264, procesado en la nube. Descargalo o publicalo." },
   { icono: Smartphone, titulo: "App para iPhone y Android", texto: "Revisá los clips que encontró la IA desde el celular." },
+  { icono: Radio, titulo: "Clips de tus lives", texto: "Para streamers de TikTok: grabamos el live desde OBS y al terminar tenés los clips.", pronto: true },
   { icono: ListChecks, titulo: "Revisión en equipo", texto: "Asignar, editar, enviar a revisión y aprobar.", pronto: true },
   { icono: CalendarClock, titulo: "Publicar y programar", texto: "Facebook hoy; Instagram, TikTok y YouTube en camino, todo desde el mismo lugar." },
 ];
@@ -170,6 +193,10 @@ const PREGUNTAS = [
   {
     p: "¿El clip sigue a la persona que habla?",
     r: "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula o se tapa la cara. Cuando discuten varios, divide la pantalla; en una toma larga, corta un par de segundos a la reacción de otro. Cada plano se puede corregir, y si no te convence, volvés a como estaba.",
+  },
+  {
+    p: "¿Sirve para mis lives de TikTok?",
+    r: "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Pronto va a ser automático para quien transmite desde la computadora: sumás NG Creator como un destino más en OBS o Streamlabs, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch.",
   },
   {
     p: "¿Pone subtítulos automáticos?",
@@ -317,6 +344,40 @@ export default function Producto() {
             </ul>
           </div>
           <MaquetaAutoEncuadre />
+        </div>
+      </section>
+
+      {/* ---- Lives (proximamente) ---- */}
+      <section id="lives" className="border-t border-white/5">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
+          <div className="lg:order-2">
+            <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-ng-celeste">
+              Para streamers de TikTok
+              <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium normal-case tracking-normal text-ng-lila">Próximamente</span>
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Terminás el live. Los clips ya están listos.</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
+              Un live de dos horas tiene diez clips buenos adentro, y casi nadie tiene tiempo de buscarlos. Si transmitís desde la
+              computadora, NG Creator va a grabar tu live mientras sale al aire y lo va a convertir en clips verticales, sin que
+              tengas que descargar ni subir nada.
+            </p>
+            <ol className="mt-6 space-y-4">
+              {LIVES.map((p, i) => (
+                <li key={p.titulo} className="flex items-start gap-3">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-white">{i + 1}</span>
+                  <span className="text-sm">
+                    <span className="font-semibold">{p.titulo}.</span> <span className="text-ng-secundario">{p.texto}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-6 text-sm text-ng-tenue">
+              También para YouTube, Facebook y Twitch. Mientras tanto, ya podés subir la grabación de tu live como cualquier episodio.
+            </p>
+          </div>
+          <div className="lg:order-1">
+            <MaquetaLives />
+          </div>
         </div>
       </section>
 
