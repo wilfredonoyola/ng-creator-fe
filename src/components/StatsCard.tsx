@@ -8,7 +8,7 @@ interface StatsCardProps {
   color?: string;
 }
 
-export function StatsCard({ icon, label, value, trend, color = "#3B82F6" }: StatsCardProps) {
+export function StatsCard({ icon, label, value, trend, color = "#A855F7" }: StatsCardProps) {
   return (
     <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
       <div className="mb-4 flex items-center justify-between">

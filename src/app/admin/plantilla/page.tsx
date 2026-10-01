@@ -298,7 +298,7 @@ function Deslizador({
         value={valor}
         onChange={(e) => onCambio(Number(e.target.value))}
         disabled={deshabilitado}
-        className="mt-1 w-full accent-[#3B82F6]"
+        className="mt-1 w-full accent-[#A855F7]"
       />
     </label>
   );
