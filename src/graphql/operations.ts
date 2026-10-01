@@ -1413,6 +1413,11 @@ export const CLIPS_DE_EPISODIO = gql`
       formato
       estadoRender
       urlPoster
+      tomadoPor {
+        usuarioId
+        nombre
+        en
+      }
     }
   }
 `;
@@ -1516,6 +1521,11 @@ const CAMPOS_CLIP_EDITOR = gql`
     urlPoster
     renderizadoEn
     editadoEn
+    tomadoPor {
+      usuarioId
+      nombre
+      en
+    }
     lineasSubtitulo {
       desde
       hasta
@@ -1603,6 +1613,70 @@ export const DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO = gql`
   mutation DeshacerAutoEncuadreClipEpisodio($id: ID!, $marcaId: String!) {
     deshacerAutoEncuadreClipEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposClipEditor
+    }
+  }
+`;
+
+/**
+ * Quien tiene cada clip (#70, ng-creator-be#125). Devuelven solo `tomadoPor`:
+ * con el _id alcanza para que Apollo actualice la lista y el editor.
+ */
+export const TOMAR_CLIP_EPISODIO = gql`
+  mutation TomarClipEpisodio($id: ID!, $marcaId: String!) {
+    tomarClipEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      tomadoPor {
+        usuarioId
+        nombre
+        en
+      }
+    }
+  }
+`;
+
+export const SOLTAR_CLIP_EPISODIO = gql`
+  mutation SoltarClipEpisodio($id: ID!, $marcaId: String!) {
+    soltarClipEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      tomadoPor {
+        usuarioId
+        nombre
+        en
+      }
+    }
+  }
+`;
+
+/**
+ * Los clips que ya cubren parte de un tramo, para avisar antes de cortar dos
+ * veces el mismo momento. No bloquea: el que decide es quien corta.
+ */
+export const CRUCES_DE_TRAMO = gql`
+  query CrucesDeTramo(
+    $episodioId: ID!
+    $marcaId: String!
+    $desdeSeg: Float!
+    $hastaSeg: Float!
+    $excluirClipId: ID
+  ) {
+    crucesDeTramo(
+      episodioId: $episodioId
+      marcaId: $marcaId
+      desdeSeg: $desdeSeg
+      hastaSeg: $hastaSeg
+      excluirClipId: $excluirClipId
+    ) {
+      clipId
+      titulo
+      desdeSeg
+      hastaSeg
+      tomadoPor {
+        usuarioId
+        nombre
+        en
+      }
+      segundosEnComun
+      masLargo
     }
   }
 `;

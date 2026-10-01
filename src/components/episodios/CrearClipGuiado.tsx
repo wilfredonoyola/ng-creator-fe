@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { BUSCAR_EN_EPISODIO, CREAR_CLIP_EPISODIO, TRANSCRIPCION_EPISODIO } from "@/graphql/operations";
 import type { ControlReproductor } from "@/components/ReproductorEpisodio";
 import type { FormatoClip } from "@/lib/clip-encuadre";
+import { useSesion } from "@/lib/sesion";
+import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
 
 /**
  * "Crear clip" guiado, en tres pasos y con el episodio a la vista:
@@ -67,6 +69,12 @@ export function CrearClipGuiado({
   const [formato, setFormato] = useState<FormatoClip>("VERTICAL");
   const [autoEncuadre, setAutoEncuadre] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const cliente = useApolloClient();
+  const { usuario } = useSesion();
+  // Otros clips que ya cubren este tramo (#70): se avisa antes de crear, no se frena.
+  const [cruces, setCruces] = useState<CruceClip[] | null>(null);
+  const [revisando, setRevisando] = useState(false);
+  useEffect(() => setCruces(null), [desde, hasta]);
 
   const buscarQ = useQuery(BUSCAR_EN_EPISODIO, {
     variables: { id: episodioId, marcaId, texto },
@@ -129,8 +137,22 @@ export function CrearClipGuiado({
     setHasta(Math.min(duracionEpisodio || Infinity, ultima && tope - ultima.hasta < 2 ? ultima.hasta : tope));
   }
 
+  /** Antes de crear, se mira si el tramo pisa otro clip. Sin cruces, sigue directo. */
+  async function revisarYCrear() {
+    setError(null);
+    setRevisando(true);
+    const encontrados = await buscarCruces(cliente, { episodioId, marcaId, desdeSeg: desde, hastaSeg: hasta });
+    setRevisando(false);
+    if (encontrados.length) {
+      setCruces(encontrados);
+      return;
+    }
+    await crearYEditar();
+  }
+
   async function crearYEditar() {
     setError(null);
+    setCruces(null);
     try {
       const r = await crear({
         variables: {
@@ -329,13 +351,23 @@ export function CrearClipGuiado({
             {tiempo(desde)} → {tiempo(hasta)} ({duracion.toFixed(1)} s)
           </p>
           {error && <p className="text-sm text-red-400">{error}</p>}
-          <button
-            onClick={() => void crearYEditar()}
-            disabled={creando}
-            className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
-          >
-            {creando ? "Creando…" : "Crear y abrir el editor"}
-          </button>
+          {cruces ? (
+            <AvisoCruces
+              cruces={cruces}
+              usuarioId={usuario?._id}
+              textoSeguir={creando ? "Creando…" : "Crear igual"}
+              onSeguir={() => void crearYEditar()}
+              onCancelar={() => setCruces(null)}
+            />
+          ) : (
+            <button
+              onClick={() => void revisarYCrear()}
+              disabled={creando || revisando}
+              className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
+            >
+              {creando ? "Creando…" : revisando ? "Revisando…" : "Crear y abrir el editor"}
+            </button>
+          )}
         </div>
       )}
     </div>
