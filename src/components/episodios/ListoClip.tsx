@@ -23,7 +23,7 @@ export interface ResumenPublicacionClip {
 }
 
 /**
- * El chip "Listo · Ana" con "Volver a en trabajo", o el botón "Marcar listo".
+ * El chip "Terminado · Ana" con "Volver a editar", o el botón "Marcar terminado".
  * El botón solo aparece con el MP4 procesado: sin eso no hay nada que
  * programar, y el backend lo rechaza igual.
  */
@@ -65,7 +65,7 @@ export function ListoClip({
             title={`Desde ${new Date(listoPor.en).toLocaleString("es")}`}
             className="rounded-full bg-ng-teal/15 px-2 py-0.5 text-[11px] text-ng-teal"
           >
-            ✓ Listo · {listoPor.nombre}
+            ✓ Terminado · {listoPor.nombre}
           </span>
           {puedeOperar && (
             <button
@@ -73,7 +73,7 @@ export function ListoClip({
               disabled={loading}
               className="rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-white/60 hover:bg-white/5 disabled:opacity-50"
             >
-              Volver a en trabajo
+              Volver a editar
             </button>
           )}
         </>
@@ -84,7 +84,7 @@ export function ListoClip({
           title="Ya se puede programar: lo ve todo el equipo en el calendario"
           className="rounded-full border border-ng-teal/40 px-2 py-0.5 text-[11px] text-ng-teal hover:bg-ng-teal/10 disabled:opacity-50"
         >
-          {loading ? "Marcando…" : "Marcar listo"}
+          {loading ? "Marcando…" : "Marcar terminado"}
         </button>
       )}
       {error && <span className="text-[11px] text-red-400">{error}</span>}
@@ -113,8 +113,11 @@ export function EstadoPublicacionClip({ publicacion }: { publicacion?: ResumenPu
         </span>
       )}
       {fallidas > 0 && (
-        <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] text-red-400">
-          Falló{fallidas > 1 ? ` (${fallidas})` : ""}
+        <span
+          title="Una red rechazó la publicación: entrá a Programar para ver el motivo y reintentar"
+          className="rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] text-red-400"
+        >
+          Falló en redes{fallidas > 1 ? ` (${fallidas})` : ""}
         </span>
       )}
     </>
