@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { useQuery } from "@apollo/client";
-import { ArrowRight, Clapperboard, Loader2, Mic, Sparkles, Upload } from "lucide-react";
-import { COLA_DE_REVISION, EPISODIOS } from "@/graphql/operations";
+import { ArrowRight, Clapperboard, Loader2, Mic, Play, Sparkles, Upload } from "lucide-react";
+import { CLIPS_DE_EPISODIO, COLA_DE_REVISION, EPISODIOS } from "@/graphql/operations";
+import { ReproductorEpisodio, type ControlReproductor } from "@/components/ReproductorEpisodio";
+import { MOTIVOS, reloj } from "@/lib/momentos";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
@@ -15,6 +18,7 @@ interface EpisodioResumen {
   estado: "SUBIENDO" | "PROCESANDO" | "LISTO" | "FALLIDO";
   duracionSeg?: number | null;
   miniaturaUrl?: string | null;
+  urlReproduccion?: string | null;
   estadoTranscripcion?: "EN_COLA" | "TRANSCRIBIENDO" | "LISTA" | "FALLIDA" | null;
   progresoTranscripcion?: number | null;
   estadoMomentos?: "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO" | null;
@@ -47,16 +51,31 @@ function duracion(seg?: number | null) {
   return h ? `${h} h ${m} min` : `${m} min`;
 }
 
+/** Un clip del episodio reciente, con lo que el Inicio muestra de él. */
+interface ClipResumen {
+  _id: string;
+  desdeSeg: number;
+  hastaSeg: number;
+  puntuacion: number;
+  motivo: string;
+  titulo: string;
+  estadoRender?: string | null;
+  urlPoster?: string | null;
+}
+
 /**
- * Inicio: lo que te toca hoy en la marca activa. Primero lo que está en
- * camino, después lo que ya tiene clips para editar. Sin métricas de
- * adorno: cada bloque lleva a una acción.
+ * Inicio: lo que te toca hoy en la marca activa, armado alrededor del
+ * episodio más reciente que ya tiene clips. Arriba, el episodio para mirarlo
+ * y los clips que ya se procesaron; abajo, los mejores momentos que encontró
+ * la IA (tocar uno lo reproduce arriba). Después, lo que está en camino. Cada
+ * bloque lleva a una acción.
  */
 export default function InicioPage() {
   const { activa } = useMarcaActiva();
   const { usuario, esAdmin } = useSesion();
+  const marcaId = activa?._id ?? "";
   const { data, loading } = useQuery(EPISODIOS, {
-    variables: { marcaId: activa?._id ?? "", limite: 30 },
+    variables: { marcaId, limite: 30 },
     skip: !activa,
     // Mientras haya algo en camino, el backend avanza estados al listar.
     pollInterval: 20000,
@@ -69,8 +88,25 @@ export default function InicioPage() {
   const episodios: EpisodioResumen[] = data?.episodios ?? [];
   const conEtapa = episodios.map((ep) => ({ ep, e: etapa(ep) }));
   const enCamino = conEtapa.filter(({ e }) => !e.listo);
-  const paraEditar = conEtapa.filter(({ e }) => e.listo).slice(0, 6);
-  const clipsTotales = paraEditar.reduce((n, { ep }) => n + (ep.clipsSugeridos ?? 0), 0);
+  const listos = conEtapa.filter(({ e }) => e.listo);
+  const reciente = listos[0]?.ep ?? null;
+  const otrosListos = listos.slice(1, 7);
+  const clipsTotales = listos.reduce((n, { ep }) => n + (ep.clipsSugeridos ?? 0), 0);
+
+  const clipsQ = useQuery(CLIPS_DE_EPISODIO, {
+    variables: { id: reciente?._id ?? "", marcaId },
+    skip: !reciente,
+  });
+  const clips: ClipResumen[] = clipsQ.data?.clipsDeEpisodio ?? [];
+  const procesados = clips.filter((c) => c.estadoRender === "LISTO" && c.urlPoster);
+  const destacados = [...clips].sort((a, b) => b.puntuacion - a.puntuacion).slice(0, 4);
+
+  const reproductor = useRef<ControlReproductor>(null);
+  const cajaReproductor = useRef<HTMLDivElement>(null);
+  function reproducir(c: ClipResumen) {
+    reproductor.current?.reproducirTramo(c.desdeSeg, c.hastaSeg);
+    cajaReproductor.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 
   const inicioMes = new Date();
   inicioMes.setDate(1);
@@ -82,7 +118,7 @@ export default function InicioPage() {
 
   return (
     <DashboardLayout>
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{nombre ? `Hola, ${nombre}` : "Inicio"}</h1>
           <p className="mt-1 text-ng-secundario">
@@ -97,11 +133,13 @@ export default function InicioPage() {
         </Link>
       </div>
 
-      <div className="mb-8 grid grid-cols-3 gap-3">
-        <Cifra valor={delMes} etiqueta="Episodios este mes" />
-        <Cifra valor={enCamino.length} etiqueta="En proceso" />
-        <Cifra valor={clipsTotales} etiqueta="Clips para editar" />
-      </div>
+      {episodios.length > 0 && (
+        <div className="mb-6 flex flex-wrap gap-2 text-xs">
+          <Cifra valor={delMes} etiqueta="episodios este mes" />
+          <Cifra valor={enCamino.length} etiqueta="en proceso" />
+          <Cifra valor={clipsTotales} etiqueta="clips para editar" />
+        </div>
+      )}
 
       {loading && !episodios.length ? (
         <div className="flex items-center gap-2 text-sm text-ng-secundario">
@@ -122,12 +160,122 @@ export default function InicioPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-10">
-          {paraEditar.length > 0 && (
+        <div className="space-y-6">
+          {reciente && (
+            <>
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+                {/* ---- Episodio reciente ---- */}
+                <section ref={cajaReproductor} className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-4">
+                  <Encabezado
+                    titulo="Episodio reciente"
+                    accion={{ href: `/episodios/${reciente._id}`, texto: "Abrir episodio" }}
+                  />
+                  {reciente.urlReproduccion ? (
+                    <div className="overflow-hidden rounded-ng-lg bg-black">
+                      <ReproductorEpisodio ref={reproductor} url={reciente.urlReproduccion} poster={reciente.miniaturaUrl} />
+                    </div>
+                  ) : (
+                    <Miniatura ep={reciente} className="aspect-video w-full" />
+                  )}
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <p className="truncate font-semibold">{reciente.titulo || reciente.nombreArchivo}</p>
+                    {duracion(reciente.duracionSeg) && (
+                      <span className="shrink-0 text-xs text-ng-tenue">{duracion(reciente.duracionSeg)}</span>
+                    )}
+                  </div>
+                </section>
+
+                {/* ---- Clips generados ---- */}
+                <section className="flex min-w-0 flex-col rounded-ng-xl border border-white/10 bg-ng-tarjeta p-4">
+                  <Encabezado
+                    titulo="Clips generados"
+                    cuenta={procesados.length}
+                    accion={{ href: `/episodios/${reciente._id}`, texto: "Ver todos" }}
+                  />
+                  {procesados.length ? (
+                    <div className="-mx-1 flex flex-1 gap-3 overflow-x-auto px-1 pb-1">
+                      {procesados.map((c, i) => (
+                        <Link
+                          key={c._id}
+                          href={`/episodios/${reciente._id}/clips/${c._id}`}
+                          className="group w-[30%] min-w-[118px] shrink-0"
+                        >
+                          <div
+                            className={`relative aspect-[9/16] overflow-hidden rounded-ng-lg border transition ${
+                              i === 0 ? "border-ng-azul/70 brillo-marca" : "border-white/10 group-hover:border-ng-azul/50"
+                            }`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element -- poster del CDN */}
+                            <img src={c.urlPoster!} alt="" className="h-full w-full object-cover" />
+                            <span className="absolute bottom-1.5 right-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[10px] tabular-nums text-white">
+                              {reloj(c.hastaSeg - c.desdeSeg)}
+                            </span>
+                          </div>
+                          <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-snug">{c.titulo}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-1 flex-col items-center justify-center rounded-ng-lg border border-dashed border-white/10 p-6 text-center">
+                      <Clapperboard size={26} className="text-ng-tenue" aria-hidden />
+                      <p className="mt-2 text-sm text-ng-secundario">Todavía no procesaste clips de este episodio.</p>
+                      <p className="mt-0.5 text-xs text-ng-tenue">Elegí un momento de abajo, ajustalo y procesalo: aparece acá.</p>
+                    </div>
+                  )}
+                </section>
+              </div>
+
+              {/* ---- Momentos destacados ---- */}
+              {destacados.length > 0 && (
+                <section className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-4">
+                  <Encabezado
+                    titulo="Momentos destacados (IA)"
+                    detalle="Tocá uno para verlo arriba"
+                    accion={{
+                      href: `/episodios/${reciente._id}`,
+                      texto: `Ver los ${clips.length} momentos`,
+                      destacada: true,
+                    }}
+                  />
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    {destacados.map((c) => (
+                      <div key={c._id} className="group">
+                        <button
+                          onClick={() => reproducir(c)}
+                          className="relative block aspect-video w-full overflow-hidden rounded-ng-lg border border-white/10 text-left transition hover:border-ng-azul/50"
+                          title="Reproducir este momento arriba"
+                        >
+                          <Miniatura ep={reciente} className="h-full w-full rounded-none" />
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
+                            <Play size={28} className="text-white opacity-0 drop-shadow transition group-hover:opacity-100" aria-hidden />
+                          </span>
+                          <span className="absolute bottom-2 left-2 rounded-md bg-ng-violeta px-1.5 py-0.5 text-xs font-bold tabular-nums text-white">
+                            {c.puntuacion}
+                          </span>
+                        </button>
+                        <p className="mt-2 text-[11px] uppercase tracking-wide text-ng-lila">{MOTIVOS[c.motivo] ?? c.motivo}</p>
+                        <p className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug">{c.titulo}</p>
+                        <div className="mt-1 flex items-center justify-between text-xs text-ng-tenue">
+                          <span className="tabular-nums">
+                            {reloj(c.desdeSeg)} – {reloj(c.hastaSeg)}
+                          </span>
+                          <Link href={`/episodios/${reciente._id}/clips/${c._id}`} className="text-ng-celeste hover:underline">
+                            Editar
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </>
+          )}
+
+          {otrosListos.length > 0 && (
             <section>
-              <Encabezado titulo="Listos para editar" detalle="La IA ya encontró los momentos" />
+              <Encabezado titulo="Otros episodios listos para editar" detalle="La IA ya encontró los momentos" />
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {paraEditar.map(({ ep, e }) => (
+                {otrosListos.map(({ ep, e }) => (
                   <TarjetaEpisodio key={ep._id} ep={ep} etapa={e} />
                 ))}
               </div>
@@ -181,18 +329,47 @@ export default function InicioPage() {
 
 function Cifra({ valor, etiqueta }: { valor: number; etiqueta: string }) {
   return (
-    <div className="rounded-ng-lg border border-white/10 bg-ng-tarjeta p-4">
-      <p className="text-2xl font-bold">{valor}</p>
-      <p className="mt-0.5 text-xs text-ng-secundario">{etiqueta}</p>
-    </div>
+    <span className="rounded-full border border-white/10 bg-ng-tarjeta px-3 py-1 text-ng-secundario">
+      <span className="font-semibold text-ng-texto">{valor}</span> {etiqueta}
+    </span>
   );
 }
 
-function Encabezado({ titulo, detalle }: { titulo: string; detalle: string }) {
+function Encabezado({
+  titulo,
+  detalle,
+  cuenta,
+  accion,
+}: {
+  titulo: string;
+  detalle?: string;
+  cuenta?: number;
+  accion?: { href: string; texto: string; destacada?: boolean };
+}) {
   return (
-    <div className="mb-4">
-      <h2 className="text-lg font-semibold">{titulo}</h2>
-      <p className="text-sm text-ng-tenue">{detalle}</p>
+    <div className="mb-3 flex items-start justify-between gap-3">
+      <div>
+        <h2 className="flex items-center gap-2 text-lg font-semibold">
+          {titulo}
+          {cuenta !== undefined && (
+            <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-medium text-ng-secundario">{cuenta}</span>
+          )}
+        </h2>
+        {detalle && <p className="text-sm text-ng-tenue">{detalle}</p>}
+      </div>
+      {accion &&
+        (accion.destacada ? (
+          <Link
+            href={accion.href}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-ng-md bg-ng-violeta/90 px-3 py-1.5 text-xs font-semibold text-white hover:brightness-110"
+          >
+            <Sparkles size={13} aria-hidden /> {accion.texto}
+          </Link>
+        ) : (
+          <Link href={accion.href} className="inline-flex shrink-0 items-center gap-1 text-sm text-ng-celeste hover:underline">
+            {accion.texto} <ArrowRight size={14} aria-hidden />
+          </Link>
+        ))}
     </div>
   );
 }
