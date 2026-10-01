@@ -8,7 +8,7 @@ import { useSesion } from "@/lib/sesion";
 /**
  * Quién tiene cada clip y el aviso de cruces (#70, ng-creator-be#125).
  *
- * El equipo de una marca trabaja el mismo episodio: "Lo tomo" deja el clip a
+ * El equipo de una marca trabaja el mismo episodio: "Tomarlo" deja el clip a
  * nombre de quien lo va a hacer, y antes de cortar un tramo se avisa si otro
  * clip ya cubre ese momento. Nada de esto bloquea: tomar uno ajeno se confirma
  * y un cruce se puede guardar igual.
@@ -31,15 +31,15 @@ export interface CruceClip {
   masLargo: boolean;
 }
 
-/** "Lo tiene Ana", "Lo tenés vos" o "Libre". */
+/** "Lo edita Ana", "Lo editás vos" o "Libre". */
 export function quienLoTiene(tomadoPor: Autoria | null | undefined, usuarioId?: string | null): string {
   if (!tomadoPor) return "Libre";
-  return tomadoPor.usuarioId === usuarioId ? "Lo tenés vos" : `Lo tiene ${tomadoPor.nombre}`;
+  return tomadoPor.usuarioId === usuarioId ? "Lo editás vos" : `Lo edita ${tomadoPor.nombre}`;
 }
 
 /**
- * La etiqueta de quién lo tiene y, para quien opera la marca, "Lo tomo" (en
- * los libres y en los ajenos, confirmando) o "Soltar" (en los propios).
+ * La etiqueta de quién lo tiene y, para quien opera la marca, "Tomarlo" (en
+ * los libres y en los ajenos, confirmando) o "Liberar" (en los propios).
  */
 export function TomarClip({
   clipId,
@@ -60,7 +60,7 @@ export function TomarClip({
   const ocupado = tomando || soltando;
 
   async function lotomo() {
-    if (tomadoPor && !mio && !window.confirm(`Lo tiene ${tomadoPor.nombre}. ¿Tomarlo igual?`)) return;
+    if (tomadoPor && !mio && !window.confirm(`Lo está editando ${tomadoPor.nombre}. ¿Tomarlo igual?`)) return;
     setError(null);
     try {
       await tomar({ variables: { id: clipId, marcaId } });
@@ -96,9 +96,10 @@ export function TomarClip({
         <button
           onClick={() => void (mio ? losuelto() : lotomo())}
           disabled={ocupado}
+          title={mio ? "Lo deja libre para que lo tome otra persona del equipo" : "Pasa a tu nombre: el equipo ve que lo estás haciendo vos"}
           className="rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-white/70 hover:bg-white/5 disabled:opacity-50"
         >
-          {mio ? "Soltar" : "Lo tomo"}
+          {mio ? "Liberar" : "Tomarlo"}
         </button>
       )}
       {error && <span className="text-[11px] text-red-400">{error}</span>}
