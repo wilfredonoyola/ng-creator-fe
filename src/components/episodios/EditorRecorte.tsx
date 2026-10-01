@@ -1,5 +1,6 @@
 "use client";
 
+import { estiloDelLogo, plantillaDelClip, type PlantillaClip } from "@/lib/plantilla-clip";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useHls } from "@/lib/use-hls";
 import {
@@ -39,6 +40,9 @@ export interface EstiloClip {
   colorResaltado: string;
   colorGancho: string;
   colorContornoGancho: string;
+  /** El logo de la marca y su plantilla de clips (be#117). */
+  logoUrl?: string | null;
+  plantilla?: PlantillaClip | null;
 }
 
 /** Colores de los recuadros, uno por panel, como en la vista previa. */
@@ -82,6 +86,7 @@ export function EditorRecorte({
   fondo = "DESENFOCADO",
   onCambiarFondo,
   subtitulo = null,
+  plantillaActiva = true,
   onCambiarSubtitulo,
   autoEncuadre,
 }: {
@@ -116,6 +121,8 @@ export function EditorRecorte({
   onCambiarFondo?: (f: FondoClip) => void;
   /** Letra, tamaño y altura propios de los subtítulos (null = los de siempre). */
   subtitulo?: SubtituloClip | null;
+  /** Si el clip lleva la plantilla de la marca: el logo y la llamada a la acción se ven en la vista previa. */
+  plantillaActiva?: boolean;
   onCambiarSubtitulo?: (s: SubtituloClip) => void;
   /** El botón que sigue al que habla (ng-creator-be#105). */
   autoEncuadre?: {
@@ -141,6 +148,7 @@ export function EditorRecorte({
   useHls(video, url);
 
   const duracion = hasta - desde;
+  const plantilla = plantillaDelClip(estilo, plantillaActiva, duracion);
   const posiciones = posicionesEfectivas(
     { formato, diseno, encuadre, posiciones: posicionesGuardadas },
     fuente,
@@ -641,10 +649,16 @@ export function EditorRecorte({
               height={Math.max(1, Math.round(altoVista * 2))}
               className="absolute inset-0 h-full w-full"
             />
-            {textos.map((tx, i) => {
+            {plantilla.logo && (
+              // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca, tal cual va al render
+              <img src={plantilla.logo.url} alt="" style={estiloDelLogo(plantilla.logo.plantilla, anchoVista)} />
+            )}
+            {[...textos, ...(plantilla.llamada ? [plantilla.llamada] : [])].map((tx, i) => {
+              // La llamada a la acción es de la plantilla: se ve, pero no se mueve ni se elige acá.
+              const deLaPlantilla = i >= textos.length;
               const hasta = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : duracion;
               const visible = tc >= tx.desdeSeg && tc < hasta;
-              const elegido = textoElegido === i;
+              const elegido = !deLaPlantilla && textoElegido === i;
               if (!visible && !elegido) return null;
               const f = FUENTES[tx.fuente] ?? FUENTES.ANTON;
               const { borde, sombra } = medidasEfecto(tx.efecto, tx.tamano);
@@ -653,9 +667,10 @@ export function EditorRecorte({
               return (
                 <div
                   key={i}
-                  onPointerDown={(e) => arrastrarTexto(e, i)}
+                  onPointerDown={deLaPlantilla ? undefined : (e) => arrastrarTexto(e, i)}
                   onClick={(e) => e.stopPropagation()}
-                  className={`absolute text-center ${puedeEditar ? "cursor-move" : ""} ${
+                  title={deLaPlantilla ? "Llamada a la acción de la plantilla de la marca" : undefined}
+                  className={`absolute text-center ${puedeEditar && !deLaPlantilla ? "cursor-move" : ""} ${
                     elegido ? "outline-dashed outline-1 outline-offset-4 outline-white/70" : ""
                   } ${visible ? "" : "opacity-40"}`}
                   style={{
