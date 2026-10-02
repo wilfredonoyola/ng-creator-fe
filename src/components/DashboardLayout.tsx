@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { haySesion } from "@/lib/auth";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
+import { useMenuColapsado } from "@/lib/menu-colapsado";
 import { Sidebar } from "./Sidebar";
 import { NavInferior } from "./NavInferior";
 
@@ -15,11 +16,27 @@ import { NavInferior } from "./NavInferior";
  * izquierda. Una barra lateral de 256px siempre visible dejaba el contenido en
  * una franja inservible en un teléfono.
  */
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({
+  children,
+  menuColapsable,
+  margenChico = false,
+}: {
+  children: React.ReactNode;
+  /**
+   * Para pantallas que necesitan el ancho (el editor de clips): desde lg el
+   * menú arranca como una tira de íconos y se puede expandir; queda fijo desde
+   * md (sin la barra de arriba ni la de abajo del teléfono). Es la clave con
+   * que se recuerda la elección de esa pantalla.
+   */
+  menuColapsable?: string;
+  /** Desde md, márgenes de 1rem (en vez de 2rem desde lg): para herramientas que usan toda la pantalla. */
+  margenChico?: boolean;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
   const { activa } = useMarcaActiva();
+  const menu = useMenuColapsado(menuColapsable ?? null);
 
   useEffect(() => {
     if (!haySesion()) router.push("/login");
@@ -42,7 +59,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-ng-fondo">
       {/* Barra superior: solo en pantallas chicas */}
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-white/10 bg-ng-fondo/95 px-4 py-3 backdrop-blur lg:hidden"
+        className={`sticky top-0 z-30 flex items-center gap-3 border-b border-white/10 bg-ng-fondo/95 px-4 py-3 backdrop-blur lg:hidden ${menuColapsable ? "md:hidden" : ""}`}
         style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
       >
         <button
@@ -84,22 +101,27 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {abierto && (
         <div
           onClick={() => setAbierto(false)}
-          className="fixed inset-0 z-40 bg-black/70 lg:hidden"
+          className={`fixed inset-0 z-40 bg-black/70 lg:hidden ${menuColapsable ? "md:hidden" : ""}`}
           aria-hidden
         />
       )}
 
-      <Sidebar abierto={abierto} onCerrar={() => setAbierto(false)} />
+      <Sidebar
+        abierto={abierto}
+        onCerrar={() => setAbierto(false)}
+        colapsado={menu.colapsado}
+        onAlternarColapso={menuColapsable ? menu.alternar : undefined}
+      />
 
-      <main className="lg:pl-64">
+      <main className={`transition-[padding] duration-200 ${menuColapsable ? (menu.colapsado ? "md:pl-16" : "md:pl-64") : "lg:pl-64"}`}>
         {/* pb-24 en móvil: la barra inferior es fija y taparía el final del
             contenido, que suele ser justo el botón de la acción. */}
-        <div className="min-h-screen p-4 pb-24 sm:p-6 sm:pb-24 lg:p-8">
+        <div className={`min-h-screen p-4 pb-24 sm:p-6 sm:pb-24 ${margenChico ? "md:p-4" : "lg:p-8"}`}>
           {children}
         </div>
       </main>
 
-      <NavInferior onMas={() => setAbierto(true)} />
+      <NavInferior onMas={() => setAbierto(true)} ocultarDesdeMd={Boolean(menuColapsable)} />
     </div>
   );
 }

@@ -390,7 +390,7 @@ export default function EditorClipPage({
 
   if (!clip || !b || !ep || !estilo) {
     return (
-      <DashboardLayout>
+      <DashboardLayout menuColapsable="editor-clip" margenChico>
         {clipQ.error ? (
           <p className="text-red-400">{clipQ.error.message}</p>
         ) : (
@@ -511,7 +511,7 @@ export default function EditorClipPage({
       contenido: (
         <>
           <GaleriaEstilos
-            anchoMuestra={84}
+            enPanel
             tema={temaValido(estilo.tema)}
             valor={b.estiloTexto}
             onElegir={(estiloTexto) => cambiar({ estiloTexto })}
@@ -662,7 +662,7 @@ export default function EditorClipPage({
               </button>
             ))}
           </div>
-          <div className="max-h-72 overflow-y-auto rounded-lg bg-black/30 p-3 text-[15px] leading-8 lg:max-h-[45vh]">
+          <div className="max-h-72 overflow-y-auto rounded-lg bg-black/30 p-3 text-[15px] leading-8 md:max-h-[45vh]">
             {palabras.map((p) => {
               const mitad = (p.desde + p.hasta) / 2;
               const dentro = mitad >= b.desdeSeg && mitad <= b.hastaSeg;
@@ -711,12 +711,13 @@ export default function EditorClipPage({
   const inspector = <InspectorClip pestanas={pestanas} activa={pestana} onElegir={elegirPestana} />;
 
   return (
-    <DashboardLayout>
-      {/* Desde lg, la página entera es el editor: el alto de la ventana menos
-          los márgenes de DashboardLayout, sin scroll de página. */}
-      <div className="flex flex-col lg:h-[calc(100dvh-4rem)]">
+    <DashboardLayout menuColapsable="editor-clip" margenChico>
+      {/* Desde md, la página entera es el editor: el alto de la ventana menos
+          los márgenes de DashboardLayout (1rem con margenChico), sin scroll de
+          página. El menú de la app arranca colapsado en una tira de íconos. */}
+      <div className="flex flex-col md:h-[calc(100dvh-2rem)]">
         <header
-          className="sticky z-20 -mx-4 -mt-4 mb-4 h-14 shrink-0 border-b border-white/10 bg-ng-fondo/95 px-4 backdrop-blur sm:-mx-6 sm:-mt-6 sm:px-6 lg:static lg:-mx-8 lg:-mt-8 lg:px-8"
+          className="barra-clip sticky z-20 -mx-4 -mt-4 mb-3 h-14 shrink-0 border-b border-white/10 bg-ng-fondo/95 px-4 backdrop-blur sm:-mx-6 sm:-mt-6 sm:px-6 md:static md:-mx-4 md:-mt-4 md:px-4"
           // Debajo de la barra de arriba del teléfono (DashboardLayout), que también es sticky.
           style={{ top: "calc(2.6875rem + max(0.75rem, env(safe-area-inset-top)))" }}
         >
@@ -763,7 +764,7 @@ export default function EditorClipPage({
         )}
 
         {ep.urlReproduccion ? (
-          <div className="lg:min-h-0 lg:flex-1">
+          <div className="editor-contenedor md:min-h-0 md:flex-1">
             <EditorRecorte
               url={ep.urlReproduccion}
               desde={b.desdeSeg}
@@ -777,6 +778,7 @@ export default function EditorClipPage({
                   estadoAuto === "LISTO" && clip.personasAutoEncuadre != null
                     ? `${clip.personasAutoEncuadre} persona${clip.personasAutoEncuadre === 1 ? "" : "s"}`
                     : null,
+                personas: estadoAuto === "LISTO" ? clip.personasAutoEncuadre : null,
                 progreso: clip.progresoAutoEncuadre,
                 onPedir: () => void pedirAutoEncuadre(),
                 resaltar: resaltarAuto,
@@ -830,9 +832,9 @@ export default function EditorClipPage({
             />
           </div>
         ) : (
-          <div className="space-y-4 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] lg:gap-4 lg:space-y-0">
+          <div className="space-y-4 md:grid md:min-h-0 md:flex-1 md:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] md:gap-4 md:space-y-0">
             <p className="text-sm text-white/50">El video todavía no está listo en Bunny.</p>
-            <div className="lg:min-h-0">{inspector}</div>
+            <div className="md:min-h-0">{inspector}</div>
           </div>
         )}
       </div>

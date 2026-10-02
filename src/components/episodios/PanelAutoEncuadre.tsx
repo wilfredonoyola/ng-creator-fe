@@ -99,7 +99,7 @@ export function PanelAutoEncuadre({
             return (
               <li key={e.clave} className={`flex items-center gap-1.5 ${hecha ? "text-white/80" : enCurso ? "text-white" : "text-white/35"}`}>
                 <span
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] ${
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${
                     hecha ? "bg-emerald-500 text-white" : enCurso ? "animate-pulse bg-ng-violeta text-white" : "border border-white/20"
                   }`}
                 >

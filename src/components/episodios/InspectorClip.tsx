@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { Pista } from "@/components/Pista";
 
 export interface PestanaInspector<T extends string> {
   id: T;
@@ -78,10 +79,10 @@ export function InspectorClip<T extends string>({
   const riel = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const actual = pestanas.find((p) => p.id === activa) ?? pestanas[0];
-  // El riel es vertical desde lg; más angosto, una barra horizontal.
+  // El riel es vertical desde md; más angosto, una barra horizontal.
   const [vertical, setVertical] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia("(min-width: 768px)");
     setVertical(mq.matches);
     const cambio = (e: MediaQueryListEvent) => setVertical(e.matches);
     mq.addEventListener("change", cambio);
@@ -107,36 +108,39 @@ export function InspectorClip<T extends string>({
   }
 
   return (
-    <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] lg:h-full lg:flex-row">
+    <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] md:h-full md:flex-row">
       <div
         ref={riel}
         role="tablist"
         aria-label="Ajustes del clip"
         aria-orientation={vertical ? "vertical" : "horizontal"}
         onKeyDown={teclas}
-        className="flex shrink-0 gap-1 overflow-x-auto border-b border-white/10 p-1.5 lg:w-[76px] lg:flex-col lg:overflow-y-auto lg:overflow-x-visible lg:border-b-0 lg:border-r"
+        className="flex shrink-0 gap-1 overflow-x-auto border-b border-white/10 p-1.5 md:w-[52px] md:flex-col md:items-center md:overflow-visible md:border-b-0 md:border-r"
       >
         {pestanas.map((p) => {
           const elegida = p.id === actual.id;
           const Icono = p.icono;
           return (
-            <button
-              key={p.id}
-              id={`${base}-pestana-${p.id}`}
-              type="button"
-              role="tab"
-              aria-selected={elegida}
-              aria-controls={`${base}-panel`}
-              tabIndex={elegida ? 0 : -1}
-              onClick={() => onElegir(p.id)}
-              title={p.titulo ?? p.etiqueta}
-              className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition lg:flex-col lg:gap-1 lg:px-1 lg:py-2.5 lg:text-[11px] ${
-                elegida ? "bg-ng-azul/20 text-white" : "text-white/55 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <Icono size={18} aria-hidden className={elegida ? "text-ng-celeste" : undefined} />
-              <span className="leading-tight">{p.etiqueta}</span>
-            </button>
+            // Desde md, solo el ícono: el nombre va en la pista, que sale a la
+            // derecha (sobre el panel, no sobre la vista previa).
+            <Pista key={p.id} texto={p.titulo ?? p.etiqueta} lado="derecha" className="shrink-0">
+              <button
+                id={`${base}-pestana-${p.id}`}
+                type="button"
+                role="tab"
+                aria-selected={elegida}
+                aria-controls={`${base}-panel`}
+                aria-label={p.titulo ?? p.etiqueta}
+                tabIndex={elegida ? 0 : -1}
+                onClick={() => onElegir(p.id)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition md:h-10 md:w-10 md:justify-center md:p-0 ${
+                  elegida ? "bg-ng-azul/20 text-white" : "text-white/55 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <Icono size={18} aria-hidden className={elegida ? "text-ng-celeste" : undefined} />
+                <span className="leading-tight md:sr-only">{p.etiqueta}</span>
+              </button>
+            </Pista>
           );
         })}
       </div>
@@ -146,7 +150,7 @@ export function InspectorClip<T extends string>({
         role="tabpanel"
         aria-labelledby={`${base}-pestana-${actual.id}`}
         tabIndex={0}
-        className="min-h-0 min-w-0 flex-1 p-4 outline-none lg:overflow-y-auto"
+        className="min-h-0 min-w-0 flex-1 p-4 outline-none md:overflow-y-auto"
       >
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">{actual.titulo ?? actual.etiqueta}</h2>
         {actual.contenido}

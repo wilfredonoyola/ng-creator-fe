@@ -5,6 +5,8 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { useHls } from "@/lib/use-hls";
 import { dibujarSubtitulos, dibujarTexto, ganchoDeLlamada, type Dibujo, type EstiloResuelto, type EstiloTexto, type Tema } from "@/lib/estilos-texto";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
+import { Pista } from "@/components/Pista";
+import { Info } from "lucide-react";
 import {
   ajustarRegion,
   FUENTES,
@@ -120,9 +122,9 @@ export function EditorRecorte({
   estilo: EstiloClip;
   puedeEditar: boolean;
   /**
-   * Los ajustes del clip (el inspector con sus pestañas). Desde xl va en una
-   * tercera columna, al lado de la vista previa; en lg, a la derecha de las
-   * dos; más angosto, debajo de todo.
+   * Los ajustes del clip (el inspector con sus pestañas). Con el ancho para
+   * tres columnas va al lado de la vista previa; si no, desde md, a la derecha
+   * del video y la vista previa apilados; en el teléfono, debajo de todo.
    */
   inspector?: ReactNode;
   /** Para la barra del tramo: hasta dónde se puede extender el clip. */
@@ -143,6 +145,8 @@ export function EditorRecorte({
     /** 0-1 mientras analiza. */
     progreso?: number | null;
     resumen?: string | null;
+    /** Cuántas personas encontró: va en un globito en el botón. */
+    personas?: number | null;
     onPedir: () => void;
     /** El panel de avance y resultado; recibe cómo llevar la vista previa a un segundo del clip. */
     panel?: (ir: (segDelClip: number) => void) => ReactNode;
@@ -433,52 +437,62 @@ export function EditorRecorte({
   }
 
   return (
-    // Desde lg el editor ocupa el alto de la ventana y cada columna scrollea
-    // por dentro. Las columnas están en globals.css (editor-clip): en lg, el
-    // video y la vista previa apilados a la izquierda y el inspector a la
-    // derecha; en xl, video, vista previa e inspector en tres columnas, la de
-    // la vista previa del ancho de un lienzo que entra en el alto.
+    // Desde md el editor ocupa el alto de la ventana y cada columna scrollea
+    // por dentro. Las columnas están en globals.css (editor-clip) y dependen
+    // del ancho que tiene el editor, no de la ventana: con el ancho para tres,
+    // video, vista previa e inspector; si no, el video y la vista previa
+    // apilados a la izquierda y el inspector a la derecha.
     <div
-      className="editor-clip flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0"
+      className="editor-clip flex flex-col gap-3 md:grid md:h-full md:min-h-0"
       style={{ "--ratio-vista": lienzo.ancho / lienzo.alto } as React.CSSProperties}
     >
-      <div className="flex flex-col gap-4 lg:min-h-0 lg:overflow-y-auto xl:contents">
+      <div className="editor-izquierda flex flex-col gap-3">
       {/* ---- El cuadro entero, con los recuadros ---- */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 xl:max-h-full xl:min-h-0 xl:self-start xl:overflow-y-auto">
-        {/* Formato, diseño y fondo en una sola fila de botones chicos: lo que
-            más se toca es el recuadro y el video, no esto. Lo que hace cada
-            uno va en su título (al pasar el mouse). */}
-        <div className="mb-2 flex flex-wrap items-center gap-2">
+      <div className="editor-video editor-columna rounded-xl border border-white/10 bg-white/[0.03] p-3">
+        {/* Formato, diseño y fondo en una sola fila de controles segmentados:
+            lo que más se toca es el recuadro y el video, no esto. Lo que hace
+            cada uno va en su pista (al pasar el mouse). */}
+        <div className="mb-2 flex flex-wrap items-center gap-1.5">
           <Pestanas opciones={FORMATOS} valor={formato} onCambio={onCambiarFormato} deshabilitado={!puedeEditar} />
           <div
-            className="flex flex-wrap rounded-lg border border-white/10 bg-black/30 p-0.5"
+            className="flex rounded-lg border border-white/10 bg-black/30 p-0.5"
             role="group"
             aria-label={posiciones.length > 1 ? "Diseño de este tramo" : "Diseño"}
           >
             {DISENOS.map((d) => (
-              <button
-                key={d.valor}
-                disabled={!puedeEditar}
-                onClick={() => cambiarDisenoTramo(d.valor)}
-                title={`${d.titulo}${posiciones.length > 1 ? " (en este tramo)" : ""}`}
-                className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition disabled:opacity-50 ${
-                  d.valor === disenoActivo ? "bg-ng-azul/20 font-medium text-white" : "text-white/60 hover:text-white"
-                }`}
-              >
-                <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === disenoActivo} chico />
-                {d.etiqueta}
-              </button>
+              <Pista key={d.valor} texto={`${d.etiqueta}: ${d.titulo}${posiciones.length > 1 ? " (en este tramo)" : ""}`}>
+                <button
+                  disabled={!puedeEditar}
+                  onClick={() => cambiarDisenoTramo(d.valor)}
+                  aria-label={`${d.etiqueta}: ${d.titulo}`}
+                  aria-pressed={d.valor === disenoActivo}
+                  className={`flex h-7 items-center gap-1.5 rounded-md px-2 text-xs transition disabled:opacity-50 ${
+                    d.valor === disenoActivo ? "bg-ng-azul/20 font-medium text-white" : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  <MiniDiseno diseno={d.valor} horizontal={formato === "HORIZONTAL"} activo={d.valor === disenoActivo} chico />
+                  {/* Si la columna es angosta, solo el dibujito (globals.css). */}
+                  <span className="etiqueta-diseno">{d.etiqueta}</span>
+                </button>
+              </Pista>
             ))}
           </div>
           {conFondo && onCambiarFondo && (
             <Pestanas opciones={FONDOS} valor={fondo} onCambio={onCambiarFondo} deshabilitado={!puedeEditar} />
           )}
-          {posiciones.length > 1 && (
-            <span className="text-[11px] tabular-nums text-white/40">
-              Tramo {activa.desdeSeg.toFixed(1)}–
-              {(indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1)} s
-            </span>
-          )}
+          <span className="ml-auto flex items-center gap-1.5 whitespace-nowrap text-xs tabular-nums text-white/45">
+            {posiciones.length > 1 && (
+              <>
+                Tramo {activa.desdeSeg.toFixed(1)}–
+                {(indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1)} s
+              </>
+            )}
+            {puedeEditar && (
+              <Pista texto="Arrastrá el recuadro para moverlo; la esquina, para agrandarlo." lado="abajo-derecha">
+                <Info size={14} className="text-white/40" aria-label="Cómo mover el recuadro" tabIndex={0} />
+              </Pista>
+            )}
+          </span>
         </div>
         {/* El cuadro entero, con un tope de alto: así entran abajo el
             reproductor y los encuadres sin tener que bajar. */}
@@ -487,8 +501,10 @@ export function EditorRecorte({
           className="relative mx-auto w-full touch-none select-none overflow-hidden rounded-lg bg-black"
           style={{
             aspectRatio: `${fuente.ancho} / ${fuente.alto}`,
-            maxHeight: "42vh",
-            maxWidth: `calc(42vh * ${fuente.ancho / fuente.alto})`,
+            // Todo el ancho de la columna, con un tope de alto para que
+            // entren abajo el reproductor, el tramo y los encuadres.
+            maxHeight: "var(--alto-cuadro)",
+            maxWidth: `calc(var(--alto-cuadro) * ${fuente.ancho / fuente.alto})`,
           }}
         >
           <video
@@ -529,7 +545,7 @@ export function EditorRecorte({
               }}
             >
               <span
-                className="absolute left-1 top-1 rounded px-1 text-[10px] font-semibold text-black"
+                className="absolute left-1 top-1 rounded px-1 text-xs font-semibold text-black"
                 style={{ background: COLORES[i] }}
               >
                 {paneles.length > 1 ? (paneles[i].y > 0 || paneles[i].x > 0 ? "Abajo" : "Arriba") : formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"}
@@ -544,12 +560,6 @@ export function EditorRecorte({
             </div>
           ))}
         </div>
-
-        {puedeEditar && (
-          <p className="mt-1.5 text-[11px] text-white/35">
-            Arrastrá el recuadro para moverlo; la esquina, para agrandarlo.
-          </p>
-        )}
 
         {/* ---- Transporte y posiciones ---- */}
         <div className="mt-3 flex items-center gap-3">
@@ -581,7 +591,7 @@ export function EditorRecorte({
               />
             ))}
           </div>
-          <span className="w-24 shrink-0 text-right text-xs tabular-nums text-white/50">
+          <span className="shrink-0 whitespace-nowrap text-right text-xs tabular-nums text-white/50">
             {tc.toFixed(1)} / {duracion.toFixed(1)} s
           </span>
         </div>
@@ -596,39 +606,59 @@ export function EditorRecorte({
         />
 
         <div className="mt-3">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-xs font-medium uppercase tracking-wide text-white/50">
-              Posiciones del recorte · {posiciones.length}
+          <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+            <p className="flex items-center gap-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-white/50">
+              Encuadres · {posiciones.length}
+              <Pista texto="Las posiciones del recorte: desde cada segundo, otro encuadre. Tocá una para ir a ese momento.">
+                <Info size={14} className="text-white/40" aria-label="Qué son los encuadres" tabIndex={0} />
+              </Pista>
             </p>
-            {puedeEditar && autoEncuadre && (
-              <button
-                onClick={autoEncuadre.onPedir}
-                disabled={autoEncuadre.analizando}
-                className="ml-auto mr-2 rounded-lg bg-ng-violeta px-2.5 py-1 text-xs font-medium text-white hover:brightness-110 disabled:opacity-70"
-                title="Mira quién habla y arma los cambios de encuadre solo. Después los ajustás."
-              >
-                {autoEncuadre.analizando
-                  ? `Mirando quién habla… ${autoEncuadre.progreso ? `${Math.round(autoEncuadre.progreso * 100)}%` : ""}`
-                  : `✨ Auto-encuadre${autoEncuadre.resumen ? ` · ${autoEncuadre.resumen}` : ""}`}
-              </button>
-            )}
-            {puedeEditar && (
-              <button
-                onClick={nuevaPosicion}
-                className="rounded-lg border border-white/15 px-2.5 py-1 text-xs text-white/80 hover:bg-white/5"
-                title="Desde este segundo, otro encuadre. Arranca igual al actual: movelo después."
-              >
-                + Cambiar encuadre aquí ({tc.toFixed(1)} s)
-              </button>
-            )}
+            <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
+              {puedeEditar && autoEncuadre && (
+                <Pista texto="Mira quién habla y arma los cambios de encuadre solo. Después los ajustás." lado="abajo-derecha">
+                  <button
+                    onClick={autoEncuadre.onPedir}
+                    disabled={autoEncuadre.analizando}
+                    className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-lg bg-ng-violeta px-2.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-70"
+                  >
+                    {autoEncuadre.analizando ? (
+                      `Mirando… ${autoEncuadre.progreso ? `${Math.round(autoEncuadre.progreso * 100)}%` : ""}`
+                    ) : (
+                      <>
+                        ✨ Auto-encuadre
+                        {autoEncuadre.personas != null && (
+                          <span
+                            className="rounded-full bg-white/20 px-1.5 text-xs leading-4 tabular-nums"
+                            aria-label={`${autoEncuadre.personas} ${autoEncuadre.personas === 1 ? "persona" : "personas"}`}
+                          >
+                            {autoEncuadre.personas}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </button>
+                </Pista>
+              )}
+              {puedeEditar && (
+                <Pista texto={`Desde este segundo (${tc.toFixed(1)} s), otro encuadre. Arranca igual al actual: movelo después.`} lado="abajo-derecha">
+                  <button
+                    onClick={nuevaPosicion}
+                    className="flex h-7 items-center whitespace-nowrap rounded-lg border border-white/15 px-2.5 text-xs text-white/80 hover:bg-white/5"
+                  >
+                    + Encuadre aquí
+                  </button>
+                </Pista>
+              )}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          {/* Una sola fila: con muchos encuadres scrollea de costado. */}
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             {posiciones.map((p, i) => {
               const fin = i + 1 < posiciones.length ? posiciones[i + 1].desdeSeg : duracion;
               return (
                 <div
                   key={`${resaltar}-${i}`}
-                  className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-xs tabular-nums ${
+                  className={`flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg border px-2 py-1 text-xs tabular-nums ${
                     i === indiceActiva ? "border-amber-300 text-white" : "border-white/15 text-white/60"
                   }`}
                   style={{
@@ -655,7 +685,7 @@ export function EditorRecorte({
       </div>
 
       {/* ---- La vista previa: siempre a la vista, al lado del inspector ---- */}
-      <div className="xl:min-h-0 xl:overflow-y-auto">
+      <div className="editor-columna">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
           <p className="mb-2 text-sm font-medium">
             Vista previa ({formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"})
@@ -866,7 +896,7 @@ export function EditorRecorte({
       </div>
       </div>
 
-      {inspector && <div className="lg:min-h-0">{inspector}</div>}
+      {inspector && <div className="md:min-h-0">{inspector}</div>}
     </div>
   );
 }
@@ -939,7 +969,7 @@ function Pestanas<T extends string>({
           title={o.titulo}
           disabled={deshabilitado}
           onClick={() => o.valor !== valor && onCambio(o.valor)}
-          className={`rounded-md px-2.5 py-1 text-xs transition ${
+          className={`h-7 whitespace-nowrap rounded-md px-2 text-xs transition ${
             o.valor === valor ? "bg-marca font-medium text-white" : "text-white/60 hover:text-white"
           }`}
         >
@@ -1018,58 +1048,66 @@ function BarraDelTramo({
     window.addEventListener("pointerup", soltar);
   }
 
-  const boton = "rounded border border-white/15 px-2 py-0.5 text-[11px] text-white/70 hover:bg-white/5 disabled:opacity-40";
+  const boton = "whitespace-nowrap rounded border border-white/15 px-1.5 py-0.5 text-xs text-white/70 hover:bg-white/5 disabled:opacity-40";
   return (
-    <div className="mt-4">
-      <div className="mb-1.5 flex items-center justify-between text-[11px] text-white/45">
-        <span className="font-medium uppercase tracking-wide text-white/50">
-          Tramo del clip <span className="normal-case tracking-normal text-white/35">· arrastrá los bordes para alargarlo o acortarlo</span>
+    <div className="mt-3">
+      <div className="mb-1.5 flex items-center justify-between gap-2 text-xs text-white/45">
+        <span className="flex items-center gap-1.5 whitespace-nowrap font-medium uppercase tracking-wide text-white/50">
+          Tramo del clip
+          <Pista texto="Arrastrá los bordes para alargarlo o acortarlo. Los botones lo corren de a 5 s.">
+            <Info size={14} className="text-white/40" aria-label="Cómo cambiar el tramo" tabIndex={0} />
+          </Pista>
         </span>
-        <span className="tabular-nums">
+        <span className="whitespace-nowrap tabular-nums">
           {reloj(desde)} – {reloj(hasta)} · {(hasta - desde).toFixed(1)} s
         </span>
       </div>
-      <div className="flex items-center gap-2">
-        <div className="flex shrink-0 gap-1">
+      {/* La barra a todo el ancho y debajo los botones de a 5 s, del inicio a
+          la izquierda y del final a la derecha: en una columna angosta, los
+          cuatro al lado de la barra la dejaban sin lugar. */}
+      <div ref={barra} className="relative h-9 touch-none select-none rounded-md bg-white/[0.06]">
+        <div
+          className="absolute inset-y-0 rounded-md border-2 border-ng-azul bg-ng-teal/15"
+          style={{ left: `${pct(desde)}%`, width: `${pct(hasta) - pct(desde)}%` }}
+        >
+          <div
+            onPointerDown={(e) => arrastrar(e, "desde")}
+            className="absolute -left-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
+            title="Arrastrá para mover el inicio"
+          />
+          <div
+            onPointerDown={(e) => arrastrar(e, "hasta")}
+            className="absolute -right-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
+            title="Arrastrá para mover el final"
+          />
+        </div>
+        {t >= ventana.ini && t <= ventana.fin && (
+          <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white" style={{ left: `${pct(t)}%` }} />
+        )}
+        <span className="pointer-events-none absolute bottom-0.5 left-1 text-xs leading-none tabular-nums text-white/30">
+          {reloj(ventana.ini)}
+        </span>
+        <span className="pointer-events-none absolute bottom-0.5 right-1 text-xs leading-none tabular-nums text-white/30">
+          {reloj(ventana.fin)}
+        </span>
+      </div>
+      <div className="mt-1.5 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-white/40">Inicio</span>
           <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde - 5, hasta))} title="Mover el inicio 5 s antes (el clip se alarga)">
-            ← 5 s
+            ←5s
           </button>
           <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(Math.min(desde + 5, hasta - 1), hasta))} title="Mover el inicio 5 s después (el clip se acorta)">
-            5 s →
+            5s→
           </button>
         </div>
-        <div ref={barra} className="relative h-9 flex-1 touch-none select-none rounded-md bg-white/[0.06]">
-          <div
-            className="absolute inset-y-0 rounded-md border-2 border-ng-azul bg-ng-teal/15"
-            style={{ left: `${pct(desde)}%`, width: `${pct(hasta) - pct(desde)}%` }}
-          >
-            <div
-              onPointerDown={(e) => arrastrar(e, "desde")}
-              className="absolute -left-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
-              title="Arrastrá para mover el inicio"
-            />
-            <div
-              onPointerDown={(e) => arrastrar(e, "hasta")}
-              className="absolute -right-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
-              title="Arrastrá para mover el final"
-            />
-          </div>
-          {t >= ventana.ini && t <= ventana.fin && (
-            <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white" style={{ left: `${pct(t)}%` }} />
-          )}
-          <span className="pointer-events-none absolute bottom-0.5 left-1 text-[10px] tabular-nums text-white/30">
-            {reloj(ventana.ini)}
-          </span>
-          <span className="pointer-events-none absolute bottom-0.5 right-1 text-[10px] tabular-nums text-white/30">
-            {reloj(ventana.fin)}
-          </span>
-        </div>
-        <div className="flex shrink-0 gap-1">
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-white/40">Final</span>
           <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, Math.max(hasta - 5, desde + 1)))} title="Mover el final 5 s antes (el clip se acorta)">
-            ← 5 s
+            ←5s
           </button>
           <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, hasta + 5))} title="Mover el final 5 s después (el clip se alarga)">
-            5 s →
+            5s→
           </button>
         </div>
       </div>

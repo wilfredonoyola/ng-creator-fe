@@ -8,6 +8,7 @@ import { MARCAR_CLIP_LISTO, SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/
 import { diaYHora } from "@/lib/publicaciones";
 import { useSesion } from "@/lib/sesion";
 import { Menu, type OpcionMenu } from "@/components/Menu";
+import { Pista } from "@/components/Pista";
 import { EstadoGuardado, estadoDelMp4, useDescargarMp4, type EstadoRender } from "./ExportarClip";
 import type { Autoria } from "./TomarClip";
 import type { ResumenPublicacionClip } from "./ListoClip";
@@ -179,12 +180,20 @@ export function BarraDelClip({
 
       {/* ---- El clip: se achica primero ---- */}
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-1.5 text-[11px] leading-4 text-ng-secundario">
-          <span className="truncate">{episodio}</span>
-          <span aria-hidden className="text-white/20">·</span>
-          <span
-            className={`inline-flex shrink-0 items-center gap-1 ${!tomadoPor ? "" : mio ? TONOS.marca : TONOS.aviso}`}
-            title={
+        {/* Prioridades si no entra todo: primero se va el estado del MP4 (que
+            igual se ve en Exportar), después "Liberar", y recién entonces se
+            trunca el episodio, que nunca baja de 8rem. Lo opcional va en un
+            grupo de un renglón que se encoge antes que nada (shrink alto) y
+            lo que no entra pasa a un segundo renglón oculto. */}
+        <div className="flex min-w-0 items-center gap-1.5 text-xs leading-4 text-ng-secundario">
+          <span className="min-w-[8rem] shrink truncate" title={episodio}>
+            {episodio}
+          </span>
+          <span aria-hidden className="shrink-0 text-white/20">·</span>
+          {/* La pista sale abajo y a la izquierda: sobre la columna del video, no sobre la vista previa. */}
+          <Pista
+            className="shrink-0"
+            texto={
               !tomadoPor
                 ? "Tomalo para que el equipo sepa que lo estás haciendo vos."
                 : mio
@@ -192,28 +201,34 @@ export function BarraDelClip({
                   : "Si lo tomás, pasa a tu nombre y así lo ve todo el equipo."
             }
           >
-            {!tomadoPor ? "Nadie lo tomó" : mio ? "Lo editás vos" : `Lo edita ${tomadoPor.nombre}`}
-          </span>
-          {puedeOperar && (
-            <button
-              onClick={mio ? liberarlo : tomarlo}
-              disabled={tomando || soltando}
-              className="shrink-0 text-ng-celeste underline-offset-2 hover:underline disabled:opacity-50"
-            >
-              {tomando || soltando ? "…" : mio ? "Liberar" : tomadoPor ? "Tomarlo igual" : "Tomarlo"}
-            </button>
-          )}
-          <span aria-hidden className="hidden text-white/20 sm:inline">·</span>
-          <span className={`hidden shrink-0 sm:inline ${TONOS[mp4.tono]}`} title={mp4.detalle}>
-            {mp4.etiqueta}
-          </span>
+            <span tabIndex={0} className={`inline-flex items-center gap-1 whitespace-nowrap outline-none ${!tomadoPor ? "" : mio ? TONOS.marca : TONOS.aviso}`}>
+              {!tomadoPor ? "Nadie lo tomó" : mio ? "Lo editás vos" : `Lo edita ${tomadoPor.nombre}`}
+            </span>
+          </Pista>
+          <div className="flex h-4 min-w-0 shrink-[1000] flex-wrap items-center gap-x-1.5 overflow-hidden">
+            {puedeOperar && (
+              <button
+                onClick={mio ? liberarlo : tomarlo}
+                disabled={tomando || soltando}
+                className="whitespace-nowrap text-ng-celeste underline-offset-2 hover:underline disabled:opacity-50"
+              >
+                {tomando || soltando ? "…" : mio ? "Liberar" : tomadoPor ? "Tomarlo igual" : "Tomarlo"}
+              </button>
+            )}
+            <span className={`whitespace-nowrap ${TONOS[mp4.tono]}`} title={mp4.detalle}>
+              <span aria-hidden className="mr-1.5 text-white/20">·</span>
+              {mp4.etiqueta}
+            </span>
+          </div>
         </div>
         <input
           value={titulo}
           onChange={(e) => onCambiarTitulo(e.target.value)}
           disabled={!puedeOperar}
           aria-label="Título del clip"
-          className="block w-full min-w-0 truncate bg-transparent text-[15px] font-semibold leading-6 outline-none focus:underline disabled:opacity-100"
+          // Truncado con "…": el completo, al pasar el mouse.
+          title={titulo}
+          className="block w-full min-w-0 truncate bg-transparent text-base font-semibold leading-6 outline-none focus:underline disabled:opacity-100"
         />
       </div>
 
@@ -269,15 +284,15 @@ export function BarraDelClip({
                 opciones={[opcionListo]}
               />
             ) : (
-              <button
-                onClick={() => terminar(true)}
-                disabled={!tieneVideo || marcando}
-                title={tieneVideo ? "Ya se puede programar: lo ve todo el equipo en el calendario" : "Procesá el video para poder marcarlo listo"}
-                className={SECUNDARIO}
+              <Pista
+                lado="abajo-derecha"
+                texto={tieneVideo ? "Lo ve todo el equipo en el calendario, para programarlo." : "Procesá el video para poder marcarlo listo."}
               >
-                {marcando ? <LoaderCircle size={16} className="animate-spin" aria-hidden /> : <Check size={16} aria-hidden />}
-                Listo
-              </button>
+                <button onClick={() => terminar(true)} disabled={!tieneVideo || marcando} className={SECUNDARIO}>
+                  {marcando ? <LoaderCircle size={16} className="animate-spin" aria-hidden /> : <Check size={16} aria-hidden />}
+                  Listo
+                </button>
+              </Pista>
             )}
           </div>
         )}
@@ -326,22 +341,42 @@ export function BarraDelClip({
         )}
 
         {redes && (
-          <span className={`hidden max-w-[11rem] truncate text-[11px] leading-tight xl:inline ${TONOS[redes.tono]}`} title={redes.ayuda}>
+          <span className={`solo-barra-ancha max-w-[11rem] truncate text-xs leading-tight ${TONOS[redes.tono]}`} title={redes.ayuda}>
             {redes.texto}
+          </span>
+        )}
+        {/* Apagado, dice por qué: en línea solo con la barra ancha (≥1400px);
+            si no, en la pista y en el aria-describedby del botón. */}
+        {puedeOperar && !tieneVideo && (
+          <span className="solo-barra-ancha max-w-[9rem] text-xs leading-tight text-ng-secundario">
+            {mp4.procesando ? "Se puede programar al terminar de procesar" : "Procesá el video para programar"}
           </span>
         )}
 
         {puedeOperar &&
           (tieneVideo ? (
-            <Link href={hrefProgramar} className={PRIMARIO} title={redes ? `${redes.texto}. ${redes.ayuda}` : "Elegí redes y hora"}>
-              <Send size={16} aria-hidden />
-              {fallidas ? "Reintentar" : "Programar"}
-            </Link>
+            <Pista lado="abajo-derecha" texto={redes ? `${redes.texto}. ${redes.ayuda}` : "Elegí redes y hora."}>
+              <Link href={hrefProgramar} className={PRIMARIO}>
+                <Send size={16} aria-hidden />
+                {fallidas ? "Reintentar" : "Programar"}
+              </Link>
+            </Pista>
           ) : (
-            <button disabled className={PRIMARIO} title="Primero procesá el video (en Exportar)">
-              <Send size={16} aria-hidden />
-              Programar
-            </button>
+            <Pista
+              id="motivo-programar"
+              lado="abajo-derecha"
+              texto={mp4.procesando ? "Se procesa el video: cuando termine, se puede programar." : "Primero procesá el video, en Exportar. Sin MP4 no hay qué programar."}
+            >
+              <button
+                aria-disabled
+                aria-describedby="motivo-programar"
+                onClick={(e) => e.preventDefault()}
+                className={`${PRIMARIO} cursor-not-allowed opacity-50 hover:brightness-100`}
+              >
+                <Send size={16} aria-hidden />
+                Programar
+              </button>
+            </Pista>
           ))}
       </div>
     </div>
