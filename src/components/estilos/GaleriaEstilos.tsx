@@ -149,6 +149,7 @@ export function GaleriaEstilos({
   onElegir,
   nombreMarca,
   compacta = false,
+  anchoMuestra,
   deLaMarca,
   deshabilitado = false,
 }: {
@@ -158,13 +159,15 @@ export function GaleriaEstilos({
   onElegir: (e: EstiloTexto | null) => void;
   nombreMarca?: string;
   compacta?: boolean;
+  /** El ancho de cada miniatura, para que entren varias por fila en un panel angosto. */
+  anchoMuestra?: number;
   /** El estilo de la marca: suma la opción "Como la marca (…)", que es null. */
   deLaMarca?: EstiloTexto;
   deshabilitado?: boolean;
 }) {
   const { estilos, porEstilo, cargando, error } = useEstilosTexto();
   const t = useRelojMuestra();
-  const ancho = compacta ? 64 : 104;
+  const ancho = anchoMuestra ?? (compacta ? 64 : 104);
 
   if (error) return <p className="text-xs text-red-400">No se pudieron cargar los estilos: {error.message}</p>;
   if (cargando && !estilos.length) return <div className={`${compacta ? "h-32" : "h-64"} animate-pulse rounded-xl bg-white/5`} />;

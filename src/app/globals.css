@@ -150,3 +150,32 @@ body {
     box-shadow: 0 0 0 0 rgb(167 139 250 / 0);
   }
 }
+
+/*
+ * El editor de clips de episodio. La vista previa mide --alto-vista de alto
+ * (y su ancho sale de --ratio-vista, que pone el editor según el formato).
+ * Desde xl el editor es de tres columnas: el video, la vista previa del ancho
+ * de un lienzo que entra en el alto de la ventana, y el inspector. El alto que
+ * se descuenta es el de la barra de arriba, los márgenes de la página y el
+ * título de la tarjeta de la vista previa. En lg (1024–1279) son dos: el video
+ * y la vista previa apilados, y el inspector.
+ */
+.editor-clip {
+  --alto-vista: 56vh;
+}
+@media (min-width: 1024px) {
+  .editor-clip {
+    grid-template-columns: minmax(0, 1fr) clamp(300px, 30vw, 380px);
+  }
+}
+@media (min-width: 1280px) {
+  .editor-clip {
+    --alto-vista: calc(100dvh - 10.5rem);
+    /* Lo que queda al lado del menú de la app (16rem) y los márgenes (4rem). */
+    --ancho-editor: calc(100vw - 20rem);
+    grid-template-columns:
+      minmax(0, 1fr)
+      calc(min(var(--alto-vista) * var(--ratio-vista), 30rem, var(--ancho-editor) * 0.28) + 1.5rem + 2px)
+      clamp(300px, 26vw, 420px);
+  }
+}

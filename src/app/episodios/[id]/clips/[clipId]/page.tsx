@@ -23,13 +23,14 @@ import { useSesion } from "@/lib/sesion";
 import type { DisenoClip, Encuadre, FondoClip, FormatoClip, Region, SubtituloClip, Texto } from "@/lib/clip-encuadre";
 import { LIENZOS, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, subtituloPorDefecto } from "@/lib/clip-encuadre";
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
-import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExportar";
+import { InspectorClip, usePestanaInspector, type PestanaInspector } from "@/components/episodios/InspectorClip";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
 import { BarraDelClip } from "@/components/episodios/BarraDelClip";
 import { GaleriaEstilos } from "@/components/estilos/GaleriaEstilos";
 import { ESTILO_TEXTO_POR_DEFECTO, resolverEstilo, temaValido, type EstiloTexto } from "@/lib/estilos-texto";
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
+import { Captions, Palette, ScrollText, Stamp, Type } from "lucide-react";
 
 interface Palabra {
   texto: string;
@@ -60,6 +61,10 @@ interface Borrador {
   /** El estilo de texto de este clip (be#132). Null = el de la marca. */
   estiloTexto: EstiloTexto | null;
 }
+
+/** Las pestañas del inspector, en orden. Cada una se abre con `#id` en la dirección. */
+const PESTANAS = ["estilo", "textos", "subtitulos", "marca", "transcripcion"] as const;
+type Pestana = (typeof PESTANAS)[number];
 
 /** Cuánto contexto se muestra alrededor del clip en la transcripción. */
 const CONTEXTO_SEG = 30;
@@ -115,6 +120,7 @@ export default function EditorClipPage({
   const [modo, setModo] = useState<"inicio" | "fin" | "corregir">("inicio");
   const [corrigiendo, setCorrigiendo] = useState<Palabra | null>(null);
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
+  const [pestana, elegirPestana] = usePestanaInspector(PESTANAS, "estilo");
   // El tramo que está guardado, y el aviso de cruces (#70) cuando el nuevo pisa
   // otro clip. Lo que ya se aceptó con "Guardar igual" no se vuelve a preguntar
   // a cada ajuste fino; solo si aparece un clip nuevo en el cruce.
@@ -491,314 +497,346 @@ export default function EditorClipPage({
   const defEfectivo = porEstilo.get(estiloEfectivo);
   const conEstilo = defEfectivo && !defEfectivo.respetaTextos ? resolverEstilo(defEfectivo, estilo.tema) : null;
 
-  return (
-    <DashboardLayout>
-      <Link href={`/episodios/${episodioId}`} className="text-sm text-white/50 hover:text-white/80">
-        ← {ep.titulo}
-      </Link>
+  const desactualizado =
+    estadoRender === "LISTO" &&
+    (sinGuardar || Boolean(clip.editadoEn && clip.renderizadoEn && new Date(clip.editadoEn) > new Date(clip.renderizadoEn)));
 
-      <div className="mb-5 mt-2 flex flex-wrap items-center justify-between gap-3">
-        <input
-          value={b.titulo}
-          onChange={(e) => cambiar({ titulo: e.target.value })}
-          disabled={!opera}
-          className="min-w-0 flex-1 bg-transparent text-2xl font-bold outline-none focus:underline"
-        />
-        <EstadoGuardado guardando={guardando} sinGuardar={sinGuardar} error={Boolean(error)} />
-      </div>
-      <BarraDelClip
-        clipId={clipId}
-        marcaId={marcaId ?? ""}
-        tomadoPor={clip.tomadoPor}
-        listoPor={clip.listoPor}
-        publicacion={clip.publicacion}
-        tieneVideo={estadoRender === "LISTO" && Boolean(clip.urlVideo)}
-        puedeOperar={opera}
-        hrefProgramar={`/episodios/${episodioId}/clips/${clipId}/publicar`}
-      />
-      {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
-      {cruces && (
-        <div className="mb-4">
-          <AvisoCruces
-            cruces={cruces}
-            usuarioId={usuario?._id}
-            textoSeguir="Guardar igual"
-            onSeguir={guardarIgual}
-            onCancelar={() => {
-              // Vuelve al tramo guardado; lo demás que se cambió se guarda igual.
-              setCruces(null);
-              const t = tramoGuardado.current;
-              if (t) cambiarTramo(t.desdeSeg, t.hastaSeg);
-            }}
+  // ---- Las pestañas del inspector ----
+  const pestanas: PestanaInspector<Pestana>[] = [
+    {
+      id: "estilo",
+      etiqueta: "Estilo",
+      titulo: "Estilo del texto",
+      icono: Palette,
+      contenido: (
+        <>
+          <GaleriaEstilos
+            anchoMuestra={84}
+            tema={temaValido(estilo.tema)}
+            valor={b.estiloTexto}
+            onElegir={(estiloTexto) => cambiar({ estiloTexto })}
+            deLaMarca={estilo.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
+            nombreMarca={activa?.nombre}
+            deshabilitado={!opera}
           />
-        </div>
-      )}
-
-      {ep.urlReproduccion ? (
-        <EditorRecorte
-          url={ep.urlReproduccion}
-          desde={b.desdeSeg}
-          hasta={b.hastaSeg}
-          formato={b.formato}
-          diseno={b.diseno}
-          fondo={b.fondo}
-          autoEncuadre={{
-            analizando: analizando || pidiendoAuto,
-            resumen:
-              estadoAuto === "LISTO" && clip.personasAutoEncuadre != null
-                ? `${clip.personasAutoEncuadre} persona${clip.personasAutoEncuadre === 1 ? "" : "s"}`
-                : null,
-            progreso: clip.progresoAutoEncuadre,
-            onPedir: () => void pedirAutoEncuadre(),
-            resaltar: resaltarAuto,
-            panel: (ir) => (
-              <PanelAutoEncuadre
-                estado={pidiendoAuto && !analizando ? "EN_COLA" : estadoAuto}
-                etapa={clip.etapaAutoEncuadre}
-                progreso={clip.progresoAutoEncuadre}
-                empezoEn={clip.autoEncuadreEmpezoEn}
-                error={falloCerrado ? null : clip.errorAutoEncuadre}
-                personas={(clip.resumenAutoEncuadre ?? []) as PersonaAuto[]}
-                cambios={b.posiciones.length}
-                mostrarResumen={resumenAbierto}
-                deshacible={Boolean(clip.autoEncuadreDeshacible)}
-                deshaciendo={deshaciendo}
-                onVerPrimerCambio={() => ir(Math.max(0, (b.posiciones[1]?.desdeSeg ?? 1) - 1))}
-                onDeshacer={() => void deshacerAutoEncuadre()}
-                onReintentar={() => void pedirAutoEncuadre()}
-                onCerrar={() => {
-                  setResumenAbierto(false);
-                  setFalloCerrado(true);
-                }}
-              />
-            ),
-          }}
-          subtitulo={b.subtitulo}
-          plantillaActiva={b.plantillaActiva}
-          onCambiarSubtitulo={(subtitulo) => cambiar({ subtitulo })}
-          onCambiarFondo={(fondo) => cambiar({ fondo })}
-          encuadre={b.encuadre}
-          posicionesGuardadas={b.posiciones}
-          // El diseño del clip sigue al del primer tramo (lo usan los subtítulos).
-          onCambiarPosiciones={(posiciones) => cambiar({ posiciones, diseno: posiciones[0]?.diseno ?? b.diseno })}
-          lineas={lineas}
-          textos={b.textos}
-          onCambiarTextos={(textos) => cambiar({ textos })}
-          textoElegido={textoElegido}
-          onElegirTexto={setTextoElegido}
-          estilo={estilo}
-          estiloTexto={conEstilo}
-          nombreMarca={activa?.nombre}
-          puedeEditar={opera}
-          duracionEpisodio={ep.duracionSeg ?? 0}
-          onCambiarTramo={cambiarTramo}
-          onCambiarFormato={(formato) => cambiar({ formato })}
-          debajoDeLaVista={
-            <PanelExportar
-              titulo={b.titulo}
-              estado={estadoRender ?? null}
-              progreso={clip.progresoRender ?? 0}
-              error={clip.errorRender}
-              urlVideo={clip.urlVideo}
-              urlPoster={clip.urlPoster}
-              // Hay cambios que el MP4 no tiene: sin guardar todavía, o
-              // guardados después del último render.
-              desactualizado={
-                estadoRender === "LISTO" &&
-                (sinGuardar ||
-                  Boolean(clip.editadoEn && clip.renderizadoEn && new Date(clip.editadoEn) > new Date(clip.renderizadoEn)))
-              }
-              guardando={guardando || sinGuardar}
-              pidiendo={pidiendoRender}
-              puedeProcesar={opera}
-              onProcesar={() => void pedirRender()}
+          <p className="mt-3 text-xs text-white/40">
+            El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en{" "}
+            <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+              Plantilla de clips
+            </Link>
+            .
+          </p>
+        </>
+      ),
+    },
+    {
+      id: "textos",
+      etiqueta: "Textos",
+      titulo: "Gancho y textos",
+      icono: Type,
+      contenido: (
+        <>
+          {conEstilo && (
+            <p className="mb-3 text-xs text-white/45">
+              Con el estilo {conEstilo.def.nombre}, la letra, los colores, las mayúsculas y la caja de cada texto los pone
+              el estilo. Acá cuentan el contenido, las palabras destacadas, el lugar, el tamaño y el tiempo.
+            </p>
+          )}
+          <PanelTextos
+            textos={b.textos}
+            onCambiar={(textos) => cambiar({ textos })}
+            elegido={textoElegido}
+            onElegir={setTextoElegido}
+            duracion={duracion}
+            colorMarca={estilo.colorResaltado}
+            deshabilitado={!opera}
+          />
+        </>
+      ),
+    },
+    {
+      id: "subtitulos",
+      etiqueta: "Subtítulos",
+      icono: Captions,
+      contenido: (
+        <>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={b.subtitulosActivos}
+              onChange={(e) => cambiar({ subtitulosActivos: e.target.checked })}
+              disabled={!opera}
             />
-          }
-        />
-      ) : (
-        <p className="text-sm text-white/50">El video todavía no está listo en Bunny.</p>
-      )}
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {/* ---- Controles ---- */}
-        <div className="space-y-5">
-          <Seccion titulo="Tramo">
-            <div className="mb-3 flex flex-wrap gap-2">
-              {(
-                [
-                  ["inicio", "Tocar = inicio"],
-                  ["fin", "Tocar = fin"],
-                  ["corregir", "Tocar = corregir palabra"],
-                ] as const
-              ).map(([m, texto]) => (
-                <button
-                  key={m}
-                  onClick={() => setModo(m)}
-                  className={`rounded-lg px-3 py-1.5 text-xs ${
-                    modo === m ? "bg-white text-black" : "border border-white/15 text-white/70"
-                  }`}
-                >
-                  {texto}
-                </button>
-              ))}
-            </div>
-            <div className="max-h-72 overflow-y-auto rounded-lg bg-black/30 p-3 text-[15px] leading-8">
-              {palabras.map((p) => {
-                const mitad = (p.desde + p.hasta) / 2;
-                const dentro = mitad >= b.desdeSeg && mitad <= b.hastaSeg;
-                const corregida = correccionDe.get(Math.round(p.desde * 1000));
-                return (
-                  <button
-                    key={p.desde}
-                    onClick={() => tocarPalabra(p)}
-                    title={`${p.desde.toFixed(2)} s`}
-                    className={`mr-1 rounded px-0.5 transition ${
-                      dentro ? "bg-ng-teal/20 text-white" : "text-white/35"
-                    } hover:bg-white/20 ${corregida !== undefined ? "underline decoration-amber-400" : ""}`}
-                  >
-                    {corregida !== undefined ? corregida || "∅" : p.texto}
-                  </button>
-                );
-              })}
-            </div>
-            {corrigiendo && (
-              <Correccion
-                palabra={corrigiendo}
-                actual={correccionDe.get(Math.round(corrigiendo.desde * 1000))}
-                onGuardar={(texto) => corregir(corrigiendo, texto)}
-                onCancelar={() => setCorrigiendo(null)}
-              />
-            )}
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <AjusteFino
-                etiqueta="Empieza"
-                valor={b.desdeSeg}
-                onCambio={(v) => cambiarTramo(Math.min(v, b.hastaSeg - 1), b.hastaSeg)}
-                disabled={!opera}
-              />
-              <AjusteFino
-                etiqueta="Termina"
-                valor={b.hastaSeg}
-                onCambio={(v) => cambiarTramo(b.desdeSeg, Math.max(v, b.desdeSeg + 1))}
-                disabled={!opera}
-              />
-            </div>
-            <p className="mt-2 text-xs text-white/45">Dura {duracion.toFixed(2)} s</p>
-          </Seccion>
-        </div>
-
-        <div className="space-y-5">
-          <Seccion titulo="Estilo del texto">
-            <GaleriaEstilos
-              compacta
-              tema={temaValido(estilo.tema)}
-              valor={b.estiloTexto}
-              onElegir={(estiloTexto) => cambiar({ estiloTexto })}
-              deLaMarca={estilo.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
-              nombreMarca={activa?.nombre}
+            Subtítulos con la palabra resaltada
+          </label>
+          {b.subtitulosActivos && (
+            <EstiloSubtitulos
+              delEstilo={conEstilo?.def.nombre}
+              valor={b.subtitulo}
+              porDefecto={subtituloPorDefecto(LIENZOS[b.formato], b.diseno)}
+              onCambiar={(subtitulo) => cambiar({ subtitulo })}
               deshabilitado={!opera}
             />
-            <p className="mt-2 text-xs text-white/40">
-              El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en{" "}
+          )}
+          <p className="mt-3 text-xs text-white/40">
+            ¿Una palabra mal transcrita?{" "}
+            <button
+              onClick={() => {
+                setModo("corregir");
+                elegirPestana("transcripcion");
+              }}
+              className="text-ng-celeste hover:underline"
+            >
+              Corregila en la transcripción
+            </button>
+            . Cambia el subtítulo, no el tiempo.
+            {b.correcciones.length > 0 && ` ${b.correcciones.length} corregida(s).`}
+          </p>
+        </>
+      ),
+    },
+    {
+      id: "marca",
+      etiqueta: "Marca",
+      titulo: "Plantilla de la marca",
+      icono: Stamp,
+      contenido:
+        estilo.plantilla && (estilo.plantilla.logoActivo || estilo.plantilla.ctaActivo) ? (
+          <>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={b.plantillaActiva}
+                onChange={(e) => cambiar({ plantillaActiva: e.target.checked })}
+                disabled={!opera}
+              />
+              {[
+                estilo.plantilla.logoActivo && (estilo.logoUrl ? "Logo" : null),
+                estilo.plantilla.ctaActivo && estilo.plantilla.ctaTexto.trim() ? "llamada a la acción al final" : null,
+              ]
+                .filter(Boolean)
+                .join(" y ") || "Plantilla"}{" "}
+              de la marca en este clip
+            </label>
+            <p className="mt-1 text-xs text-white/40">
+              Se configura una vez para todos los clips, en{" "}
               <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
                 Plantilla de clips
               </Link>
               .
             </p>
-          </Seccion>
-
-          <Seccion titulo="Subtítulos">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={b.subtitulosActivos}
-                onChange={(e) => cambiar({ subtitulosActivos: e.target.checked })}
-                disabled={!opera}
-              />
-              Subtítulos con la palabra resaltada
-            </label>
-            {b.subtitulosActivos && (
-              <EstiloSubtitulos
-                delEstilo={conEstilo?.def.nombre}
-                valor={b.subtitulo}
-                porDefecto={subtituloPorDefecto(LIENZOS[b.formato], b.diseno)}
-                onCambiar={(subtitulo) => cambiar({ subtitulo })}
-                deshabilitado={!opera}
-              />
-            )}
-            <p className="mt-1 text-xs text-white/40">
-              Para arreglar una palabra mal transcrita: “Tocar = corregir palabra” y tocala en el
-              texto. Cambia el subtítulo, no el tiempo.
-              {b.correcciones.length > 0 && ` ${b.correcciones.length} corregida(s).`}
-            </p>
-          </Seccion>
-
-          <Seccion titulo="Textos">
-            {conEstilo && (
-              <p className="mb-3 text-xs text-white/45">
-                Con el estilo {conEstilo.def.nombre}, la letra, los colores, las mayúsculas y la caja de cada texto los pone
-                el estilo. Acá cuentan el contenido, las palabras destacadas, el lugar, el tamaño y el tiempo.
-              </p>
-            )}
-            <PanelTextos
-              textos={b.textos}
-              onCambiar={(textos) => cambiar({ textos })}
-              elegido={textoElegido}
-              onElegir={setTextoElegido}
-              duracion={duracion}
-              colorMarca={estilo.colorResaltado}
-              deshabilitado={!opera}
+          </>
+        ) : (
+          <p className="text-xs text-white/50">
+            La marca no tiene plantilla. Con una, cada clip sale con su logo y una llamada a la acción al final:{" "}
+            <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+              armala en Plantilla de clips
+            </Link>
+            .
+          </p>
+        ),
+    },
+    {
+      id: "transcripcion",
+      etiqueta: "Transcripción",
+      titulo: "Tramo en la transcripción",
+      icono: ScrollText,
+      contenido: (
+        <>
+          <div className="mb-3 flex flex-wrap gap-2">
+            {(
+              [
+                ["inicio", "Tocar = inicio"],
+                ["fin", "Tocar = fin"],
+                ["corregir", "Tocar = corregir palabra"],
+              ] as const
+            ).map(([m, texto]) => (
+              <button
+                key={m}
+                onClick={() => setModo(m)}
+                className={`rounded-lg px-3 py-1.5 text-xs ${
+                  modo === m ? "bg-white text-black" : "border border-white/15 text-white/70"
+                }`}
+              >
+                {texto}
+              </button>
+            ))}
+          </div>
+          <div className="max-h-72 overflow-y-auto rounded-lg bg-black/30 p-3 text-[15px] leading-8 lg:max-h-[45vh]">
+            {palabras.map((p) => {
+              const mitad = (p.desde + p.hasta) / 2;
+              const dentro = mitad >= b.desdeSeg && mitad <= b.hastaSeg;
+              const corregida = correccionDe.get(Math.round(p.desde * 1000));
+              return (
+                <button
+                  key={p.desde}
+                  onClick={() => tocarPalabra(p)}
+                  title={`${p.desde.toFixed(2)} s`}
+                  className={`mr-1 rounded px-0.5 transition ${
+                    dentro ? "bg-ng-teal/20 text-white" : "text-white/35"
+                  } hover:bg-white/20 ${corregida !== undefined ? "underline decoration-amber-400" : ""}`}
+                >
+                  {corregida !== undefined ? corregida || "∅" : p.texto}
+                </button>
+              );
+            })}
+          </div>
+          {corrigiendo && (
+            <Correccion
+              palabra={corrigiendo}
+              actual={correccionDe.get(Math.round(corrigiendo.desde * 1000))}
+              onGuardar={(texto) => corregir(corrigiendo, texto)}
+              onCancelar={() => setCorrigiendo(null)}
             />
-          </Seccion>
+          )}
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
+            <AjusteFino
+              etiqueta="Empieza"
+              valor={b.desdeSeg}
+              onCambio={(v) => cambiarTramo(Math.min(v, b.hastaSeg - 1), b.hastaSeg)}
+              disabled={!opera}
+            />
+            <AjusteFino
+              etiqueta="Termina"
+              valor={b.hastaSeg}
+              onCambio={(v) => cambiarTramo(b.desdeSeg, Math.max(v, b.desdeSeg + 1))}
+              disabled={!opera}
+            />
+          </div>
+          <p className="mt-2 text-xs text-white/45">Dura {duracion.toFixed(2)} s</p>
+        </>
+      ),
+    },
+  ];
+  const inspector = <InspectorClip pestanas={pestanas} activa={pestana} onElegir={elegirPestana} />;
 
-          <Seccion titulo="Plantilla de la marca">
-            {estilo.plantilla && (estilo.plantilla.logoActivo || estilo.plantilla.ctaActivo) ? (
-              <>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={b.plantillaActiva}
-                    onChange={(e) => cambiar({ plantillaActiva: e.target.checked })}
-                    disabled={!opera}
+  return (
+    <DashboardLayout>
+      {/* Desde lg, la página entera es el editor: el alto de la ventana menos
+          los márgenes de DashboardLayout, sin scroll de página. */}
+      <div className="flex flex-col lg:h-[calc(100dvh-4rem)]">
+        <header
+          className="sticky z-20 -mx-4 -mt-4 mb-4 h-14 shrink-0 border-b border-white/10 bg-ng-fondo/95 px-4 backdrop-blur sm:-mx-6 sm:-mt-6 sm:px-6 lg:static lg:-mx-8 lg:-mt-8 lg:px-8"
+          // Debajo de la barra de arriba del teléfono (DashboardLayout), que también es sticky.
+          style={{ top: "calc(2.6875rem + max(0.75rem, env(safe-area-inset-top)))" }}
+        >
+          <BarraDelClip
+            clipId={clipId}
+            marcaId={marcaId ?? ""}
+            hrefVolver={`/episodios/${episodioId}`}
+            episodio={ep.titulo}
+            titulo={b.titulo}
+            onCambiarTitulo={(titulo) => cambiar({ titulo })}
+            tomadoPor={clip.tomadoPor}
+            listoPor={clip.listoPor}
+            publicacion={clip.publicacion}
+            puedeOperar={opera}
+            hrefProgramar={`/episodios/${episodioId}/clips/${clipId}/publicar`}
+            guardado={{ guardando, sinGuardar, error: Boolean(error) }}
+            render={{
+              estado: estadoRender ?? null,
+              progreso: clip.progresoRender ?? 0,
+              error: clip.errorRender,
+              urlVideo: clip.urlVideo,
+              desactualizado,
+              pidiendo: pidiendoRender,
+            }}
+            onProcesar={() => void pedirRender()}
+          />
+        </header>
+        {error && <p className="mb-3 shrink-0 text-sm text-red-400">{error}</p>}
+        {cruces && (
+          <div className="mb-3 shrink-0">
+            <AvisoCruces
+              cruces={cruces}
+              usuarioId={usuario?._id}
+              textoSeguir="Guardar igual"
+              onSeguir={guardarIgual}
+              onCancelar={() => {
+                // Vuelve al tramo guardado; lo demás que se cambió se guarda igual.
+                setCruces(null);
+                const t = tramoGuardado.current;
+                if (t) cambiarTramo(t.desdeSeg, t.hastaSeg);
+              }}
+            />
+          </div>
+        )}
+
+        {ep.urlReproduccion ? (
+          <div className="lg:min-h-0 lg:flex-1">
+            <EditorRecorte
+              url={ep.urlReproduccion}
+              desde={b.desdeSeg}
+              hasta={b.hastaSeg}
+              formato={b.formato}
+              diseno={b.diseno}
+              fondo={b.fondo}
+              autoEncuadre={{
+                analizando: analizando || pidiendoAuto,
+                resumen:
+                  estadoAuto === "LISTO" && clip.personasAutoEncuadre != null
+                    ? `${clip.personasAutoEncuadre} persona${clip.personasAutoEncuadre === 1 ? "" : "s"}`
+                    : null,
+                progreso: clip.progresoAutoEncuadre,
+                onPedir: () => void pedirAutoEncuadre(),
+                resaltar: resaltarAuto,
+                panel: (ir) => (
+                  <PanelAutoEncuadre
+                    estado={pidiendoAuto && !analizando ? "EN_COLA" : estadoAuto}
+                    etapa={clip.etapaAutoEncuadre}
+                    progreso={clip.progresoAutoEncuadre}
+                    empezoEn={clip.autoEncuadreEmpezoEn}
+                    error={falloCerrado ? null : clip.errorAutoEncuadre}
+                    personas={(clip.resumenAutoEncuadre ?? []) as PersonaAuto[]}
+                    cambios={b.posiciones.length}
+                    mostrarResumen={resumenAbierto}
+                    deshacible={Boolean(clip.autoEncuadreDeshacible)}
+                    deshaciendo={deshaciendo}
+                    onVerPrimerCambio={() => ir(Math.max(0, (b.posiciones[1]?.desdeSeg ?? 1) - 1))}
+                    onDeshacer={() => void deshacerAutoEncuadre()}
+                    onReintentar={() => void pedirAutoEncuadre()}
+                    onCerrar={() => {
+                      setResumenAbierto(false);
+                      setFalloCerrado(true);
+                    }}
                   />
-                  {[
-                    estilo.plantilla.logoActivo && (estilo.logoUrl ? "Logo" : null),
-                    estilo.plantilla.ctaActivo && estilo.plantilla.ctaTexto.trim() ? "llamada a la acción al final" : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" y ") || "Plantilla"}{" "}
-                  de la marca en este clip
-                </label>
-                <p className="mt-1 text-xs text-white/40">
-                  Se configura una vez para todos los clips, en{" "}
-                  <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-                    Plantilla de clips
-                  </Link>
-                  .
-                </p>
-              </>
-            ) : (
-              <p className="text-xs text-white/50">
-                La marca no tiene plantilla. Con una, cada clip sale con su logo y una llamada a la acción al final:{" "}
-                <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-                  armala en Plantilla de clips
-                </Link>
-                .
-              </p>
-            )}
-          </Seccion>
-        </div>
+                ),
+              }}
+              subtitulo={b.subtitulo}
+              plantillaActiva={b.plantillaActiva}
+              onCambiarSubtitulo={(subtitulo) => cambiar({ subtitulo })}
+              onCambiarFondo={(fondo) => cambiar({ fondo })}
+              encuadre={b.encuadre}
+              posicionesGuardadas={b.posiciones}
+              // El diseño del clip sigue al del primer tramo (lo usan los subtítulos).
+              onCambiarPosiciones={(posiciones) => cambiar({ posiciones, diseno: posiciones[0]?.diseno ?? b.diseno })}
+              lineas={lineas}
+              textos={b.textos}
+              onCambiarTextos={(textos) => cambiar({ textos })}
+              textoElegido={textoElegido}
+              // Tocar un texto en la vista previa lo abre en su pestaña.
+              onElegirTexto={(i) => {
+                setTextoElegido(i);
+                elegirPestana("textos");
+              }}
+              estilo={estilo}
+              estiloTexto={conEstilo}
+              nombreMarca={activa?.nombre}
+              puedeEditar={opera}
+              duracionEpisodio={ep.duracionSeg ?? 0}
+              onCambiarTramo={cambiarTramo}
+              onCambiarFormato={(formato) => cambiar({ formato })}
+              inspector={inspector}
+            />
+          </div>
+        ) : (
+          <div className="space-y-4 lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] lg:gap-4 lg:space-y-0">
+            <p className="text-sm text-white/50">El video todavía no está listo en Bunny.</p>
+            <div className="lg:min-h-0">{inspector}</div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
-  );
-}
-
-function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/50">{titulo}</h2>
-      {children}
-    </section>
   );
 }
 
@@ -991,7 +1029,7 @@ function EstiloSubtitulos({
 function Fila({ etiqueta, children }: { etiqueta: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="w-24 shrink-0 text-xs text-white/50">{etiqueta}</span>
+      <span className="w-20 shrink-0 text-xs text-white/50">{etiqueta}</span>
       {children}
     </div>
   );
