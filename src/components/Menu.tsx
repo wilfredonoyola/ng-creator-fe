@@ -78,7 +78,6 @@ export function Menu({
         aria-expanded={abierto}
         aria-controls={abierto ? id : undefined}
         aria-label={etiqueta}
-        title={etiqueta}
         onClick={() => setAbierto((a) => !a)}
         className={claseBoton}
       >
@@ -112,7 +111,7 @@ export function Menu({
               {o.icono && <span className="mt-0.5 shrink-0 text-white/60">{o.icono}</span>}
               <span className="min-w-0">
                 <span className="block">{o.texto}</span>
-                {o.detalle && <span className="mt-0.5 block text-[11px] leading-snug text-white/45">{o.detalle}</span>}
+                {o.detalle && <span className="mt-0.5 block text-xs leading-snug text-white/45">{o.detalle}</span>}
               </span>
             </button>
           ))}

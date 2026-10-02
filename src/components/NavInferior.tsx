@@ -37,7 +37,7 @@ const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, label: "Crear" }
  * Va abajo porque es donde llega el pulgar. Una barra de navegación arriba
  * obliga a recolocar la mano en cada salto.
  */
-export function NavInferior({ onMas }: { onMas: () => void }) {
+export function NavInferior({ onMas, ocultarDesdeMd = false }: { onMas: () => void; ocultarDesdeMd?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { esAdmin } = useSesion();
@@ -45,7 +45,7 @@ export function NavInferior({ onMas }: { onMas: () => void }) {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-30 grid border-t border-white/10 bg-ng-fondo/95 backdrop-blur lg:hidden"
+      className={`fixed inset-x-0 bottom-0 z-30 grid border-t border-white/10 bg-ng-fondo/95 backdrop-blur lg:hidden ${ocultarDesdeMd ? "md:hidden" : ""}`}
       style={{ paddingBottom: "env(safe-area-inset-bottom)", gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}
     >
       {tabs.map((t) => {

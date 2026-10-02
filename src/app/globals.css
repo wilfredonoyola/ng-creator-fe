@@ -152,30 +152,66 @@ body {
 }
 
 /*
- * El editor de clips de episodio. La vista previa mide --alto-vista de alto
- * (y su ancho sale de --ratio-vista, que pone el editor según el formato).
- * Desde xl el editor es de tres columnas: el video, la vista previa del ancho
- * de un lienzo que entra en el alto de la ventana, y el inspector. El alto que
- * se descuenta es el de la barra de arriba, los márgenes de la página y el
- * título de la tarjeta de la vista previa. En lg (1024–1279) son dos: el video
- * y la vista previa apilados, y el inspector.
+ * El editor de clips de episodio. Las columnas dependen del ancho que tiene el
+ * editor (container queries sobre .editor-contenedor), no de la ventana: con
+ * el menú de la app colapsado o con zoom, el mismo ancho de ventana deja más o
+ * menos lugar.
+ *
+ * La vista previa mide --alto-vista de alto (su ancho sale de --ratio-vista,
+ * que pone el editor según el formato) y el video original, --alto-cuadro.
+ * - Angosto (teléfono): todo apilado.
+ * - Desde md: video y vista previa apilados a la izquierda, con su scroll, y
+ *   el inspector a la derecha.
+ * - Con 840px o más de editor: tres columnas. El video se lleva lo que sobra;
+ *   la vista previa, el ancho de un lienzo que entra en el alto, con un tope
+ *   (24% del editor) para que el video no quede chico; el inspector, el riel
+ *   de 52px y un panel de clamp(280px, 22vw, 340px).
  */
+.editor-contenedor {
+  container-type: inline-size;
+}
 .editor-clip {
   --alto-vista: 56vh;
+  --alto-cuadro: 42vh;
+  --ancho-inspector: calc(52px + clamp(280px, 22vw, 340px) + 2px);
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .editor-clip {
-    grid-template-columns: minmax(0, 1fr) clamp(300px, 30vw, 380px);
+    grid-template-columns: minmax(0, 1fr) var(--ancho-inspector);
+  }
+  .editor-izquierda {
+    min-height: 0;
+    overflow-y: auto;
   }
 }
-@media (min-width: 1280px) {
-  .editor-clip {
-    --alto-vista: calc(100dvh - 10.5rem);
-    /* Lo que queda al lado del menú de la app (16rem) y los márgenes (4rem). */
-    --ancho-editor: calc(100vw - 20rem);
-    grid-template-columns:
-      minmax(0, 1fr)
-      calc(min(var(--alto-vista) * var(--ratio-vista), 30rem, var(--ancho-editor) * 0.28) + 1.5rem + 2px)
-      clamp(300px, 26vw, 420px);
+@media (min-width: 768px) {
+  @container (min-width: 840px) {
+    .editor-clip {
+      /* La barra de arriba, los márgenes y el título de la tarjeta de la vista previa. */
+      --alto-vista: calc(100dvh - 9rem);
+      --alto-cuadro: calc(100dvh - 21rem);
+      grid-template-columns:
+        minmax(0, 1fr)
+        calc(min(var(--alto-vista) * var(--ratio-vista), 26rem, 24cqw) + 1.5rem + 2px)
+        var(--ancho-inspector);
+    }
+    .editor-izquierda {
+      display: contents;
+    }
+    .editor-columna {
+      min-height: 0;
+      max-height: 100%;
+      align-self: start;
+      overflow-y: auto;
+    }
+  }
+}
+/* En una columna de video angosta, el diseño va solo con su dibujito. */
+.editor-video {
+  container-type: inline-size;
+}
+@container (max-width: 520px) {
+  .etiqueta-diseno {
+    display: none;
   }
 }

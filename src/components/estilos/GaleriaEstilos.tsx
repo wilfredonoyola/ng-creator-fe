@@ -14,6 +14,7 @@ import {
 } from "@/lib/estilos-texto";
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
+import { Check } from "lucide-react";
 
 const LIENZO = LIENZOS.VERTICAL;
 
@@ -108,7 +109,8 @@ export function MuestraEstilo({
   tema: Tema;
   t: number;
   nombreMarca?: string;
-  ancho: number;
+  /** En px. Sin ancho, llena el de su caja (para una grilla que se reparte el panel). */
+  ancho?: number;
   children?: ReactNode;
 }) {
   const estilo = useMemo(() => resolverEstilo(def, tema), [def, tema]);
@@ -122,14 +124,12 @@ export function MuestraEstilo({
   return (
     <div
       className="relative overflow-hidden rounded-lg bg-gradient-to-b from-[#334155] via-[#1e293b] to-[#0b0f1a]"
-      style={{ width: ancho, height: (ancho * LIENZO.alto) / LIENZO.ancho }}
+      style={ancho ? { width: ancho, height: (ancho * LIENZO.alto) / LIENZO.ancho } : { width: "100%", aspectRatio: `${LIENZO.ancho} / ${LIENZO.alto}` }}
     >
       {/* Alguien hablando, para que el texto se vea sobre algo. */}
-      <div className="absolute inset-x-0 bottom-[30%] flex justify-center opacity-60">
-        <div className="flex flex-col items-center">
-          <div className="rounded-full bg-teal-300/50" style={{ width: ancho * 0.3, height: ancho * 0.3 }} />
-          <div className="mt-[3%] rounded-t-full bg-teal-300/30" style={{ width: ancho * 0.52, height: ancho * 0.4 }} />
-        </div>
+      <div className="absolute inset-x-0 bottom-[30%] flex flex-col items-center opacity-60">
+        <div className="aspect-square w-[30%] rounded-full bg-teal-300/50" />
+        <div className="mt-[3%] w-[52%] rounded-t-full bg-teal-300/30" style={{ aspectRatio: "0.52 / 0.4" }} />
       </div>
       <CapaDibujos lienzo={LIENZO} dibujos={dibujos} />
       {children}
@@ -141,7 +141,9 @@ export function MuestraEstilo({
  * La galería de estilos de texto: una miniatura 9:16 por estilo, con el tema
  * de la marca, agrupadas en virales y profesionales. Sirve para el estilo por
  * defecto de la marca (la plantilla) y para el de cada clip (el editor, en una
- * fila compacta con la opción de quedarse con el de la marca).
+ * fila compacta con la opción de quedarse con el de la marca). `enPanel` es
+ * para un panel angosto (el inspector del editor): "Como la marca" en una
+ * fila arriba y las miniaturas en tres columnas que llenan el ancho.
  */
 export function GaleriaEstilos({
   tema,
@@ -149,7 +151,7 @@ export function GaleriaEstilos({
   onElegir,
   nombreMarca,
   compacta = false,
-  anchoMuestra,
+  enPanel = false,
   deLaMarca,
   deshabilitado = false,
 }: {
@@ -159,15 +161,14 @@ export function GaleriaEstilos({
   onElegir: (e: EstiloTexto | null) => void;
   nombreMarca?: string;
   compacta?: boolean;
-  /** El ancho de cada miniatura, para que entren varias por fila en un panel angosto. */
-  anchoMuestra?: number;
+  enPanel?: boolean;
   /** El estilo de la marca: suma la opción "Como la marca (…)", que es null. */
   deLaMarca?: EstiloTexto;
   deshabilitado?: boolean;
 }) {
   const { estilos, porEstilo, cargando, error } = useEstilosTexto();
   const t = useRelojMuestra();
-  const ancho = anchoMuestra ?? (compacta ? 64 : 104);
+  const ancho = compacta ? 64 : 104;
 
   if (error) return <p className="text-xs text-red-400">No se pudieron cargar los estilos: {error.message}</p>;
   if (cargando && !estilos.length) return <div className={`${compacta ? "h-32" : "h-64"} animate-pulse rounded-xl bg-white/5`} />;
@@ -195,6 +196,60 @@ export function GaleriaEstilos({
       <span className={`mt-1 block truncate px-0.5 text-[11px] ${elegido ? "font-semibold text-white" : "text-white/70"}`}>{etiqueta}</span>
     </button>
   );
+
+  if (enPanel) {
+    const elegidoMarca = valor === null;
+    return (
+      <div className="space-y-3">
+        {marca && (
+          <button
+            type="button"
+            onClick={() => onElegir(null)}
+            disabled={deshabilitado}
+            aria-pressed={elegidoMarca}
+            title={marca.descripcion}
+            className={`flex w-full items-center gap-2.5 rounded-lg border px-2.5 py-2 text-left text-sm transition disabled:cursor-not-allowed ${
+              elegidoMarca ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/10 text-white/75 hover:bg-white/5"
+            }`}
+          >
+            <MuestraEstilo def={marca} tema={tema} t={t} nombreMarca={nombreMarca} ancho={22} />
+            <span className="min-w-0 flex-1 truncate">
+              Como la marca <span className="text-white/45">({marca.nombre})</span>
+            </span>
+            {elegidoMarca && <Check size={16} className="shrink-0 text-ng-celeste" aria-hidden />}
+          </button>
+        )}
+        {grupos.map((g) => (
+          <div key={g.titulo}>
+            <p className="mb-1.5 text-xs text-white/35">{g.titulo}</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {g.items.map((def) => {
+                const elegido = valor === def.estilo;
+                return (
+                  <button
+                    key={def.estilo}
+                    type="button"
+                    onClick={() => onElegir(def.estilo)}
+                    disabled={deshabilitado}
+                    aria-pressed={elegido}
+                    title={def.descripcion}
+                    className={`min-w-0 rounded-lg p-1 text-left transition disabled:cursor-not-allowed ${
+                      elegido ? "bg-ng-azul/20 ring-2 ring-ng-azul" : "hover:bg-white/5"
+                    } ${deshabilitado && !elegido ? "opacity-60" : ""}`}
+                  >
+                    <MuestraEstilo def={def} tema={tema} t={t} nombreMarca={nombreMarca} />
+                    <span className={`mt-1 block truncate px-0.5 text-xs ${elegido ? "font-semibold text-white" : "text-white/70"}`}>
+                      {def.nombre}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (compacta) {
     return (
