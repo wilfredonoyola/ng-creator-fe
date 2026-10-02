@@ -1,4 +1,5 @@
 import type { Texto } from "@/lib/clip-encuadre";
+import type { EstiloTexto } from "@/lib/estilos-texto";
 
 /**
  * La plantilla de clips de una marca (ng-creator-be#117): el logo en una
@@ -19,6 +20,11 @@ export interface PlantillaClip {
   ctaTexto: string;
   /** Cuántos segundos del final dura la llamada a la acción (2–8). */
   ctaSeg: number;
+  /**
+   * El estilo de texto de los clips de la marca que no eligieron otro
+   * (ng-creator-be#132). Sin esto, el backend deja el que estaba.
+   */
+  estiloTexto?: EstiloTexto;
 }
 
 export const PLANTILLA_POR_DEFECTO: PlantillaClip = {

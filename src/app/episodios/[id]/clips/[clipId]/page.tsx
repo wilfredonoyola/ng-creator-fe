@@ -27,6 +27,9 @@ import { EstadoGuardado, PanelExportar } from "@/components/episodios/PanelExpor
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
 import { BarraDelClip } from "@/components/episodios/BarraDelClip";
+import { GaleriaEstilos } from "@/components/estilos/GaleriaEstilos";
+import { ESTILO_TEXTO_POR_DEFECTO, resolverEstilo, temaValido, type EstiloTexto } from "@/lib/estilos-texto";
+import { useEstilosTexto } from "@/lib/use-estilos-texto";
 
 interface Palabra {
   texto: string;
@@ -54,6 +57,8 @@ interface Borrador {
   textos: Texto[];
   /** Si lleva el logo y la llamada a la acción de la plantilla de la marca (be#117). */
   plantillaActiva: boolean;
+  /** El estilo de texto de este clip (be#132). Null = el de la marca. */
+  estiloTexto: EstiloTexto | null;
 }
 
 /** Cuánto contexto se muestra alrededor del clip en la transcripción. */
@@ -77,6 +82,7 @@ export default function EditorClipPage({
   const { id: episodioId, clipId } = params;
   const { activa } = useMarcaActiva();
   const { puedeOperar, usuario } = useSesion();
+  const { porEstilo } = useEstilosTexto();
   const cliente = useApolloClient();
   const marcaId = activa?._id ?? null;
   const opera = puedeOperar(marcaId);
@@ -181,6 +187,7 @@ export default function EditorClipPage({
       ganchoSeg: clip.ganchoSeg,
       textos,
       plantillaActiva: clip.plantillaActiva ?? true,
+      estiloTexto: clip.estiloTexto ?? null,
     });
   }, [clip, b, estilo]);
 
@@ -244,6 +251,8 @@ export default function EditorClipPage({
               ganchoSeg: borrador.ganchoSeg,
               textos: borrador.textos.map((t) => ({ ...t, hastaSeg: t.hastaSeg ?? null })),
               plantillaActiva: borrador.plantillaActiva,
+              // null = el de la marca.
+              estiloTexto: borrador.estiloTexto,
             },
           },
         });
@@ -474,6 +483,14 @@ export default function EditorClipPage({
 
   const lineas: LineaSubtitulo[] = clip.lineasSubtitulo ?? [];
 
+  // El estilo con que sale (estiloTextoEfectivo): el del clip, el de la marca o
+  // KARAOKE. Se calcula acá para que la vista previa cambie apenas se elige.
+  // KARAOKE se dibuja como siempre; los demás, con el tema de la marca.
+  const estiloEfectivo: EstiloTexto =
+    b.estiloTexto ?? estilo.estiloTexto ?? clip.estiloTextoEfectivo ?? ESTILO_TEXTO_POR_DEFECTO;
+  const defEfectivo = porEstilo.get(estiloEfectivo);
+  const conEstilo = defEfectivo && !defEfectivo.respetaTextos ? resolverEstilo(defEfectivo, estilo.tema) : null;
+
   return (
     <DashboardLayout>
       <Link href={`/episodios/${episodioId}`} className="text-sm text-white/50 hover:text-white/80">
@@ -570,6 +587,8 @@ export default function EditorClipPage({
           textoElegido={textoElegido}
           onElegirTexto={setTextoElegido}
           estilo={estilo}
+          estiloTexto={conEstilo}
+          nombreMarca={activa?.nombre}
           puedeEditar={opera}
           duracionEpisodio={ep.duracionSeg ?? 0}
           onCambiarTramo={cambiarTramo}
@@ -669,6 +688,24 @@ export default function EditorClipPage({
         </div>
 
         <div className="space-y-5">
+          <Seccion titulo="Estilo del texto">
+            <GaleriaEstilos
+              compacta
+              tema={temaValido(estilo.tema)}
+              valor={b.estiloTexto}
+              onElegir={(estiloTexto) => cambiar({ estiloTexto })}
+              deLaMarca={estilo.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
+              nombreMarca={activa?.nombre}
+              deshabilitado={!opera}
+            />
+            <p className="mt-2 text-xs text-white/40">
+              El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en{" "}
+              <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+                Plantilla de clips
+              </Link>
+              .
+            </p>
+          </Seccion>
 
           <Seccion titulo="Subtítulos">
             <label className="flex items-center gap-2 text-sm">
@@ -682,6 +719,7 @@ export default function EditorClipPage({
             </label>
             {b.subtitulosActivos && (
               <EstiloSubtitulos
+                delEstilo={conEstilo?.def.nombre}
                 valor={b.subtitulo}
                 porDefecto={subtituloPorDefecto(LIENZOS[b.formato], b.diseno)}
                 onCambiar={(subtitulo) => cambiar({ subtitulo })}
@@ -696,6 +734,12 @@ export default function EditorClipPage({
           </Seccion>
 
           <Seccion titulo="Textos">
+            {conEstilo && (
+              <p className="mb-3 text-xs text-white/45">
+                Con el estilo {conEstilo.def.nombre}, la letra, los colores, las mayúsculas y la caja de cada texto los pone
+                el estilo. Acá cuentan el contenido, las palabras destacadas, el lugar, el tamaño y el tiempo.
+              </p>
+            )}
             <PanelTextos
               textos={b.textos}
               onCambiar={(textos) => cambiar({ textos })}
@@ -851,7 +895,10 @@ function EstiloSubtitulos({
   porDefecto,
   onCambiar,
   deshabilitado,
+  delEstilo,
 }: {
+  /** Con un estilo de texto que no es KARAOKE: la letra, el efecto y las mayúsculas los pone el estilo. */
+  delEstilo?: string;
   valor: SubtituloClip | null;
   porDefecto: SubtituloClip;
   onCambiar: (s: SubtituloClip | null) => void;
@@ -864,33 +911,43 @@ function EstiloSubtitulos({
   return (
     <div className="mt-3 space-y-3 rounded-lg border border-white/10 bg-black/20 p-3">
       <p className="text-xs text-white/45">Arrastrá el subtítulo en la vista previa para subirlo o bajarlo; la bolita de la derecha lo agranda.</p>
-      <Fila etiqueta="Letra">
-        {(
-          [
-            ["NUNITO", "Nunito"],
-            ["ANTON", "Anton"],
-            ["BEBAS", "Bebas"],
-          ] as const
-        ).map(([f, t]) => (
-          <button key={f} disabled={deshabilitado} onClick={() => poner({ fuente: f })} className={boton(s.fuente === f)}>
-            {t}
-          </button>
-        ))}
-      </Fila>
-      <Fila etiqueta="Efecto">
-        {(
-          [
-            ["CONTORNO", "Contorno"],
-            ["SOMBRA", "Sombra"],
-            ["CAJA", "Caja"],
-            ["NINGUNO", "Nada"],
-          ] as const
-        ).map(([e, t]) => (
-          <button key={e} disabled={deshabilitado} onClick={() => poner({ efecto: e })} className={boton(s.efecto === e)}>
-            {t}
-          </button>
-        ))}
-      </Fila>
+      {delEstilo && (
+        <p className="text-xs text-white/45">
+          Con el estilo {delEstilo}, la letra, los colores, el efecto y las mayúsculas los pone el estilo; acá cuentan el
+          tamaño y el lugar.
+        </p>
+      )}
+      {!delEstilo && (
+        <>
+          <Fila etiqueta="Letra">
+            {(
+              [
+                ["NUNITO", "Nunito"],
+                ["ANTON", "Anton"],
+                ["BEBAS", "Bebas"],
+              ] as const
+            ).map(([f, t]) => (
+              <button key={f} disabled={deshabilitado} onClick={() => poner({ fuente: f })} className={boton(s.fuente === f)}>
+                {t}
+              </button>
+            ))}
+          </Fila>
+          <Fila etiqueta="Efecto">
+            {(
+              [
+                ["CONTORNO", "Contorno"],
+                ["SOMBRA", "Sombra"],
+                ["CAJA", "Caja"],
+                ["NINGUNO", "Nada"],
+              ] as const
+            ).map(([e, t]) => (
+              <button key={e} disabled={deshabilitado} onClick={() => poner({ efecto: e })} className={boton(s.efecto === e)}>
+                {t}
+              </button>
+            ))}
+          </Fila>
+        </>
+      )}
       <Fila etiqueta={`Tamaño · ${Math.round(s.tamano)}`}>
         <input
           type="range"
@@ -915,10 +972,12 @@ function EstiloSubtitulos({
             {t}
           </button>
         ))}
-        <label className="ml-2 flex items-center gap-1.5 text-xs text-white/70">
-          <input type="checkbox" checked={s.mayusculas} disabled={deshabilitado} onChange={(e) => poner({ mayusculas: e.target.checked })} />
-          MAYÚSCULAS
-        </label>
+        {!delEstilo && (
+          <label className="ml-2 flex items-center gap-1.5 text-xs text-white/70">
+            <input type="checkbox" checked={s.mayusculas} disabled={deshabilitado} onChange={(e) => poner({ mayusculas: e.target.checked })} />
+            MAYÚSCULAS
+          </label>
+        )}
       </Fila>
       {valor && (
         <button disabled={deshabilitado} onClick={() => onCambiar(null)} className="text-xs text-ng-celeste hover:underline">

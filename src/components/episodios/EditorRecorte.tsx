@@ -3,6 +3,8 @@
 import { estiloDelLogo, plantillaDelClip, type PlantillaClip } from "@/lib/plantilla-clip";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useHls } from "@/lib/use-hls";
+import { dibujarSubtitulos, dibujarTexto, ganchoDeLlamada, type Dibujo, type EstiloResuelto, type EstiloTexto, type Tema } from "@/lib/estilos-texto";
+import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import {
   ajustarRegion,
   FUENTES,
@@ -43,6 +45,10 @@ export interface EstiloClip {
   /** El logo de la marca y su plantilla de clips (be#117). */
   logoUrl?: string | null;
   plantilla?: PlantillaClip | null;
+  /** Los colores de la marca para los estilos de texto (be#132). */
+  tema: Tema;
+  /** El estilo de texto de la marca: el de los clips que no eligieron otro. */
+  estiloTexto: EstiloTexto;
 }
 
 /** Colores de los recuadros, uno por panel, como en la vista previa. */
@@ -89,6 +95,8 @@ export function EditorRecorte({
   plantillaActiva = true,
   onCambiarSubtitulo,
   autoEncuadre,
+  estiloTexto = null,
+  nombreMarca,
 }: {
   url: string;
   /** Segundos del episodio. */
@@ -136,6 +144,14 @@ export function EditorRecorte({
     /** Cambia cuando llegan encuadres nuevos: se resaltan y la vista previa va al primer cambio. */
     resaltar?: number;
   };
+  /**
+   * El estilo de texto del clip ya con el tema de la marca (be#132), si no es
+   * KARAOKE: el gancho, los textos, la llamada a la acción y los subtítulos se
+   * dibujan como los dibuja el render con ese estilo. Null = como siempre.
+   */
+  estiloTexto?: EstiloResuelto | null;
+  /** Para el rótulo (ROTULO): va chico arriba del gancho. */
+  nombreMarca?: string;
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
@@ -650,7 +666,70 @@ export function EditorRecorte({
               // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca, tal cual va al render
               <img src={plantilla.logo.url} alt="" style={estiloDelLogo(plantilla.logo.plantilla, anchoVista)} />
             )}
-            {[...textos, ...(plantilla.llamada ? [plantilla.llamada] : [])].map((tx, i) => {
+            {estiloTexto && (() => {
+              // Con estilo: todo lo dibuja el mismo cálculo que el render
+              // (lib/estilos-texto). Encima van, invisibles, las zonas para
+              // agarrar cada texto y el subtítulo, como en el de siempre.
+              const llamada = plantilla.llamada;
+              const delTexto = textos.map((tx, i) => {
+                const hasta = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : duracion;
+                const visible = tc >= tx.desdeSeg && tc < hasta;
+                if (!visible && textoElegido !== i) return null;
+                const d = dibujarTexto(tx, estiloTexto.gancho, lienzo, { duracionSeg: duracion, nombreMarca, tc });
+                return d && !visible ? { ...d, opacidad: 0.4 } : d;
+              });
+              const deLlamada =
+                llamada && tc >= llamada.desdeSeg && tc < (llamada.hastaSeg ?? duracion)
+                  ? dibujarTexto(llamada, ganchoDeLlamada(estiloTexto.gancho, estiloTexto.tema), lienzo, { duracionSeg: duracion, tc })
+                  : null;
+              const sub = linea ? dibujarSubtitulos(linea, tc, lienzo, diseno, estiloTexto.subtitulos, subtitulo) : null;
+              const editableSub = puedeEditar && !!onCambiarSubtitulo;
+              const zona = (c: Dibujo["caja"]) => ({ left: c.x * k, top: c.y * k, width: c.ancho * k, height: c.alto * k });
+              return (
+                <>
+                  <CapaDibujos lienzo={lienzo} dibujos={[sub, ...delTexto, deLlamada]} />
+                  {sub && (
+                    <div
+                      onPointerDown={(e) => arrastrarSubtitulo(e, "mover")}
+                      onClick={(e) => e.stopPropagation()}
+                      title={editableSub ? "Arrastrá para subir o bajar el subtítulo" : undefined}
+                      className={`group absolute inset-x-0 ${editableSub ? "cursor-ns-resize hover:outline-dashed hover:outline-1 hover:outline-white/50" : "pointer-events-none"}`}
+                      style={{ top: sub.caja.y * k, height: sub.caja.alto * k }}
+                    >
+                      {editableSub && (
+                        <span
+                          onPointerDown={(e) => arrastrarSubtitulo(e, "tamano")}
+                          title="Arrastrá a los lados para agrandar o achicar"
+                          className="absolute right-2 top-1/2 hidden h-4 w-4 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-ng-azul bg-white group-hover:block"
+                        />
+                      )}
+                    </div>
+                  )}
+                  {delTexto.map((d, i) =>
+                    d ? (
+                      <div
+                        key={i}
+                        onPointerDown={(e) => arrastrarTexto(e, i)}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`absolute ${puedeEditar ? "cursor-move" : ""} ${
+                          textoElegido === i ? "outline-dashed outline-1 outline-offset-4 outline-white/70" : ""
+                        }`}
+                        style={zona(d.caja)}
+                      />
+                    ) : null,
+                  )}
+                  {deLlamada && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      title="Llamada a la acción de la plantilla de la marca"
+                      className="absolute"
+                      style={zona(deLlamada.caja)}
+                    />
+                  )}
+                </>
+              );
+            })()}
+            {!estiloTexto && [...textos, ...(plantilla.llamada ? [plantilla.llamada] : [])].map((tx, i) => {
               // La llamada a la acción es de la plantilla: se ve, pero no se mueve ni se elige acá.
               const deLaPlantilla = i >= textos.length;
               const hasta = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : duracion;
@@ -712,7 +791,7 @@ export function EditorRecorte({
                 </div>
               );
             })}
-            {linea && (() => {
+            {!estiloTexto && linea && (() => {
               // Con subtítulo propio: su letra, cuerpo, efecto y altura (centrado
               // en centroY, como el \\an5\\pos del render). Sin él, el de siempre.
               const sp = subtitulo;

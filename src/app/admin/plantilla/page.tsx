@@ -6,14 +6,28 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 import { uploadMarcaLogo } from "@/lib/upload";
-import { FUENTES, medidasEfecto } from "@/lib/clip-encuadre";
-import { GUARDAR_PLANTILLA_CLIP, PLANTILLA_CLIP_MARCA } from "@/graphql/operations";
+import { FUENTES, LIENZOS, medidasEfecto } from "@/lib/clip-encuadre";
+import { GUARDAR_PLANTILLA_CLIP, GUARDAR_TEMA_MARCA, PLANTILLA_CLIP_MARCA } from "@/graphql/operations";
 import {
   estiloDelLogo,
   PLANTILLA_POR_DEFECTO,
   POSICIONES_LOGO,
+  textoDeLlamada,
   type PlantillaClip,
 } from "@/lib/plantilla-clip";
+import {
+  dibujarTexto,
+  ESTILO_TEXTO_POR_DEFECTO,
+  ganchoDeLlamada,
+  resolverEstilo,
+  temaValido,
+  type EstiloTexto,
+  type Tema,
+} from "@/lib/estilos-texto";
+import { useEstilosTexto } from "@/lib/use-estilos-texto";
+import { GaleriaEstilos, MuestraEstilo, useRelojMuestra } from "@/components/estilos/GaleriaEstilos";
+import { CapaDibujos } from "@/components/estilos/CapaDibujos";
+import { TemaDeMarca } from "@/components/estilos/TemaDeMarca";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
 const ANCHO_VISTA = 216;
@@ -23,19 +37,29 @@ const ANCHO_VISTA = 216;
  * esquina y una llamada a la acción al final. Se arma una vez y la lleva cada
  * clip de la marca; en el editor, cada clip la puede apagar.
  *
- * Como Equipo: la ve cualquiera con acceso a la marca y la cambia quien opera.
+ * Con ng-creator-be#132 suma el tema de la marca (sus colores) y el estilo de
+ * texto de sus clips (gancho y subtítulos), que cada clip puede cambiar.
+ *
+ * Como Equipo: la ve cualquiera con acceso a la marca y la cambia quien opera;
+ * el tema, solo el propietario.
  */
 export default function PlantillaClipsPage() {
   const { activa } = useMarcaActiva();
-  const { puedeOperar } = useSesion();
+  const { puedeOperar, esPropietario } = useSesion();
   const marcaId = activa?._id;
   const opera = puedeOperar(marcaId);
+  const propietario = esPropietario(marcaId);
 
   const q = useQuery(PLANTILLA_CLIP_MARCA, { variables: { marcaId: marcaId ?? "" }, skip: !marcaId });
   const estilo = q.data?.estiloClipMarca;
   const [guardar, { loading: guardando }] = useMutation(GUARDAR_PLANTILLA_CLIP, {
     refetchQueries: [{ query: PLANTILLA_CLIP_MARCA, variables: { marcaId } }],
   });
+  const [guardarTema, { loading: guardandoTema }] = useMutation(GUARDAR_TEMA_MARCA, {
+    refetchQueries: [{ query: PLANTILLA_CLIP_MARCA, variables: { marcaId } }],
+  });
+  const [tema, setTema] = useState<Tema | null>(null);
+  const [temaGuardadoEn, setTemaGuardadoEn] = useState<Date | null>(null);
 
   const [p, setP] = useState<PlantillaClip | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -50,8 +74,13 @@ export default function PlantillaClipsPage() {
     if (!estilo || !marcaId || cargadaPara.current === marcaId) return;
     cargadaPara.current = marcaId;
     const { __typename: _, ...guardada } = estilo.plantilla ?? { __typename: null };
-    setP(estilo.plantilla ? (guardada as PlantillaClip) : { ...PLANTILLA_POR_DEFECTO });
+    setP(
+      estilo.plantilla
+        ? (guardada as PlantillaClip)
+        : { ...PLANTILLA_POR_DEFECTO, estiloTexto: estilo.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO },
+    );
     setLogoUrl(estilo.logoUrl ?? null);
+    setTema(temaValido(estilo.tema));
   }, [estilo, marcaId]);
 
   const cambiar = (c: Partial<PlantillaClip>) => {
@@ -70,6 +99,17 @@ export default function PlantillaClipsPage() {
       setError(e instanceof Error ? e.message : "No se pudo subir el logo");
     } finally {
       setSubiendo(false);
+    }
+  }
+
+  async function enviarTema() {
+    if (!marcaId || !tema) return;
+    setError(null);
+    try {
+      await guardarTema({ variables: { marcaId, tema } });
+      setTemaGuardadoEn(new Date());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo guardar el tema");
     }
   }
 
@@ -104,8 +144,9 @@ export default function PlantillaClipsPage() {
           </span>
         </p>
         <p className="mt-2 max-w-2xl text-sm text-white/35">
-          Tu logo en una esquina y, si querés, una llamada a la acción al final. Se aplica sola a todos los clips de la
-          marca; en el editor de cada clip se puede apagar. Los clips ya procesados la toman al volver a procesarlos.
+          Los colores de la marca, el estilo de los textos, tu logo en una esquina y, si querés, una llamada a la acción
+          al final. Se aplica sola a todos los clips de la marca; en el editor de cada clip se puede cambiar el estilo y
+          apagar el logo y la llamada. Los clips ya procesados la toman al volver a procesarlos.
         </p>
       </div>
 
@@ -115,11 +156,39 @@ export default function PlantillaClipsPage() {
         </div>
       )}
 
-      {!p ? (
+      {!p || !tema || !marcaId ? (
         <p className="text-sm text-white/50">Cargando…</p>
       ) : (
         <div className="grid gap-8 lg:grid-cols-[1fr_auto]">
-          <div className="space-y-6">
+          <div className="min-w-0 space-y-6">
+            <TemaDeMarca
+              marcaId={marcaId}
+              tema={tema}
+              onCambiar={(t) => {
+                setTema(t);
+                setTemaGuardadoEn(null);
+              }}
+              editable={propietario}
+              tieneLogo={Boolean(logoUrl)}
+              onGuardar={() => void enviarTema()}
+              guardando={guardandoTema}
+              guardadoEn={temaGuardadoEn}
+            />
+
+            <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <h2 className="font-semibold">Estilo de los textos</h2>
+              <p className="mb-4 mt-0.5 text-xs text-white/45">
+                Cómo salen el gancho y los subtítulos de los clips de la marca, con sus colores. Cada clip lo puede
+                cambiar en el editor. Se guarda con la plantilla.
+              </p>
+              <GaleriaEstilos
+                tema={temaValido(tema)}
+                valor={p.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
+                onElegir={(e) => e && cambiar({ estiloTexto: e })}
+                nombreMarca={activa.nombre}
+                deshabilitado={!opera}
+              />
+            </section>
             <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="font-semibold">Logo</h2>
@@ -236,7 +305,11 @@ export default function PlantillaClipsPage() {
                 onCambio={(v) => cambiar({ ctaSeg: v })}
                 deshabilitado={!opera}
               />
-              <p className="mt-2 text-xs text-white/40">Va en el centro, en caja, con los colores del gancho de la marca.</p>
+              <p className="mt-2 text-xs text-white/40">
+                {p.estiloTexto && p.estiloTexto !== "KARAOKE"
+                  ? "Va en el centro, en una caja de tu color primario, con la letra del estilo."
+                  : "Va en el centro, en caja, con los colores del gancho de la marca."}
+              </p>
             </section>
 
             {opera && (
@@ -258,6 +331,9 @@ export default function PlantillaClipsPage() {
             logoUrl={logoUrl}
             colorGancho={estilo?.colorGancho ?? "#FFFFFF"}
             colorCaja={estilo?.colorContornoGancho ?? "#000000"}
+            tema={temaValido(tema)}
+            estiloTexto={p.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
+            nombreMarca={activa.nombre}
           />
         </div>
       )}
@@ -304,72 +380,106 @@ function Deslizador({
   );
 }
 
-/** Un clip 9:16 de muestra con el logo y la llamada a la acción, como salen en el render. */
+/**
+ * Un clip 9:16 de muestra con el estilo de los textos, el tema, el logo y la
+ * llamada a la acción, como salen en el render. Con KARAOKE la llamada va como
+ * siempre (Anton, en caja con los colores del gancho); con otro estilo, en una
+ * caja del primario con la letra del gancho del estilo.
+ */
 function VistaPrevia({
   plantilla,
   logoUrl,
   colorGancho,
   colorCaja,
+  tema,
+  estiloTexto,
+  nombreMarca,
 }: {
   plantilla: PlantillaClip;
   logoUrl: string | null;
   colorGancho: string;
   colorCaja: string;
+  tema: Tema;
+  estiloTexto: EstiloTexto;
+  nombreMarca: string;
 }) {
+  const { porEstilo } = useEstilosTexto();
+  const t = useRelojMuestra();
+  const def = porEstilo.get(estiloTexto);
   // El render mide en un lienzo de 1080 de ancho: lo mismo, a esta escala.
   const k = ANCHO_VISTA / 1080;
   const { borde } = medidasEfecto("CAJA", 80);
+  const cta = plantilla.ctaActivo && plantilla.ctaTexto.trim();
+  const conEstilo = def && !def.respetaTextos;
+
+  const encima = (
+    <>
+      {plantilla.logoActivo && logoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca
+        <img src={logoUrl} alt="" style={estiloDelLogo(plantilla, ANCHO_VISTA)} />
+      )}
+      {cta && conEstilo && (
+        <CapaDibujos
+          lienzo={LIENZOS.VERTICAL}
+          dibujos={[
+            dibujarTexto(
+              textoDeLlamada(plantilla, 10, { color: colorGancho, colorCaja }),
+              ganchoDeLlamada(resolverEstilo(def, tema).gancho, tema),
+              LIENZOS.VERTICAL,
+              { duracionSeg: 10 },
+            ),
+          ]}
+        />
+      )}
+      {cta && !conEstilo && (
+        <div
+          className="absolute text-center"
+          style={{
+            left: "50%",
+            top: "42%",
+            transform: "translate(-50%, -50%)",
+            width: "max-content",
+            maxWidth: ANCHO_VISTA * 0.85,
+            fontFamily: "'Anton', sans-serif",
+            fontSize: 80 * FUENTES.ANTON.factorCss * k,
+            lineHeight: `${80 * k}px`,
+            color: colorGancho,
+            textTransform: "uppercase",
+          }}
+        >
+          <span
+            style={{
+              background: colorCaja,
+              padding: `${borde * k * 0.35}px ${borde * k}px`,
+              boxDecorationBreak: "clone",
+              WebkitBoxDecorationBreak: "clone",
+            }}
+          >
+            {plantilla.ctaTexto.trim()}
+          </span>
+        </div>
+      )}
+    </>
+  );
+
   return (
     <div className="lg:sticky lg:top-6">
       <p className="mb-2 text-sm font-medium">Así sale (9:16)</p>
-      <div
-        className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-[#1e293b] to-[#0b0f1a]"
-        style={{ width: ANCHO_VISTA, height: (ANCHO_VISTA * 16) / 9 }}
-      >
-        <div className="absolute inset-x-0 bottom-[28%] flex justify-center">
-          <div className="flex flex-col items-center opacity-70">
-            <div className="h-16 w-16 rounded-full bg-teal-400/60" />
-            <div className="mt-1 h-20 w-28 rounded-t-full bg-teal-400/40" />
-          </div>
+      {def ? (
+        <div className="overflow-hidden rounded-xl border border-white/10">
+          <MuestraEstilo def={def} tema={tema} t={t} nombreMarca={nombreMarca} ancho={ANCHO_VISTA}>
+            {encima}
+          </MuestraEstilo>
         </div>
-        {plantilla.logoActivo && logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca
-          <img src={logoUrl} alt="" style={estiloDelLogo(plantilla, ANCHO_VISTA)} />
-        )}
-        {plantilla.ctaActivo && plantilla.ctaTexto.trim() && (
-          <div
-            className="absolute text-center"
-            style={{
-              left: "50%",
-              top: "42%",
-              transform: "translate(-50%, -50%)",
-              width: "max-content",
-              maxWidth: ANCHO_VISTA * 0.85,
-              fontFamily: "'Anton', sans-serif",
-              fontSize: 80 * FUENTES.ANTON.factorCss * k,
-              lineHeight: `${80 * k}px`,
-              color: colorGancho,
-              textTransform: "uppercase",
-            }}
-          >
-            <span
-              style={{
-                background: colorCaja,
-                padding: `${borde * k * 0.35}px ${borde * k}px`,
-                boxDecorationBreak: "clone",
-                WebkitBoxDecorationBreak: "clone",
-              }}
-            >
-              {plantilla.ctaTexto.trim()}
-            </span>
-          </div>
-        )}
-        <div className="absolute inset-x-3 bottom-[18%] text-center text-[11px] font-black text-white [text-shadow:0_0_3px_#000]">
-          así se ven los <span className="text-yellow-300">subtítulos</span>
-        </div>
-      </div>
+      ) : (
+        <div
+          className="relative animate-pulse overflow-hidden rounded-xl border border-white/10 bg-white/5"
+          style={{ width: ANCHO_VISTA, height: (ANCHO_VISTA * 16) / 9 }}
+        />
+      )}
       <p className="mt-2 max-w-[216px] text-xs text-white/40">
-        La llamada a la acción aparece solo al final del clip; acá se ve siempre para que la ajustes.
+        El gancho dura los primeros segundos y la llamada a la acción aparece solo al final; acá se ven siempre para que
+        los ajustes.
       </p>
     </div>
   );

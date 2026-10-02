@@ -1574,6 +1574,8 @@ const CAMPOS_CLIP_EDITOR = gql`
     ganchoActivo
     ganchoSeg
     plantillaActiva
+    estiloTexto
+    estiloTextoEfectivo
     textos {
       contenido
       destacadas
@@ -1651,7 +1653,15 @@ const CAMPOS_ESTILO_CLIP_MARCA = gql`
       ctaActivo
       ctaTexto
       ctaSeg
+      estiloTexto
     }
+    tema {
+      colorPrimario
+      colorSecundario
+      colorTexto
+      colorFondo
+    }
+    estiloTexto
   }
 `;
 
@@ -1681,6 +1691,93 @@ export const PLANTILLA_CLIP_MARCA = gql`
 export const GUARDAR_PLANTILLA_CLIP = gql`
   mutation GuardarPlantillaClip($marcaId: ID!, $plantilla: PlantillaClipInput!) {
     guardarPlantillaClip(marcaId: $marcaId, plantilla: $plantilla) {
+      _id
+    }
+  }
+`;
+
+// ---- Estilos de texto y tema de la marca (ng-creator-be#132) ----
+
+const CAMPOS_TRAZO = `
+  fuente
+  mayusculas
+  escala
+  interletra
+  alineacion
+  color
+  contorno
+  colorContorno
+  sombraX
+  sombraY
+  colorSombra
+  opacidadSombra
+  desenfoqueSombra
+`;
+
+/**
+ * La galería de estilos de texto, tal cual la usa el render. No es de ninguna
+ * marca (los colores salen del tema de cada una): se pide una vez.
+ */
+export const ESTILOS_TEXTO = gql`
+  query EstilosTexto {
+    estilosTexto {
+      estilo
+      nombre
+      descripcion
+      categoria
+      respetaTextos
+      gancho {
+        ${CAMPOS_TRAZO}
+        tratamiento
+        interlineado
+        colorDestacada
+        fuenteDestacada
+        escalaDestacada
+        colorSegundoTono
+        opacidadSegundoTono
+        colorCaja
+        opacidadCaja
+        radioCaja
+        rellenoX
+        rellenoY
+        colorCaja2
+        colorTexto2
+        giro
+        colorAcento
+        conMarca
+        fuenteMarca
+      }
+      subtitulos {
+        ${CAMPOS_TRAZO}
+        efectoActiva
+        colorActiva
+        escalaActiva
+        opacidadInactiva
+        colorFondoActiva
+        radioFondoActiva
+        colorFranja
+        opacidadFranja
+        animacionMs
+      }
+    }
+  }
+`;
+
+/** "Usar colores del logo": la paleta del logo, para proponer un tema. Null si no hay logo o no tiene colores. */
+export const COLORES_DEL_LOGO = gql`
+  query ColoresDelLogo($marcaId: ID!) {
+    coloresDelLogo(marcaId: $marcaId) {
+      colorPrimario
+      colorSecundario
+      colores
+    }
+  }
+`;
+
+/** Los colores de la marca para los estilos de texto. Solo el propietario. */
+export const GUARDAR_TEMA_MARCA = gql`
+  mutation GuardarTemaMarca($marcaId: ID!, $tema: TemaMarcaInput!) {
+    guardarTemaMarca(marcaId: $marcaId, tema: $tema) {
       _id
     }
   }
