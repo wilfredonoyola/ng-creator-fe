@@ -21,16 +21,20 @@ export function Pista({
   lado = "abajo",
   children,
   className = "",
+  id,
 }: {
   texto: ReactNode;
   lado?: keyof typeof LADOS;
   children: ReactNode;
   className?: string;
+  /** Para apuntarle con aria-describedby (cerrada sigue valiendo como descripción). */
+  id?: string;
 }) {
   return (
     <span className={`group/pista relative inline-flex ${className}`}>
       {children}
       <span
+        id={id}
         role="tooltip"
         className={`pointer-events-none absolute z-50 hidden w-max max-w-[16rem] rounded-lg border border-white/10 bg-ng-elevada px-2.5 py-1.5 text-xs font-normal normal-case leading-snug tracking-normal text-white/80 shadow-xl shadow-black/40 group-focus-within/pista:block group-hover/pista:block ${LADOS[lado]}`}
       >

@@ -717,7 +717,7 @@ export default function EditorClipPage({
           página. El menú de la app arranca colapsado en una tira de íconos. */}
       <div className="flex flex-col md:h-[calc(100dvh-2rem)]">
         <header
-          className="sticky z-20 -mx-4 -mt-4 mb-3 h-14 shrink-0 border-b border-white/10 bg-ng-fondo/95 px-4 backdrop-blur sm:-mx-6 sm:-mt-6 sm:px-6 md:static md:-mx-4 md:-mt-4 md:px-4"
+          className="barra-clip sticky z-20 -mx-4 -mt-4 mb-3 h-14 shrink-0 border-b border-white/10 bg-ng-fondo/95 px-4 backdrop-blur sm:-mx-6 sm:-mt-6 sm:px-6 md:static md:-mx-4 md:-mt-4 md:px-4"
           // Debajo de la barra de arriba del teléfono (DashboardLayout), que también es sticky.
           style={{ top: "calc(2.6875rem + max(0.75rem, env(safe-area-inset-top)))" }}
         >

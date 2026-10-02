@@ -215,3 +215,20 @@ body {
     display: none;
   }
 }
+
+/*
+ * La barra de arriba del editor: lo que va en línea solo si la barra es ancha
+ * (el motivo de Programar apagado, "Programado · vie 3"). Más angosta, queda
+ * en la pista del botón.
+ */
+.barra-clip {
+  container-type: inline-size;
+}
+.solo-barra-ancha {
+  display: none;
+}
+@container (min-width: 1400px) {
+  .solo-barra-ancha {
+    display: inline;
+  }
+}
