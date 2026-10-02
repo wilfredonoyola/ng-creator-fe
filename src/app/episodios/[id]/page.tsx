@@ -305,6 +305,7 @@ function TarjetaClip({
   onReproducir: () => void;
 }) {
   const [verTexto, setVerTexto] = useState(false);
+  const [viendoFinal, setViendoFinal] = useState(false);
   const tieneVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
   return (
     <li
@@ -366,6 +367,14 @@ function TarjetaClip({
         >
           Editar
         </Link>
+        {tieneVideo && (
+          <button
+            onClick={() => setViendoFinal(true)}
+            className="rounded-lg border border-white/15 px-3 py-1.5 text-center text-xs text-white/80 hover:bg-white/5"
+          >
+            Ver video final
+          </button>
+        )}
         {opera && tieneVideo && (
           <Link
             href={`${editar}/publicar`}
@@ -385,7 +394,38 @@ function TarjetaClip({
         )}
         </div>
       </div>
+      {viendoFinal && clip.urlVideo && (
+        <VideoFinalModal url={clip.urlVideo} titulo={clip.titulo} onCerrar={() => setViendoFinal(false)} />
+      )}
     </li>
+  );
+}
+
+/** El MP4 procesado, encima de la lista: se mira sin salir del episodio. */
+function VideoFinalModal({ url, titulo, onCerrar }: { url: string; titulo: string; onCerrar: () => void }) {
+  useEffect(() => {
+    const alTeclear = (e: KeyboardEvent) => e.key === "Escape" && onCerrar();
+    window.addEventListener("keydown", alTeclear);
+    return () => window.removeEventListener("keydown", alTeclear);
+  }, [onCerrar]);
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Video final: ${titulo}`}
+      onClick={onCerrar}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+    >
+      <div onClick={(e) => e.stopPropagation()} className="flex max-h-full flex-col items-center gap-3">
+        <div className="flex w-full items-center justify-between gap-4">
+          <p className="truncate text-sm font-medium">{titulo}</p>
+          <button onClick={onCerrar} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/80 hover:bg-white/5">
+            Cerrar
+          </button>
+        </div>
+        <video src={url} controls autoPlay playsInline className="max-h-[80vh] max-w-full rounded-xl bg-black" />
+      </div>
+    </div>
   );
 }
 
