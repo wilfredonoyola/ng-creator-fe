@@ -85,7 +85,7 @@ export function EditorRecorte({
   onElegirTexto,
   estilo,
   puedeEditar,
-  debajoDeLaVista,
+  inspector,
   duracionEpisodio,
   onCambiarTramo,
   onCambiarFormato,
@@ -119,7 +119,12 @@ export function EditorRecorte({
   onElegirTexto: (i: number) => void;
   estilo: EstiloClip;
   puedeEditar: boolean;
-  debajoDeLaVista?: ReactNode;
+  /**
+   * Los ajustes del clip (el inspector con sus pestañas). Desde xl va en una
+   * tercera columna, al lado de la vista previa; en lg, a la derecha de las
+   * dos; más angosto, debajo de todo.
+   */
+  inspector?: ReactNode;
   /** Para la barra del tramo: hasta dónde se puede extender el clip. */
   duracionEpisodio: number;
   onCambiarTramo: (desde: number, hasta: number) => void;
@@ -428,16 +433,25 @@ export function EditorRecorte({
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+    // Desde lg el editor ocupa el alto de la ventana y cada columna scrollea
+    // por dentro. Las columnas están en globals.css (editor-clip): en lg, el
+    // video y la vista previa apilados a la izquierda y el inspector a la
+    // derecha; en xl, video, vista previa e inspector en tres columnas, la de
+    // la vista previa del ancho de un lienzo que entra en el alto.
+    <div
+      className="editor-clip flex flex-col gap-4 lg:grid lg:h-full lg:min-h-0"
+      style={{ "--ratio-vista": lienzo.ancho / lienzo.alto } as React.CSSProperties}
+    >
+      <div className="flex flex-col gap-4 lg:min-h-0 lg:overflow-y-auto xl:contents">
       {/* ---- El cuadro entero, con los recuadros ---- */}
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 xl:max-h-full xl:min-h-0 xl:self-start xl:overflow-y-auto">
         {/* Formato, diseño y fondo en una sola fila de botones chicos: lo que
             más se toca es el recuadro y el video, no esto. Lo que hace cada
             uno va en su título (al pasar el mouse). */}
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <Pestanas opciones={FORMATOS} valor={formato} onCambio={onCambiarFormato} deshabilitado={!puedeEditar} />
           <div
-            className="flex rounded-lg border border-white/10 bg-black/30 p-0.5"
+            className="flex flex-wrap rounded-lg border border-white/10 bg-black/30 p-0.5"
             role="group"
             aria-label={posiciones.length > 1 ? "Diseño de este tramo" : "Diseño"}
           >
@@ -640,8 +654,8 @@ export function EditorRecorte({
         </div>
       </div>
 
-      {/* ---- La vista previa: queda a la vista mientras se baja por las herramientas ---- */}
-      <div className="space-y-4 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:self-start xl:overflow-y-auto">
+      {/* ---- La vista previa: siempre a la vista, al lado del inspector ---- */}
+      <div className="xl:min-h-0 xl:overflow-y-auto">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
           <p className="mb-2 text-sm font-medium">
             Vista previa ({formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"})
@@ -652,8 +666,8 @@ export function EditorRecorte({
             className="relative mx-auto cursor-pointer overflow-hidden rounded-lg bg-black"
             style={{
               aspectRatio: `${lienzo.ancho} / ${lienzo.alto}`,
-              maxHeight: "56vh",
-              maxWidth: `calc(56vh * ${lienzo.ancho / lienzo.alto})`,
+              maxHeight: "var(--alto-vista)",
+              maxWidth: "calc(var(--alto-vista) * var(--ratio-vista))",
             }}
           >
             <canvas
@@ -849,8 +863,10 @@ export function EditorRecorte({
             })()}
           </div>
         </div>
-        {debajoDeLaVista}
       </div>
+      </div>
+
+      {inspector && <div className="lg:min-h-0">{inspector}</div>}
     </div>
   );
 }
