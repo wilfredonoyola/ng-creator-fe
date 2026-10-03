@@ -2,13 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { cerrarSesion } from "@/lib/auth";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { CONTACTO } from "@/lib/legal";
-import { ELIMINAR_MI_CUENTA, RESUMEN_ELIMINAR_CUENTA } from "@/graphql/operations";
+import {
+  ELIMINAR_MI_CUENTA,
+  GUARDAR_PREFERENCIA_NOTIFICACION,
+  PREFERENCIAS_NOTIFICACION,
+  RESUMEN_ELIMINAR_CUENTA,
+} from "@/graphql/operations";
+import {
+  ESTILO_NOTIFICACION,
+  TIPOS_NOTIFICACION,
+  type PreferenciaNotificacion,
+  type TipoNotificacion,
+} from "@/lib/notificaciones";
 
 /** Lo que hay que escribir para confirmar. El backend exige el mismo texto. */
 const PALABRA = "ELIMINAR";
@@ -20,8 +31,8 @@ interface MarcaAlEliminar {
 }
 
 /**
- * La cuenta de quien está en sesión: sus datos, sus marcas y la opción de
- * eliminarla (ng-creator-be#95).
+ * La cuenta de quien está en sesión: sus datos, sus marcas, qué avisos recibe
+ * (ng-creator-be#134) y la opción de eliminarla (ng-creator-be#95).
  *
  * Eliminar la cuenta desde la app es requisito de Apple (App Review 5.1.1(v)),
  * y por la regla de app y web con la misma funcionalidad está también acá.
@@ -89,6 +100,8 @@ export default function PerfilPage() {
             Cerrar sesión
           </button>
         </section>
+
+        <PreferenciasDeAvisos />
 
         {/* Zona de peligro: separada y al final, para que no se toque por error. */}
         <section className="mt-8 rounded-2xl border border-red-500/30 bg-red-500/5 p-5">
@@ -307,5 +320,148 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
         )}
       </div>
     </div>
+  );
+}
+
+/** Por dónde puede llegar un aviso: las columnas de la tabla. */
+const CANALES: { campo: "enApp" | "push" | "correo"; etiqueta: string }[] = [
+  { campo: "enApp", etiqueta: "En la app" },
+  { campo: "push", etiqueta: "En el teléfono" },
+  { campo: "correo", etiqueta: "Por correo" },
+];
+
+/**
+ * Qué avisos le llegan a esta persona y por dónde. Son de la cuenta, no de la
+ * marca: valen para todas las marcas en las que está.
+ *
+ * Cada interruptor se guarda al tocarlo, sin botón de guardar. La respuesta
+ * optimista lo deja cambiado al instante; si el servidor dice que no, Apollo
+ * lo vuelve atrás solo.
+ */
+function PreferenciasDeAvisos() {
+  const { data, loading, error } = useQuery(PREFERENCIAS_NOTIFICACION, { errorPolicy: "all" });
+  const [guardar] = useMutation(GUARDAR_PREFERENCIA_NOTIFICACION);
+  const [errorAlGuardar, setErrorAlGuardar] = useState<string | null>(null);
+  const prefs: PreferenciaNotificacion[] = data?.preferenciasNotificacion ?? [];
+
+  async function cambiar(tipo: TipoNotificacion, campo: "enApp" | "push" | "correo", valor: boolean) {
+    setErrorAlGuardar(null);
+    // Las preferencias no tienen id: la caché no las une sola con la consulta,
+    // así que la lista que devuelve la mutación se escribe a mano.
+    const nuevas = prefs.map((p) => (p.tipo === tipo ? { ...p, [campo]: valor } : p));
+    try {
+      await guardar({
+        variables: { input: { tipo, [campo]: valor } },
+        optimisticResponse: {
+          guardarPreferenciaNotificacion: nuevas.map((p) => ({ __typename: "PreferenciaNotificacion", ...p })),
+        },
+        update(cache, { data: respuesta }) {
+          if (!respuesta?.guardarPreferenciaNotificacion) return;
+          cache.writeQuery({
+            query: PREFERENCIAS_NOTIFICACION,
+            data: { preferenciasNotificacion: respuesta.guardarPreferenciaNotificacion },
+          });
+        },
+      });
+    } catch (err) {
+      setErrorAlGuardar(err instanceof Error ? err.message : "No se pudo guardar");
+    }
+  }
+
+  return (
+    <section id="notificaciones" className="mt-8 scroll-mt-20 rounded-2xl border border-white/10 bg-white/5 p-5">
+      <h2 className="font-semibold">Notificaciones</h2>
+      <p className="mt-1 text-sm text-white/50">
+        Los avisos le llegan a todo el equipo de la marca, menos a quien hizo la acción. Elegí cuáles querés recibir y
+        por dónde.
+      </p>
+
+      {loading && !prefs.length ? (
+        <p className="mt-4 text-sm text-white/50">Cargando…</p>
+      ) : error && !prefs.length ? (
+        <p className="mt-4 text-sm text-red-400">No pudimos traer tus preferencias: {error.message}</p>
+      ) : (
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-xs text-white/50">
+                <th className="pb-2 text-left font-medium">
+                  <span className="sr-only">Aviso</span>
+                </th>
+                {CANALES.map((c) => (
+                  <th key={c.campo} scope="col" className="w-16 px-1 pb-2 text-center font-medium sm:w-28">
+                    {c.etiqueta}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {TIPOS_NOTIFICACION.map((tipo) => {
+                const p = prefs.find((x) => x.tipo === tipo);
+                if (!p) return null;
+                const etiqueta = ESTILO_NOTIFICACION[tipo].etiqueta;
+                return (
+                  <tr key={tipo}>
+                    <th scope="row" className="py-3 pr-2 text-left font-normal">
+                      {etiqueta}
+                    </th>
+                    {CANALES.map((c) => (
+                      <td key={c.campo} className="px-1 py-3 text-center">
+                        <Interruptor
+                          encendido={p[c.campo]}
+                          etiqueta={`${etiqueta}: ${c.etiqueta.toLowerCase()}`}
+                          onCambiar={(v) => cambiar(tipo, c.campo, v)}
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <p className="mt-3 text-xs text-white/40">
+        En el teléfono llegan si tenés la app instalada y le diste permiso para avisarte.
+      </p>
+
+      {errorAlGuardar && (
+        <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3">
+          <p className="text-sm text-red-400">No se pudo guardar: {errorAlGuardar}</p>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** Un interruptor de encendido y apagado. Encendido lleva el degradado de la marca. */
+function Interruptor({
+  encendido,
+  etiqueta,
+  onCambiar,
+}: {
+  encendido: boolean;
+  etiqueta: string;
+  onCambiar: (valor: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={encendido}
+      aria-label={etiqueta}
+      title={etiqueta}
+      onClick={() => onCambiar(!encendido)}
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition ${
+        encendido ? "bg-marca" : "bg-white/15"
+      }`}
+    >
+      <span
+        className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+          encendido ? "translate-x-[22px]" : "translate-x-0.5"
+        }`}
+      />
+    </button>
   );
 }

@@ -2023,3 +2023,72 @@ export const IMPORTAR_DE_RESTREAM = gql`
     }
   }
 `;
+
+// ---- Notificaciones (ng-creator-be#134) ----
+
+/**
+ * Los avisos al equipo de la marca: clips listos, tomados, programados y
+ * publicados. Del más nuevo al más viejo; la página siguiente se pide con
+ * `antesDe` = el `createdAt` del último que llegó.
+ */
+export const MIS_NOTIFICACIONES = gql`
+  query MisNotificaciones($marcaId: String, $limite: Int, $antesDe: DateTime) {
+    misNotificaciones(marcaId: $marcaId, limite: $limite, antesDe: $antesDe) {
+      _id
+      tipo
+      titulo
+      cuerpo
+      leida
+      createdAt
+      marcaId
+      marcaNombre
+      actor {
+        nombre
+      }
+      enlace {
+        episodioId
+        clipId
+        publicadas {
+          red
+          url
+        }
+      }
+    }
+  }
+`;
+
+export const NOTIFICACIONES_SIN_LEER = gql`
+  query NotificacionesSinLeer($marcaId: String) {
+    notificacionesSinLeer(marcaId: $marcaId)
+  }
+`;
+
+/** Sin `ids` marca todas las de la marca. */
+export const MARCAR_NOTIFICACIONES_LEIDAS = gql`
+  mutation MarcarNotificacionesLeidas($ids: [ID!], $marcaId: String) {
+    marcarNotificacionesLeidas(ids: $ids, marcaId: $marcaId)
+  }
+`;
+
+/** Siempre vienen los cuatro tipos, con lo que ya eligió o con lo de fábrica. */
+export const PREFERENCIAS_NOTIFICACION = gql`
+  query PreferenciasNotificacion {
+    preferenciasNotificacion {
+      tipo
+      enApp
+      push
+      correo
+    }
+  }
+`;
+
+export const GUARDAR_PREFERENCIA_NOTIFICACION = gql`
+  mutation GuardarPreferenciaNotificacion($input: PreferenciaNotificacionInput!) {
+    guardarPreferenciaNotificacion(input: $input) {
+      tipo
+      enApp
+      push
+      correo
+    }
+  }
+`;
