@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { CalendarClock, Hand, Send, Sparkles, type LucideIcon } from "lucide-react";
 import { NOTIFICACIONES_SIN_LEER } from "@/graphql/operations";
-import { useMarcaActiva } from "@/lib/marca-activa";
 
 /**
  * Los avisos al equipo de una marca (ng-creator-be#134). Llegan a todos los
@@ -58,7 +57,8 @@ export function rutaDeNotificacion(n: Notificacion): string {
 const INTERVALO_MS = 60_000;
 
 /**
- * Cuántos avisos sin leer hay en la marca activa.
+ * Cuántos avisos sin leer hay, en todas las marcas de la persona: el mismo
+ * número que el push le pone al ícono de la app en el teléfono.
  *
  * Una sola consulta para toda la pantalla (la hace DashboardLayout y la pasa a
  * cada campanita): si cada campanita preguntara por su cuenta, serían dos
@@ -66,11 +66,7 @@ const INTERVALO_MS = 60_000;
  * la vista, y al volver a ella, que es cuando más importa estar al día.
  */
 export function useNotificacionesSinLeer(): { sinLeer: number; refrescar: () => void } {
-  const { activa, cargando } = useMarcaActiva();
   const { data, refetch } = useQuery(NOTIFICACIONES_SIN_LEER, {
-    variables: { marcaId: activa?._id },
-    // Sin esperar a la marca, la primera respuesta sería la de todas juntas.
-    skip: cargando,
     pollInterval: INTERVALO_MS,
     skipPollAttempt: () => typeof document !== "undefined" && document.hidden,
     fetchPolicy: "cache-and-network",
@@ -78,7 +74,6 @@ export function useNotificacionesSinLeer(): { sinLeer: number; refrescar: () => 
   });
 
   useEffect(() => {
-    if (cargando) return;
     const alVolver = () => {
       if (!document.hidden) refetch().catch(() => {});
     };
@@ -88,13 +83,13 @@ export function useNotificacionesSinLeer(): { sinLeer: number; refrescar: () => 
       window.removeEventListener("focus", alVolver);
       document.removeEventListener("visibilitychange", alVolver);
     };
-  }, [cargando, refetch]);
+  }, [refetch]);
 
   return {
     sinLeer: data?.notificacionesSinLeer ?? 0,
     // Un fallo acá no merece un error en pantalla: el próximo intento lo corrige.
     refrescar: () => {
-      if (!cargando) refetch().catch(() => {});
+      refetch().catch(() => {});
     },
   };
 }

@@ -179,14 +179,16 @@ function PanelNotificaciones({
   onCerrar: () => void;
 }) {
   const router = useRouter();
-  const { activa } = useMarcaActiva();
+  const { activa, marcas, seleccionar } = useMarcaActiva();
+  // Los avisos son de todas las marcas; el nombre solo hace falta si hay más de una.
+  const variasMarcas = marcas.length > 1;
   const ahora = useAhora();
   const [agotado, setAgotado] = useState(false);
   const [trayendoMas, setTrayendoMas] = useState(false);
 
   // Fresca cada vez que se abre: los avisos llegan mientras tanto.
   const { data, loading, error, fetchMore } = useQuery(MIS_NOTIFICACIONES, {
-    variables: { marcaId: activa?._id, limite: LIMITE },
+    variables: { limite: LIMITE },
     fetchPolicy: "network-only",
     nextFetchPolicy: "cache-first",
   });
@@ -201,7 +203,7 @@ function PanelNotificaciones({
   async function marcarLeidas(ids?: string[]) {
     const cuales = ids ?? lista.filter((n) => !n.leida).map((n) => n._id);
     await marcar({
-      variables: { ids, marcaId: activa?._id },
+      variables: { ids },
       update(cache) {
         for (const id of cuales) {
           cache.modify({
@@ -219,6 +221,8 @@ function PanelNotificaciones({
     // el aviso solo queda sin leer.
     if (!n.leida) marcarLeidas([n._id]).catch(() => {});
     onCerrar();
+    // El clip es de otra marca: se pasa a esa antes de abrirlo, como en la app.
+    if (n.marcaId !== activa?._id && marcas.some((m) => m._id === n.marcaId)) seleccionar(n.marcaId);
     router.push(rutaDeNotificacion(n));
   }
 
@@ -251,7 +255,7 @@ function PanelNotificaciones({
       <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold">Notificaciones</h2>
-          {activa && <p className="truncate text-xs text-white/40">{activa.nombre}</p>}
+          {variasMarcas && <p className="truncate text-xs text-white/40">De todas tus marcas</p>}
         </div>
         <button
           onClick={() => marcarLeidas().catch(() => {})}
@@ -279,7 +283,7 @@ function PanelNotificaciones({
         ) : (
           <ul className="divide-y divide-white/5">
             {lista.map((n) => (
-              <ItemNotificacion key={n._id} n={n} ahora={ahora} onAbrir={() => abrir(n)} />
+              <ItemNotificacion key={n._id} n={n} ahora={ahora} conMarca={variasMarcas} onAbrir={() => abrir(n)} />
             ))}
           </ul>
         )}
@@ -312,7 +316,17 @@ function PanelNotificaciones({
   );
 }
 
-function ItemNotificacion({ n, ahora, onAbrir }: { n: Notificacion; ahora: number; onAbrir: () => void }) {
+function ItemNotificacion({
+  n,
+  ahora,
+  conMarca,
+  onAbrir,
+}: {
+  n: Notificacion;
+  ahora: number;
+  conMarca: boolean;
+  onAbrir: () => void;
+}) {
   const estilo = ESTILO_NOTIFICACION[n.tipo];
   const Icono = estilo?.icono ?? Bell;
   // Solo las que la red ya devolvió con enlace: sin url no hay adónde ir.
@@ -325,7 +339,9 @@ function ItemNotificacion({ n, ahora, onAbrir }: { n: Notificacion; ahora: numbe
           <Icono size={16} strokeWidth={1.8} aria-hidden />
         </span>
         <span className="min-w-0 flex-1">
-          <span className={`block text-sm ${n.leida ? "text-white/70" : "font-medium text-white"}`}>{n.titulo}</span>
+          <span className={`block text-sm ${n.leida ? "text-white/70" : "font-medium text-white"}`}>{n.titulo}
+            {conMarca && n.marcaNombre && <span className="font-normal text-white/45"> · {n.marcaNombre}</span>}
+          </span>
           <span className="mt-0.5 block text-xs text-white/55">{n.cuerpo}</span>
           <span className="mt-1 block text-xs text-white/35" title={fechaCompleta(n.createdAt)}>
             {tiempoRelativo(n.createdAt, ahora)}
