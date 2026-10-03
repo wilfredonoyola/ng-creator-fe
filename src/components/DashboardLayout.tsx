@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { haySesion } from "@/lib/auth";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useMenuColapsado } from "@/lib/menu-colapsado";
+import { useNotificacionesSinLeer } from "@/lib/notificaciones";
+import { Campanita } from "./Campanita";
 import { Sidebar } from "./Sidebar";
 import { NavInferior } from "./NavInferior";
 
@@ -37,6 +39,7 @@ export function DashboardLayout({
   const [abierto, setAbierto] = useState(false);
   const { activa } = useMarcaActiva();
   const menu = useMenuColapsado(menuColapsable ?? null);
+  const avisos = useNotificacionesSinLeer();
 
   useEffect(() => {
     if (!haySesion()) router.push("/login");
@@ -95,6 +98,10 @@ export function DashboardLayout({
           </span>
           <span className="text-[10px] text-white/30">▾</span>
         </button>
+
+        {/* En el teléfono la campanita va acá, a la vista: adentro del cajón
+            nadie se enteraría de que llegó algo. */}
+        <Campanita sinLeer={avisos.sinLeer} onCambio={avisos.refrescar} abreHacia="abajo" className="-mr-1" />
       </header>
 
       {/* Fondo oscuro que cierra el cajón al tocarlo */}
@@ -111,6 +118,7 @@ export function DashboardLayout({
         onCerrar={() => setAbierto(false)}
         colapsado={menu.colapsado}
         onAlternarColapso={menuColapsable ? menu.alternar : undefined}
+        avisos={avisos}
       />
 
       <main className={`transition-[padding] duration-200 ${menuColapsable ? (menu.colapsado ? "md:pl-16" : "md:pl-64") : "lg:pl-64"}`}>

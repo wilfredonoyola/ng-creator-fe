@@ -24,6 +24,7 @@ import { ESTILO_ROL, useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
+import { Campanita } from "./Campanita";
 
 // Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
 // sola familia de íconos, no emojis.
@@ -94,12 +95,19 @@ export function Sidebar({
   onCerrar,
   colapsado = false,
   onAlternarColapso,
+  avisos,
 }: {
   abierto?: boolean;
   onCerrar?: () => void;
   colapsado?: boolean;
   /** Sin esto no hay botón para colapsar: la pantalla no lo ofrece. */
   onAlternarColapso?: () => void;
+  /**
+   * El conteo de avisos sin leer, que pide DashboardLayout. La campanita del
+   * menú se ve solo cuando el menú está fijo; en el cajón del teléfono no hace
+   * falta, porque la barra de arriba ya tiene la suya.
+   */
+  avisos?: { sinLeer: number; refrescar: () => void };
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -179,6 +187,13 @@ export function Sidebar({
         {NAV_PRINCIPAL.map((item) => (
           <BotonNav key={item.href} {...item} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
         ))}
+        {/* Una fila más del menú, que abre la lista al costado: así entra igual
+            en la tira de íconos que en el menú abierto. */}
+        {avisos && (
+          <div className={`hidden ${fijoDesdeMd ? "md:block" : "lg:block"}`}>
+            <Campanita sinLeer={avisos.sinLeer} onCambio={avisos.refrescar} abreHacia="derecha" fila colapsado={c} />
+          </div>
+        )}
 
         {esAdmin && (
           <>
