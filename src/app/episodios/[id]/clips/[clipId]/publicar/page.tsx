@@ -369,7 +369,7 @@ function Formulario({
                     </span>
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] text-xs font-bold ${
-                        on ? "border-ng-azul bg-ng-azul text-white" : "border-white/30"
+                        on ? "border-ng-azul bg-ng-azul text-ng-tinta" : "border-white/30"
                       }`}
                     >
                       {on ? "✓" : ""}

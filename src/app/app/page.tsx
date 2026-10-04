@@ -82,7 +82,7 @@ export default function PaginaApp() {
               se dice en cada uno, y decidí cuáles salen a TikTok, Reels y Shorts. Rápido, desde donde estés.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 font-semibold text-white brillo-marca hover:brightness-110">
+              <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
                 Empezar
               </Link>
               <span className="text-sm text-ng-tenue">Pronto en App Store y Google Play</span>
@@ -149,7 +149,7 @@ export default function PaginaApp() {
             ))}
           </div>
           <div className="mt-12 text-center">
-            <Link href="/#precios" className="rounded-ng-md bg-marca px-8 py-3.5 font-semibold text-white brillo-marca hover:brightness-110">
+            <Link href="/#precios" className="rounded-ng-md bg-marca px-8 py-3.5 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
               Ver planes
             </Link>
           </div>

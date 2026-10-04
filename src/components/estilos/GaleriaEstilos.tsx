@@ -123,7 +123,7 @@ export function MuestraEstilo({
   }, [estilo, t, nombreMarca]);
   return (
     <div
-      className="relative overflow-hidden rounded-lg bg-gradient-to-b from-[#334155] via-[#1e293b] to-[#0b0f1a]"
+      className="relative overflow-hidden rounded-lg bg-gradient-to-b from-[#3A3935] via-[#262624] to-[#0A0A0A]"
       style={ancho ? { width: ancho, height: (ancho * LIENZO.alto) / LIENZO.ancho } : { width: "100%", aspectRatio: `${LIENZO.ancho} / ${LIENZO.alto}` }}
     >
       {/* Alguien hablando, para que el texto se vea sobre algo. */}

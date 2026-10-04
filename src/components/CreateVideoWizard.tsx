@@ -184,7 +184,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               <div
                 className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-all ${
                   isComplete
-                    ? "bg-marca text-white"
+                    ? "bg-marca text-ng-tinta"
                     : isActive
                     ? "bg-ng-teal/20 text-ng-teal ring-2 ring-ng-azul"
                     : "bg-white/10 text-white/40"
@@ -217,7 +217,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                   inputMode === "file"
-                    ? "bg-marca text-white"
+                    ? "bg-marca text-ng-tinta"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -231,7 +231,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
                   inputMode === "link"
-                    ? "bg-marca text-white"
+                    ? "bg-marca text-ng-tinta"
                     : "text-white/60 hover:text-white"
                 }`}
               >
@@ -366,7 +366,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             <button
               onClick={() => setStep("config")}
               disabled={!hasClipSource}
-              className="w-full rounded-lg bg-marca py-3 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+              className="w-full rounded-lg bg-marca py-3 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
             >
               Continuar →
             </button>
@@ -481,7 +481,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                     ? "No hay página activa: habilitá una en Administrar páginas"
                     : undefined
                 }
-                className="flex-1 rounded-lg bg-marca py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+                className="flex-1 rounded-lg bg-marca py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
                 Crear 🚀
               </button>

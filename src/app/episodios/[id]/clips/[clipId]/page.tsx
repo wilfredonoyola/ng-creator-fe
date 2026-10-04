@@ -947,7 +947,7 @@ function EstiloSubtitulos({
   const s = valor ?? porDefecto;
   const poner = (parcial: Partial<SubtituloClip>) => onCambiar({ ...s, ...parcial });
   const boton = (activo: boolean) =>
-    `rounded-md px-2.5 py-1 text-xs transition ${activo ? "bg-marca font-medium text-white" : "border border-white/10 text-white/60 hover:text-white"}`;
+    `rounded-md px-2.5 py-1 text-xs transition ${activo ? "bg-marca font-medium text-ng-tinta" : "border border-white/10 text-white/60 hover:text-white"}`;
   return (
     <div className="mt-3 space-y-3 rounded-lg border border-white/10 bg-black/20 p-3">
       <p className="text-xs text-white/45">Arrastrá el subtítulo en la vista previa para subirlo o bajarlo; la bolita de la derecha lo agranda.</p>
@@ -997,7 +997,7 @@ function EstiloSubtitulos({
           value={s.tamano}
           disabled={deshabilitado}
           onChange={(e) => poner({ tamano: Number(e.target.value) })}
-          className="w-full accent-[#A855F7]"
+          className="w-full accent-[#FFD400]"
         />
       </Fila>
       <Fila etiqueta="Lugar">

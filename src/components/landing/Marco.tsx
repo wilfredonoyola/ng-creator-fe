@@ -20,7 +20,7 @@ export function Cabecera() {
           <Link href="/app" className="hidden text-ng-secundario hover:text-white sm:inline">App</Link>
           <Link href="/#precios" className="hidden text-ng-secundario hover:text-white sm:inline">Precios</Link>
           <Link href="/login" className="text-ng-secundario hover:text-white">Entrar</Link>
-          <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-white brillo-marca hover:brightness-110">
+          <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
             Empezar
           </Link>
         </nav>

@@ -112,7 +112,7 @@ export default function AnalisisPage() {
             onClick={() => setDias(p.id)}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
               dias === p.id
-                ? "bg-marca text-white"
+                ? "bg-marca text-ng-tinta"
                 : "border border-white/10 text-white/60 hover:bg-white/5"
             }`}
           >

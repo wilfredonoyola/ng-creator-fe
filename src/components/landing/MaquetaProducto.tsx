@@ -18,11 +18,11 @@ export function MaquetaProducto() {
       <div
         aria-hidden
         className="absolute -inset-10 -z-10 rounded-full opacity-70 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.28), rgba(139,92,246,0.14) 45%, transparent 70%)" }}
+        style={{ background: "transparent" }}
       />
       <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta/90 p-4 shadow-2xl backdrop-blur">
         <div className="flex items-center gap-3 border-b border-white/10 pb-3">
-          <div className="flex h-12 w-20 items-center justify-center rounded-lg bg-gradient-to-br from-[#1e293b] to-[#0b0f1a] text-[10px] text-white/40">
+          <div className="flex h-12 w-20 items-center justify-center rounded-lg bg-gradient-to-br from-[#262624] to-[#0A0A0A] text-[10px] text-white/40">
             2:24:04
           </div>
           <div className="min-w-0">

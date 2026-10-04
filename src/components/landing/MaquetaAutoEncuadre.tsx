@@ -35,7 +35,7 @@ function Plano({ rotulo, detalle, children, activo = false }: { rotulo: string; 
   return (
     <figure className="min-w-0">
       <div
-        className={`relative aspect-[9/16] overflow-hidden rounded-ng-lg border bg-gradient-to-b from-[#1e293b] to-[#0b0f1a] ${
+        className={`relative aspect-[9/16] overflow-hidden rounded-ng-lg border bg-gradient-to-b from-[#262624] to-[#0A0A0A] ${
           activo ? "border-ng-azul/60 brillo-marca" : "border-white/10"
         }`}
       >
@@ -59,12 +59,12 @@ export function MaquetaAutoEncuadre() {
       <div
         aria-hidden
         className="absolute -inset-10 -z-10 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(20,184,166,0.22), rgba(168,85,247,0.14) 45%, transparent 70%)" }}
+        style={{ background: "transparent" }}
       />
       <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta/90 p-4 shadow-2xl backdrop-blur">
         <p className="text-[11px] text-ng-tenue">Lo que grabó la cámara · 16:9</p>
         {/* La mesa, con el recorte vertical sobre quien habla. */}
-        <div className="relative mt-2 aspect-video overflow-hidden rounded-ng-lg border border-white/10 bg-gradient-to-b from-[#1e293b] to-[#0b0f1a]">
+        <div className="relative mt-2 aspect-video overflow-hidden rounded-ng-lg border border-white/10 bg-gradient-to-b from-[#262624] to-[#0A0A0A]">
           <div className="absolute inset-x-0 bottom-0 h-[22%] bg-white/5" />
           {MESA.map((p) => (
             <div key={p.cx} className="absolute bottom-[22%] -translate-x-1/2" style={{ left: `${p.cx}%` }}>

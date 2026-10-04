@@ -76,7 +76,7 @@ export function DashboardLayout({
           <span className="mt-1 block h-0.5 w-5 bg-current" />
         </button>
 
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-marca text-[11px] font-bold text-white">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-marca text-[11px] font-bold text-ng-tinta">
           NG
         </span>
 

@@ -16,16 +16,16 @@ export default function Imagen() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          background: "radial-gradient(ellipse at top left, #1d3a7a 0%, #0B0F1A 55%, #05070d 100%)",
-          color: "#F8FAFC",
+          background: "#0A0A0A",
+          color: "#FFFFFF",
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 34, color: "#C084FC", letterSpacing: 6 }}>NG CREATOR</div>
+        <div style={{ fontSize: 34, color: "#FFD400", letterSpacing: 6 }}>NG CREATOR</div>
         <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, marginTop: 24, maxWidth: 950 }}>
           Subí el episodio. Publicá los clips. Todo en un solo lugar.
         </div>
-        <div style={{ fontSize: 32, color: "#94A3B8", marginTop: 28 }}>
+        <div style={{ fontSize: 32, color: "#A3A29C", marginTop: 28 }}>
           Transcripción · momentos con IA · edición en equipo · todas tus redes
         </div>
       </div>

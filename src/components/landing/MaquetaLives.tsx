@@ -18,7 +18,7 @@ export function MaquetaLives() {
       <div
         aria-hidden
         className="absolute -inset-10 -z-10 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(239,68,68,0.18), rgba(139,92,246,0.14) 45%, transparent 70%)" }}
+        style={{ background: "transparent" }}
       />
       <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta/90 p-4 shadow-2xl backdrop-blur">
         <p className="text-[11px] text-ng-tenue">OBS o Streamlabs · transmitiendo a</p>

@@ -74,7 +74,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
       <div>
         <div className="mb-2 flex items-center justify-between">
           <span
-            className="rounded bg-marca px-2 py-0.5 text-xs font-bold text-white"
+            className="rounded bg-marca px-2 py-0.5 text-xs font-bold text-ng-tinta"
           >
             {exp.numero ? `EXPEDIENTE #${exp.numero}` : "SIN NUMERAR"}
           </span>
@@ -149,7 +149,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
           <button
             onClick={() => aprobar({ variables: { id: exp._id } })}
             disabled={aprobando}
-            className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-white brillo-marca disabled:opacity-50"
+            className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta brillo-marca disabled:opacity-50"
           >
             {aprobando ? "Publicando…" : "Aprobar y publicar"}
           </button>

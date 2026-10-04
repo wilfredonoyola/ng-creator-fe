@@ -231,7 +231,7 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.22), rgba(139,92,246,0.10) 45%, transparent 70%)" }}
+        style={{ background: "transparent" }}
       />
       <form
         onSubmit={alEnviar}
@@ -315,7 +315,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={deshabilitado}
-          className="w-full rounded-ng-md bg-marca py-2.5 text-sm font-semibold text-white brillo-marca transition hover:brightness-110 disabled:opacity-50"
+          className="w-full rounded-ng-md bg-marca py-2.5 text-sm font-semibold text-ng-tinta brillo-marca transition hover:brightness-110 disabled:opacity-50"
         >
           {textoBoton}
         </button>

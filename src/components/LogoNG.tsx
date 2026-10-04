@@ -1,43 +1,55 @@
 import Image from "next/image";
 
+/** El wordmark mide 3960.8 x 713 en su SVG. */
+const PROPORCION_WORDMARK = 3960.8 / 713;
+
 /**
- * El logo de NG Creator: el monograma NG y la palabra al lado, como pide la
- * guía de marca ("[NG ICON] NG Creator"). `soloIcono` para lugares chicos.
+ * El logo de Clipfine: el wordmark blanco, sin brillo ni placa, como pide la
+ * guía (Clipfine-Brand-Package/01-Logo/LOGO-GUIDELINES.md). `soloIcono` para
+ * lugares chicos: debajo de 48px va el ícono "small", que tiene el corte más
+ * abierto para que se lea.
  *
- * El monograma es un PNG con transparencia sacado de branding/Logo.png: no hay
- * vector. Si algún día lo hay, se cambia acá y en ng-creator-app.
+ * Los SVG salen del paquete de marca, sin la metadata. Si cambian, se cambian
+ * acá (public/brand) y en ng-creator-app.
  */
 export function LogoNG({
   tamano = 32,
   soloIcono = false,
   lema = false,
 }: {
+  /** El alto del ícono; el wordmark va a ~60% de esto, que es el alto de una letra al lado. */
   tamano?: number;
   soloIcono?: boolean;
   /** "Create. Share. Grow." debajo del nombre. */
   lema?: boolean;
 }) {
-  return (
-    <span className="inline-flex items-center gap-2.5">
+  if (soloIcono) {
+    return (
       <Image
-        src="/brand/ng-monograma.png"
-        alt={soloIcono ? "NG Creator" : ""}
+        src={tamano < 48 ? "/brand/clipfine-icon-small-white.svg" : "/brand/clipfine-icon-white.svg"}
+        alt="Clipfine"
         width={tamano}
         height={tamano}
         priority
-        className="shrink-0 drop-shadow-[0_0_14px_rgba(168,85,247,0.35)]"
+        unoptimized
+        className="shrink-0"
       />
-      {!soloIcono && (
-        <span className="flex flex-col leading-none">
-          <span className="font-semibold tracking-tight text-ng-texto" style={{ fontSize: tamano * 0.56 }}>
-            NG Creator
-          </span>
-          {lema && (
-            <span className="mt-1 text-[10px] uppercase tracking-[0.22em] text-ng-secundario">
-              Create · Share · Grow
-            </span>
-          )}
-        </span>
+    );
+  }
+  const alto = Math.round(tamano * 0.6);
+  return (
+    <span className="inline-flex flex-col leading-none">
+      <Image
+        src="/brand/clipfine-wordmark-white.svg"
+        alt="Clipfine"
+        width={Math.round(alto * PROPORCION_WORDMARK)}
+        height={alto}
+        priority
+        unoptimized
+        className="shrink-0"
+      />
+      {lema && (
+        <span className="mt-1.5 text-[10px] uppercase tracking-[0.22em] text-ng-secundario">Create · Share · Grow</span>
       )}
     </span>
   );

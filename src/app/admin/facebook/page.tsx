@@ -381,7 +381,7 @@ function Paso({
         <span
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
             completo
-              ? "bg-marca text-white"
+              ? "bg-marca text-ng-tinta"
               : "border border-white/20 text-white/50"
           }`}
         >
@@ -457,7 +457,7 @@ function FilaPagina({
         }
         className={`rounded-lg px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
           pagina.activa
-            ? "bg-marca text-white hover:brightness-110"
+            ? "bg-marca text-ng-tinta hover:brightness-110"
             : "border border-white/15 text-white/60 hover:bg-white/5"
         }`}
       >

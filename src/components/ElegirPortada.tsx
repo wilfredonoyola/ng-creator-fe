@@ -170,7 +170,7 @@ export function ElegirPortada({
           <button
             onClick={confirmarCuadro}
             disabled={guardando || !!guardada}
-            className="mt-2 w-full rounded-lg bg-marca py-2 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+            className="mt-2 w-full rounded-lg bg-marca py-2 text-xs font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
           >
             {guardando
               ? "Guardando…"
@@ -255,7 +255,7 @@ function Pestana({
       onClick={onClick}
       className={`flex-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition ${
         activa
-          ? "bg-marca text-white"
+          ? "bg-marca text-ng-tinta"
           : "border border-white/10 text-white/50 hover:bg-white/5"
       }`}
     >

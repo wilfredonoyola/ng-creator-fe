@@ -125,7 +125,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
         {/* Number Badge */}
         {exp.numero && (
           <div className="absolute right-3 top-3">
-            <span className="rounded-lg bg-marca px-2 py-1 text-xs font-bold text-white">
+            <span className="rounded-lg bg-marca px-2 py-1 text-xs font-bold text-ng-tinta">
               #{exp.numero}
             </span>
           </div>
@@ -248,7 +248,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
                   <button
                     onClick={handleRegenerate}
                     disabled={regenerando || !nota.trim()}
-                    className="flex-1 rounded-lg bg-marca py-2 text-sm font-medium text-white disabled:opacity-50"
+                    className="flex-1 rounded-lg bg-marca py-2 text-sm font-medium text-ng-tinta disabled:opacity-50"
                   >
                     {regenerando ? "..." : "Regenerar"}
                   </button>
@@ -286,7 +286,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
               <button
                 onClick={() => aprobar({ variables: { id: exp._id } })}
                 disabled={aprobando}
-                className="rounded-lg bg-marca px-4 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+                className="rounded-lg bg-marca px-4 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
                 {aprobando ? "..." : "Aprobar ✓"}
               </button>

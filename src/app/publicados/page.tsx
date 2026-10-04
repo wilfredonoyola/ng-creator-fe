@@ -178,7 +178,7 @@ export default function PublicadosPage() {
                     {publicados.get(pub.expedienteId)!.map((f) => (
                       <span
                         key={f}
-                        className="rounded bg-marca px-1.5 py-0.5 text-[10px] font-semibold text-white"
+                        className="rounded bg-marca px-1.5 py-0.5 text-[10px] font-semibold text-ng-tinta"
                       >
                         {ETIQUETA_FORMATO[f] ?? f}
                       </span>
@@ -243,7 +243,7 @@ function Tab({
       onClick={onClick}
       className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition ${
         activa
-          ? "bg-marca text-white"
+          ? "bg-marca text-ng-tinta"
           : "border border-white/10 text-white/60 hover:bg-white/5"
       }`}
     >

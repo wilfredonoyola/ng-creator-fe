@@ -100,7 +100,7 @@ export function PanelAutoEncuadre({
               <li key={e.clave} className={`flex items-center gap-1.5 ${hecha ? "text-white/80" : enCurso ? "text-white" : "text-white/35"}`}>
                 <span
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${
-                    hecha ? "bg-emerald-500 text-white" : enCurso ? "animate-pulse bg-ng-violeta text-white" : "border border-white/20"
+                    hecha ? "bg-emerald-500 text-ng-tinta" : enCurso ? "animate-pulse bg-ng-violeta text-ng-tinta" : "border border-white/20"
                   }`}
                 >
                   {hecha ? "✓" : i + 1}
@@ -166,7 +166,7 @@ export function PanelAutoEncuadre({
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {cambios > 1 && (
-            <button onClick={onVerPrimerCambio} className="rounded-lg bg-ng-violeta px-2.5 py-1 text-xs font-medium text-white hover:brightness-110">
+            <button onClick={onVerPrimerCambio} className="rounded-lg bg-ng-violeta px-2.5 py-1 text-xs font-medium text-ng-tinta hover:brightness-110">
               ▶ Ver el primer cambio
             </button>
           )}

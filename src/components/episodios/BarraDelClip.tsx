@@ -16,7 +16,7 @@ import type { ResumenPublicacionClip } from "./ListoClip";
 /** Todos los botones de la barra, iguales: mismo alto, radio y espaciado. */
 const BOTON = "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50";
 const SECUNDARIO = `${BOTON} border border-white/15 bg-white/[0.04] text-white/90 hover:bg-white/10`;
-const PRIMARIO = `${BOTON} bg-marca text-white hover:brightness-110`;
+const PRIMARIO = `${BOTON} bg-marca text-ng-tinta hover:brightness-110`;
 
 const TONOS = {
   tenue: "text-ng-secundario",

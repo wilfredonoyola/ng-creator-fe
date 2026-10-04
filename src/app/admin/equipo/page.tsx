@@ -296,7 +296,7 @@ function FormularioInvitar({
         <button
           type="submit"
           disabled={!email.trim() || invitando}
-          className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40"
+          className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
         >
           {invitando ? "Enviando…" : "Invitar"}
         </button>
