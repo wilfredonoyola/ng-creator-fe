@@ -30,6 +30,10 @@ jobs:
 
       - run: npm ci
 
+      # Que es y en tengan las mismas claves, y el indice al dia (docs/IDIOMAS.md).
+      - name: Mensajes
+        run: npm run mensajes && git diff --exit-code src/messages/index.ts
+
       # Los tipos primero: es el que da el mensaje mas claro cuando algo se rompe.
       - name: Tipos
         run: npx tsc --noEmit
