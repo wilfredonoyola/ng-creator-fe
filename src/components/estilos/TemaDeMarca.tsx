@@ -24,7 +24,8 @@ export const temaCompleto = (t: Tema) => COLORES.every((c) => HEX.test(t[c.clave
  * estilo de sus montajes). Solo el propietario lo cambia; los demás lo ven.
  *
  * Controlado: el tema que se está editando también pinta la galería y la
- * vista previa de al lado, antes de guardarlo.
+ * vista previa de al lado, y se guarda con el resto del Brand Kit. Tenía un
+ * botón propio y, si se guardaba con el de abajo, los colores se perdían.
  */
 export function TemaDeMarca({
   marcaId,
@@ -32,18 +33,12 @@ export function TemaDeMarca({
   onCambiar,
   editable,
   tieneLogo,
-  onGuardar,
-  guardando,
-  guardadoEn,
 }: {
   marcaId: string;
   tema: Tema;
   onCambiar: (t: Tema) => void;
   editable: boolean;
   tieneLogo: boolean;
-  onGuardar: () => void;
-  guardando: boolean;
-  guardadoEn: Date | null;
 }) {
   const [elegido, setElegido] = useState<Clave>("colorPrimario");
   const [pedirLogo, logoQ] = useLazyQuery(COLORES_DEL_LOGO, { fetchPolicy: "network-only" });
@@ -162,18 +157,7 @@ export function TemaDeMarca({
       </div>
 
       {editable ? (
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={onGuardar}
-            disabled={guardando || !temaCompleto(tema)}
-            className="rounded-lg bg-marca px-4 py-1.5 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
-          >
-            {guardando ? "Guardando…" : "Guardar tema"}
-          </button>
-          {!temaCompleto(tema) && <span className="text-xs text-red-400">Cada color va como #RRGGBB.</span>}
-          {guardadoEn && <span className="text-sm text-ng-teal">Guardado. Los clips nuevos ya salen con estos colores.</span>}
-        </div>
+        !temaCompleto(tema) && <p className="mt-3 text-xs text-red-400">Cada color va como #RRGGBB.</p>
       ) : (
         <p className="mt-3 text-xs text-white/40">Los colores de la marca los cambia el propietario.</p>
       )}

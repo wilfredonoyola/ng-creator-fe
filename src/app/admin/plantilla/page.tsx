@@ -27,7 +27,7 @@ import {
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
 import { GaleriaEstilos, MuestraEstilo, useRelojMuestra } from "@/components/estilos/GaleriaEstilos";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
-import { TemaDeMarca } from "@/components/estilos/TemaDeMarca";
+import { TemaDeMarca, temaCompleto } from "@/components/estilos/TemaDeMarca";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
 const ANCHO_VISTA = 216;
@@ -59,7 +59,6 @@ export default function PlantillaClipsPage() {
     refetchQueries: [{ query: PLANTILLA_CLIP_MARCA, variables: { marcaId } }],
   });
   const [tema, setTema] = useState<Tema | null>(null);
-  const [temaGuardadoEn, setTemaGuardadoEn] = useState<Date | null>(null);
 
   const [p, setP] = useState<PlantillaClip | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -102,21 +101,20 @@ export default function PlantillaClipsPage() {
     }
   }
 
-  async function enviarTema() {
-    if (!marcaId || !tema) return;
-    setError(null);
-    try {
-      await guardarTema({ variables: { marcaId, tema } });
-      setTemaGuardadoEn(new Date());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo guardar el tema");
-    }
-  }
+  // Los colores van con el resto: solo si los cambió el propietario, que es quien puede.
+  const guardado = estilo ? temaValido(estilo.tema) : null;
+  const temaCambiado =
+    !!tema && !!guardado && (Object.keys(tema) as (keyof Tema)[]).some((k) => tema[k] !== guardado[k]);
 
   async function enviar() {
-    if (!marcaId || !p) return;
+    if (!marcaId || !p || !tema) return;
     setError(null);
+    if (propietario && temaCambiado && !temaCompleto(tema)) {
+      setError("Cada color del tema va como #RRGGBB.");
+      return;
+    }
     try {
+      if (propietario && temaCambiado) await guardarTema({ variables: { marcaId, tema } });
       await guardar({ variables: { marcaId, plantilla: { ...p, ctaTexto: p.ctaTexto.trim() } } });
       setGuardadoEn(new Date());
     } catch (e) {
@@ -166,20 +164,17 @@ export default function PlantillaClipsPage() {
               tema={tema}
               onCambiar={(t) => {
                 setTema(t);
-                setTemaGuardadoEn(null);
+                setGuardadoEn(null);
               }}
               editable={propietario}
               tieneLogo={Boolean(logoUrl)}
-              onGuardar={() => void enviarTema()}
-              guardando={guardandoTema}
-              guardadoEn={temaGuardadoEn}
             />
 
             <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <h2 className="font-semibold">Estilo de los textos</h2>
               <p className="mb-4 mt-0.5 text-xs text-white/45">
                 Cómo salen el gancho y los subtítulos de los clips de la marca, con sus colores. Cada clip lo puede
-                cambiar en el editor. Se guarda con la plantilla.
+                cambiar en el editor. Se guarda con el Brand Kit.
               </p>
               <GaleriaEstilos
                 tema={temaValido(tema)}
@@ -316,12 +311,12 @@ export default function PlantillaClipsPage() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => void enviar()}
-                  disabled={guardando}
+                  disabled={guardando || guardandoTema}
                   className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
                 >
-                  {guardando ? "Guardando…" : "Guardar Brand Kit"}
+                  {guardando || guardandoTema ? "Guardando…" : "Guardar Brand Kit"}
                 </button>
-                {guardadoEn && <span className="text-sm text-ng-teal">Guardada. Los clips nuevos ya salen así.</span>}
+                {guardadoEn && <span className="text-sm text-ng-teal">Guardado. Los clips nuevos ya salen así.</span>}
               </div>
             )}
           </div>
