@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 export const viewport: Viewport = {
-  themeColor: "#0B0F1A",
+  themeColor: "#0A0A0A",
   // `viewportFit: cover` es lo que permite pintar bajo el notch; el padding
   // seguro lo pone el layout con env(safe-area-inset-*).
   viewportFit: "cover",

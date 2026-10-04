@@ -775,7 +775,7 @@ export default function MontajePage() {
         <button
           onClick={cargar}
           disabled={cargando || !url.trim()}
-          className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-40"
+          className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
         >
           {cargando ? "Descargando…" : "Cargar video"}
         </button>
@@ -1346,7 +1346,7 @@ export default function MontajePage() {
           <button
             onClick={generar}
             disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
-            className="rounded-lg bg-marca px-6 py-3 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
+            className="rounded-lg bg-marca px-6 py-3 text-sm font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
           >
             {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar video"}
           </button>
@@ -1415,7 +1415,7 @@ export default function MontajePage() {
           <button
             onClick={generar}
             disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
-            className="shrink-0 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-white transition disabled:opacity-40"
+            className="shrink-0 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta transition disabled:opacity-40"
           >
             {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar"}
           </button>
@@ -1611,7 +1611,7 @@ function Chip({
       onClick={onClick}
       className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
         activo
-          ? "bg-marca text-white"
+          ? "bg-marca text-ng-tinta"
           : "border border-white/10 text-white/60 hover:bg-white/5"
       }`}
     >

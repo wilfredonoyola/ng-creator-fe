@@ -548,7 +548,7 @@ export function MomentosCamara({
                       onClick={() => onCamara({ ...camara, posicion: valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         camara.posicion === valor
-                          ? "bg-marca text-white"
+                          ? "bg-marca text-ng-tinta"
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
@@ -567,7 +567,7 @@ export function MomentosCamara({
                       onClick={() => onCamara({ ...camara, volumen: v.valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         Math.abs((camara.volumen ?? 1) - v.valor) < 0.05
-                          ? "bg-marca text-white"
+                          ? "bg-marca text-ng-tinta"
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
@@ -584,7 +584,7 @@ export function MomentosCamara({
                       onClick={() => onCamara({ ...camara, suavizado: s.valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         Math.abs((camara.suavizado ?? 0) - s.valor) < 0.05
-                          ? "bg-marca text-white"
+                          ? "bg-marca text-ng-tinta"
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >

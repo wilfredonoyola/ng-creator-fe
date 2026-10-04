@@ -58,7 +58,7 @@ function Callback() {
         <p className="mt-2 break-words text-sm text-white/60">{error}</p>
         <button
           onClick={() => router.replace(VOLVER)}
-          className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
+          className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110"
         >
           Volver
         </button>

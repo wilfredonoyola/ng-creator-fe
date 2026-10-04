@@ -46,7 +46,7 @@ export function FotoMarca({
   }
   return (
     <span
-      className={`flex shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-white ${className}`}
+      className={`flex shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-ng-tinta ${className}`}
     >
       {nombre?.[0]?.toUpperCase() ?? "?"}
     </span>

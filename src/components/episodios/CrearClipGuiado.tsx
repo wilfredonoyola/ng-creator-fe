@@ -187,7 +187,7 @@ export function CrearClipGuiado({
               >
                 <span
                   className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] ${
-                    hecho ? "bg-emerald-500" : n === paso ? "bg-ng-violeta" : "border border-white/20"
+                    hecho ? "bg-emerald-500" : n === paso ? "bg-ng-violeta text-ng-tinta" : "border border-white/20"
                   }`}
                 >
                   {hecho ? "✓" : n}
@@ -250,7 +250,7 @@ export function CrearClipGuiado({
             </span>
             <button
               onClick={() => reproductor.current?.reproducirTramo(desde, hasta)}
-              className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-white hover:brightness-110"
+              className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
             >
               ▶ Escuchar el clip
             </button>
@@ -307,7 +307,7 @@ export function CrearClipGuiado({
               if (!titulo) setTitulo(textoDelClip.slice(0, 60));
               setPaso(3);
             }}
-            className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
+            className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
           >
             Siguiente
           </button>
@@ -363,7 +363,7 @@ export function CrearClipGuiado({
             <button
               onClick={() => void revisarYCrear()}
               disabled={creando || revisando}
-              className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
+              className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
             >
               {creando ? "Creando…" : revisando ? "Revisando…" : "Crear y abrir el editor"}
             </button>

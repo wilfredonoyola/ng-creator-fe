@@ -99,7 +99,7 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
           <button
             onClick={() => void conectar()}
             disabled={pidiendoUrl}
-            className="rounded-lg bg-ng-violeta px-3 py-1.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-50"
+            className="rounded-lg bg-ng-violeta px-3 py-1.5 text-xs font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
           >
             {cuenta?.requiereReconexion ? "Reconectar Restream" : "Conectar Restream"}
           </button>
@@ -158,7 +158,7 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
                   <button
                     onClick={() => void traer(ev)}
                     disabled={importando !== null}
-                    className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+                    className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta disabled:opacity-50"
                   >
                     {importando === ev.id ? "Pidiendo…" : "Importar"}
                   </button>

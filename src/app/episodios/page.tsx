@@ -469,7 +469,7 @@ function PanelSubida({
         {frenada ? (
           <button
             onClick={onReanudar}
-            className="rounded-lg bg-marca px-3 py-1.5 font-medium text-white"
+            className="rounded-lg bg-marca px-3 py-1.5 font-medium text-ng-tinta"
           >
             Reanudar
           </button>
@@ -576,7 +576,7 @@ function FilaEpisodio({
       {botonTranscribir && onTranscribir && (
         <button
           onClick={onTranscribir}
-          className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-white"
+          className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta"
         >
           {botonTranscribir}
         </button>
@@ -621,7 +621,7 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
       <div className="mt-1.5 max-w-md text-xs">
         <p className="text-red-400">No se pudo traer: {ep.errorImportacion ?? ep.error ?? "error desconocido"}</p>
         {onReintentar && (
-          <button onClick={onReintentar} className="mt-1 rounded-lg bg-marca px-2.5 py-1 font-medium text-white">
+          <button onClick={onReintentar} className="mt-1 rounded-lg bg-marca px-2.5 py-1 font-medium text-ng-tinta">
             Reintentar (sigue desde lo que ya bajó)
           </button>
         )}

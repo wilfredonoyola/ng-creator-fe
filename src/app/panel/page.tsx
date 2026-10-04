@@ -127,7 +127,7 @@ export default function InicioPage() {
         </div>
         <Link
           href="/episodios"
-          className="inline-flex items-center gap-2 rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-white brillo-marca hover:brightness-110"
+          className="inline-flex items-center gap-2 rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta brillo-marca hover:brightness-110"
         >
           <Upload size={16} aria-hidden /> Subir episodio
         </Link>
@@ -154,7 +154,7 @@ export default function InicioPage() {
           </p>
           <Link
             href="/episodios"
-            className="mt-6 inline-block rounded-ng-md bg-marca px-6 py-3 font-semibold text-white hover:brightness-110"
+            className="mt-6 inline-block rounded-ng-md bg-marca px-6 py-3 font-semibold text-ng-tinta hover:brightness-110"
           >
             Subir episodio
           </Link>
@@ -249,7 +249,7 @@ export default function InicioPage() {
                           <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
                             <Play size={28} className="text-white opacity-0 drop-shadow transition group-hover:opacity-100" aria-hidden />
                           </span>
-                          <span className="absolute bottom-2 left-2 rounded-md bg-ng-violeta px-1.5 py-0.5 text-xs font-bold tabular-nums text-white">
+                          <span className="absolute bottom-2 left-2 rounded-md bg-ng-violeta px-1.5 py-0.5 text-xs font-bold tabular-nums text-ng-tinta">
                             {c.puntuacion}
                           </span>
                         </button>
@@ -379,7 +379,7 @@ function Miniatura({ ep, className }: { ep: EpisodioResumen; className: string }
     // eslint-disable-next-line @next/next/no-img-element
     <img src={ep.miniaturaUrl} alt="" className={`shrink-0 rounded-md object-cover ${className}`} />
   ) : (
-    <div className={`shrink-0 rounded-md bg-gradient-to-br from-[#1e293b] to-[#0b0f1a] ${className}`} />
+    <div className={`shrink-0 rounded-md bg-gradient-to-br from-[#262624] to-[#0A0A0A] ${className}`} />
   );
 }
 

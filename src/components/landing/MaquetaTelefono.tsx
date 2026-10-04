@@ -11,7 +11,7 @@ export function MaquetaTelefono({ pantalla = "clip", className = "" }: { pantall
       <div
         aria-hidden
         className="absolute -inset-12 -z-10 rounded-full opacity-60 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.26), rgba(139,92,246,0.14) 45%, transparent 70%)" }}
+        style={{ background: "transparent" }}
       />
       <div className="rounded-[42px] border border-white/15 bg-[#05070d] p-2.5 shadow-2xl">
         <div className="relative h-[520px] overflow-hidden rounded-[34px] bg-ng-hondo">
@@ -26,7 +26,7 @@ export function MaquetaTelefono({ pantalla = "clip", className = "" }: { pantall
 function PantallaClip() {
   return (
     <div className="flex h-full flex-col px-3 pb-3 pt-10">
-      <div className="relative aspect-[9/16] max-h-[300px] w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#1e293b] via-[#111827] to-[#0b0f1a]">
+      <div className="relative aspect-[9/16] max-h-[300px] w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#262624] via-[#1C1C1A] to-[#0A0A0A]">
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 backdrop-blur">
             <Play size={18} className="ml-0.5 text-white" aria-hidden />
@@ -62,7 +62,7 @@ function PantallaEpisodios() {
       <ul className="mt-4 space-y-2.5">
         {EPISODIOS.map((e) => (
           <li key={e.nombre} className="flex items-center gap-3 rounded-xl border border-white/10 bg-ng-tarjeta p-2.5">
-            <div className="h-10 w-16 shrink-0 rounded-md bg-gradient-to-br from-[#1e293b] to-[#0b0f1a]" />
+            <div className="h-10 w-16 shrink-0 rounded-md bg-gradient-to-br from-[#262624] to-[#0A0A0A]" />
             <div className="min-w-0">
               <p className="truncate text-[13px] font-semibold">{e.nombre}</p>
               <p className={`mt-0.5 flex items-center gap-1 text-[11px] ${e.listo ? "text-ng-teal" : "text-ng-celeste"}`}>

@@ -305,7 +305,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             login no se guardaba nunca. */}
         <a
           href={`/login?volverA=${encodeURIComponent(`/grabar/${id}`)}`}
-          className="mt-4 inline-block rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-white"
+          className="mt-4 inline-block rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta"
         >
           Iniciar sesión
         </a>
@@ -348,7 +348,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         {sesion.reintentable && (
           <button
             onClick={() => setIntento((n) => n + 1)}
-            className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-white"
+            className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta"
           >
             Reintentar
           </button>
@@ -422,7 +422,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               aria-label="Reproducir la toma"
               className="absolute inset-0 flex items-center justify-center bg-black/30"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-marca text-xl text-white">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-marca text-xl text-ng-tinta">
                 ▶
               </span>
             </button>
@@ -453,7 +453,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           <>
             <button
               onClick={empezar}
-              className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-white"
+              className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-ng-tinta"
             >
               ● Grabar acá
             </button>
@@ -491,7 +491,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             )}
             <button
               onClick={enviar}
-              className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-white"
+              className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-ng-tinta"
             >
               Usar esta
             </button>

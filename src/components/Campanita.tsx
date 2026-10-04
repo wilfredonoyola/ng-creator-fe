@@ -119,7 +119,7 @@ export function Campanita({
           <span className={`font-medium ${colapsado ? "md:hidden" : ""}`}>Notificaciones</span>
           {sinLeer > 0 && (
             <span
-              className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-marca px-1.5 text-xs font-semibold leading-none text-white ${
+              className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-marca px-1.5 text-xs font-semibold leading-none text-ng-tinta ${
                 colapsado ? "md:absolute md:right-0.5 md:top-0.5 md:ml-0 md:px-1 md:ring-2 md:ring-ng-fondo" : ""
               }`}
             >
@@ -141,7 +141,7 @@ export function Campanita({
         >
           <Bell size={20} strokeWidth={1.8} aria-hidden />
           {sinLeer > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-marca px-1 text-xs font-semibold leading-none text-white ring-2 ring-ng-fondo">
+            <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-marca px-1 text-xs font-semibold leading-none text-ng-tinta ring-2 ring-ng-fondo">
               {conteo}
             </span>
           )}

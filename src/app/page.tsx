@@ -281,7 +281,7 @@ export default function Producto() {
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 opacity-60 blur-3xl"
-          style={{ background: "radial-gradient(ellipse at top, rgba(168,85,247,0.22), rgba(139,92,246,0.10) 40%, transparent 70%)" }}
+          style={{ background: "transparent" }}
         />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
           <div>
@@ -296,7 +296,7 @@ export default function Producto() {
               los edita en vertical con subtítulos y los aprueba, y los publicás en tus redes desde aquí. Sin descargar nada y sin saltar entre cinco programas.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 text-base font-semibold text-white brillo-marca hover:brightness-110">
+              <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 text-base font-semibold text-ng-tinta brillo-marca hover:brightness-110">
                 Empezar
               </Link>
               <a href="#como" className="rounded-ng-md border border-white/15 bg-white/5 px-6 py-3 text-base font-semibold hover:bg-white/10">
@@ -325,7 +325,7 @@ export default function Producto() {
                   className={`relative rounded-ng-xl border p-5 ${ultimo ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-tarjeta"}`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-marca text-sm font-bold text-white">{i + 1}</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-marca text-sm font-bold text-ng-tinta">{i + 1}</span>
                     <p.icono size={18} className="text-ng-celeste" aria-hidden />
                   </div>
                   <h3 className="mt-4 text-lg font-semibold">{p.titulo}</h3>
@@ -363,7 +363,7 @@ export default function Producto() {
               >
                 <div className="flex items-center justify-between">
                   <c.icono size={20} className="text-ng-celeste" aria-hidden />
-                  {c.principal && <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-semibold text-white">Lo nuestro</span>}
+                  {c.principal && <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-semibold text-ng-tinta">Lo nuestro</span>}
                 </div>
                 <h3 className="mt-3 font-semibold">{c.titulo}</h3>
                 <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{c.texto}</p>
@@ -428,7 +428,7 @@ export default function Producto() {
             <ol className="mt-6 space-y-4">
               {LIVES.map((p, i) => (
                 <li key={p.titulo} className="flex items-start gap-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-white">{i + 1}</span>
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-ng-tinta">{i + 1}</span>
                   <span className="text-sm">
                     <span className="font-semibold">{p.titulo}.</span> <span className="text-ng-secundario">{p.texto}</span>
                   </span>
@@ -561,7 +561,7 @@ export default function Producto() {
                 }`}
               >
                 {plan.destacado && (
-                  <span className="absolute -top-3 left-7 rounded-full bg-marca px-3 py-1 text-xs font-semibold text-white">
+                  <span className="absolute -top-3 left-7 rounded-full bg-marca px-3 py-1 text-xs font-semibold text-ng-tinta">
                     Para equipos
                   </span>
                 )}
@@ -581,7 +581,7 @@ export default function Producto() {
                 <Link
                   href={ENLACE_EMPEZAR}
                   className={`mt-8 block rounded-ng-md py-3 text-center font-semibold ${
-                    plan.destacado ? "bg-marca text-white hover:brightness-110" : "border border-white/15 bg-white/5 hover:bg-white/10"
+                    plan.destacado ? "bg-marca text-ng-tinta hover:brightness-110" : "border border-white/15 bg-white/5 hover:bg-white/10"
                   }`}
                 >
                   Empezar con {plan.nombre}
@@ -617,12 +617,12 @@ export default function Producto() {
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-50"
-          style={{ background: "radial-gradient(ellipse at center, rgba(168,85,247,0.18), transparent 60%)" }}
+          style={{ background: "transparent" }}
         />
         <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
           <LogoNG tamano={56} soloIcono />
           <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-5xl">Subí un episodio. Salí con diez clips.</h2>
-          <Link href={ENLACE_EMPEZAR} className="mt-8 inline-block rounded-ng-md bg-marca px-8 py-3.5 font-semibold text-white brillo-marca hover:brightness-110">
+          <Link href={ENLACE_EMPEZAR} className="mt-8 inline-block rounded-ng-md bg-marca px-8 py-3.5 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
             Empezar
           </Link>
         </div>

@@ -314,7 +314,7 @@ export default function PlantillaClipsPage() {
                 <button
                   onClick={() => void enviar()}
                   disabled={guardando || guardandoTema}
-                  className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
+                  className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-ng-tinta hover:brightness-110 disabled:opacity-60"
                 >
                   {guardando || guardandoTema ? "Guardando…" : "Guardar Brand Kit"}
                 </button>
@@ -371,7 +371,7 @@ function Deslizador({
         value={valor}
         onChange={(e) => onCambio(Number(e.target.value))}
         disabled={deshabilitado}
-        className="mt-1 w-full accent-[#A855F7]"
+        className="mt-1 w-full accent-[#FFD400]"
       />
     </label>
   );

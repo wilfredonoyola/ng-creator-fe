@@ -3,26 +3,23 @@
 @tailwind utilities;
 
 body {
-  background: #0B0F1A;
-  color: #F8FAFC;
+  background: #0A0A0A;
+  color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
-  /* El degradado de la marca: rosa → fucsia → violeta. Para la acción
-     principal de cada pantalla, no para todo. */
+  /* La acción principal de cada pantalla: amarillo lleno con letra tinta.
+     Clipfine no usa degradados ni brillos. Una por pantalla, no para todo. */
   .bg-marca {
-    background-image: linear-gradient(135deg, #F43F8E 0%, #C847E8 50%, #8B5CF6 100%);
+    background-color: #FFD400;
+    color: #0A0A0A;
   }
   .texto-marca {
-    background-image: linear-gradient(135deg, #F43F8E 0%, #C847E8 50%, #8B5CF6 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: #FFD400;
   }
-  /* El brillo, sutil: CTA principal, lo elegido, momentos de IA. */
   .brillo-marca {
-    box-shadow: 0 0 40px rgba(244, 63, 142, 0.14), 0 0 80px rgba(139, 92, 246, 0.10);
+    box-shadow: none;
   }
 }
 

@@ -198,7 +198,7 @@ export default function DetalleEpisodioPage({
               <button
                 onClick={() => setCreandoClip(true)}
                 title="Buscá el momento, marcá inicio y fin, y al editor"
-                className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-white hover:brightness-110"
+                className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
               >
                 + Crear clip
               </button>
@@ -387,7 +387,7 @@ function TarjetaClip({
           <button
             onClick={onReproducir}
             title="Reproducir este tramo"
-            className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-white"
+            className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta"
           >
             ▶ Escuchar
           </button>

@@ -223,7 +223,7 @@ export function TarjetaRevival({
           {ABRE_PANEL.includes(post.estado) ? (
             <button
               onClick={() => onAbrirPanel(post)}
-              className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-white transition hover:brightness-110"
+              className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110"
             >
               {TEXTO_PANEL[post.estado]}
             </button>
@@ -231,7 +231,7 @@ export function TarjetaRevival({
             <button
               onClick={() => onCambiarEstado(post.postId, siguiente.estado)}
               disabled={ocupado}
-              className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-40"
+              className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
             >
               {siguiente.texto}
             </button>

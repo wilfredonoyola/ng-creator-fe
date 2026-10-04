@@ -1,9 +1,9 @@
 import type { Config } from "tailwindcss";
 
 /**
- * El sistema de NG Creator (branding/NG_CREATOR_BRAND_AND_APP_SYSTEM.md). Los
- * mismos valores que usa la app (ng-creator-app/src/theme): un cambio va en
- * los dos lados.
+ * El sistema de Clipfine (branding/re-branding y estragias/.../Clipfine-Brand-Package):
+ * tinta, blanco y amarillo, sin degradados. Los mismos valores que usa la app
+ * (ng-creator-app/src/theme): un cambio va en los dos lados.
  */
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
@@ -11,25 +11,26 @@ const config: Config = {
     extend: {
       colors: {
         ng: {
-          fondo: "#0B0F1A",
-          hondo: "#070A12",
-          superficie: "#111827",
-          elevada: "#161D2E",
-          tarjeta: "#121827",
-          // El principal de la marca (desde el 1/10/2026, rosa → violeta): los
-          // nombres quedan por compatibilidad, los valores ya no son azules.
-          azul: "#A855F7",
-          // El principal, más claro para texto y links sobre fondo oscuro.
-          celeste: "#C084FC",
-          // El arranque del degradado de la marca.
-          cian: "#F43F8E",
-          violeta: "#8B5CF6",
-          lila: "#A78BFA",
-          // Lo que está listo, guardado o bien: el verde de antes pasa a teal.
-          teal: "#14D8C4",
-          texto: "#F8FAFC",
-          secundario: "#94A3B8",
-          tenue: "#64748B",
+          fondo: "#0A0A0A",
+          hondo: "#050505",
+          superficie: "#1C1C1A",
+          elevada: "#262624",
+          tarjeta: "#1F1F1D",
+          // El principal de la marca: el amarillo de Clipfine (desde el 4/10/2026).
+          // Los nombres quedan por compatibilidad, los valores ya no son azules.
+          azul: "#FFD400",
+          // El principal para texto y links sobre fondo oscuro: el mismo amarillo.
+          celeste: "#FFD400",
+          cian: "#FFD400",
+          violeta: "#FFD400",
+          lila: "#FFE14D",
+          // Lo que está listo, guardado o bien.
+          teal: "#3DDC97",
+          // La letra sobre el amarillo.
+          tinta: "#0A0A0A",
+          texto: "#FFFFFF",
+          secundario: "#A3A29C",
+          tenue: "#6B6A64",
         },
       },
       fontFamily: {

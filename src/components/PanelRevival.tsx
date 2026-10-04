@@ -187,7 +187,7 @@ export function PanelRevival({
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <button
                       onClick={copiarPrompt}
-                      className="rounded-lg bg-marca px-4 py-1.5 text-xs font-semibold text-white transition hover:brightness-110"
+                      className="rounded-lg bg-marca px-4 py-1.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110"
                     >
                       {copiado ? "✓ Copiado" : "Copiar prompt"}
                     </button>
@@ -347,7 +347,7 @@ export function PanelRevival({
                   publicando ||
                   (modo === "programar" && !cuando)
                 }
-                className="w-full rounded-lg bg-marca py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
+                className="w-full rounded-lg bg-marca py-2.5 text-sm font-semibold text-ng-tinta transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/30"
               >
                 {publicando
                   ? modo === "programar"

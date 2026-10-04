@@ -260,7 +260,7 @@ export default function CreatorsPage() {
           </button>
           <button
             onClick={() => setShowCreatorModal(true)}
-            className="rounded-xl bg-marca px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
+            className="rounded-xl bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110"
           >
             + Creator
           </button>
@@ -460,7 +460,7 @@ export default function CreatorsPage() {
           </p>
           <button
             onClick={() => setShowCreatorModal(true)}
-            className="mt-4 rounded-xl bg-marca px-6 py-3 font-medium text-white transition hover:brightness-110"
+            className="mt-4 rounded-xl bg-marca px-6 py-3 font-medium text-ng-tinta transition hover:brightness-110"
           >
             Crear Creator
           </button>
@@ -506,7 +506,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleCreateCreator}
                 disabled={creandoCreator || !creatorName.trim()}
-                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
                 {creandoCreator ? "Creando..." : "Crear"}
               </button>
@@ -562,7 +562,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleCreateLicense}
                 disabled={creandoLicense || !selectedCreator || !licenseScope.trim()}
-                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
                 {creandoLicense ? "Creando..." : "Crear"}
               </button>
@@ -591,7 +591,7 @@ export default function CreatorsPage() {
                     onClick={() => handleTemplateSelect(t)}
                     className={`rounded-lg px-3 py-1.5 text-xs transition ${
                       selectedTemplate?.id === t.id
-                        ? "bg-marca text-white"
+                        ? "bg-marca text-ng-tinta"
                         : "bg-white/10 text-white/70 hover:bg-white/20"
                     }`}
                   >
@@ -634,7 +634,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleSaveMessage}
                 disabled={agregandoEvidencia || !messageText.trim()}
-                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
                 {agregandoEvidencia ? "Guardando..." : "Guardar"}
               </button>
@@ -714,7 +714,7 @@ export default function CreatorsPage() {
               <button
                 onClick={handleUploadScreenshot}
                 disabled={uploadingScreenshot || agregandoEvidencia || !screenshotFile}
-                className="flex-1 rounded-xl bg-marca py-3 font-medium text-white transition hover:brightness-110 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
                 {uploadingScreenshot || agregandoEvidencia ? "Subiendo..." : "Subir"}
               </button>

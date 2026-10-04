@@ -569,7 +569,7 @@ export function EditorRecorte({
         <div className="mt-3 flex items-center gap-3">
           <button
             onClick={alternar}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-marca text-white"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-marca text-ng-tinta"
             title={sonando ? "Pausa" : "Reproducir"}
           >
             {sonando ? "❚❚" : "▶"}
@@ -623,7 +623,7 @@ export function EditorRecorte({
                   <button
                     onClick={autoEncuadre.onPedir}
                     disabled={autoEncuadre.analizando}
-                    className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-lg bg-ng-violeta px-2.5 text-xs font-medium text-white hover:brightness-110 disabled:opacity-70"
+                    className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-lg bg-ng-violeta px-2.5 text-xs font-medium text-ng-tinta hover:brightness-110 disabled:opacity-70"
                   >
                     {autoEncuadre.analizando ? (
                       `Mirando… ${autoEncuadre.progreso ? `${Math.round(autoEncuadre.progreso * 100)}%` : ""}`
@@ -982,7 +982,7 @@ function Pestanas<T extends string>({
           disabled={deshabilitado}
           onClick={() => o.valor !== valor && onCambio(o.valor)}
           className={`h-7 whitespace-nowrap rounded-md px-2 text-xs transition ${
-            o.valor === valor ? "bg-marca font-medium text-white" : "text-white/60 hover:text-white"
+            o.valor === valor ? "bg-marca font-medium text-ng-tinta" : "text-white/60 hover:text-white"
           }`}
         >
           {o.etiqueta}
