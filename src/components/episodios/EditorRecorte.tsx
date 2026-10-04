@@ -765,7 +765,7 @@ export function EditorRecorte({
                   {deLlamada && (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      title="Llamada a la acción de la plantilla de la marca"
+                      title="Llamada a la acción del Brand Kit"
                       className="absolute"
                       style={zona(deLlamada.caja)}
                     />
@@ -789,7 +789,7 @@ export function EditorRecorte({
                   key={i}
                   onPointerDown={deLaPlantilla ? undefined : (e) => arrastrarTexto(e, i)}
                   onClick={(e) => e.stopPropagation()}
-                  title={deLaPlantilla ? "Llamada a la acción de la plantilla de la marca" : undefined}
+                  title={deLaPlantilla ? "Llamada a la acción del Brand Kit" : undefined}
                   className={`absolute text-center ${puedeEditar && !deLaPlantilla ? "cursor-move" : ""} ${
                     elegido ? "outline-dashed outline-1 outline-offset-4 outline-white/70" : ""
                   } ${visible ? "" : "opacity-40"}`}
