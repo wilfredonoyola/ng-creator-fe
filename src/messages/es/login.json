@@ -1,0 +1,49 @@
+{
+  "requisitos": {
+    "largo": "8 caracteres o más",
+    "mayuscula": "una mayúscula",
+    "minuscula": "una minúscula",
+    "numero": "un número",
+    "simbolo": "un símbolo"
+  },
+  "cuentaEliminada": "Tu cuenta se eliminó.",
+  "errorEntrar": "No se pudo iniciar sesión",
+  "noCoincidenLargo": "Las dos contraseñas no coinciden",
+  "errorGuardar": "No se pudo guardar la contraseña",
+  "codigoEnviado": "Si {correo} tiene cuenta, te llegó un código. Si no lo ves, mirá en spam.",
+  "errorCodigo": "No se pudo mandar el código",
+  "errorCambiar": "No se pudo cambiar la contraseña",
+  "nuevaPassword": "Nueva contraseña",
+  "repetila": "Repetila",
+  "noCoinciden": "No coinciden",
+  "titulos": {
+    "entrar": "Bienvenido a NG Creator",
+    "desafio": "Elegí tu contraseña",
+    "pedir": "Recuperá tu contraseña",
+    "confirmar": "Elegí una contraseña nueva"
+  },
+  "subtitulos": {
+    "entrar": "Creá, colaborá y publicá más rápido.",
+    "desafio": "La que te llegó por correo era temporal. Definí la tuya y entrás directo.",
+    "pedir": "Te mandamos un código a tu correo para elegir una nueva.",
+    "confirmar": "Escribí el código que te llegó y la contraseña que quieras."
+  },
+  "botones": {
+    "entrar": "Entrar",
+    "entrando": "Entrando…",
+    "desafio": "Guardar y entrar",
+    "pedir": "Mandarme el código",
+    "mandando": "Mandando…",
+    "confirmar": "Cambiar y entrar",
+    "guardando": "Guardando…"
+  },
+  "correo": "Correo",
+  "correoEjemplo": "tu@correo.com",
+  "password": "Contraseña",
+  "olvidaste": "¿La olvidaste?",
+  "codigo": "Código",
+  "volver": "← Volver a entrar",
+  "otroCodigo": "Mandar otro código",
+  "privacidad": "Privacidad",
+  "terminos": "Términos"
+}

@@ -1,0 +1,49 @@
+{
+  "requisitos": {
+    "largo": "8 characters or more",
+    "mayuscula": "an uppercase letter",
+    "minuscula": "a lowercase letter",
+    "numero": "a number",
+    "simbolo": "a symbol"
+  },
+  "cuentaEliminada": "Your account was deleted.",
+  "errorEntrar": "Couldn't sign in",
+  "noCoincidenLargo": "The two passwords don't match",
+  "errorGuardar": "Couldn't save the password",
+  "codigoEnviado": "If {correo} has an account, we sent it a code. If you don't see it, check spam.",
+  "errorCodigo": "Couldn't send the code",
+  "errorCambiar": "Couldn't change the password",
+  "nuevaPassword": "New password",
+  "repetila": "Repeat it",
+  "noCoinciden": "They don't match",
+  "titulos": {
+    "entrar": "Welcome to NG Creator",
+    "desafio": "Choose your password",
+    "pedir": "Reset your password",
+    "confirmar": "Choose a new password"
+  },
+  "subtitulos": {
+    "entrar": "Create, collaborate and publish faster.",
+    "desafio": "The one we emailed you was temporary. Set your own and you're in.",
+    "pedir": "We'll email you a code to choose a new one.",
+    "confirmar": "Enter the code you got and the password you want."
+  },
+  "botones": {
+    "entrar": "Sign in",
+    "entrando": "Signing in…",
+    "desafio": "Save and sign in",
+    "pedir": "Send me the code",
+    "mandando": "Sending…",
+    "confirmar": "Change and sign in",
+    "guardando": "Saving…"
+  },
+  "correo": "Email",
+  "correoEjemplo": "you@email.com",
+  "password": "Password",
+  "olvidaste": "Forgot it?",
+  "codigo": "Code",
+  "volver": "← Back to sign in",
+  "otroCodigo": "Send another code",
+  "privacidad": "Privacy",
+  "terminos": "Terms"
+}
