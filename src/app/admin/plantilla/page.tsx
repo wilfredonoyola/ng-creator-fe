@@ -28,6 +28,8 @@ import { useEstilosTexto } from "@/lib/use-estilos-texto";
 import { GaleriaEstilos, MuestraEstilo, useRelojMuestra } from "@/components/estilos/GaleriaEstilos";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { TemaDeMarca, temaCompleto } from "@/components/estilos/TemaDeMarca";
+import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
+import type { Plataforma } from "@/lib/plataformas";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
 const ANCHO_VISTA = 216;
@@ -401,6 +403,7 @@ function VistaPrevia({
   const { porEstilo } = useEstilosTexto();
   const t = useRelojMuestra();
   const def = porEstilo.get(estiloTexto);
+  const [plataforma, setPlataforma] = useState<Plataforma | null>(null);
   // El render mide en un lienzo de 1080 de ancho: lo mismo, a esta escala.
   const k = ANCHO_VISTA / 1080;
   const { borde } = medidasEfecto("CAJA", 80);
@@ -454,12 +457,16 @@ function VistaPrevia({
           </span>
         </div>
       )}
+      {plataforma && <InterfazPlataforma plataforma={plataforma} ancho={ANCHO_VISTA} nombreMarca={nombreMarca} />}
     </>
   );
 
   return (
     <div className="lg:sticky lg:top-6">
       <p className="mb-2 text-sm font-medium">Así sale (9:16)</p>
+      <div className="mb-2 max-w-[216px]">
+        <SelectorPlataforma valor={plataforma} onCambio={setPlataforma} />
+      </div>
       {def ? (
         <div className="overflow-hidden rounded-xl border border-white/10">
           <MuestraEstilo def={def} tema={tema} t={t} nombreMarca={nombreMarca} ancho={ANCHO_VISTA}>
@@ -475,6 +482,7 @@ function VistaPrevia({
       <p className="mt-2 max-w-[216px] text-xs text-white/40">
         El gancho dura los primeros segundos y la llamada a la acción aparece solo al final; acá se ven siempre para que
         los ajustes.
+        {plataforma && " Lo que queda fuera de la línea punteada lo tapa la red."}
       </p>
     </div>
   );
