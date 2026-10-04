@@ -6,6 +6,8 @@ import { useHls } from "@/lib/use-hls";
 import { dibujarSubtitulos, dibujarTexto, ganchoDeLlamada, type Dibujo, type EstiloResuelto, type EstiloTexto, type Tema } from "@/lib/estilos-texto";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { Pista } from "@/components/Pista";
+import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
+import type { Plataforma } from "@/lib/plataformas";
 import { Info } from "lucide-react";
 import {
   ajustarRegion,
@@ -169,6 +171,8 @@ export function EditorRecorte({
   const [t, setT] = useState(desde);
   const [sonando, setSonando] = useState(false);
   const [anchoVista, setAnchoVista] = useState(0);
+  // La red encima de la vista previa (lib/plataformas): solo para mirar, no va al render.
+  const [plataforma, setPlataforma] = useState<Plataforma | null>(null);
   const vista = useRef<HTMLDivElement>(null);
   useHls(video, url);
 
@@ -690,6 +694,11 @@ export function EditorRecorte({
           <p className="mb-2 text-sm font-medium">
             Vista previa ({formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"})
           </p>
+          {formato === "VERTICAL" && (
+            <div className="mb-2">
+              <SelectorPlataforma valor={plataforma} onCambio={setPlataforma} />
+            </div>
+          )}
           <div
             ref={vista}
             onClick={alternar}
@@ -891,6 +900,9 @@ export function EditorRecorte({
                 </div>
               );
             })()}
+            {formato === "VERTICAL" && plataforma && anchoVista > 0 && (
+              <InterfazPlataforma plataforma={plataforma} ancho={anchoVista} nombreMarca={nombreMarca} />
+            )}
           </div>
         </div>
       </div>
