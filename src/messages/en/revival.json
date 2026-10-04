@@ -1,0 +1,40 @@
+{
+  "sincronizado": "{anio}: {n, plural, one {# post} other {# posts}}",
+  "incompleto": "{anio}: {n, plural, one {# post} other {# posts}} · some content wasn't pulled, sync again",
+  "error": "Error: {mensaje}",
+  "yaSalieron": "{n, plural, one {# scheduled post is} other {# scheduled posts are}} already live on Facebook",
+  "titulo": "Revival",
+  "subtitulo": "The posts that performed best on {pagina}",
+  "tuFanPage": "your fan page",
+  "guardadas": "{n} posts saved",
+  "ningunAnio": "No year has been synced yet",
+  "sinPagina": {
+    "titulo": "No Facebook page enabled",
+    "detalle": "An admin has to connect and enable a page in Integrations."
+  },
+  "porAnio": "Sync by year",
+  "aniosDe": "{n} of {total} years",
+  "sinSincronizar": "not synced",
+  "sincronizarAnio": "Sync {anio}",
+  "posts": "{n} posts",
+  "sinDatos": "no data",
+  "trayendo": "fetching…",
+  "nunca": "never",
+  "incompletoCorto": " · incomplete",
+  "sinInsights": "No plays or clicks: the <code>read_insights</code> permission is missing. Meta accepts the call anyway and returns nothing, so you don't see an error. The ranking works without it.",
+  "todos": "All",
+  "ordenes": {
+    "SCORE": "Best performance",
+    "FECHA": "Most recent"
+  },
+  "sinHistoria": "📱 No story",
+  "quitarAnio": "{anio} ✕",
+  "vacio": {
+    "titulo": "Empty history",
+    "detalle": "Sync a year with the ↻ button in the grid above."
+  },
+  "sinResultados": {
+    "titulo": "Nothing in this filter",
+    "detalle": "Try another tab or clear the year filter."
+  }
+}

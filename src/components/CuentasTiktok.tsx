@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import {
   TIKTOK_CONFIGURADO,
   TIKTOK_CUENTAS,
@@ -28,6 +29,7 @@ export interface CuentaTiktok {
  * CanalesYoutube: se conectan desde la marca y son de su propietario.
  */
 export function CuentasTiktok() {
+  const t = useTranslations("redesTiktok");
   const { activa: marca } = useMarcaActiva();
   const { esPropietario } = useSesion();
   const marcaId = marca?._id;
@@ -58,10 +60,10 @@ export function CuentasTiktok() {
       const { data: r, error: e } = await pedirUrl({ variables: { marcaId } });
       if (e) throw e;
       const url = r?.tiktokUrlDeConexion;
-      if (!url) throw new Error("El backend no devolvió la URL de autorización");
+      if (!url) throw new Error(t("sinUrl"));
       window.location.href = url;
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo iniciar la conexión");
+      setError(e?.message ?? t("errorConectar"));
     }
   }
 
@@ -70,7 +72,7 @@ export function CuentasTiktok() {
     try {
       await fn();
     } catch (e: any) {
-      setError(e?.message ?? "La operación falló");
+      setError(e?.message ?? t("errorOperacion"));
     }
   }
 
@@ -81,24 +83,22 @@ export function CuentasTiktok() {
           TikTok
         </span>
         <h2 className="font-semibold">
-          Cuentas de {marca?.nombre ?? "la marca activa"}
+          {marca?.nombre ? t("titulo", { marca: marca.nombre }) : t("tituloSinMarca")}
         </h2>
         {loading && (
           <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-transparent" />
         )}
       </div>
       <p className="mb-4 text-sm text-white/50">
-        Los videos de esta marca se publican en estas cuentas. Para otra marca,
-        cambiala en la barra lateral.
+        {t("descripcion")}
       </p>
 
       {!configurado ? (
         <p className="rounded-lg border border-dashed border-white/15 p-3 text-xs text-white/40">
-          El backend todavía no tiene las credenciales de TikTok
-          (TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REDIRECT_URI).
+          {t("sinCredenciales")}
         </p>
       ) : !marca ? (
-        <p className="text-xs text-white/40">Elegí una marca en la barra lateral.</p>
+        <p className="text-xs text-white/40">{t("eligeMarca")}</p>
       ) : (
         <>
           {cuentas.length > 0 && (
@@ -125,11 +125,11 @@ export function CuentasTiktok() {
                     </p>
                     {c.requiereReconexion ? (
                       <p className="text-xs text-amber-400">
-                        TikTok revocó el acceso: hay que reconectarla.
+                        {t("revocado")}
                       </p>
                     ) : (
                       <p className="text-xs text-white/40">
-                        {c.activa ? "Habilitada como destino" : "Deshabilitada"}
+                        {c.activa ? t("habilitada") : t("deshabilitada")}
                       </p>
                     )}
                   </div>
@@ -137,7 +137,7 @@ export function CuentasTiktok() {
                     <div className="flex shrink-0 items-center gap-3 text-xs">
                       {c.requiereReconexion ? (
                         <button onClick={conectar} className="text-amber-400 hover:underline">
-                          Reconectar
+                          {t("reconectar")}
                         </button>
                       ) : (
                         <button
@@ -150,14 +150,14 @@ export function CuentasTiktok() {
                           }
                           className="text-white/60 hover:text-white hover:underline"
                         >
-                          {c.activa ? "Deshabilitar" : "Habilitar"}
+                          {c.activa ? t("deshabilitar") : t("habilitar")}
                         </button>
                       )}
                       <button
                         onClick={() => {
                           if (
                             confirm(
-                              `¿Desconectar "${c.nombre}"? Lo programado para esta cuenta va a fallar a su hora.`,
+                              t("confirmarDesconectar", { nombre: c.nombre }),
                             )
                           ) {
                             void accion(() =>
@@ -167,7 +167,7 @@ export function CuentasTiktok() {
                         }}
                         className="text-red-400/70 hover:text-red-400 hover:underline"
                       >
-                        Desconectar
+                        {t("desconectar")}
                       </button>
                     </div>
                   )}
@@ -183,20 +183,19 @@ export function CuentasTiktok() {
               className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white ring-1 ring-white/20 transition hover:bg-white/10 disabled:opacity-50"
             >
               {pidiendoUrl
-                ? "Abriendo TikTok…"
+                ? t("abriendo")
                 : cuentas.length
-                  ? "Conectar otra cuenta"
-                  : "Conectar una cuenta de TikTok"}
+                  ? t("conectarOtra")
+                  : t("conectarPrimera")}
             </button>
           ) : (
             <p className="text-xs text-white/40">
-              Conectar cuentas es del propietario de la marca.
+              {t("soloPropietario")}
             </p>
           )}
 
           <p className="mt-3 text-[11px] text-white/30">
-            Mientras TikTok no audite la app, solo conectan las cuentas de
-            prueba y todo se publica como &quot;Solo yo&quot;.
+            {t("auditoria")}
           </p>
         </>
       )}

@@ -1,0 +1,22 @@
+{
+  "sinVideo": "Sin video",
+  "expediente": "EXPEDIENTE #{numero}",
+  "sinNumerar": "SIN NUMERAR",
+  "regeneraciones": " · {n} regen",
+  "partes": {
+    "apertura": "[hook] ",
+    "detalle": "[detalle] ",
+    "revelacion": "[revelación] ",
+    "cierre": "[cierre] "
+  },
+  "placeholderNota": "El hook está flojo, hazlo más directo…",
+  "publicando": "Publicando…",
+  "aprobar": "Aprobar y publicar",
+  "regenerarConNota": "Regenerar con nota",
+  "regenerando": "Regenerando…",
+  "enviarCorreccion": "Enviar corrección",
+  "descartar": "Descartar",
+  "sello": {
+    "creado": "creado"
+  }
+}

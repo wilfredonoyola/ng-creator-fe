@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import { useLazyQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { COLORES_DEL_LOGO } from "@/graphql/operations";
 import { HEX, type Tema } from "@/lib/estilos-texto";
 
 type Clave = keyof Tema;
 
-const COLORES: { clave: Clave; nombre: string; ayuda: string }[] = [
-  { clave: "colorPrimario", nombre: "Primario", ayuda: "La palabra que se dice, las píldoras, las barras" },
-  { clave: "colorSecundario", nombre: "Secundario", ayuda: "El segundo bloque y los acentos" },
-  { clave: "colorTexto", nombre: "Texto", ayuda: "La letra de los subtítulos y el gancho" },
-  { clave: "colorFondo", nombre: "Fondo", ayuda: "Cajas y franjas oscuras" },
+const COLORES: { clave: Clave }[] = [
+  { clave: "colorPrimario" },
+  { clave: "colorSecundario" },
+  { clave: "colorTexto" },
+  { clave: "colorFondo" },
 ];
 
 /** Si los cuatro colores son #RRGGBB: recién entonces se puede guardar. */
@@ -40,6 +41,7 @@ export function TemaDeMarca({
   editable: boolean;
   tieneLogo: boolean;
 }) {
+  const t = useTranslations("estilosTema");
   const [elegido, setElegido] = useState<Clave>("colorPrimario");
   const [pedirLogo, logoQ] = useLazyQuery(COLORES_DEL_LOGO, { fetchPolicy: "network-only" });
   const [aviso, setAviso] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export function TemaDeMarca({
   async function usarLogo() {
     setAviso(null);
     if (!tieneLogo) {
-      setAviso("La marca no tiene logo. Subilo más abajo, en Logo, y probá de nuevo.");
+      setAviso(t("sinLogo"));
       return;
     }
     const r = await pedirLogo({ variables: { marcaId } });
@@ -60,7 +62,7 @@ export function TemaDeMarca({
     }
     const s = r.data?.coloresDelLogo;
     if (!s) {
-      setAviso("El logo no tiene colores que sirvan (es blanco y negro, o casi transparente). Elegilos a mano.");
+      setAviso(t("logoSinColores"));
       return;
     }
     onCambiar({ ...tema, colorPrimario: s.colorPrimario, colorSecundario: s.colorSecundario });
@@ -71,8 +73,8 @@ export function TemaDeMarca({
     <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-semibold">Tema de la marca</h2>
-          <p className="mt-0.5 text-xs text-white/45">Los colores con que se pintan los estilos de texto de tus clips.</p>
+          <h2 className="font-semibold">{t("titulo")}</h2>
+          <p className="mt-0.5 text-xs text-white/45">{t("subtitulo")}</p>
         </div>
         {editable && (
           <button
@@ -81,7 +83,7 @@ export function TemaDeMarca({
             disabled={logoQ.loading}
             className="rounded-lg border border-white/15 px-3 py-1.5 text-sm hover:bg-white/5 disabled:opacity-60"
           >
-            {logoQ.loading ? "Mirando el logo…" : "Usar colores del logo"}
+            {logoQ.loading ? t("mirandoLogo") : t("usarLogo")}
           </button>
         )}
       </div>
@@ -91,8 +93,10 @@ export function TemaDeMarca({
       {editable && sugeridos.length > 0 && (
         <div className="mt-3 rounded-lg border border-white/10 bg-black/20 p-3">
           <p className="text-xs text-white/55">
-            Del logo. Tocá uno para usarlo como{" "}
-            <span className="font-medium text-white">{COLORES.find((c) => c.clave === elegido)?.nombre.toLowerCase()}</span>:
+            {t.rich("delLogo", {
+              color: t(`colores.${elegido}.minuscula`),
+              b: (c) => <span className="font-medium text-white">{c}</span>,
+            })}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {sugeridos.map((c) => (
@@ -112,7 +116,7 @@ export function TemaDeMarca({
       )}
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        {COLORES.map(({ clave, nombre, ayuda }) => {
+        {COLORES.map(({ clave }) => {
           const valor = tema[clave];
           const valido = HEX.test(valor);
           return (
@@ -130,13 +134,13 @@ export function TemaDeMarca({
                   onChange={(e) => poner(clave, e.target.value.toUpperCase())}
                   onFocus={() => setElegido(clave)}
                   disabled={!editable}
-                  aria-label={`Elegir el color ${nombre.toLowerCase()}`}
+                  aria-label={t("elegirColor", { color: t(`colores.${clave}.minuscula`) })}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-default"
                 />
               </label>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">{nombre}</p>
-                <p className="truncate text-[11px] text-white/40">{ayuda}</p>
+                <p className="text-sm font-medium">{t(`colores.${clave}.nombre`)}</p>
+                <p className="truncate text-[11px] text-white/40">{t(`colores.${clave}.ayuda`)}</p>
               </div>
               <input
                 value={valor}
@@ -146,7 +150,7 @@ export function TemaDeMarca({
                 }}
                 onFocus={() => setElegido(clave)}
                 disabled={!editable}
-                aria-label={`Color ${nombre.toLowerCase()} en hexadecimal`}
+                aria-label={t("colorHex", { color: t(`colores.${clave}.minuscula`) })}
                 className={`w-[5.5rem] rounded-md border bg-black/30 px-2 py-1 font-mono text-xs uppercase outline-none ${
                   valido ? "border-white/15 focus:border-ng-azul" : "border-red-500/60"
                 }`}
@@ -157,9 +161,9 @@ export function TemaDeMarca({
       </div>
 
       {editable ? (
-        !temaCompleto(tema) && <p className="mt-3 text-xs text-red-400">Cada color va como #RRGGBB.</p>
+        !temaCompleto(tema) && <p className="mt-3 text-xs text-red-400">{t("formatoHex")}</p>
       ) : (
-        <p className="mt-3 text-xs text-white/40">Los colores de la marca los cambia el propietario.</p>
+        <p className="mt-3 text-xs text-white/40">{t("soloPropietario")}</p>
       )}
     </section>
   );

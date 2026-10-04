@@ -1,0 +1,25 @@
+{
+  "errorPublicar": "No se pudo publicar",
+  "sinCanal": "Sin canal de YouTube habilitado para esta marca. El propietario lo conecta en Redes conectadas.",
+  "shortEn": "Short en <n>{nombre}</n>",
+  "publicadas": "{n, plural, one {# publicada} other {# publicadas}}",
+  "tituloPlaceholder": "Título (si queda vacío, la primera línea de la descripción)",
+  "tituloLargo": "{largo}/{max}: YouTube no admite más.",
+  "descripcionPlaceholder": "Descripción (opcional)",
+  "etiquetasPlaceholder": "Etiquetas separadas por coma (opcional)",
+  "visibilidades": {
+    "public": "Público",
+    "unlisted": "No listado",
+    "private": "Privado"
+  },
+  "paraNinos": "Hecho para niños (lo exige YouTube; apaga comentarios y anuncios)",
+  "yaSubido": "Ya se subió a YouTube. Publicar otra vez crea un video nuevo.",
+  "ahora": "Ahora",
+  "programar": "Programar",
+  "ayudaCola": "Queda en nuestra cola y sube a esa hora. Hasta entonces se puede cancelar o cambiar la hora. Si el servidor está caído a esa hora, sale cuando vuelva.",
+  "exigeTitulo": "YouTube exige un título",
+  "agendando": "Agendando…",
+  "encolando": "Encolando…",
+  "programarEnYoutube": "Programar en YouTube",
+  "subirAYoutube": "Subir a YouTube"
+}

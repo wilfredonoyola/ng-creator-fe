@@ -1,0 +1,7 @@
+{
+  "errorMicrofono": "Couldn't access the microphone. Check the permissions.",
+  "grabando": "Recording... {tiempo}",
+  "clickDetener": "(click to stop)",
+  "grabar": "Record a voice note",
+  "describe": "(describe the video)"
+}

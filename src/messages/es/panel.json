@@ -1,0 +1,68 @@
+{
+  "etapas": {
+    "revision": "Necesita revisión",
+    "subiendo": "A medio subir",
+    "procesando": "Procesando el video",
+    "transcribiendo": "Transcribiendo · {progreso}%",
+    "enCola": "En cola para transcribir",
+    "clips": "{n} clips para editar",
+    "buscando": "La IA busca los momentos"
+  },
+  "duracionHoras": "{h} h {m} min",
+  "duracionMinutos": "{m} min",
+  "motivos": {
+    "GANCHO_FUERTE": "Gancho fuerte",
+    "OPINION_POLEMICA": "Opinión polémica",
+    "HISTORIA_COMPLETA": "Historia completa",
+    "FRASE_CITABLE": "Frase citable",
+    "HUMOR": "Humor",
+    "EMOCION": "Emoción",
+    "DATO_SORPRENDENTE": "Dato sorprendente"
+  },
+  "hola": "Hola, {nombre}",
+  "inicio": "Inicio",
+  "hoyEn": "Lo que te toca hoy en {marca}.",
+  "elegiMarca": "Elegí una marca para empezar.",
+  "subirEpisodio": "Subir episodio",
+  "cifras": {
+    "delMes": "episodios este mes",
+    "enProceso": "en proceso",
+    "clips": "clips para editar"
+  },
+  "cargando": "Cargando episodios…",
+  "primero": {
+    "titulo": "Subí tu primer episodio",
+    "detalle": "El video completo del podcast. Se transcribe solo y la IA te marca los mejores momentos para clips."
+  },
+  "reciente": {
+    "titulo": "Episodio reciente",
+    "abrir": "Abrir episodio"
+  },
+  "generados": {
+    "titulo": "Clips generados",
+    "verTodos": "Ver todos",
+    "vacio": "Todavía no procesaste clips de este episodio.",
+    "ayuda": "Elegí un momento de abajo, ajustalo y procesalo: aparece acá."
+  },
+  "destacados": {
+    "titulo": "Momentos destacados (IA)",
+    "detalle": "Tocá uno para verlo arriba",
+    "verTodos": "Ver los {n} momentos",
+    "reproducir": "Reproducir este momento arriba",
+    "editar": "Editar"
+  },
+  "otros": {
+    "titulo": "Otros episodios listos para editar",
+    "detalle": "La IA ya encontró los momentos"
+  },
+  "enCamino": {
+    "titulo": "En proceso",
+    "detalle": "Avanzan solos; se actualiza cada 20 segundos"
+  },
+  "verEpisodios": "Ver todos los episodios",
+  "reaccion": {
+    "titulo": "Videos de reacción",
+    "esperando": "{n} esperando revisión",
+    "nada": "Nada esperando revisión"
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 /**
  * Lo que se ve mientras el auto-encuadre mira el clip (ng-creator-be#105) y
@@ -10,12 +11,7 @@ import { useEffect, useState } from "react";
 
 export type PersonaAuto = { cx: number; segundos: number; retrato?: string | null };
 
-const ETAPAS: { clave: string; texto: string }[] = [
-  { clave: "BAJANDO", texto: "Bajando el tramo" },
-  { clave: "CARAS", texto: "Buscando caras" },
-  { clave: "VOCES", texto: "Escuchando quién habla" },
-  { clave: "ARMANDO", texto: "Armando los encuadres" },
-];
+const ETAPAS = ["BAJANDO", "CARAS", "VOCES", "ARMANDO"] as const;
 
 /** Segundos que faltan, a partir de lo que tardó hasta acá. Null mientras es muy pronto para saber. */
 export function segundosQueFaltan(progreso: number, empezoEn: string | null | undefined, ahora: number): number | null {
@@ -25,9 +21,9 @@ export function segundosQueFaltan(progreso: number, empezoEn: string | null | un
   return Math.max(1, Math.round((pasado * (1 - progreso)) / progreso));
 }
 
-function textoFalta(s: number): string {
-  if (s < 60) return `faltan ~${s} s`;
-  return `faltan ~${Math.round(s / 60)} min`;
+function textoFalta(s: number, t: ReturnType<typeof useTranslations<"editorAutoEncuadre">>): string {
+  if (s < 60) return t("faltanSeg", { s });
+  return t("faltanMin", { min: Math.round(s / 60) });
 }
 
 function useAhora(activo: boolean): number {
@@ -73,20 +69,21 @@ export function PanelAutoEncuadre({
   onReintentar: () => void;
   onCerrar: () => void;
 }) {
+  const t = useTranslations("editorAutoEncuadre");
   const analizando = estado === "EN_COLA" || estado === "ANALIZANDO";
   const ahora = useAhora(analizando);
 
   if (analizando) {
     const enFila = estado === "EN_COLA";
     const p = Math.max(0, Math.min(1, progreso ?? 0));
-    const actual = enFila ? -1 : Math.max(0, ETAPAS.findIndex((e) => e.clave === etapa));
+    const actual = enFila ? -1 : Math.max(0, ETAPAS.findIndex((e) => e === etapa));
     const falta = enFila ? null : segundosQueFaltan(p, empezoEn, ahora);
     return (
       <div className="mt-3 rounded-xl border border-ng-violeta/40 bg-ng-violeta/10 p-3" aria-live="polite">
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-medium">{enFila ? "En la fila, ya empieza…" : "Mirando quién habla"}</span>
+          <span className="font-medium">{enFila ? t("enFila") : t("mirando")}</span>
           <span className="tabular-nums text-white/60">
-            {Math.round(p * 100)}%{falta ? ` · ${textoFalta(falta)}` : ""}
+            {Math.round(p * 100)}%{falta ? ` · ${textoFalta(falta, t)}` : ""}
           </span>
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
@@ -97,7 +94,7 @@ export function PanelAutoEncuadre({
             const hecha = i < actual;
             const enCurso = i === actual;
             return (
-              <li key={e.clave} className={`flex items-center gap-1.5 ${hecha ? "text-white/80" : enCurso ? "text-white" : "text-white/35"}`}>
+              <li key={e} className={`flex items-center gap-1.5 ${hecha ? "text-white/80" : enCurso ? "text-white" : "text-white/35"}`}>
                 <span
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${
                     hecha ? "bg-emerald-500 text-ng-tinta" : enCurso ? "animate-pulse bg-ng-violeta text-ng-tinta" : "border border-white/20"
@@ -105,12 +102,12 @@ export function PanelAutoEncuadre({
                 >
                   {hecha ? "✓" : i + 1}
                 </span>
-                {e.texto}
+                {t(`etapas.${e}`)}
               </li>
             );
           })}
         </ol>
-        <p className="mt-2 text-xs text-white/50">Podés seguir editando textos y subtítulos: los encuadres llegan solos.</p>
+        <p className="mt-2 text-xs text-white/50">{t("seguiEditando")}</p>
       </div>
     );
   }
@@ -118,14 +115,14 @@ export function PanelAutoEncuadre({
   if (estado === "FALLIDO" && error) {
     return (
       <div className="mt-3 rounded-xl border border-red-500/40 bg-red-500/10 p-3 text-sm">
-        <p className="font-medium text-red-300">No se pudo auto-encuadrar</p>
+        <p className="font-medium text-red-300">{t("errorTitulo")}</p>
         <p className="mt-1 text-white/70">{error}</p>
         <div className="mt-2 flex gap-2">
           <button onClick={onReintentar} className="rounded-lg bg-white/10 px-2.5 py-1 text-xs hover:bg-white/15">
-            Probar de nuevo
+            {t("probarDeNuevo")}
           </button>
           <button onClick={onCerrar} className="rounded-lg px-2.5 py-1 text-xs text-white/50 hover:text-white/80">
-            Cerrar
+            {t("cerrar")}
           </button>
         </div>
       </div>
@@ -138,15 +135,15 @@ export function PanelAutoEncuadre({
       <div className="mt-3 animate-[aparecer_0.4s_ease-out] rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-sm">
         <div className="flex items-start justify-between gap-2">
           <p className="font-medium">
-            ✓ Listo: {personas.length} persona{personas.length === 1 ? "" : "s"} · {cambios} cambio{cambios === 1 ? "" : "s"} de encuadre
+            {t("listo", { personas: personas.length, cambios })}
           </p>
-          <button onClick={onCerrar} className="text-white/40 hover:text-white/80" title="Cerrar">
+          <button onClick={onCerrar} className="text-white/40 hover:text-white/80" title={t("cerrar")}>
             ✕
           </button>
         </div>
         {conPantalla.length <= 1 && personas.length > 1 && (
           <p className="mt-1 text-xs text-amber-200/80">
-            Encontré a {personas.length} personas, pero en este tramo habla una sola: el clip queda en esa persona.
+            {t("hablaUna", { n: personas.length })}
           </p>
         )}
         <div className="mt-2 flex flex-wrap gap-3">
@@ -159,7 +156,7 @@ export function PanelAutoEncuadre({
                 <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xs">{i + 1}</span>
               )}
               <span className="text-xs tabular-nums text-white/70">
-                {x.segundos > 0 ? `${Math.round(x.segundos)} s` : "no habla"}
+                {x.segundos > 0 ? `${Math.round(x.segundos)} s` : t("noHabla")}
               </span>
             </div>
           ))}
@@ -167,7 +164,7 @@ export function PanelAutoEncuadre({
         <div className="mt-3 flex flex-wrap gap-2">
           {cambios > 1 && (
             <button onClick={onVerPrimerCambio} className="rounded-lg bg-ng-violeta px-2.5 py-1 text-xs font-medium text-ng-tinta hover:brightness-110">
-              ▶ Ver el primer cambio
+              {t("verPrimerCambio")}
             </button>
           )}
           {deshacible && (
@@ -176,7 +173,7 @@ export function PanelAutoEncuadre({
               disabled={deshaciendo}
               className="rounded-lg border border-white/15 px-2.5 py-1 text-xs text-white/80 hover:bg-white/5 disabled:opacity-50"
             >
-              ↩ Volver a como estaba
+              {t("volverComoEstaba")}
             </button>
           )}
         </div>
@@ -187,7 +184,7 @@ export function PanelAutoEncuadre({
   if (deshacible) {
     return (
       <button onClick={onDeshacer} disabled={deshaciendo} className="mt-2 text-xs text-white/50 underline hover:text-white/80 disabled:opacity-50">
-        ↩ Volver a como estaba antes del auto-encuadre
+        {t("volverAntes")}
       </button>
     );
   }

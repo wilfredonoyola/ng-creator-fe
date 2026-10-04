@@ -1,0 +1,16 @@
+{
+  "cancelaste": "You canceled the authorization on {red}",
+  "devolvioError": "{red} returned an error: {error}",
+  "sinCodigo": "{red} didn't return the authorization code",
+  "errorCompletar": "Couldn't complete the connection",
+  "noSeConecto": {
+    "facebook": "Not connected",
+    "canal": "The channel wasn't connected",
+    "cuenta": "The account wasn't connected",
+    "restream": "Restream wasn't connected"
+  },
+  "volver": "Back",
+  "volverAIntentar": "Try again",
+  "conectando": "Connecting to {red}…",
+  "canjeando": "Exchanging the code and fetching your pages"
+}

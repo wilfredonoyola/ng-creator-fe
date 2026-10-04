@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Pista } from "@/components/Pista";
 
 export interface PestanaInspector<T extends string> {
@@ -75,6 +76,7 @@ export function InspectorClip<T extends string>({
   activa: T;
   onElegir: (p: T) => void;
 }) {
+  const t = useTranslations("editorInspector");
   const base = useId();
   const riel = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -112,7 +114,7 @@ export function InspectorClip<T extends string>({
       <div
         ref={riel}
         role="tablist"
-        aria-label="Ajustes del clip"
+        aria-label={t("ajustes")}
         aria-orientation={vertical ? "vertical" : "horizontal"}
         onKeyDown={teclas}
         className="flex shrink-0 gap-1 overflow-x-auto border-b border-white/10 p-1.5 md:w-[52px] md:flex-col md:items-center md:overflow-visible md:border-b-0 md:border-r"

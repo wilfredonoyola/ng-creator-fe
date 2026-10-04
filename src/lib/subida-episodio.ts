@@ -32,6 +32,17 @@ export type EstadoSubida =
   | "error"
   | "terminada";
 
+/**
+ * Por qué se frenó o se reintenta, para que la pantalla lo diga en su idioma
+ * (namespace `episodios`, grupo `subida`).
+ */
+export type AvisoSubida =
+  | { tipo: "reintento"; intento: number }
+  | { tipo: "sinConexion" }
+  | { tipo: "firma" }
+  | { tipo: "tamano" }
+  | { tipo: "frenada"; status: number; detalle: string };
+
 export interface SubidaEpisodio {
   pausar: () => void;
   reanudar: () => void;
@@ -93,7 +104,7 @@ export async function iniciarSubidaTus(opts: {
   credenciales: CredencialesTus;
   renovar: () => Promise<CredencialesTus>;
   onProgreso: (subidos: number, total: number) => void;
-  onEstado: (estado: EstadoSubida, mensaje?: string) => void;
+  onEstado: (estado: EstadoSubida, aviso?: AvisoSubida) => void;
 }): Promise<SubidaEpisodio> {
   const { archivo, renovar, onProgreso, onEstado } = opts;
   let cred = opts.credenciales;
@@ -169,7 +180,7 @@ export async function iniciarSubidaTus(opts: {
       const reintentable =
         status === 0 || status >= 500 || status === 409 || status === 423;
       if (reintentable) {
-        onEstado("reintentando", `Reintento ${intento + 1}…`);
+        onEstado("reintentando", { tipo: "reintento", intento: intento + 1 });
       }
       return reintentable;
     },
@@ -195,10 +206,7 @@ export async function iniciarSubidaTus(opts: {
 
       frenada = true;
       if (typeof navigator !== "undefined" && navigator.onLine === false) {
-        onEstado(
-          "sin-conexion",
-          "Sin conexión. La subida sigue sola cuando vuelva.",
-        );
+        onEstado("sin-conexion", { tipo: "sinConexion" });
         return;
       }
       onEstado("error", mensajeDeError(status, err));
@@ -262,10 +270,8 @@ export async function iniciarSubidaTus(opts: {
   };
 }
 
-function mensajeDeError(status: number, err: Error): string {
-  if (status === 401 || status === 403) {
-    return "Bunny rechazó la firma de la subida. Probá reanudar; si sigue, avisá.";
-  }
-  if (status === 413) return "Bunny rechazó el archivo por tamaño.";
-  return `La subida se frenó${status ? ` (${status})` : ""}: ${err.message}`;
+function mensajeDeError(status: number, err: Error): AvisoSubida {
+  if (status === 401 || status === 403) return { tipo: "firma" };
+  if (status === 413) return { tipo: "tamano" };
+  return { tipo: "frenada", status, detalle: err.message };
 }

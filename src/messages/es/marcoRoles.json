@@ -1,0 +1,18 @@
+{
+  "PROPIETARIO": {
+    "etiqueta": "Propietario",
+    "ayuda": "Configura la página, la reconecta en Meta y decide quién más entra."
+  },
+  "EDITOR": {
+    "etiqueta": "Editor",
+    "ayuda": "Crea, revisa, aprueba y publica. No necesita cuenta de Facebook."
+  },
+  "LECTOR": {
+    "etiqueta": "Lector",
+    "ayuda": "Mira el trabajo de la página, no lo toca."
+  },
+  "PROVEEDOR": {
+    "etiqueta": "Proveedor",
+    "ayuda": "Dueño de material con quien hay un trato: sube sus videos y sigue su estado, sin entrar al espacio de trabajo. Su pantalla todavía no está construida."
+  }
+}

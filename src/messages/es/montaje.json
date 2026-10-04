@@ -1,0 +1,141 @@
+{
+  "titulo": "Montaje",
+  "subtitulo": "De un link a un video listo: elegí el área útil, escribí los titulares y generá. Queda en revisión, no se publica solo.",
+  "pasos": {
+    "1": { "titulo": "El video", "ayuda": "Pegá el link y elegí qué parte se ve" },
+    "2": { "titulo": "Qué armás", "ayuda": "El formato decide cómo se ve todo" },
+    "3": { "titulo": "Tu parte", "ayuda": "Grabá lo que vas a decir" },
+    "4": { "titulo": "Subtítulos", "ayuda": "Opcional, se transcribe solo" },
+    "5": { "titulo": "Titulares", "ayuda": "Opcional, el texto de arriba y abajo" }
+  },
+  "errores": {
+    "linkTiktok": "Pegá un link de TikTok",
+    "sinRuta": "El servidor no devolvio donde quedo guardado el video. Volve a cargar el link.",
+    "cargar": "No se pudo cargar el video",
+    "sinReferencia": "Se perdio la referencia al video. Volve a cargar el link.",
+    "iniciar": "No se pudo iniciar el montaje",
+    "fallo": "El montaje falló",
+    "versionVieja": "Ese montaje se guardó con una versión anterior del editor y ya no se puede abrir.",
+    "abrir": "No se pudo abrir ese montaje",
+    "estilo": "No se pudo guardar el estilo"
+  },
+  "sinNombre": "Montaje sin nombre",
+  "sinPagina": {
+    "titulo": "No hay ninguna página activa",
+    "detalle": "El montaje se guarda como expediente de una página. Elegí una en el switch de la izquierda."
+  },
+  "soloLectura": {
+    "titulo": "Solo lectura en esta página",
+    "detalle": "Tu rol acá no permite crear material. Pedile a quien la administra que te haga editor."
+  },
+  "render": {
+    "siguiente": "Es el siguiente",
+    "esperando": "Esperando turno · {n} delante",
+    "subiendo": "Subiendo el video",
+    "componiendo": "Componiendo el video · {progreso}%",
+    "podesCerrar": "Podés cerrar la pestaña: el video se sigue armando en el servidor y al volver acá se retoma. Cuando termine queda en revisión.",
+    "generado": "Video generado.",
+    "enRevision": "Está esperando en la cola de revisión →"
+  },
+  "placeholderLink": "https://www.tiktok.com/@usuario/video/...",
+  "descargando": "Descargando…",
+  "cargarVideo": "Cargar video",
+  "pasoDe": "Paso {paso} de {total}",
+  "verTodo": "Ver todo el editor",
+  "volverGuiado": "← Volver al modo guiado",
+  "bloques": {
+    "area": "Elegí el área útil",
+    "titulares": "Titulares",
+    "aparecer": "Aparecer en el video",
+    "lienzo": "Ajustes del lienzo"
+  },
+  "audioVideo": "Audio del video",
+  "volumenes": { "normal": "Normal", "bajo": "Bajo", "mudo": "Mudo" },
+  "proporcion": "Proporción",
+  "proporcionLibre": "Libre",
+  "tramo": {
+    "titulo": "Tramo del video",
+    "recortado": "· de {total}s, recortado a {limite}s",
+    "desde": "Desde",
+    "hasta": "Hasta",
+    "demasiado": "{seg}s es demasiado para un Reel: Meta admite hasta {limite}s. Se va a poder generar, pero al publicarlo como Reel te lo va a rechazar. Y el render tarda en proporcion al tramo.",
+    "recortar": "Recortar a {limite}s"
+  },
+  "pegaLink": "Pegá un link de TikTok arriba para empezar",
+  "queArmar": "Qué querés armar",
+  "formatosListos": {
+    "reaccion": {
+      "nombre": "Reacción",
+      "detalle": "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa."
+    },
+    "comentario": {
+      "nombre": "Comentario",
+      "detalle": "El video llena la pantalla y vos aparecés en un círculo. Para acotar algo sin taparlo."
+    },
+    "simple": {
+      "nombre": "Solo el video",
+      "detalle": "Sin cámara. Solo reencuadrar y publicar."
+    }
+  },
+  "subtitulos": {
+    "titulo": "Subtítulos automáticos",
+    "detalle": "Transcribe lo que se dice —el video y vos— y lo escribe palabra por palabra. Suma medio minuto al render."
+  },
+  "titularCitado": "“{texto}”",
+  "sinTitulares": "Sin titulares",
+  "titularArriba": "Titular de arriba",
+  "titularAbajo": "Titular de abajo",
+  "momentosResumen": "{n, plural, one {# momento} other {# momentos}}",
+  "noApareces": "No aparecés",
+  "atras": "Atrás",
+  "saltear": "Saltear",
+  "siguiente": "Siguiente",
+  "listoGenerar": "Listo — generá el video con el botón de la derecha",
+  "lienzo": {
+    "fondoLiso": "fondo liso",
+    "desenfoqueResumen": "desenfoque",
+    "formato": "Formato",
+    "tamano": "Tamaño",
+    "posicion": "Posición",
+    "centrar": "Centrar",
+    "fondo": "Fondo",
+    "color": "Color",
+    "desenfoque": "Desenfoque"
+  },
+  "comoQueda": "Cómo va a quedar",
+  "reproductor": {
+    "pausar": "⏸ Pausar",
+    "reproducir": "▶ Reproducir",
+    "alInicio": "Volver al inicio del tramo",
+    "silenciar": "Silenciar",
+    "activarSonido": "Activar el sonido"
+  },
+  "enLaFila": "En la fila",
+  "generarVideo": "Generar video",
+  "generar": "Generar",
+  "estilo": {
+    "guardado": "Listo: los próximos videos arrancan así",
+    "guardar": "Guardar esto como el estilo de la página"
+  },
+  "licencia": {
+    "titulo": "Licencia",
+    "elegidaCambiar": "Licencia elegida · cambiar",
+    "sinElegir": "Sin licencia · elegir",
+    "conElegida": "Con licencia elegida",
+    "sinVerificar": "Licencia sin verificar",
+    "opcionSinVerificar": "Sin verificar (no pedí permiso)",
+    "conLicencia": "El material queda con la licencia que elegiste.",
+    "explicacionSinVerificar": "Se registra una licencia marcada <marca>sin verificar</marca> con el link de origen guardado. Podés regularizarla después desde <link>Creators</link>."
+  },
+  "finales": "{seg}s finales",
+  "cerrar": "Cerrar",
+  "listo": "Listo",
+  "borrador": {
+    "error": "No se pudo guardar · se reintenta al siguiente cambio",
+    "guardando": "Guardando…",
+    "guardado": "Guardado"
+  },
+  "preview": {
+    "sinVideo": "Cargá un video para ver el resultado"
+  }
+}

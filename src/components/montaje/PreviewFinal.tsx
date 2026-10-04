@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
+import { useTranslations } from "next-intl";
 import {
   geometriaCamara,
   guionDeCamara,
@@ -50,6 +51,7 @@ export function PreviewFinal({
    */
   sonido?: boolean;
 }) {
+  const tr = useTranslations("montaje");
   const { lienzo, recorte, fondo } = montaje;
   const ubic = ubicacionEnLienzo(montaje, aspectoFuente);
 
@@ -348,7 +350,8 @@ export function PreviewFinal({
 
       {!src && (
         <div className="flex h-full items-center justify-center px-6 text-center text-xs text-white/25">
-          Cargá un video para ver el resultado
+          {tr("preview.sinVideo")}
+
         </div>
       )}
 

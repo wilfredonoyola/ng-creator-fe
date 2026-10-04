@@ -1,0 +1,8 @@
+{
+  "sinPublicaciones": "Sin publicaciones en este período",
+  "leyenda": "Rayado = menos de {umbral} publicaciones. El promedio no alcanza para sacar conclusiones y no cuenta para el mejor tramo.",
+  "publicaciones": "{n, plural, one {# publicación} other {# publicaciones}}",
+  "scorePromedio": "Score promedio",
+  "interacciones": "{reacciones} reacciones · {comentarios} comentarios · {compartidos} compartidos",
+  "pocosDatos": "Pocos datos para confiar"
+}

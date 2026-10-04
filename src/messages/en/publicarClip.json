@@ -1,0 +1,62 @@
+{
+  "editorDelClip": "Clip editor",
+  "noEncontrado": "We couldn't find this clip",
+  "otraMarca": "It may belong to another brand: check which one you have selected.",
+  "volverAlEpisodio": "← Back to the episode",
+  "primeroProcesa": "Process the MP4 first",
+  "primeroProcesaDetalle": "The final video is what gets scheduled: process it in the editor and come back.",
+  "titulo": "Schedule",
+  "noSePudo": "failed",
+  "fallaTodas": "Couldn't schedule. {detalle}",
+  "fallaAlgunas": "Some weren't scheduled. {detalle}",
+  "programado": "Scheduled: goes out {cuando}. You'll see it in the Calendar.",
+  "duracionListo": "{seg} s · MP4 ready",
+  "cambiosSinProcesar": "It has unprocessed changes: the last processed MP4 goes out. If you want the changes, process it again first.",
+  "elegiDiaHora": "Pick the day and time",
+  "elegiDiaHoraPunto": "Pick the day and time.",
+  "yaPaso": "That time has already passed",
+  "yaPasoLargo": "That time has already passed: pick one from now on.",
+  "sale": "Goes out {cuando}",
+  "salePunto": "Goes out {cuando}.",
+  "horaDe": "Time zone: {zona}.",
+  "marcaUnaRed": "Select at least one network under Where.",
+  "programando": "Scheduling…",
+  "programarEnN": "Schedule on {n} networks",
+  "programar": "Schedule",
+  "secciones": {
+    "donde": "Where",
+    "descripcion": "Description",
+    "cuando": "When",
+    "publicaciones": "Posts for this clip"
+  },
+  "sinRedes": "This brand has no connected networks. Connect them in <link>Connected networks</link>.",
+  "motivos": {
+    "reconectar": "Needs to be reconnected in Connected networks",
+    "desactivado": "Turned off in Connected networks"
+  },
+  "faltaInstagram": "Missing Instagram? It has to be a professional account linked to the Facebook page, and you need to reconnect Facebook accepting the Instagram permissions.",
+  "pronto": "Coming soon",
+  "descripcionPlaceholder": "What goes below the video, with hashtags",
+  "tituloYoutube": "YouTube title",
+  "irAlCalendario": "Go to calendar",
+  "soloMira": "Your role in this brand is view-only: an editor or the owner does the scheduling.",
+  "estados": {
+    "PROGRAMADA": "Scheduled",
+    "AGENDADA_EN_RED": "Scheduled on network",
+    "SUBIENDO": "Uploading",
+    "PROCESANDO": "Publishing",
+    "PUBLICADA": "Published",
+    "FALLIDA": "Failed",
+    "CANCELADA": "Canceled"
+  },
+  "confirmarCancelar": "Cancel the {red} one? It won't go out.",
+  "errorCancelar": "Couldn't cancel",
+  "fila": {
+    "salio": "Went out {cuando}",
+    "sale": "Goes out {cuando}",
+    "por": " · by {nombre}",
+    "verPublicacion": "View post ↗",
+    "cancelando": "Canceling…",
+    "cancelar": "Cancel"
+  }
+}

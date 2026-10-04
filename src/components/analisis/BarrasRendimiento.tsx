@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   COLOR_POCA_MUESTRA,
   COLOR_SERIE,
@@ -31,6 +32,7 @@ export function BarrasRendimiento({
   tramos: Tramo[];
   etiqueta: (clave: number) => string;
 }) {
+  const t = useTranslations("analisisBarras");
   const [encima, setEncima] = useState<number | null>(null);
   // Id propio por gráfico: en esta pantalla hay dos, y dos <pattern> con el
   // mismo id son HTML inválido y dejan el relleno a merced de cuál resuelva
@@ -42,7 +44,7 @@ export function BarrasRendimiento({
       <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
         <h2 className="text-sm font-semibold">{titulo}</h2>
         <p className="mt-6 text-center text-sm text-white/30">
-          Sin publicaciones en este período
+          {t("sinPublicaciones")}
         </p>
       </section>
     );
@@ -159,8 +161,7 @@ export function BarrasRendimiento({
             className="inline-block h-2.5 w-2.5 rounded-sm"
             style={{ backgroundColor: COLOR_POCA_MUESTRA }}
           />
-          Rayado = menos de {umbral} publicaciones. El promedio no alcanza para
-          sacar conclusiones y no cuenta para el mejor tramo.
+          {t("leyenda", { umbral })}
         </p>
       )}
     </section>
@@ -176,25 +177,29 @@ function Globo({
   umbral: number;
   etiqueta: (clave: number) => string;
 }) {
+  const t = useTranslations("analisisBarras");
+  const locale = useLocale();
   return (
     <div className="pointer-events-none absolute right-0 top-0 rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-xs shadow-xl">
       <p className="font-semibold">{etiqueta(tramo.clave)}</p>
       <p className="mt-1 text-white/50">
-        {tramo.posts} publicación{tramo.posts !== 1 ? "es" : ""}
+        {t("publicaciones", { n: tramo.posts })}
       </p>
       <p className="text-white/50">
-        Score promedio{" "}
+        {t("scorePromedio")}{" "}
         <span className="text-white/80">
-          {Math.round(tramo.scorePromedio).toLocaleString("es")}
+          {Math.round(tramo.scorePromedio).toLocaleString(locale)}
         </span>
       </p>
       <p className="text-white/40">
-        {Math.round(tramo.reaccionesPromedio)} reacciones ·{" "}
-        {Math.round(tramo.comentariosPromedio)} comentarios ·{" "}
-        {Math.round(tramo.compartidosPromedio)} compartidos
+        {t("interacciones", {
+          reacciones: Math.round(tramo.reaccionesPromedio),
+          comentarios: Math.round(tramo.comentariosPromedio),
+          compartidos: Math.round(tramo.compartidosPromedio),
+        })}
       </p>
       {tramo.posts < umbral && (
-        <p className="mt-1 text-amber-400/80">Pocos datos para confiar</p>
+        <p className="mt-1 text-amber-400/80">{t("pocosDatos")}</p>
       )}
     </div>
   );

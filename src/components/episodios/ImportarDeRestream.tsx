@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   IMPORTAR_DE_RESTREAM,
   RESTREAM_CONFIGURADO,
@@ -24,10 +25,10 @@ interface EventoRestream {
   episodioId?: string | null;
 }
 
-function duracion(seg: number): string {
+function duracion(t: ReturnType<typeof useTranslations<"episodiosRestream">>, seg: number): string {
   const h = Math.floor(seg / 3600);
   const m = Math.round((seg % 3600) / 60);
-  return h ? `${h} h ${m} min` : `${m} min`;
+  return h ? t("horasMinutos", { h, m }) : t("minutos", { m });
 }
 
 /**
@@ -36,6 +37,8 @@ function duracion(seg: number): string {
  * así que no hay nada que subir desde la computadora.
  */
 export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; onImportado: () => void }) {
+  const t = useTranslations("episodiosRestream");
+  const locale = useLocale();
   const { esPropietario } = useSesion();
   const mando = esPropietario(marcaId);
   const { data: conf } = useQuery(RESTREAM_CONFIGURADO, { errorPolicy: "all" });
@@ -63,10 +66,10 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
     try {
       const { data: r, error: e } = await pedirUrl({ variables: { marcaId } });
       if (e) throw e;
-      if (!r?.restreamUrlDeConexion) throw new Error("El backend no devolvió la URL de autorización");
+      if (!r?.restreamUrlDeConexion) throw new Error(t("sinUrl"));
       window.location.href = r.restreamUrlDeConexion;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo iniciar la conexión");
+      setError(e instanceof Error ? e.message : t("errorConectar"));
     }
   }
 
@@ -78,7 +81,7 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
       await eventosQ.refetch();
       onImportado();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo importar");
+      setError(e instanceof Error ? e.message : t("errorImportar"));
     } finally {
       setImportando(null);
     }
@@ -88,11 +91,11 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
     return (
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/20 p-4">
         <div>
-          <p className="text-sm font-medium">📡 Traer el live desde Restream</p>
+          <p className="text-sm font-medium">{t("traerElLive")}</p>
           <p className="text-xs text-white/50">
             {cuenta?.requiereReconexion
-              ? "Restream pidió volver a conectar la cuenta."
-              : "Sin esperar a que YouTube procese el video: la grabación llega directo."}
+              ? t("pidioReconectar")
+              : t("sinEsperar")}
           </p>
         </div>
         {mando ? (
@@ -101,10 +104,10 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
             disabled={pidiendoUrl}
             className="rounded-lg bg-ng-violeta px-3 py-1.5 text-xs font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
           >
-            {cuenta?.requiereReconexion ? "Reconectar Restream" : "Conectar Restream"}
+            {cuenta?.requiereReconexion ? t("reconectar") : t("conectar")}
           </button>
         ) : (
-          <span className="text-xs text-white/40">Lo conecta quien es propietario de la marca.</span>
+          <span className="text-xs text-white/40">{t("soloPropietario")}</span>
         )}
         {error && <p className="w-full text-xs text-red-400">{error}</p>}
       </div>
@@ -115,22 +118,22 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
     <div className="mt-4 rounded-xl border border-white/10 bg-black/20 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button onClick={() => setAbierto((a) => !a)} className="text-left">
-          <p className="text-sm font-medium">📡 Traer un live desde Restream {abierto ? "▾" : "▸"}</p>
-          <p className="text-xs text-white/50">Conectado como {cuenta.nombre}</p>
+          <p className="text-sm font-medium">{t("traerUnLive")} {abierto ? "▾" : "▸"}</p>
+          <p className="text-xs text-white/50">{t("conectadoComo", { nombre: cuenta.nombre })}</p>
         </button>
         {mando && (
           <button
-            onClick={() => window.confirm("¿Desconectar Restream de esta marca?") && void desconectar({ variables: { marcaId } })}
+            onClick={() => window.confirm(t("confirmarDesconectar")) && void desconectar({ variables: { marcaId } })}
             className="text-xs text-white/40 hover:text-red-400"
           >
-            Desconectar
+            {t("desconectar")}
           </button>
         )}
       </div>
       {abierto && (
         <div className="mt-3 space-y-2">
-          {eventosQ.loading && <p className="text-xs text-white/40">Buscando tus lives…</p>}
-          {!eventosQ.loading && !eventos.length && <p className="text-xs text-white/50">No hay lives terminados en Restream.</p>}
+          {eventosQ.loading && <p className="text-xs text-white/40">{t("buscando")}</p>}
+          {!eventosQ.loading && !eventos.length && <p className="text-xs text-white/50">{t("sinLives")}</p>}
           {eventos.map((ev) => {
             const vence = ev.grabacionVenceEn ? new Date(ev.grabacionVenceEn) : null;
             const dias = vence ? Math.ceil((vence.getTime() - Date.now()) / 86_400_000) : null;
@@ -143,16 +146,16 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm">{ev.titulo}</p>
                   <p className="text-xs text-white/45">
-                    {ev.empezoEn ? new Date(ev.empezoEn).toLocaleDateString("es", { day: "numeric", month: "short" }) : ""}
-                    {ev.duracionSeg ? ` · ${duracion(ev.duracionSeg)}` : ""}
+                    {ev.empezoEn ? new Date(ev.empezoEn).toLocaleDateString(locale, { day: "numeric", month: "short" }) : ""}
+                    {ev.duracionSeg ? ` · ${duracion(t, ev.duracionSeg)}` : ""}
                     {dias != null && !ev.episodioId && (
-                      <span className={dias <= 2 ? "text-amber-300" : ""}> · Restream la borra en {Math.max(0, dias)} día{dias === 1 ? "" : "s"}</span>
+                      <span className={dias <= 2 ? "text-amber-300" : ""}>{t("vence", { n: Math.max(0, dias) })}</span>
                     )}
                   </p>
                 </div>
                 {ev.episodioId ? (
                   <Link href={`/episodios/${ev.episodioId}`} className="shrink-0 text-xs text-ng-teal hover:underline">
-                    ✓ Ya importado
+                    {t("yaImportado")}
                   </Link>
                 ) : ev.archivo ? (
                   <button
@@ -160,10 +163,10 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
                     disabled={importando !== null}
                     className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta disabled:opacity-50"
                   >
-                    {importando === ev.id ? "Pidiendo…" : "Importar"}
+                    {importando === ev.id ? t("pidiendo") : t("importar")}
                   </button>
                 ) : (
-                  <span className="shrink-0 text-xs text-white/35">Sin grabación</span>
+                  <span className="shrink-0 text-xs text-white/35">{t("sinGrabacion")}</span>
                 )}
               </div>
             );

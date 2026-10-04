@@ -1,0 +1,23 @@
+{
+  "sinUrl": "The backend didn't return the authorization URL",
+  "errorConectar": "Couldn't start the connection",
+  "errorOperacion": "The operation failed",
+  "eligeMarca": "Pick a brand in the sidebar.",
+  "reconectar": "Reconnect",
+  "deshabilitar": "Disable",
+  "habilitar": "Enable",
+  "desconectar": "Disconnect",
+  "titulo": "{marca} accounts",
+  "tituloSinMarca": "Active brand accounts",
+  "descripcion": "This brand's videos are posted to these accounts. For another brand, switch it in the sidebar.",
+  "sinCredenciales": "The backend doesn't have the TikTok credentials yet (TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REDIRECT_URI).",
+  "revocado": "TikTok revoked access: it needs to be reconnected.",
+  "habilitada": "Enabled as a destination",
+  "deshabilitada": "Disabled",
+  "confirmarDesconectar": "Disconnect \"{nombre}\"? Anything scheduled for this account will fail when it's due.",
+  "abriendo": "Opening TikTok…",
+  "conectarOtra": "Connect another account",
+  "conectarPrimera": "Connect a TikTok account",
+  "soloPropietario": "Only the brand owner can connect accounts.",
+  "auditoria": "Until TikTok audits the app, only test accounts can connect and everything is posted as \"Only me\"."
+}

@@ -1,0 +1,50 @@
+{
+  "errorPublicar": "Couldn't publish",
+  "sinCuenta": "No TikTok account enabled for this brand. The owner connects it in Connected networks.",
+  "publicarEn": "Post to <n>{nombre}</n>",
+  "publicadas": "{n, plural, one {# published} other {# published}}",
+  "consultando": "Checking the account on TikTok…",
+  "muyLargo": "The video is {dura}s long and this account allows up to {max}s on TikTok.",
+  "textoPlaceholder": "Video caption, with #hashtags and @mentions (optional)",
+  "textoLargo": "{largo}/{max}: TikTok doesn't allow more.",
+  "quienPuedeVerlo": "Who can view this video",
+  "elegiOpcion": "Choose an option",
+  "privacidades": {
+    "PUBLIC_TO_EVERYONE": "Everyone",
+    "MUTUAL_FOLLOW_FRIENDS": "Friends",
+    "FOLLOWER_OF_CREATOR": "Followers",
+    "SELF_ONLY": "Only me"
+  },
+  "noDisponibleMarca": " (not available for branded content)",
+  "permitir": "Allow users to",
+  "comentar": "Comment",
+  "duo": "Duet",
+  "stitch": "Stitch",
+  "comercial": {
+    "etiqueta": "Disclose commercial content",
+    "detalle": "If the video promotes a brand, product or service",
+    "tuMarca": "Your brand",
+    "tuMarcaDetalle": "You're promoting your own business. It will be labeled \"Promotional content\".",
+    "deMarca": "Branded content",
+    "deMarcaDetalle": "You're promoting a third party. It will be labeled \"Paid partnership\".",
+    "falta": "Choose at least one option to disclose the commercial content."
+  },
+  "ia": {
+    "etiqueta": "AI-generated content",
+    "detalle": "TikTok adds the corresponding label"
+  },
+  "yaPublicado": "Already posted on TikTok. Posting again creates a new video.",
+  "ahora": "Now",
+  "programar": "Schedule",
+  "noPrograma": "TikTok doesn't schedule: it waits in our queue and goes out at that time. If the server is down then, it goes out when it's back.",
+  "consentimientoMarca": "By posting, you agree to TikTok's <politica>Branded Content Policy</politica> and <musica>Music Usage Confirmation</musica>.",
+  "consentimiento": "By posting, you agree to TikTok's <musica>Music Usage Confirmation</musica>.",
+  "tardaEnAparecer": "After posting, it may take a few minutes for the video to appear on the account.",
+  "ayudaPrivacidad": "Choose who can view it",
+  "ayudaComercial": "Complete the commercial content disclosure",
+  "agendando": "Scheduling…",
+  "encolando": "Queuing…",
+  "programarEnTiktok": "Schedule on TikTok",
+  "publicarEnTiktok": "Post to TikTok",
+  "deshabilitadaEnTiktok": "The account has this turned off on TikTok"
+}

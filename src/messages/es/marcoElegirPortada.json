@@ -1,0 +1,23 @@
+{
+  "errorGuardar": "No se pudo guardar la portada",
+  "errorSubir": "No se pudo subir la imagen",
+  "cambiar": "Cambiar portada",
+  "elegir": "Elegir portada",
+  "portada": "Portada",
+  "cerrar": "Cerrar",
+  "pestanaCuadro": "Un cuadro del video",
+  "pestanaImagen": "Subir imagen",
+  "buscaCuadro": "Buscá el cuadro",
+  "guardando": "Guardando…",
+  "guardada": "✓ Portada guardada",
+  "usarCuadro": "Usar este cuadro",
+  "actual": "Portada actual",
+  "subiendo": "Subiendo…",
+  "guardadaSubirOtra": "✓ Portada guardada · subir otra",
+  "elegiImagen": "Elegí una imagen de tu computadora",
+  "formatos": "JPG, PNG o WEBP · hasta 10MB",
+  "proporcion": "Usá la misma proporción que el video (9:16 en un Reel), o Meta la recorta por su cuenta.",
+  "asiSale": "✓ Así va a salir la portada",
+  "altGuardada": "Portada guardada",
+  "explicacion": "Es la cubierta del Reel y lo que se publica si elegís formato de imagen."
+}

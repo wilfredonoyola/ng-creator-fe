@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   CalendarDays,
   Clapperboard,
@@ -20,7 +21,7 @@ import {
 } from "lucide-react";
 import { cerrarSesion } from "@/lib/auth";
 import { LogoNG } from "./LogoNG";
-import { ESTILO_ROL, useSesion } from "@/lib/sesion";
+import { useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
@@ -28,10 +29,24 @@ import { Campanita } from "./Campanita";
 
 // Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
 // sola familia de íconos, no emojis.
+type ClaveNav =
+  | "inicio"
+  | "episodios"
+  | "calendario"
+  | "publicaciones"
+  | "crearVideo"
+  | "montaje"
+  | "revision"
+  | "creators"
+  | "equipo"
+  | "brandKit"
+  | "redesConectadas";
+
 interface ItemNav {
   href: string;
   icon: LucideIcon;
-  label: string;
+  /** La clave de su nombre en `marcoSidebar.nav`. */
+  clave: ClaveNav;
   /** Otras rutas que cuentan como esta sección (las pestañas de adentro). */
   tambien?: string[];
 }
@@ -41,10 +56,10 @@ interface ItemNav {
  * ve un cliente de podcast.
  */
 export const NAV_PRINCIPAL: ItemNav[] = [
-  { href: "/panel", icon: House, label: "Inicio" },
-  { href: "/episodios", icon: Mic, label: "Episodios" },
-  { href: "/calendario", icon: CalendarDays, label: "Calendario" },
-  { href: "/publicados", icon: MonitorPlay, label: "Publicaciones", tambien: ["/analisis"] },
+  { href: "/panel", icon: House, clave: "inicio" },
+  { href: "/episodios", icon: Mic, clave: "episodios" },
+  { href: "/calendario", icon: CalendarDays, clave: "calendario" },
+  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
 ];
 
 /**
@@ -57,10 +72,10 @@ export const NAV_PRINCIPAL: ItemNav[] = [
  * Revival salió del menú: no se usa. La ruta sigue, por si vuelve.
  */
 export const NAV_REACCION: ItemNav[] = [
-  { href: "/crear", icon: Clapperboard, label: "Crear video" },
-  { href: "/montaje", icon: Scissors, label: "Montaje" },
-  { href: "/revision", icon: ListChecks, label: "Revisión" },
-  { href: "/creators", icon: UserRound, label: "Creators" },
+  { href: "/crear", icon: Clapperboard, clave: "crearVideo" },
+  { href: "/montaje", icon: Scissors, clave: "montaje" },
+  { href: "/revision", icon: ListChecks, clave: "revision" },
+  { href: "/creators", icon: UserRound, clave: "creators" },
 ];
 
 /**
@@ -68,10 +83,10 @@ export const NAV_REACCION: ItemNav[] = [
  * acceso a la marca (adentro, quien no es propietario solo mira); "Redes
  * conectadas" es de ADMIN, porque es donde se suman cuentas nuevas.
  */
-const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, label: "Equipo" };
+const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
-const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, label: "Brand Kit" };
-const navAdmin: ItemNav[] = [{ href: "/admin/facebook", icon: Link2, label: "Redes conectadas" }];
+const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
+const navAdmin: ItemNav[] = [{ href: "/admin/facebook", icon: Link2, clave: "redesConectadas" }];
 
 export function esActivo(item: ItemNav, pathname: string): boolean {
   return [item.href, ...(item.tambien ?? [])].some((r) => pathname === r || pathname.startsWith(`${r}/`));
@@ -109,6 +124,8 @@ export function Sidebar({
    */
   avisos?: { sinLeer: number; refrescar: () => void };
 }) {
+  const t = useTranslations("marcoSidebar");
+  const tRol = useTranslations("marcoRoles");
   const pathname = usePathname();
   const router = useRouter();
   const { usuario, esAdmin, rolEn } = useSesion();
@@ -151,7 +168,7 @@ export function Sidebar({
         )}
         <button
           onClick={onCerrar}
-          aria-label="Cerrar menú"
+          aria-label={t("cerrarMenu")}
           className={`rounded-lg px-2 py-1 text-white/40 transition hover:bg-white/10 hover:text-white lg:hidden ${fijoDesdeMd ? "md:hidden" : ""}`}
         >
           ✕
@@ -167,8 +184,8 @@ export function Sidebar({
         <div className="hidden justify-center pb-2 pt-4 md:flex">
           <button
             onClick={onAlternarColapso}
-            title={`Trabajando en ${activa?.nombre ?? "…"}. Expandí el menú para cambiarla.`}
-            aria-label={`Trabajando en ${activa?.nombre ?? "…"}. Expandir el menú`}
+            title={t("trabajandoEnTitulo", { marca: activa?.nombre ?? "…" })}
+            aria-label={t("trabajandoEnEtiqueta", { marca: activa?.nombre ?? "…" })}
             className="rounded-lg p-1.5 transition hover:bg-white/10"
           >
             <FotoMarca
@@ -185,7 +202,7 @@ export function Sidebar({
       {/* Navegacion. Scrollea sola si no entra, sin arrastrar el resto. */}
       <nav className={`flex-1 space-y-1 overflow-y-auto px-3 pb-4 ${c ? "md:px-2" : ""}`}>
         {NAV_PRINCIPAL.map((item) => (
-          <BotonNav key={item.href} {...item} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
+          <BotonNav key={item.href} {...item} label={t(`nav.${item.clave}`)} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
         ))}
         {/* Una fila más del menú, que abre la lista al costado: así entra igual
             en la tira de íconos que en el menú abierto. */}
@@ -197,19 +214,20 @@ export function Sidebar({
 
         {esAdmin && (
           <>
-            <Titulo colapsado={c}>Videos de reacción</Titulo>
+            <Titulo colapsado={c}>{t("videosReaccion")}</Titulo>
             {NAV_REACCION.map((item) => (
-              <BotonNav key={item.href} {...item} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
+              <BotonNav key={item.href} {...item} label={t(`nav.${item.clave}`)} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
             ))}
           </>
         )}
 
         {(esAdmin || rolAqui) && (
           <>
-            <Titulo colapsado={c}>Administración</Titulo>
+            <Titulo colapsado={c}>{t("administracion")}</Titulo>
             {rolAqui && (
               <BotonNav
                 {...navEquipo}
+                label={t(`nav.${navEquipo.clave}`)}
                 colapsado={c}
                 activo={pathname.startsWith(navEquipo.href)}
                 onClick={() => ir(navEquipo.href)}
@@ -218,6 +236,7 @@ export function Sidebar({
             {rolAqui && (
               <BotonNav
                 {...navPlantilla}
+                label={t(`nav.${navPlantilla.clave}`)}
                 colapsado={c}
                 activo={pathname.startsWith(navPlantilla.href)}
                 onClick={() => ir(navPlantilla.href)}
@@ -228,6 +247,7 @@ export function Sidebar({
                 <BotonNav
                   key={item.href}
                   {...item}
+                  label={t(`nav.${item.clave}`)}
                   colapsado={c}
                   activo={pathname.startsWith(item.href)}
                   onClick={() => ir(item.href)}
@@ -260,20 +280,20 @@ export function Sidebar({
                 puede ser propietario de una y lector de otra. */}
             <p className="truncate text-xs text-white/40">
               {rolAqui
-                ? `${ESTILO_ROL[rolAqui].etiqueta} de ${activa?.nombre ?? "la página"}`
+                ? t("rolDe", { rol: tRol(`${rolAqui}.etiqueta`), marca: activa?.nombre ?? t("laPagina") })
                 : esAdmin
-                  ? "Administrador"
-                  : "Sin acceso a páginas"}
+                  ? t("administrador")
+                  : t("sinAcceso")}
             </p>
           </div>
-          <span className="shrink-0 text-xs text-white/30">Perfil</span>
+          <span className="shrink-0 text-xs text-white/30">{t("perfil")}</span>
         </button>
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
         >
           <span>🚪</span>
-          Cerrar sesión
+          {t("cerrarSesion")}
         </button>
       </div>
 
@@ -282,16 +302,16 @@ export function Sidebar({
         <div className="hidden flex-col items-center gap-1 border-t border-white/10 py-3 md:flex">
           <button
             onClick={() => ir("/perfil")}
-            title={`Perfil · ${usuario?.nombre || usuario?.email || ""}`}
-            aria-label="Perfil"
+            title={t("perfilDe", { nombre: usuario?.nombre || usuario?.email || "" })}
+            aria-label={t("perfil")}
             className={`flex h-10 w-10 items-center justify-center rounded-lg transition hover:bg-white/10 ${pathname.startsWith("/perfil") ? "bg-white/5" : ""}`}
           >
             <UserRound size={18} strokeWidth={1.8} className="text-ng-secundario" aria-hidden />
           </button>
           <button
             onClick={handleLogout}
-            title="Cerrar sesión"
-            aria-label="Cerrar sesión"
+            title={t("cerrarSesion")}
+            aria-label={t("cerrarSesion")}
             className="flex h-10 w-10 items-center justify-center rounded-lg text-ng-secundario transition hover:bg-red-500/10 hover:text-red-400"
           >
             <LogOut size={18} strokeWidth={1.8} aria-hidden />
@@ -303,8 +323,8 @@ export function Sidebar({
         <div className={`hidden border-t border-white/10 p-2 md:flex ${c ? "justify-center" : "justify-end"}`}>
           <button
             onClick={onAlternarColapso}
-            title={c ? "Expandir el menú" : "Colapsar el menú"}
-            aria-label={c ? "Expandir el menú" : "Colapsar el menú"}
+            title={c ? t("expandir") : t("colapsar")}
+            aria-label={c ? t("expandir") : t("colapsar")}
             aria-expanded={!c}
             className="flex h-9 w-9 items-center justify-center rounded-lg text-ng-secundario transition hover:bg-white/10 hover:text-white"
           >

@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "titulo": "App to edit podcast clips from your phone — NG Creator",
+    "descripcion": "The NG Creator app for iPhone and Android: review the clips AI found in your podcast, with their viral potential and what's said, and edit them quickly from your phone."
+  },
+  "hoy": {
+    "episodios": {
+      "titulo": "Your episodes and how they're going",
+      "texto": "Each episode with its status: uploading, transcribing or with clips ready."
+    },
+    "clips": {
+      "titulo": "The clips AI found",
+      "texto": "Ranked by viral potential, with the reason for each one: humor, emotion, controversy."
+    },
+    "loQueSeDice": {
+      "titulo": "What's said",
+      "texto": "Each clip's transcript below the video, so you can decide without hitting play."
+    },
+    "vertical": {
+      "titulo": "The clip in vertical",
+      "texto": "Play it exactly as it'll look on TikTok, Reels and Shorts."
+    },
+    "cuenta": {
+      "titulo": "One account",
+      "texto": "The same one as the web. What you edit on your computer shows up on your phone."
+    }
+  },
+  "pronto": {
+    "recortar": {
+      "titulo": "Trim right to the words",
+      "texto": "The cut lands exactly where the sentence ends, without hunting for the exact frame."
+    },
+    "formato": {
+      "titulo": "Format, zoom and position",
+      "texto": "9:16, 1:1 or 16:9, with the frame on whoever is speaking."
+    },
+    "subtitulos": {
+      "titulo": "Captions and hook",
+      "texto": "Fix a word or change the top text with your finger."
+    },
+    "render": {
+      "titulo": "Cloud rendering",
+      "texto": "The MP4 is built on our servers: it doesn't use your battery or your data."
+    },
+    "revisar": {
+      "titulo": "Team review and approval",
+      "texto": "Approve or request changes on your editors' clips from wherever you are."
+    },
+    "avisos": {
+      "titulo": "Notifications",
+      "texto": "It lets you know when an episode has its clips or when someone asks you to review one."
+    }
+  },
+  "preguntas": {
+    "editar": {
+      "p": "Can you edit a podcast from your phone?",
+      "r": "Yes: the heavy lifting (transcribing, finding the moments and building the MP4) happens in the cloud, so the phone only shows and adjusts. That's why it runs smoothly even if the episode is two hours long."
+    },
+    "plataformas": {
+      "p": "Is it for iPhone or Android?",
+      "r": "Both, with the same account as the web."
+    },
+    "precio": {
+      "p": "Does the app cost extra?",
+      "r": "No. It's included in the Creator and Team plans; you manage your plan from the web."
+    }
+  },
+  "portada": {
+    "etiqueta": "App for iPhone and Android",
+    "titulo": "Edit your podcast clips <marca>from your phone</marca>.",
+    "texto": "AI already found the episode's best moments. Review them on your phone, with their viral potential and what's said in each one, and decide which ones go out to TikTok, Reels and Shorts. Fast, from wherever you are.",
+    "empezar": "Get started",
+    "tiendas": "Coming soon to the App Store and Google Play"
+  },
+  "loQueYaHace": "What it already does",
+  "loQueViene": "What's coming",
+  "prontoEtiqueta": "Soon",
+  "loQueVieneTexto": "The web editor, designed for your finger.",
+  "porQue": {
+    "titulo": "Why editing fast matters",
+    "p1": "A podcast episode performs on social the day it comes out, not a week later. Finding the moments by hand in two hours of video, cutting them in another program, adding captions and exporting them eats up a whole afternoon per episode.",
+    "p2": "With NG Creator, that part is already done when you open the app: the episode transcribed, the moments marked and every clip built in vertical. What's left is what needs a person: choosing, adjusting and approving."
+  },
+  "verPlanes": "See plans"
+}

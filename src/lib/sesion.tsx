@@ -106,7 +106,13 @@ export function useSesion(): Sesion {
   return useContext(SesionContext);
 }
 
-/** Etiqueta y color de cada rol, para no repetirlos en cada pantalla. */
+/**
+ * Etiqueta y color de cada rol, para no repetirlos en cada pantalla.
+ *
+ * Lo que se muestra se traduce con el namespace `marcoRoles`:
+ * `t("PROPIETARIO.etiqueta")`, `t("PROPIETARIO.ayuda")`. `etiqueta` y `ayuda` quedan
+ * acá en español solo hasta que no las lea ninguna pantalla: no usarlas.
+ */
 export const ESTILO_ROL: Record<
   RolPagina,
   { etiqueta: string; clase: string; ayuda: string }

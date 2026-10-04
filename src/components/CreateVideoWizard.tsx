@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import Link from "next/link";
-import { uploadClip, uploadVoiceNote, downloadFromTikTok, getTikTokPreview, TikTokPreview } from "@/lib/upload";
+import { useTranslations } from "next-intl";
+import { ErrorDeSubida, uploadClip, uploadVoiceNote, downloadFromTikTok, getTikTokPreview, TikTokPreview } from "@/lib/upload";
 import { INGESTAR, LICENSES, COLA_DE_REVISION } from "@/graphql/operations";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { VoiceRecorder } from "./VoiceRecorder";
@@ -19,6 +20,8 @@ interface License {
 }
 
 export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
+  const t = useTranslations("montajeWizard");
+  const tSubida = useTranslations("erroresSubida");
   const [step, setStep] = useState<Step>("upload");
   const [inputMode, setInputMode] = useState<InputMode>("file");
   const [clipFile, setClipFile] = useState<File | null>(null);
@@ -58,7 +61,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
         const preview = await getTikTokPreview(tiktokUrl);
         setTiktokPreview(preview);
       } catch (err: any) {
-        setError(err.message || "Error al obtener preview");
+        setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err.message || t("errores.preview"));
         setTiktokPreview(null);
       } finally {
         setLoadingPreview(false);
@@ -68,7 +71,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
     // Debounce: wait 500ms after user stops typing
     const timeout = setTimeout(fetchPreview, 500);
     return () => clearTimeout(timeout);
-  }, [tiktokUrl]);
+  }, [tiktokUrl, t, tSubida]);
   const licenses: License[] = licensesData?.licenses?.filter((l: License) => l.status === "ACTIVA") || [];
 
   const [ingestar] = useMutation(INGESTAR, {
@@ -86,14 +89,12 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
   const handleProcess = async () => {
     if (!hasClipSource || !selectedLicense) {
-      setError("Selecciona un clip y una licencia");
+      setError(t("errores.faltaClip"));
       return;
     }
     // Sin pagina activa no hay a que espacio de trabajo asignar el expediente.
     if (!marcaActiva) {
-      setError(
-        "No hay página activa. Un admin tiene que habilitar una en Administrar páginas.",
-      );
+      setError(t("errores.sinPagina"));
       return;
     }
 
@@ -112,7 +113,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
         setProgress(20);
         clipResult = await downloadFromTikTok(tiktokUrl);
       } else {
-        throw new Error("No hay fuente de video");
+        throw new Error(t("errores.sinFuente"));
       }
 
       // Upload voice note if exists
@@ -150,7 +151,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
         onComplete?.();
       }, 2000);
     } catch (err: any) {
-      setError(err.message || "Error al procesar");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err.message || t("errores.procesar"));
       setStep("config");
     } finally {
       setUploading(false);
@@ -221,7 +222,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                     : "text-white/60 hover:text-white"
                 }`}
               >
-                📁 Archivo
+                {t("modoArchivo")}
               </button>
               <button
                 onClick={() => {
@@ -273,9 +274,9 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                   className="flex h-32 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-white/20 bg-white/5 transition hover:border-ng-azul/50 hover:bg-ng-teal/5"
                 >
                   <div className="mb-1 text-3xl opacity-50">📁</div>
-                  <p className="text-sm font-medium">Arrastra o selecciona video</p>
+                  <p className="text-sm font-medium">{t("arrastra")}</p>
                   <p className="mt-0.5 text-xs text-white/30">
-                    MP4, MOV, WebM • Máx 500MB
+                    {t("formatos")}
                   </p>
                 </button>
               )
@@ -288,7 +289,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                     type="url"
                     value={tiktokUrl}
                     onChange={(e) => setTiktokUrl(e.target.value)}
-                    placeholder="https://www.tiktok.com/@usuario/video/..."
+                    placeholder={t("placeholderTiktok")}
                     className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/30"
                   />
                   {tiktokUrl && (
@@ -308,7 +309,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 {loadingPreview && (
                   <div className="flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-6">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
-                    <span className="text-xs text-white/50">Obteniendo preview...</span>
+                    <span className="text-xs text-white/50">{t("obteniendoPreview")}</span>
                   </div>
                 )}
 
@@ -328,7 +329,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                       <div className="relative">
                         <img
                           src={tiktokPreview.thumbnail}
-                          alt="Preview"
+                          alt={t("altPreview")}
                           className="w-full max-h-48 object-contain bg-black"
                         />
                         {tiktokPreview.duration > 0 && (
@@ -368,7 +369,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               disabled={!hasClipSource}
               className="w-full rounded-lg bg-marca py-3 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
             >
-              Continuar →
+              {t("continuar")}
             </button>
           </div>
         )}
@@ -383,14 +384,14 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
             {/* License Selection */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-white/60">Licencia *</label>
+              <label className="mb-1.5 block text-xs font-medium text-white/60">{t("licencia")}</label>
               {licenses.length > 0 ? (
                 <select
                   value={selectedLicense}
                   onChange={(e) => setSelectedLicense(e.target.value)}
                   className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-ng-azul/50"
                 >
-                  <option value="">Seleccionar licencia</option>
+                  <option value="">{t("seleccionarLicencia")}</option>
                   {licenses.map((license) => (
                     <option key={license._id} value={license._id}>
                       {license.scope}
@@ -399,12 +400,12 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 </select>
               ) : (
                 <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-center">
-                  <p className="text-xs text-white/40">No hay licencias activas.</p>
+                  <p className="text-xs text-white/40">{t("sinLicencias")}</p>
                   <Link
                     href="/creators"
                     className="text-xs text-ng-teal hover:underline"
                   >
-                    Crear una →
+                    {t("crearUna")}
                   </Link>
                 </div>
               )}
@@ -413,7 +414,7 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
             {/* Pagina de destino: viene del espacio de trabajo, no se elige */}
             <div>
               <label className="mb-1.5 block text-xs font-medium text-white/60">
-                Página
+                {t("pagina")}
               </label>
               {marcaActiva ? (
                 <div
@@ -425,18 +426,17 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                       {marcaActiva.nombre}
                     </span>
                     <span className="block text-[10px] text-white/40">
-                      Espacio de trabajo activo · cámbialo en la barra lateral
+                      {t("espacioActivo")}
                     </span>
                   </span>
                 </div>
               ) : (
                 <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 px-3 py-2.5">
                   <p className="text-xs font-medium text-amber-400">
-                    Sin página activa
+                    {t("sinPaginaTitulo")}
                   </p>
                   <p className="mt-0.5 text-[11px] text-white/50">
-                    Un admin tiene que habilitar una página en Administrar
-                    páginas antes de poder crear videos.
+                    {t("sinPaginaDetalle")}
                   </p>
                 </div>
               )}
@@ -444,23 +444,19 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
 
             {/* Type Selection */}
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-white/60">Tipo</label>
+              <label className="mb-1.5 block text-xs font-medium text-white/60">{t("tipo")}</label>
               <div className="grid grid-cols-3 gap-1.5">
-                {[
-                  { value: "EXPEDIENTE_COMPLETO", label: "Expediente" },
-                  { value: "VOZ_SIN_CAMARA", label: "Voz" },
-                  { value: "XED", label: "XED" },
-                ].map((t) => (
+                {(["EXPEDIENTE_COMPLETO", "VOZ_SIN_CAMARA", "XED"] as const).map((tipo) => (
                   <button
-                    key={t.value}
-                    onClick={() => setTipoDeValor(t.value)}
+                    key={tipo}
+                    onClick={() => setTipoDeValor(tipo)}
                     className={`rounded-lg border py-2 text-xs transition ${
-                      tipoDeValor === t.value
+                      tipoDeValor === tipo
                         ? "border-ng-azul bg-ng-teal/10 text-ng-teal"
                         : "border-white/10 text-white/60 hover:border-white/20"
                     }`}
                   >
-                    {t.label}
+                    {t(`tipos.${tipo}`)}
                   </button>
                 ))}
               </div>
@@ -471,19 +467,19 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
                 onClick={() => setStep("upload")}
                 className="flex-1 rounded-lg border border-white/10 py-2.5 text-sm text-white/60 transition hover:bg-white/5"
               >
-                ← Atrás
+                {t("atras")}
               </button>
               <button
                 onClick={handleProcess}
                 disabled={!selectedLicense || uploading || !marcaActiva}
                 title={
                   !marcaActiva
-                    ? "No hay página activa: habilitá una en Administrar páginas"
+                    ? t("sinPaginaTitle")
                     : undefined
                 }
                 className="flex-1 rounded-lg bg-marca py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
-                Crear 🚀
+                {t("crear")}
               </button>
             </div>
           </div>
@@ -497,9 +493,9 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               </div>
             </div>
             <div>
-              <h2 className="font-bold">Procesando...</h2>
+              <h2 className="font-bold">{t("procesando")}</h2>
               <p className="mt-0.5 text-xs text-white/50">
-                Subiendo archivos
+                {t("subiendoArchivos")}
               </p>
             </div>
             <div className="mx-auto h-1.5 w-48 overflow-hidden rounded-full bg-white/10">
@@ -517,16 +513,17 @@ export function CreateVideoWizard({ onComplete }: { onComplete?: () => void }) {
               <span className="text-2xl">✓</span>
             </div>
             <div>
-              <h2 className="font-bold text-ng-teal">¡Video creado!</h2>
+              <h2 className="font-bold text-ng-teal">{t("creado")}</h2>
               <p className="mt-0.5 text-xs text-white/50">
-                Aparecerá en la cola de revisión
+                {t("enCola")}
               </p>
             </div>
             <button
               onClick={resetWizard}
               className="rounded-lg border border-white/10 px-6 py-2 text-sm transition hover:bg-white/5"
             >
-              Crear otro
+              {t("crearOtro")}
+
             </button>
           </div>
         )}

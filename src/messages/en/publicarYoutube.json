@@ -1,0 +1,25 @@
+{
+  "errorPublicar": "Couldn't publish",
+  "sinCanal": "No YouTube channel enabled for this brand. The owner connects it in Connected networks.",
+  "shortEn": "Short on <n>{nombre}</n>",
+  "publicadas": "{n, plural, one {# published} other {# published}}",
+  "tituloPlaceholder": "Title (if empty, the first line of the description)",
+  "tituloLargo": "{largo}/{max}: YouTube doesn't allow more.",
+  "descripcionPlaceholder": "Description (optional)",
+  "etiquetasPlaceholder": "Comma-separated tags (optional)",
+  "visibilidades": {
+    "public": "Public",
+    "unlisted": "Unlisted",
+    "private": "Private"
+  },
+  "paraNinos": "Made for kids (required by YouTube; turns off comments and ads)",
+  "yaSubido": "Already uploaded to YouTube. Posting again creates a new video.",
+  "ahora": "Now",
+  "programar": "Schedule",
+  "ayudaCola": "It waits in our queue and uploads at that time. Until then you can cancel it or change the time. If the server is down then, it goes out when it's back.",
+  "exigeTitulo": "YouTube requires a title",
+  "agendando": "Scheduling…",
+  "encolando": "Queuing…",
+  "programarEnYoutube": "Schedule on YouTube",
+  "subirAYoutube": "Upload to YouTube"
+}

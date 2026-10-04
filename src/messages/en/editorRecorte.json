@@ -1,0 +1,54 @@
+{
+  "formatos": {
+    "VERTICAL": "Reels, TikTok, Shorts",
+    "CUADRADO": "Feed",
+    "HORIZONTAL": "YouTube"
+  },
+  "disenos": {
+    "UNO": { "etiqueta": "Single", "titulo": "A single frame" },
+    "DIVIDIDO": { "etiqueta": "Split", "titulo": "Two, one above the other" },
+    "HORIZONTAL": { "etiqueta": "Landscape", "titulo": "The full 16:9, centered" },
+    "CENTRADO": { "etiqueta": "Centered", "titulo": "A square in the middle" }
+  },
+  "fondos": {
+    "DESENFOCADO": { "etiqueta": "Blurred", "titulo": "The same video, softened" },
+    "NEGRO": { "etiqueta": "Black", "titulo": "Clean bars for text" }
+  },
+  "disenoDelTramo": "Layout for this segment",
+  "diseno": "Layout",
+  "enEsteTramo": " (in this segment)",
+  "tramo": "Segment {desde}–{hasta} s",
+  "ayudaRecuadro": "Drag the box to move it; drag the corner to resize it.",
+  "ayudaRecuadroEtiqueta": "How to move the box",
+  "abajo": "Bottom",
+  "arriba": "Top",
+  "pausa": "Pause",
+  "reproducir": "Play",
+  "encuadres": "Framing · {n}",
+  "ayudaEncuadres": "The crop positions: from each second on, a different framing. Tap one to jump to that moment.",
+  "ayudaEncuadresEtiqueta": "What framing changes are",
+  "ayudaAuto": "Watches who's talking and builds the framing changes on its own. Then you fine-tune them.",
+  "mirando": "Watching…",
+  "autoEncuadre": "✨ Auto-framing",
+  "personas": "{n, plural, one {# person} other {# people}}",
+  "ayudaNuevo": "From this second ({seg} s), a new framing. It starts the same as the current one: move it afterwards.",
+  "nuevoEncuadre": "+ Framing here",
+  "quitar": "Remove",
+  "vistaPrevia": "Preview ({formato})",
+  "arrastraSubtitulo": "Drag to move the caption up or down",
+  "arrastraTamano": "Drag sideways to make it bigger or smaller",
+  "llamadaBrandKit": "Brand Kit call to action",
+  "barra": {
+    "titulo": "Clip segment",
+    "ayuda": "Drag the edges to lengthen or shorten it. The buttons shift it by 5 s.",
+    "ayudaEtiqueta": "How to change the segment",
+    "arrastraInicio": "Drag to move the start",
+    "arrastraFinal": "Drag to move the end",
+    "inicio": "Start",
+    "final": "End",
+    "inicioAntes": "Move the start 5 s earlier (the clip gets longer)",
+    "inicioDespues": "Move the start 5 s later (the clip gets shorter)",
+    "finalAntes": "Move the end 5 s earlier (the clip gets shorter)",
+    "finalDespues": "Move the end 5 s later (the clip gets longer)"
+  }
+}

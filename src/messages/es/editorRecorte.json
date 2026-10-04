@@ -1,0 +1,54 @@
+{
+  "formatos": {
+    "VERTICAL": "Reels, TikTok, Shorts",
+    "CUADRADO": "Feed",
+    "HORIZONTAL": "YouTube"
+  },
+  "disenos": {
+    "UNO": { "etiqueta": "Uno", "titulo": "Un solo encuadre" },
+    "DIVIDIDO": { "etiqueta": "Dividido", "titulo": "Dos, uno arriba del otro" },
+    "HORIZONTAL": { "etiqueta": "Horizontal", "titulo": "El 16:9 entero, centrado" },
+    "CENTRADO": { "etiqueta": "Centrado", "titulo": "Un cuadrado al medio" }
+  },
+  "fondos": {
+    "DESENFOCADO": { "etiqueta": "Desenfocado", "titulo": "El mismo video, suave" },
+    "NEGRO": { "etiqueta": "Negro", "titulo": "Franjas limpias para textos" }
+  },
+  "disenoDelTramo": "Diseño de este tramo",
+  "diseno": "Diseño",
+  "enEsteTramo": " (en este tramo)",
+  "tramo": "Tramo {desde}–{hasta} s",
+  "ayudaRecuadro": "Arrastrá el recuadro para moverlo; la esquina, para agrandarlo.",
+  "ayudaRecuadroEtiqueta": "Cómo mover el recuadro",
+  "abajo": "Abajo",
+  "arriba": "Arriba",
+  "pausa": "Pausa",
+  "reproducir": "Reproducir",
+  "encuadres": "Encuadres · {n}",
+  "ayudaEncuadres": "Las posiciones del recorte: desde cada segundo, otro encuadre. Tocá una para ir a ese momento.",
+  "ayudaEncuadresEtiqueta": "Qué son los encuadres",
+  "ayudaAuto": "Mira quién habla y arma los cambios de encuadre solo. Después los ajustás.",
+  "mirando": "Mirando…",
+  "autoEncuadre": "✨ Auto-encuadre",
+  "personas": "{n, plural, one {# persona} other {# personas}}",
+  "ayudaNuevo": "Desde este segundo ({seg} s), otro encuadre. Arranca igual al actual: movelo después.",
+  "nuevoEncuadre": "+ Encuadre aquí",
+  "quitar": "Quitar",
+  "vistaPrevia": "Vista previa ({formato})",
+  "arrastraSubtitulo": "Arrastrá para subir o bajar el subtítulo",
+  "arrastraTamano": "Arrastrá a los lados para agrandar o achicar",
+  "llamadaBrandKit": "Llamada a la acción del Brand Kit",
+  "barra": {
+    "titulo": "Tramo del clip",
+    "ayuda": "Arrastrá los bordes para alargarlo o acortarlo. Los botones lo corren de a 5 s.",
+    "ayudaEtiqueta": "Cómo cambiar el tramo",
+    "arrastraInicio": "Arrastrá para mover el inicio",
+    "arrastraFinal": "Arrastrá para mover el final",
+    "inicio": "Inicio",
+    "final": "Final",
+    "inicioAntes": "Mover el inicio 5 s antes (el clip se alarga)",
+    "inicioDespues": "Mover el inicio 5 s después (el clip se acorta)",
+    "finalAntes": "Mover el final 5 s antes (el clip se acorta)",
+    "finalDespues": "Mover el final 5 s después (el clip se alarga)"
+  }
+}

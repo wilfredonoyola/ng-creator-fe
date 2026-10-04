@@ -1,0 +1,44 @@
+{
+  "confirmarBuscar": "¿Buscar momentos otra vez? La lista de sugeridos se reemplaza.",
+  "errorAnalisis": "No se pudo pedir el análisis",
+  "noEncontrado": "No encontramos ese episodio",
+  "otraMarca": "Puede ser de otra marca: revisá cuál tenés elegida.",
+  "volverAEpisodios": "← Volver a Episodios",
+  "volver": "← Episodios",
+  "palabras": "{n, plural, other { · {cantidad} palabras}}",
+  "costo": " · costó US${usd}",
+  "reintentar": "Reintentar",
+  "buscarOtraVez": "Buscar momentos otra vez",
+  "videoNoListo": "El video todavía no está listo en Bunny",
+  "clips": "Clips",
+  "crearClipAyuda": "Buscá el momento, marcá inicio y fin, y al editor",
+  "crearClip": "+ Crear clip",
+  "analisis": {
+    "transcribiendo": "Transcribiendo el episodio ({p}%). Después la IA busca los momentos.",
+    "falloTranscripcion": "La transcripción falló: {error}. Reintentala desde Episodios.",
+    "sinDetalle": "sin detalle",
+    "sinTranscripcion": "Los clips salen de la transcripción, que todavía no está.",
+    "analizando": "La IA está leyendo el episodio y eligiendo momentos. Tarda un par de minutos.",
+    "falloMomentos": "La búsqueda de momentos falló: {error}",
+    "sinMomentos": "La IA no encontró momentos que funcionen solos en este episodio."
+  },
+  "tarjeta": {
+    "hechoAMano": "Hecho a mano",
+    "mp4Listo": "MP4 listo",
+    "renderizando": "Renderizando",
+    "tramo": "{desde} – {hasta} · {seg} s",
+    "puntuacion": " · puntuación {n}",
+    "gancho": "Gancho: <g>“{gancho}”</g>",
+    "ocultarTexto": "Ocultar lo que se dice",
+    "verTexto": "Ver lo que se dice",
+    "editar": "Editar",
+    "verFinal": "Ver video final",
+    "programar": "Programar",
+    "reproducirTramo": "Reproducir este tramo",
+    "escuchar": "▶ Escuchar"
+  },
+  "modal": {
+    "etiqueta": "Video final: {titulo}",
+    "cerrar": "Cerrar"
+  }
+}

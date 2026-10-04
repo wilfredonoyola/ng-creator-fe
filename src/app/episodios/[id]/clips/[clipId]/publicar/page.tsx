@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   CANCELAR_PUBLICACION,
   CLIP_EPISODIO,
@@ -35,8 +36,8 @@ interface Destino {
   foto?: string | null;
   formato: string;
   etiqueta: string;
-  /** Si no se puede usar, por qué. */
-  motivo?: string;
+  /** Si no se puede usar, por qué (clave en `publicarClip.motivos`). */
+  motivo?: "reconectar" | "desactivado";
 }
 
 /** Lo mismo que el backend: lo que va abajo del video y el título de YouTube. */
@@ -59,6 +60,7 @@ export default function ProgramarClipPage({
   // Objeto plano, no promesa: ver publicados/[id].
   params: { id: string; clipId: string };
 }) {
+  const t = useTranslations("publicarClip");
   const { id: episodioId, clipId } = params;
   const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
@@ -111,16 +113,16 @@ export default function ProgramarClipPage({
       formato: "SHORT",
       etiqueta: "Short",
       motivo: c.requiereReconexion
-        ? "Hay que volver a conectarlo en Redes conectadas"
+        ? "reconectar"
         : !c.activa
-          ? "Desactivado en Redes conectadas"
+          ? "desactivado"
           : undefined,
     });
   }
 
   const volver = (
     <Link href={`/episodios/${episodioId}/clips/${clipId}`} className="text-sm text-white/50 hover:text-white/80">
-      ← {clip?.titulo ?? "Editor del clip"}
+      ← {clip?.titulo ?? t("editorDelClip")}
     </Link>
   );
 
@@ -130,9 +132,9 @@ export default function ProgramarClipPage({
         {clipQ.loading || !activa ? (
           <div className="h-64 animate-pulse rounded-2xl bg-white/5" />
         ) : (
-          <Vacio titulo="No encontramos este clip" detalle="Puede ser de otra marca: revisá cuál tenés elegida.">
+          <Vacio titulo={t("noEncontrado")} detalle={t("otraMarca")}>
             <Link href={`/episodios/${episodioId}`} className="mt-4 inline-block text-sm text-ng-teal">
-              ← Volver al episodio
+              {t("volverAlEpisodio")}
             </Link>
           </Vacio>
         )}
@@ -145,7 +147,7 @@ export default function ProgramarClipPage({
       <DashboardLayout>
         {volver}
         <div className="mt-4">
-          <Vacio titulo="Primero procesá el MP4" detalle="Se programa el video final: procesalo en el editor y volvé." />
+          <Vacio titulo={t("primeroProcesa")} detalle={t("primeroProcesaDetalle")} />
         </div>
       </DashboardLayout>
     );
@@ -154,7 +156,7 @@ export default function ProgramarClipPage({
   return (
     <DashboardLayout>
       {volver}
-      <h1 className="mb-5 mt-2 text-2xl font-bold">Programar</h1>
+      <h1 className="mb-5 mt-2 text-2xl font-bold">{t("titulo")}</h1>
       <div className="mx-auto max-w-2xl">
         <Formulario
           clip={clip}
@@ -196,6 +198,8 @@ function Formulario({
   publicaciones: Publicacion[];
   refrescar: () => void;
 }) {
+  const t = useTranslations("publicarClip");
+  const locale = useLocale();
   const [elegidos, setElegidos] = useState<Set<string>>(
     () =>
       new Set(
@@ -243,7 +247,7 @@ function Formulario({
     if (!aEnviar.length) return;
     setAviso(null);
     if (!cuando || yaPaso) {
-      setAviso({ tono: "error", texto: "Esa hora ya pasó: elegí una de acá en adelante." });
+      setAviso({ tono: "error", texto: t("yaPasoLargo") });
       return;
     }
     setEnviando(true);
@@ -268,7 +272,7 @@ function Formulario({
           refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
         });
       } catch (e) {
-        fallas.push(`${REDES[d.red]?.nombre ?? d.red}: ${e instanceof Error ? e.message : "no se pudo"}`);
+        fallas.push(`${REDES[d.red]?.nombre ?? d.red}: ${e instanceof Error ? e.message : t("noSePudo")}`);
       }
     }
     setEnviando(false);
@@ -276,12 +280,12 @@ function Formulario({
     if (fallas.length) {
       setAviso({
         tono: "error",
-        texto: `${fallas.length === aEnviar.length ? "No se pudo programar" : "Algunas no se programaron"}. ${fallas.join(" · ")}`,
+        texto: t(fallas.length === aEnviar.length ? "fallaTodas" : "fallaAlgunas", { detalle: fallas.join(" · ") }),
       });
     } else {
       setAviso({
         tono: "ok",
-        texto: `Programado: sale el ${diaYHora(cuando)}. Lo ves en el Calendario.`,
+        texto: t("programado", { cuando: diaYHora(cuando, locale) }),
       });
     }
   }
@@ -292,12 +296,12 @@ function Formulario({
         <Poster url={clip.urlPoster} className="h-32 w-[72px]" />
         <div className="min-w-0 flex-1">
           <p className="text-lg font-semibold">{clip.titulo}</p>
-          <p className="text-sm text-white/45">{Math.round(clip.hastaSeg - clip.desdeSeg)} s · MP4 listo</p>
+          <p className="text-sm text-white/45">{t("duracionListo", { seg: Math.round(clip.hastaSeg - clip.desdeSeg) })}</p>
         </div>
       </div>
       {editadoSinProcesar ? (
         <p className="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3 text-sm text-amber-300">
-          Tiene cambios sin procesar: sale el último MP4 procesado. Si querés los cambios, procesalo de nuevo antes.
+          {t("cambiosSinProcesar")}
         </p>
       ) : null}
 
@@ -308,7 +312,7 @@ function Formulario({
           <div className="sticky top-2 z-10 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-ng-fondo/95 p-3 backdrop-blur">
             <div className="min-w-0 flex-1 space-y-1.5">
               <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/55"}`}>
-                {!fecha ? "Elegí el día y la hora" : yaPaso ? "Esa hora ya pasó" : `Sale el ${diaYHora(cuando!)}`}
+                {!fecha ? t("elegiDiaHora") : yaPaso ? t("yaPaso") : t("sale", { cuando: diaYHora(cuando!, locale) })}
               </p>
               {elegidosEnOrden.length ? (
                 <div className="flex flex-wrap gap-1.5">
@@ -325,7 +329,7 @@ function Formulario({
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-amber-300">Marcá al menos una red en Dónde.</p>
+                <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p>
               )}
             </div>
             <button
@@ -334,18 +338,20 @@ function Formulario({
               disabled={enviando || elegidos.size === 0 || yaPaso}
               className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
             >
-              {enviando ? "Programando…" : elegidos.size > 1 ? `Programar en ${elegidos.size} redes` : "Programar"}
+              {enviando ? t("programando") : elegidos.size > 1 ? t("programarEnN", { n: elegidos.size }) : t("programar")}
             </button>
           </div>
 
-          <Seccion titulo="Dónde">
+          <Seccion titulo={t("secciones.donde")}>
             {destinos.length === 0 ? (
               <p className="text-sm text-white/60">
-                Esta marca no tiene redes conectadas. Conectalas en{" "}
-                <Link href="/admin/facebook" className="text-ng-celeste hover:underline">
-                  Redes conectadas
-                </Link>
-                .
+                {t.rich("sinRedes", {
+                  link: (c) => (
+                    <Link href="/admin/facebook" className="text-ng-celeste hover:underline">
+                      {c}
+                    </Link>
+                  ),
+                })}
               </p>
             ) : (
               destinos.map((d) => {
@@ -364,7 +370,7 @@ function Formulario({
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium">{d.nombre}</span>
                       <span className={`block text-xs ${d.motivo ? "text-amber-300" : "text-white/45"}`}>
-                        {d.motivo ?? `${REDES[d.red].nombre} · ${d.etiqueta}`}
+                        {d.motivo ? t(`motivos.${d.motivo}`) : `${REDES[d.red].nombre} · ${d.etiqueta}`}
                       </span>
                     </span>
                     <span
@@ -380,35 +386,34 @@ function Formulario({
             )}
             {faltaInstagram ? (
               <p className="text-xs text-white/40">
-                ¿Falta Instagram? Tiene que ser una cuenta profesional ligada a la página de Facebook, y hay que volver a
-                conectar Facebook aceptando los permisos de Instagram.
+                {t("faltaInstagram")}
               </p>
             ) : null}
             <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 opacity-45">
               <IconoRed red="TIKTOK" />
               <span>
                 <span className="block text-sm font-medium">TikTok</span>
-                <span className="block text-xs text-white/45">Pronto</span>
+                <span className="block text-xs text-white/45">{t("pronto")}</span>
               </span>
             </div>
           </Seccion>
 
-          <Seccion titulo="Descripción">
+          <Seccion titulo={t("secciones.descripcion")}>
             <textarea
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Lo que va abajo del video, con hashtags"
+              placeholder={t("descripcionPlaceholder")}
               maxLength={DESCRIPCION_MAX}
               rows={4}
               className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
             />
             {conYoutube && (
               <label className="block">
-                <span className="mb-1 block text-xs text-white/45">Título en YouTube</span>
+                <span className="mb-1 block text-xs text-white/45">{t("tituloYoutube")}</span>
                 <input
                   value={tituloYoutube}
                   onChange={(e) => setTituloYoutube(e.target.value)}
-                  placeholder="Título en YouTube"
+                  placeholder={t("tituloYoutube")}
                   maxLength={TITULO_YOUTUBE_MAX}
                   className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
                 />
@@ -416,7 +421,7 @@ function Formulario({
             )}
           </Seccion>
 
-          <Seccion titulo="Cuándo">
+          <Seccion titulo={t("secciones.cuando")}>
             <div className="flex flex-wrap items-center gap-2">
               <input
                 type="datetime-local"
@@ -443,11 +448,11 @@ function Formulario({
             </div>
             <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/40"}`}>
               {!fecha
-                ? "Elegí el día y la hora."
+                ? t("elegiDiaHoraPunto")
                 : yaPaso
-                  ? "Esa hora ya pasó: elegí una de acá en adelante."
-                  : `Sale el ${diaYHora(cuando!)}.`}{" "}
-              Hora de {zonaHoraria()}.
+                  ? t("yaPasoLargo")
+                  : t("salePunto", { cuando: diaYHora(cuando!, locale) })}{" "}
+              {t("horaDe", { zona: zonaHoraria(locale) })}
             </p>
           </Seccion>
 
@@ -462,7 +467,7 @@ function Formulario({
               {aviso.texto}
               {aviso.tono === "ok" && (
                 <Link href="/calendario" className="ml-2 underline underline-offset-2">
-                  Ir al calendario
+                  {t("irAlCalendario")}
                 </Link>
               )}
             </p>
@@ -471,12 +476,12 @@ function Formulario({
         </>
       ) : (
         <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/50">
-          Tu rol en esta marca solo mira: programar lo hace un editor o el propietario.
+          {t("soloMira")}
         </p>
       )}
 
       {publicaciones.length > 0 && (
-        <Seccion titulo="Publicaciones de este clip">
+        <Seccion titulo={t("secciones.publicaciones")}>
           {publicaciones.map((p) => (
             <FilaPublicacionClip key={p._id} p={p} marcaId={marcaId} opera={opera} onCambio={refrescar} />
           ))}
@@ -497,21 +502,25 @@ function FilaPublicacionClip({
   opera: boolean;
   onCambio: () => void;
 }) {
+  const t = useTranslations("publicarClip");
+  const locale = useLocale();
   const [cancelar, { loading }] = useMutation(CANCELAR_PUBLICACION, {
     refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
   });
   const [error, setError] = useState<string | null>(null);
-  const e = ESTADOS_PUBLICACION[p.estado] ?? { texto: p.estado, clase: "bg-white/10 text-white/60" };
+  const e = ESTADOS_PUBLICACION[p.estado]
+    ? { texto: t(`estados.${p.estado}`), clase: ESTADOS_PUBLICACION[p.estado].clase }
+    : { texto: p.estado, clase: "bg-white/10 text-white/60" };
   const fecha = p.publicadaEn ?? p.publicarEn;
 
   async function cancelarla() {
-    if (!window.confirm(`¿Cancelar la de ${REDES[p.red]?.nombre ?? p.red}? No sale.`)) return;
+    if (!window.confirm(t("confirmarCancelar", { red: REDES[p.red]?.nombre ?? p.red }))) return;
     setError(null);
     try {
       await cancelar({ variables: { marcaId, id: p._id } });
       onCambio();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo cancelar");
+      setError(err instanceof Error ? err.message : t("errorCancelar"));
     }
   }
 
@@ -527,9 +536,12 @@ function FilaPublicacionClip({
       </div>
       {fecha ? (
         <p className="mt-1 text-xs text-white/45">
-          {p.estado === "PUBLICADA" ? "Salió el " : p.estado === "PROGRAMADA" ? "Sale el " : ""}
-          {diaYHora(new Date(fecha))}
-          {p.creadoPor?.nombre ? ` · por ${p.creadoPor.nombre}` : ""}
+          {p.estado === "PUBLICADA"
+            ? t("fila.salio", { cuando: diaYHora(new Date(fecha), locale) })
+            : p.estado === "PROGRAMADA"
+              ? t("fila.sale", { cuando: diaYHora(new Date(fecha), locale) })
+              : diaYHora(new Date(fecha), locale)}
+          {p.creadoPor?.nombre ? t("fila.por", { nombre: p.creadoPor.nombre }) : ""}
         </p>
       ) : null}
       {p.error ? <p className="mt-1 break-words text-xs text-red-400">{p.error}</p> : null}
@@ -538,12 +550,12 @@ function FilaPublicacionClip({
         <div className="mt-2 flex gap-4 text-xs">
           {p.permalink ? (
             <a href={p.permalink} target="_blank" rel="noreferrer" className="text-ng-celeste hover:underline">
-              Ver publicación ↗
+              {t("fila.verPublicacion")}
             </a>
           ) : null}
           {opera && p.estado === "PROGRAMADA" ? (
             <button onClick={() => void cancelarla()} disabled={loading} className="text-red-400/80 hover:text-red-400 disabled:opacity-50">
-              {loading ? "Cancelando…" : "Cancelar"}
+              {loading ? t("fila.cancelando") : t("fila.cancelar")}
             </button>
           ) : null}
         </div>

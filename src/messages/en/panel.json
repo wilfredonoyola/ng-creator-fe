@@ -1,0 +1,68 @@
+{
+  "etapas": {
+    "revision": "Needs review",
+    "subiendo": "Partly uploaded",
+    "procesando": "Processing the video",
+    "transcribiendo": "Transcribing · {progreso}%",
+    "enCola": "Queued for transcription",
+    "clips": "{n, plural, one {# clip} other {# clips}} to edit",
+    "buscando": "AI is finding the moments"
+  },
+  "duracionHoras": "{h} h {m} min",
+  "duracionMinutos": "{m} min",
+  "motivos": {
+    "GANCHO_FUERTE": "Strong hook",
+    "OPINION_POLEMICA": "Hot take",
+    "HISTORIA_COMPLETA": "Full story",
+    "FRASE_CITABLE": "Quotable line",
+    "HUMOR": "Humor",
+    "EMOCION": "Emotion",
+    "DATO_SORPRENDENTE": "Surprising fact"
+  },
+  "hola": "Hi, {nombre}",
+  "inicio": "Home",
+  "hoyEn": "What's on your plate today in {marca}.",
+  "elegiMarca": "Pick a brand to get started.",
+  "subirEpisodio": "Upload episode",
+  "cifras": {
+    "delMes": "episodes this month",
+    "enProceso": "in progress",
+    "clips": "clips to edit"
+  },
+  "cargando": "Loading episodes…",
+  "primero": {
+    "titulo": "Upload your first episode",
+    "detalle": "The full podcast video. It gets transcribed automatically and AI flags the best moments for clips."
+  },
+  "reciente": {
+    "titulo": "Latest episode",
+    "abrir": "Open episode"
+  },
+  "generados": {
+    "titulo": "Generated clips",
+    "verTodos": "See all",
+    "vacio": "You haven't processed any clips from this episode yet.",
+    "ayuda": "Pick a moment below, adjust it and process it: it shows up here."
+  },
+  "destacados": {
+    "titulo": "Top moments (AI)",
+    "detalle": "Tap one to watch it above",
+    "verTodos": "See all {n} moments",
+    "reproducir": "Play this moment above",
+    "editar": "Edit"
+  },
+  "otros": {
+    "titulo": "Other episodes ready to edit",
+    "detalle": "AI already found the moments"
+  },
+  "enCamino": {
+    "titulo": "In progress",
+    "detalle": "They move along on their own; refreshes every 20 seconds"
+  },
+  "verEpisodios": "See all episodes",
+  "reaccion": {
+    "titulo": "Reaction videos",
+    "esperando": "{n} awaiting review",
+    "nada": "Nothing awaiting review"
+  }
+}

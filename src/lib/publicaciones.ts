@@ -71,7 +71,11 @@ export const REDES: Record<string, { nombre: string; sigla: string; clase: strin
   TIKTOK: { nombre: "TikTok", sigla: "♪", clase: "bg-black text-white ring-1 ring-white/20" },
 };
 
-/** Cómo se dice cada estado, y con qué color. */
+/**
+ * Cómo se dice cada estado, y con qué color. `texto` es el español; una
+ * pantalla traducida usa la clave del estado (`estados.PUBLICADA`) en su
+ * namespace y toma de acá solo la clase.
+ */
 export const ESTADOS_PUBLICACION: Record<EstadoPublicacion, { texto: string; clase: string }> = {
   PROGRAMADA: { texto: "Programada", clase: "bg-indigo-400/15 text-indigo-300" },
   AGENDADA_EN_RED: { texto: "Agendada", clase: "bg-indigo-400/15 text-indigo-300" },
@@ -83,14 +87,14 @@ export const ESTADOS_PUBLICACION: Record<EstadoPublicacion, { texto: string; cla
 };
 
 /** "18:00". Las horas del calendario van en 24 h: no hay a. m. que confundir. */
-export function horaCorta(fecha: Date): string {
-  return fecha.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", hour12: false });
+export function horaCorta(fecha: Date, locale: string): string {
+  return fecha.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
-/** "vie 3, 18:00". */
-export function diaYHora(fecha: Date): string {
-  const dia = fecha.toLocaleDateString("es", { weekday: "short" }).replace(".", "");
-  return `${dia} ${fecha.getDate()}, ${horaCorta(fecha)}`;
+/** "vie 3, 18:00" ("Fri 3, 18:00" en inglés). */
+export function diaYHora(fecha: Date, locale: string): string {
+  const dia = fecha.toLocaleDateString(locale, { weekday: "short" }).replace(".", "");
+  return `${dia} ${fecha.getDate()}, ${horaCorta(fecha, locale)}`;
 }
 
 /**
@@ -98,14 +102,14 @@ export function diaYHora(fecha: Date): string {
  * El_Salvador (GMT-6)". El equipo puede estar en países distintos, y una hora
  * sin zona es una hora que alguien lee mal.
  */
-export function zonaHoraria(): string {
+export function zonaHoraria(locale: string): string {
   try {
     const zona = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const corta = new Intl.DateTimeFormat("es", { timeZoneName: "shortOffset" })
+    const corta = new Intl.DateTimeFormat(locale, { timeZoneName: "shortOffset" })
       .formatToParts(new Date())
       .find((p) => p.type === "timeZoneName")?.value;
     return corta ? `${zona.replace(/_/g, " ")} (${corta})` : zona.replace(/_/g, " ");
   } catch {
-    return "la hora de este dispositivo";
+    return locale === "es" ? "la hora de este dispositivo" : "this device's time";
   }
 }

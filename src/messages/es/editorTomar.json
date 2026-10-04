@@ -1,0 +1,22 @@
+{
+  "libre": "Libre",
+  "loEditasVos": "Lo editás vos",
+  "loEdita": "Lo edita {nombre}",
+  "confirmarTomar": "Lo está editando {nombre}. ¿Tomarlo igual?",
+  "errorTomar": "No se pudo tomar el clip",
+  "errorSoltar": "No se pudo soltar el clip",
+  "desde": "Desde {fecha}",
+  "liberarAyuda": "Lo deja libre para que lo tome otra persona del equipo",
+  "tomarAyuda": "Pasa a tu nombre: el equipo ve que lo estás haciendo vos",
+  "liberar": "Liberar",
+  "tomar": "Tomarlo",
+  "cruces": {
+    "titulo": "Este tramo ya está en otro clip",
+    "cruce": "Se cruza con «{titulo}» ({desde}–{hasta}), {quien} — {segundos} s en común.",
+    "libre": "que está libre",
+    "vos": "lo tenés vos",
+    "otro": "lo tiene {nombre}",
+    "masLargo": "El tuyo es más largo: más contexto, está bien.",
+    "cancelar": "Cancelar"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "colores": {
+    "colorPrimario": { "nombre": "Primario", "minuscula": "primario", "ayuda": "La palabra que se dice, las píldoras, las barras" },
+    "colorSecundario": { "nombre": "Secundario", "minuscula": "secundario", "ayuda": "El segundo bloque y los acentos" },
+    "colorTexto": { "nombre": "Texto", "minuscula": "texto", "ayuda": "La letra de los subtítulos y el gancho" },
+    "colorFondo": { "nombre": "Fondo", "minuscula": "fondo", "ayuda": "Cajas y franjas oscuras" }
+  },
+  "sinLogo": "La marca no tiene logo. Subilo más abajo, en Logo, y probá de nuevo.",
+  "logoSinColores": "El logo no tiene colores que sirvan (es blanco y negro, o casi transparente). Elegilos a mano.",
+  "titulo": "Tema de la marca",
+  "subtitulo": "Los colores con que se pintan los estilos de texto de tus clips.",
+  "mirandoLogo": "Mirando el logo…",
+  "usarLogo": "Usar colores del logo",
+  "delLogo": "Del logo. Tocá uno para usarlo como <b>{color}</b>:",
+  "elegirColor": "Elegir el color {color}",
+  "colorHex": "Color {color} en hexadecimal",
+  "formatoHex": "Cada color va como #RRGGBB.",
+  "soloPropietario": "Los colores de la marca los cambia el propietario."
+}

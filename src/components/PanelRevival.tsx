@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ADJUNTAR_IMAGEN_NUEVA,
   GENERAR_PROMPT_REVIVAL,
@@ -9,7 +10,7 @@ import {
   PUBLICAR_HISTORIA_REVIVAL,
   PREVISUALIZAR_HISTORIA,
 } from "@/graphql/operations";
-import { uploadImagenRevival } from "@/lib/upload";
+import { ErrorDeSubida, uploadImagenRevival } from "@/lib/upload";
 import type { PostRevival } from "./TarjetaRevival";
 
 /**
@@ -42,6 +43,9 @@ export function PanelRevival({
   onCerrar: () => void;
   onCambio: () => void;
 }) {
+  const t = useTranslations("revivalPanel");
+  const tSubida = useTranslations("erroresSubida");
+  const locale = useLocale();
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [subiendo, setSubiendo] = useState(false);
@@ -88,7 +92,7 @@ export function PanelRevival({
         },
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo subir");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err instanceof Error ? err.message : t("errorSubir"));
     } finally {
       setSubiendo(false);
     }
@@ -115,18 +119,19 @@ export function PanelRevival({
       >
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-ng-fondo px-4 py-3 sm:px-5 sm:py-4">
           <div>
-            <h2 className="font-bold">Revivir publicación</h2>
+            <h2 className="font-bold">{t("titulo")}</h2>
             <p className="text-xs text-white/40">
-              {new Date(post.publicadoEn).toLocaleDateString("es", {
+              {new Date(post.publicadoEn).toLocaleDateString(locale, {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
               })}{" "}
-              · score {post.score.toLocaleString("es")}
+              {t("score", { score: post.score.toLocaleString(locale) })}
             </p>
           </div>
           <button
             onClick={onCerrar}
+            aria-label={t("cerrar")}
             className="rounded-lg px-3 py-1 text-white/40 transition hover:bg-white/10 hover:text-white"
           >
             ✕
@@ -142,12 +147,12 @@ export function PanelRevival({
 
           {/* Comparador */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Lado titulo="Original" imagen={original} texto={post.mensaje} />
+            <Lado titulo={t("original")} imagen={original} texto={post.mensaje} />
             <Lado
-              titulo="Nueva"
+              titulo={t("nueva")}
               imagen={post.imagenNuevaUrl}
               texto={post.mensajeNuevo}
-              vacio="Todavía no subiste la imagen nueva"
+              vacio={t("sinNueva")}
             />
           </div>
 
@@ -156,7 +161,7 @@ export function PanelRevival({
             <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-semibold">
-                  Análisis y prompt para ChatGPT
+                  {t("analisisTitulo")}
                 </h3>
                 <button
                   onClick={() =>
@@ -166,10 +171,10 @@ export function PanelRevival({
                   className="rounded-lg bg-white/10 px-3 py-1.5 text-xs transition hover:bg-white/20 disabled:opacity-40"
                 >
                   {generando
-                    ? "Analizando…"
+                    ? t("analizando")
                     : post.promptImagen
-                      ? "Regenerar"
-                      : "Generar prompt"}
+                      ? t("regenerar")
+                      : t("generarPrompt")}
                 </button>
               </div>
 
@@ -189,7 +194,7 @@ export function PanelRevival({
                       onClick={copiarPrompt}
                       className="rounded-lg bg-marca px-4 py-1.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110"
                     >
-                      {copiado ? "✓ Copiado" : "Copiar prompt"}
+                      {copiado ? t("copiado") : t("copiarPrompt")}
                     </button>
                     {original && (
                       <a
@@ -199,21 +204,18 @@ export function PanelRevival({
                         download
                         className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5"
                       >
-                        ⬇️ Bajar la referencia
+                        {t("bajarReferencia")}
                       </a>
                     )}
                   </div>
                   <p className="mt-2 text-[11px] text-white/30">
-                    En ChatGPT: adjuntá la imagen original y pegá el prompt. El
-                    prompt arranca diciendo &ldquo;based on the reference
-                    image&rdquo;, así que sin adjuntarla el resultado no va a
-                    parecerse en nada.
+                    {t("ayudaChatgpt")}
                   </p>
                 </>
               ) : (
                 !generando && (
                   <p className="text-xs text-white/30">
-                    Generá el prompt, pegalo en ChatGPT y volvé con la imagen.
+                    {t("generaPrimero")}
                   </p>
                 )
               )}
@@ -225,14 +227,14 @@ export function PanelRevival({
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-xs text-white/50">
-                  Texto de la publicación nueva
+                  {t("textoNuevo")}
                 </label>
                 <textarea
                   value={mensaje}
                   onChange={(e) => setMensaje(e.target.value)}
                   rows={3}
                   className="w-full rounded-lg border border-white/10 bg-black/40 p-3 text-sm text-white/80 outline-none focus:border-ng-azul/40"
-                  placeholder="Arranca con el texto del original; editalo a gusto."
+                  placeholder={t("placeholderTexto")}
                 />
               </div>
 
@@ -245,14 +247,13 @@ export function PanelRevival({
                   disabled={subiendo}
                 />
                 {subiendo
-                  ? "Subiendo y aplicando la marca de agua…"
+                  ? t("subiendoMarca")
                   : post.imagenNuevaUrl
-                    ? "Reemplazar imagen nueva"
-                    : "Subir la imagen que hiciste en ChatGPT"}
+                    ? t("reemplazar")
+                    : t("subirImagen")}
               </label>
               <p className="text-[11px] text-white/25">
-                La marca de agua de la página se aplica en el servidor: no hace
-                falta que la pongas vos.
+                {t("marcaServidor")}
               </p>
             </div>
           )}
@@ -260,7 +261,7 @@ export function PanelRevival({
           {/* Publicar o programar */}
           {post.estado === "PUBLICADO" ? (
             <div className="rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-sm text-violet-200">
-              Publicado.{" "}
+              {t("publicado")}{" "}
               {post.publicadoPermalink && (
                 <a
                   href={post.publicadoPermalink}
@@ -268,38 +269,31 @@ export function PanelRevival({
                   rel="noopener noreferrer"
                   className="underline"
                 >
-                  Ver en Facebook
+                  {t("verFacebook")}
                 </a>
               )}
             </div>
           ) : post.estado === "PROGRAMADO" ? (
             <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-4 py-3 text-sm text-indigo-200">
-              Programado para{" "}
-              <strong>
-                {post.programadaPara &&
-                  new Date(post.programadaPara).toLocaleString("es", {
-                    day: "numeric",
-                    month: "long",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-              </strong>
-              .
+              {t.rich("programadoPara", {
+                fecha: post.programadaPara
+                  ? new Date(post.programadaPara).toLocaleString(locale, {
+                      day: "numeric",
+                      month: "long",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "",
+                b: (c) => <strong>{c}</strong>,
+              })}
               <p className="mt-1 text-xs text-indigo-200/60">
-                La agenda la sostiene Facebook, así que sale a esa hora aunque
-                este sistema esté apagado. Para cancelarla o cambiarla, entrá al
-                Meta Business Suite de la página.
+                {t("agendaFacebook")}
               </p>
             </div>
           ) : (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
-                {(
-                  [
-                    ["ahora", "Publicar ahora"],
-                    ["programar", "Programar"],
-                  ] as const
-                ).map(([valor, etiqueta]) => (
+                {(["ahora", "programar"] as const).map((valor) => (
                   <button
                     key={valor}
                     onClick={() => setModo(valor)}
@@ -309,7 +303,7 @@ export function PanelRevival({
                         : "text-white/50 hover:bg-white/5 hover:text-white"
                     }`}
                   >
-                    {etiqueta}
+                    {t(`modos.${valor}`)}
                   </button>
                 ))}
               </div>
@@ -324,8 +318,7 @@ export function PanelRevival({
                     className="w-full rounded-lg border border-white/10 bg-black/40 p-2.5 text-sm text-white/80 outline-none focus:border-ng-azul/40"
                   />
                   <p className="mt-1 text-[11px] text-white/25">
-                    Facebook exige al menos 10 minutos de anticipación. La hora
-                    es la de tu computadora.
+                    {t("anticipacion")}
                   </p>
                 </div>
               )}
@@ -351,13 +344,13 @@ export function PanelRevival({
               >
                 {publicando
                   ? modo === "programar"
-                    ? "Programando…"
-                    : "Publicando…"
+                    ? t("programando")
+                    : t("publicando")
                   : !post.imagenNuevaUrl
-                    ? "Subí la imagen nueva para poder publicar"
+                    ? t("subiPrimero")
                     : modo === "programar"
-                      ? "Programar publicación"
-                      : "Publicar en la página"}
+                      ? t("programarPublicacion")
+                      : t("publicarPagina")}
               </button>
             </div>
           )}
@@ -367,11 +360,18 @@ export function PanelRevival({
             <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold">Historia</h3>
+                  <h3 className="text-sm font-semibold">{t("historia")}</h3>
                   <p className="text-[11px] text-white/40">
                     {post.historiaPublicadaEn
-                      ? `Subida el ${new Date(post.historiaPublicadaEn).toLocaleString("es", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })} · expira a las 24 h`
-                      : "Publicación aparte de la del feed. La imagen se adapta a 9:16 con fondo difuminado."}
+                      ? t("historiaSubida", {
+                          fecha: new Date(post.historiaPublicadaEn).toLocaleString(locale, {
+                            day: "numeric",
+                            month: "short",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }),
+                        })
+                      : t("historiaAparte")}
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-2">
@@ -383,10 +383,10 @@ export function PanelRevival({
                     className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 disabled:opacity-40"
                   >
                     {previsualizando
-                      ? "Armando…"
+                      ? t("armando")
                       : post.historiaUrl
-                        ? "Regenerar"
-                        : "Ver cómo queda"}
+                        ? t("regenerar")
+                        : t("verComoQueda")}
                   </button>
                   <button
                     onClick={() =>
@@ -396,10 +396,10 @@ export function PanelRevival({
                     className="rounded-lg border border-white/15 px-4 py-1.5 text-xs font-medium text-white/70 transition hover:border-ng-azul/40 hover:text-ng-celeste disabled:opacity-40"
                   >
                     {subiendoHistoria
-                      ? "Subiendo…"
+                      ? t("subiendo")
                       : post.historiaPublicadaEn
-                        ? "Volver a subir"
-                        : "Subir a historia"}
+                        ? t("volverASubir")
+                        : t("subirHistoria")}
                   </button>
                 </div>
               </div>
@@ -410,20 +410,17 @@ export function PanelRevival({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={post.historiaUrl}
-                    alt="Vista previa de la historia"
+                    alt={t("altHistoria")}
                     className="w-48 rounded-xl border border-white/10"
                   />
                 </div>
               )}
 
               <p className="mt-2 text-[11px] text-white/25">
-                El texto de la publicación se quema en la franja de abajo. Si lo
-                editás arriba, dale Regenerar. Los emojis se omiten: el
-                renderizador no los dibuja a color y salen como manchas.
+                {t("notaTexto")}
               </p>
               <p className="text-[11px] text-white/25">
-                No se puede programar: la API de historias de Meta no acepta
-                agendarlas.
+                {t("noProgramable")}
               </p>
             </div>
           )}

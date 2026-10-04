@@ -1,0 +1,62 @@
+{
+  "sinUrl": "El backend no devolvió la URL de autorización",
+  "errorConectar": "No se pudo iniciar la conexión",
+  "errorOperacion": "La operación falló",
+  "sinPaginas": "Sin páginas para configurar",
+  "sinPaginasDetalle": "Conectar cuentas de Facebook nuevas es de administradores. Si ya trabajás en una página, acá vas a ver las tuyas.",
+  "titulo": "Integración con Facebook",
+  "subtituloAdmin": "Conectá una cuenta y elegí en qué páginas se puede publicar.",
+  "subtituloPropietario": "Configurá las páginas de las que sos propietario.",
+  "paso1": {
+    "titulo": "Credenciales de la app de Meta",
+    "listo": "El backend tiene cargadas las credenciales de la app.",
+    "falta": "Falta configurar la app de Meta en el backend. Creá una app de tipo Business en developers.facebook.com y cargá en el <code>.env</code>:",
+    "permisos": "Permisos a solicitar: <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>pages_manage_posts</code>. Opcional: <code>read_insights</code> (alcance e impresiones del historial; sin él Revival rankea igual, pero solo con reacciones, comentarios y compartidos).",
+    "redirect": "La redirect URI debe estar registrada <em>exactamente igual</em> en la app, o Meta rechaza el login."
+  },
+  "paso2": {
+    "titulo": "Autorizar la cuenta",
+    "vence": "el token vence {cuando}",
+    "sincronizando": "Sincronizando…",
+    "sincronizar": "↻ Sincronizar páginas",
+    "reconectar": "Reconectar",
+    "duracion": "El token de Facebook dura unos 60 días. Cuando venza hay que reconectar; las páginas habilitadas y sus vínculos se conservan. Cada quien conecta su propia cuenta: sincronizar no toca las páginas que ya tienen otro propietario.",
+    "iniciaSesion": "Iniciá sesión con la cuenta que administra las fan pages.",
+    "preparando": "Preparando…",
+    "conectar": "Conectar con Facebook"
+  },
+  "paso3": {
+    "titulo": "Habilitar páginas como destino",
+    "espacio": "Cada página habilitada es un espacio de trabajo propio: su cola de revisión y su numeración de expedientes son independientes. Conectar no habilita — marcá explícitamente dónde se puede publicar.",
+    "propietario": "Quien conecta una página queda como su propietario. Para que otra persona trabaje en ella no hace falta que la reconecte: invitala desde <e>Equipo</e> y publica con el token que ya quedó guardado, sin necesidad de administrar la fan page en Facebook."
+  },
+  "porId": {
+    "titulo": "Agregar una página por su ID",
+    "sinListado": "Meta no devuelve el listado de páginas mientras la app tenga acceso estándar. Pegá el ID que aparece en el diálogo de autorización, debajo del nombre de la página.",
+    "noAparece": "Si una página que autorizaste no aparece arriba, agregala con su ID.",
+    "verificando": "Verificando…",
+    "agregar": "Agregar"
+  },
+  "listo": "{n, plural, one {Listo: # página habilitada.} other {Listo: # páginas habilitadas.}}",
+  "listoDetalle": "Ya aparecen en el switch de la barra lateral y como destino al publicar un video aprobado.",
+  "fila": {
+    "sinPermiso": "sin permiso para publicar",
+    "soloPropietario": "Solo el propietario de la página puede habilitarla",
+    "requierePermiso": "Requiere permiso CREATE_CONTENT sobre la página",
+    "habilitada": "Habilitada",
+    "habilitar": "Habilitar",
+    "desconectar": "Desconectar",
+    "no": "No",
+    "desconectarAyuda": "Deja de ser destino de publicación. No borra sus expedientes."
+  },
+  "logo": {
+    "error": "No se pudo subir el logo",
+    "sinLogo": "sin logo",
+    "marcaDeAgua": "Marca de agua",
+    "seAplica": "Se aplica al contenido reciclado de esta página",
+    "sinLogoNoSe": "Sin logo no se puede publicar contenido reciclado",
+    "subiendo": "Subiendo…",
+    "cambiar": "Cambiar",
+    "subir": "Subir logo"
+  }
+}

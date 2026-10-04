@@ -1,0 +1,63 @@
+{
+  "errorPublicar": "No se pudo publicar",
+  "sinPagina": "Sin página de Facebook habilitada. Un admin tiene que conectar una.",
+  "agendando": "Agendando…",
+  "encolando": "Encolando…",
+  "publicando": "Publicando…",
+  "programarEnFacebook": "Programar en Facebook",
+  "publicarEnFacebook": "Publicar en Facebook",
+  "publicarEn": "Publicar en <n>{nombre}</n>",
+  "publicadas": "{n, plural, one {# publicada} other {# publicadas}}",
+  "sinPoster": "Este expediente no tiene poster; se genera al ensamblar",
+  "formatos": {
+    "REEL": {
+      "etiqueta": "Reel",
+      "detalle": "Al feed, vertical. 3 a 90s"
+    },
+    "HISTORIA_VIDEO": {
+      "etiqueta": "Historia",
+      "detalle": "Video, expira en 24h"
+    },
+    "IMAGEN": {
+      "etiqueta": "Imagen",
+      "detalle": "Foto al feed"
+    },
+    "HISTORIA_IMAGEN": {
+      "etiqueta": "Historia imagen",
+      "detalle": "Foto, expira en 24h"
+    }
+  },
+  "descripcionPlaceholder": "Descripción (opcional)",
+  "yaEnEsteFormato": "Ya se publicó en este formato. Publicar otra vez crea un post nuevo.",
+  "ahora": "Ahora",
+  "programar": "Programar",
+  "ayudaCola": "Queda en nuestra cola y sale a esa hora. Hasta entonces se puede cancelar o cambiar la hora. Si el servidor está caído a esa hora, sale cuando vuelva.",
+  "ayudaMeta": "Queda agendado en Facebook y sale a esa hora aunque nuestro servidor esté apagado. Mínimo {min} minutos.",
+  "historiasNo": "Las historias no se pueden programar: expiran a las 24 horas.",
+  "fila": {
+    "noSePudo": "No se pudo",
+    "formatos": {
+      "REEL": "reel",
+      "HISTORIA_VIDEO": "historia video",
+      "IMAGEN": "imagen",
+      "HISTORIA_IMAGEN": "historia imagen",
+      "VIDEO": "video",
+      "SHORT": "short"
+    },
+    "sale": "sale {cuando}",
+    "agendadaEnFacebook": " (agendada en Facebook)",
+    "subiendo": "subiendo…",
+    "publicando": "publicando…",
+    "cancelada": "cancelada",
+    "canceladaPor": "cancelada por {nombre}",
+    "por": "por <n>{nombre}</n>",
+    "portadaDeMeta": "Salió con la portada que eligió Meta, no con la nuestra",
+    "cambiarHora": "Cambiar hora",
+    "cancelando": "Cancelando…",
+    "cancelar": "Cancelar",
+    "guardando": "Guardando…",
+    "guardar": "Guardar",
+    "volver": "Volver",
+    "ver": "ver"
+  }
+}

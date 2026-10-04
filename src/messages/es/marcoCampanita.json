@@ -1,0 +1,13 @@
+{
+  "notificaciones": "Notificaciones",
+  "etiquetaSinLeer": "Notificaciones, {n} sin leer",
+  "marcarTodas": "Marcar todas como leídas",
+  "cargando": "Cargando…",
+  "error": "No pudimos traer las notificaciones. Probá de nuevo en un rato.",
+  "vacioTitulo": "No tenés notificaciones",
+  "vacioDetalle": "Te avisamos acá cuando haya clips listos para editar o cuando alguien del equipo tome, programe o publique uno.",
+  "verMas": "Ver más",
+  "elegir": "Elegí qué avisos recibir y por dónde",
+  "sinLeer": "Sin leer",
+  "verEn": "Ver en {red}"
+}

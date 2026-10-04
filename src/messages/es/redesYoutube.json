@@ -1,0 +1,23 @@
+{
+  "sinUrl": "El backend no devolvió la URL de autorización",
+  "errorConectar": "No se pudo iniciar la conexión",
+  "errorOperacion": "La operación falló",
+  "eligeMarca": "Elegí una marca en la barra lateral.",
+  "reconectar": "Reconectar",
+  "deshabilitar": "Deshabilitar",
+  "habilitar": "Habilitar",
+  "desconectar": "Desconectar",
+  "titulo": "Canales de {marca}",
+  "tituloSinMarca": "Canales de la marca activa",
+  "descripcion": "Los Shorts de esta marca se suben a estos canales. Para otra marca, cambiala en la barra lateral.",
+  "sinCredenciales": "El backend todavía no tiene las credenciales de Google (YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REDIRECT_URI).",
+  "revocado": "Google revocó el acceso: hay que reconectarlo.",
+  "habilitado": "Habilitado como destino",
+  "deshabilitado": "Deshabilitado",
+  "confirmarDesconectar": "¿Desconectar \"{nombre}\"? Lo programado para este canal va a fallar a su hora.",
+  "abriendo": "Abriendo Google…",
+  "conectarOtro": "Conectar otro canal",
+  "conectarPrimero": "Conectar un canal de YouTube",
+  "soloPropietario": "Conectar canales es del propietario de la marca.",
+  "aprobacion": "Mientras Google no apruebe la app, solo pueden conectar las cuentas agregadas como testers y los videos suben como privados."
+}

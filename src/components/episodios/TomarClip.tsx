@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, type ApolloClient } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { CRUCES_DE_TRAMO, SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/graphql/operations";
 import { useSesion } from "@/lib/sesion";
 
@@ -32,9 +33,13 @@ export interface CruceClip {
 }
 
 /** "Lo edita Ana", "Lo editás vos" o "Libre". */
-export function quienLoTiene(tomadoPor: Autoria | null | undefined, usuarioId?: string | null): string {
-  if (!tomadoPor) return "Libre";
-  return tomadoPor.usuarioId === usuarioId ? "Lo editás vos" : `Lo edita ${tomadoPor.nombre}`;
+export function quienLoTiene(
+  tomadoPor: Autoria | null | undefined,
+  usuarioId: string | null | undefined,
+  t: ReturnType<typeof useTranslations<"editorTomar">>,
+): string {
+  if (!tomadoPor) return t("libre");
+  return tomadoPor.usuarioId === usuarioId ? t("loEditasVos") : t("loEdita", { nombre: tomadoPor.nombre });
 }
 
 /**
@@ -52,6 +57,8 @@ export function TomarClip({
   tomadoPor?: Autoria | null;
   puedeOperar: boolean;
 }) {
+  const t = useTranslations("editorTomar");
+  const locale = useLocale();
   const { usuario } = useSesion();
   const [tomar, { loading: tomando }] = useMutation(TOMAR_CLIP_EPISODIO);
   const [soltar, { loading: soltando }] = useMutation(SOLTAR_CLIP_EPISODIO);
@@ -60,12 +67,12 @@ export function TomarClip({
   const ocupado = tomando || soltando;
 
   async function lotomo() {
-    if (tomadoPor && !mio && !window.confirm(`Lo está editando ${tomadoPor.nombre}. ¿Tomarlo igual?`)) return;
+    if (tomadoPor && !mio && !window.confirm(t("confirmarTomar", { nombre: tomadoPor.nombre }))) return;
     setError(null);
     try {
       await tomar({ variables: { id: clipId, marcaId } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo tomar el clip");
+      setError(e instanceof Error ? e.message : t("errorTomar"));
     }
   }
 
@@ -74,14 +81,14 @@ export function TomarClip({
     try {
       await soltar({ variables: { id: clipId, marcaId } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo soltar el clip");
+      setError(e instanceof Error ? e.message : t("errorSoltar"));
     }
   }
 
   return (
     <span className="inline-flex flex-wrap items-center gap-1.5">
       <span
-        title={tomadoPor ? `Desde ${new Date(tomadoPor.en).toLocaleString("es")}` : undefined}
+        title={tomadoPor ? t("desde", { fecha: new Date(tomadoPor.en).toLocaleString(locale) }) : undefined}
         className={`rounded-full px-2 py-0.5 text-[11px] ${
           !tomadoPor
             ? "bg-white/5 text-white/50"
@@ -90,16 +97,16 @@ export function TomarClip({
               : "bg-amber-400/15 text-amber-300"
         }`}
       >
-        {quienLoTiene(tomadoPor, usuario?._id)}
+        {quienLoTiene(tomadoPor, usuario?._id, t)}
       </span>
       {puedeOperar && (
         <button
           onClick={() => void (mio ? losuelto() : lotomo())}
           disabled={ocupado}
-          title={mio ? "Lo deja libre para que lo tome otra persona del equipo" : "Pasa a tu nombre: el equipo ve que lo estás haciendo vos"}
+          title={mio ? t("liberarAyuda") : t("tomarAyuda")}
           className="rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-white/70 hover:bg-white/5 disabled:opacity-50"
         >
-          {mio ? "Liberar" : "Tomarlo"}
+          {mio ? t("liberar") : t("tomar")}
         </button>
       )}
       {error && <span className="text-[11px] text-red-400">{error}</span>}
@@ -134,21 +141,25 @@ export function AvisoCruces({
   onSeguir: () => void;
   onCancelar: () => void;
 }) {
+  const t = useTranslations("editorTomar");
   return (
     <div className="rounded-lg border border-amber-400/40 bg-amber-400/[0.07] p-3 text-sm">
-      <p className="mb-2 font-medium text-amber-200">Este tramo ya está en otro clip</p>
+      <p className="mb-2 font-medium text-amber-200">{t("cruces.titulo")}</p>
       <ul className="space-y-1.5 text-white/75">
         {cruces.map((c) => (
           <li key={c.clipId}>
-            Se cruza con «{c.titulo}» ({reloj(c.desdeSeg)}–{reloj(c.hastaSeg)}),{" "}
-            {!c.tomadoPor
-              ? "que está libre"
-              : c.tomadoPor.usuarioId === usuarioId
-                ? "lo tenés vos"
-                : `lo tiene ${c.tomadoPor.nombre}`}{" "}
-            —{" "}
-            {Math.round(c.segundosEnComun)} s en común.
-            {c.masLargo && <span className="text-white/50"> El tuyo es más largo: más contexto, está bien.</span>}
+            {t("cruces.cruce", {
+              titulo: c.titulo,
+              desde: reloj(c.desdeSeg),
+              hasta: reloj(c.hastaSeg),
+              quien: !c.tomadoPor
+                ? t("cruces.libre")
+                : c.tomadoPor.usuarioId === usuarioId
+                  ? t("cruces.vos")
+                  : t("cruces.otro", { nombre: c.tomadoPor.nombre }),
+              segundos: Math.round(c.segundosEnComun),
+            })}
+            {c.masLargo && <span className="text-white/50"> {t("cruces.masLargo")}</span>}
           </li>
         ))}
       </ul>
@@ -163,7 +174,7 @@ export function AvisoCruces({
           onClick={onCancelar}
           className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/70 hover:bg-white/5"
         >
-          Cancelar
+          {t("cruces.cancelar")}
         </button>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, type DocumentNode } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   CANCELAR_PUBLICACION,
   PROGRAMAR_PUBLICACION,
@@ -19,27 +20,21 @@ import {
 
 type Formato = "REEL" | "HISTORIA_VIDEO" | "IMAGEN" | "HISTORIA_IMAGEN";
 
+/** Etiqueta y detalle de cada uno salen de `publicarFacebook.formatos.<valor>`. */
 const FORMATOS: Array<{
   valor: Formato;
-  label: string;
-  detalle: string;
   necesitaPoster?: boolean;
 }> = [
-  { valor: "REEL", label: "Reel", detalle: "Al feed, vertical. 3 a 90s" },
-  { valor: "HISTORIA_VIDEO", label: "Historia", detalle: "Video, expira en 24h" },
-  {
-    valor: "IMAGEN",
-    label: "Imagen",
-    detalle: "Foto al feed",
-    necesitaPoster: true,
-  },
-  {
-    valor: "HISTORIA_IMAGEN",
-    label: "Historia imagen",
-    detalle: "Foto, expira en 24h",
-    necesitaPoster: true,
-  },
+  { valor: "REEL" },
+  { valor: "HISTORIA_VIDEO" },
+  { valor: "IMAGEN", necesitaPoster: true },
+  { valor: "HISTORIA_IMAGEN", necesitaPoster: true },
 ];
+
+/** Los formatos que se nombran en el historial (de todas las redes). */
+const FORMATOS_FILA = ["REEL", "HISTORIA_VIDEO", "IMAGEN", "HISTORIA_IMAGEN", "VIDEO", "SHORT"] as const;
+const esFormatoFila = (f: string): f is (typeof FORMATOS_FILA)[number] =>
+  (FORMATOS_FILA as readonly string[]).includes(f);
 
 /**
  * Los formatos que se pueden programar.
@@ -83,6 +78,7 @@ export function PublicarEnFacebook({
   marcaIdDelVideo: string;
   tienePoster?: boolean;
 }) {
+  const t = useTranslations("publicarFacebook");
   const { activa: marca } = useMarcaActiva();
   const activa = marca?.paginaFacebook ?? null;
   const [formato, setFormato] = useState<Formato>("REEL");
@@ -158,38 +154,40 @@ export function PublicarEnFacebook({
       setFecha("");
       setCuando("ahora");
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo publicar");
+      setError(e?.message ?? t("errorPublicar"));
     }
   }
 
   if (!activa || !marca) {
     return (
       <div className="rounded-xl border border-dashed border-white/15 p-3 text-xs text-white/40">
-        Sin página de Facebook habilitada. Un admin tiene que conectar una.
+        {t("sinPagina")}
       </div>
     );
   }
 
   const textoBoton = loading
     ? cuando === "despues"
-      ? "Agendando…"
+      ? t("agendando")
       : porCola
-        ? "Encolando…"
-        : "Publicando…"
+        ? t("encolando")
+        : t("publicando")
     : cuando === "despues"
-      ? "Programar en Facebook"
-      : "Publicar en Facebook";
+      ? t("programarEnFacebook")
+      : t("publicarEnFacebook");
 
   return (
     <div className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs text-white/50">
-          Publicar en{" "}
-          <span className="font-medium text-white/80">{activa.nombre}</span>
+          {t.rich("publicarEn", {
+            nombre: activa.nombre,
+            n: (c) => <span className="font-medium text-white/80">{c}</span>,
+          })}
         </p>
         {publicadas.length > 0 && (
           <span className="rounded bg-ng-teal/15 px-2 py-0.5 text-[10px] font-medium text-ng-teal">
-            {publicadas.length} publicada{publicadas.length !== 1 ? "s" : ""}
+            {t("publicadas", { n: publicadas.length })}
           </span>
         )}
       </div>
@@ -206,8 +204,8 @@ export function PublicarEnFacebook({
               disabled={bloqueado}
               title={
                 bloqueado
-                  ? "Este expediente no tiene poster; se genera al ensamblar"
-                  : f.detalle
+                  ? t("sinPoster")
+                  : t(`formatos.${f.valor}.detalle`)
               }
               className={`rounded-lg border px-2.5 py-2 text-left transition disabled:cursor-not-allowed disabled:opacity-35 ${
                 seleccionado
@@ -220,9 +218,9 @@ export function PublicarEnFacebook({
                   seleccionado ? "text-ng-teal" : "text-white/80"
                 }`}
               >
-                {f.label}
+                {t(`formatos.${f.valor}.etiqueta`)}
               </span>
-              <span className="block text-[10px] text-white/35">{f.detalle}</span>
+              <span className="block text-[10px] text-white/35">{t(`formatos.${f.valor}.detalle`)}</span>
             </button>
           );
         })}
@@ -231,14 +229,14 @@ export function PublicarEnFacebook({
       <textarea
         value={descripcion}
         onChange={(e) => setDescripcion(e.target.value)}
-        placeholder="Descripción (opcional)"
+        placeholder={t("descripcionPlaceholder")}
         rows={2}
         className="w-full rounded-lg border border-white/10 bg-black/40 p-2.5 text-xs outline-none placeholder:text-white/25 focus:border-ng-azul/50"
       />
 
       {yaEnEsteFormato && (
         <p className="text-[11px] text-yellow-400/80">
-          Ya se publicó en este formato. Publicar otra vez crea un post nuevo.
+          {t("yaEnEsteFormato")}
         </p>
       )}
 
@@ -246,13 +244,13 @@ export function PublicarEnFacebook({
         <div className="space-y-2">
           <div className="flex gap-1.5">
             <Opcion activa={cuando === "ahora"} onClick={() => setCuando("ahora")}>
-              Ahora
+              {t("ahora")}
             </Opcion>
             <Opcion
               activa={cuando === "despues"}
               onClick={() => setCuando("despues")}
             >
-              Programar
+              {t("programar")}
             </Opcion>
           </div>
 
@@ -269,15 +267,15 @@ export function PublicarEnFacebook({
                   no se puede prometer lo mismo en los dos casos. */}
               <p className="text-[10px] text-white/30">
                 {porCola
-                  ? "Queda en nuestra cola y sale a esa hora. Hasta entonces se puede cancelar o cambiar la hora. Si el servidor está caído a esa hora, sale cuando vuelva."
-                  : `Queda agendado en Facebook y sale a esa hora aunque nuestro servidor esté apagado. Mínimo ${MINUTOS_MINIMOS_META} minutos.`}
+                  ? t("ayudaCola")
+                  : t("ayudaMeta", { min: MINUTOS_MINIMOS_META })}
               </p>
             </>
           )}
         </div>
       ) : (
         <p className="text-[10px] text-white/30">
-          Las historias no se pueden programar: expiran a las 24 horas.
+          {t("historiasNo")}
         </p>
       )}
 
@@ -339,6 +337,8 @@ export function FilaPublicacion({
   p: Publicacion;
   refetchQueries: Array<{ query: DocumentNode; variables: Record<string, string> }>;
 }) {
+  const t = useTranslations("publicarFacebook");
+  const locale = useLocale();
   const [moviendo, setMoviendo] = useState(false);
   const [nuevaHora, setNuevaHora] = useState(() =>
     aInputLocal(new Date(p.publicarEn)),
@@ -366,7 +366,7 @@ export function FilaPublicacion({
       await fn();
       setMoviendo(false);
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo");
+      setError(e?.message ?? t("fila.noSePudo"));
     }
   }
 
@@ -377,42 +377,48 @@ export function FilaPublicacion({
       </span>
       <div className="min-w-0 flex-1">
         <span className="text-white/60">
-          {p.formato.replace("_", " ").toLowerCase()}
+          {esFormatoFila(p.formato)
+            ? t(`fila.formatos.${p.formato}`)
+            : p.formato.replace("_", " ").toLowerCase()}
         </span>
         {esperando && (
           <span
             className="ml-1.5 text-indigo-300/80"
-            title={fechaCompleta(p.publicarEn)}
+            title={fechaCompleta(p.publicarEn, locale)}
           >
-            sale {tiempoRelativo(p.publicarEn)}
-            {p.estado === "AGENDADA_EN_RED" && " (agendada en Facebook)"}
+            {t("fila.sale", { cuando: tiempoRelativo(p.publicarEn, Date.now(), locale) })}
+            {p.estado === "AGENDADA_EN_RED" && t("fila.agendadaEnFacebook")}
           </span>
         )}
         {p.estado === "SUBIENDO" && (
-          <span className="ml-1.5 text-yellow-400/80">subiendo…</span>
+          <span className="ml-1.5 text-yellow-400/80">{t("fila.subiendo")}</span>
         )}
         {p.estado === "PROCESANDO" && (
-          <span className="ml-1.5 text-yellow-400/80">publicando…</span>
+          <span className="ml-1.5 text-yellow-400/80">{t("fila.publicando")}</span>
         )}
         {p.estado === "CANCELADA" && (
           <span className="ml-1.5 text-white/30">
-            cancelada
-            {p.canceladoPor?.nombre && ` por ${p.canceladoPor.nombre}`}
+            {p.canceladoPor?.nombre
+              ? t("fila.canceladaPor", { nombre: p.canceladoPor.nombre })
+              : t("fila.cancelada")}
           </span>
         )}
         {p.publicadaEn && (
           <span
             className="ml-1.5 text-white/30"
-            title={fechaCompleta(p.publicadaEn)}
+            title={fechaCompleta(p.publicadaEn, locale)}
           >
-            {tiempoRelativo(p.publicadaEn)}
+            {tiempoRelativo(p.publicadaEn, Date.now(), locale)}
           </span>
         )}
         {/* Quién la mandó. Sin autor no se escribe nada: las
             publicaciones anteriores al registro no lo tienen. */}
         {p.creadoPor?.nombre && (
           <span className="ml-1.5 text-white/30">
-            por <span className="text-white/50">{p.creadoPor.nombre}</span>
+            {t.rich("fila.por", {
+              nombre: p.creadoPor.nombre,
+              n: (c) => <span className="text-white/50">{c}</span>,
+            })}
           </span>
         )}
         {p.error && (
@@ -431,7 +437,7 @@ export function FilaPublicacion({
             className="block break-words text-amber-400/70"
             title={p.portadaError ?? undefined}
           >
-            Salió con la portada que eligió Meta, no con la nuestra
+            {t("fila.portadaDeMeta")}
           </span>
         )}
 
@@ -441,7 +447,7 @@ export function FilaPublicacion({
               onClick={() => setMoviendo(true)}
               className="text-white/50 underline-offset-2 hover:text-white hover:underline"
             >
-              Cambiar hora
+              {t("fila.cambiarHora")}
             </button>
             <button
               disabled={cancelando}
@@ -452,7 +458,7 @@ export function FilaPublicacion({
               }
               className="text-red-400/70 underline-offset-2 hover:text-red-400 hover:underline disabled:opacity-50"
             >
-              {cancelando ? "Cancelando…" : "Cancelar"}
+              {cancelando ? t("fila.cancelando") : t("fila.cancelar")}
             </button>
           </span>
         )}
@@ -480,13 +486,13 @@ export function FilaPublicacion({
               }
               className="text-ng-teal hover:underline disabled:opacity-50"
             >
-              {guardando ? "Guardando…" : "Guardar"}
+              {guardando ? t("fila.guardando") : t("fila.guardar")}
             </button>
             <button
               onClick={() => setMoviendo(false)}
               className="text-white/40 hover:text-white"
             >
-              Volver
+              {t("fila.volver")}
             </button>
           </span>
         )}
@@ -501,7 +507,7 @@ export function FilaPublicacion({
           rel="noopener noreferrer"
           className="shrink-0 text-ng-teal hover:underline"
         >
-          ver
+          {t("fila.ver")}
         </a>
       )}
     </div>

@@ -1,0 +1,37 @@
+{
+  "errorOperacion": "La operación falló",
+  "sinPagina": {
+    "titulo": "No hay ninguna página activa",
+    "detalle": "El equipo se administra por página. Habilitá una en Integraciones o pedí que te inviten a una."
+  },
+  "titulo": "Equipo",
+  "quienTrabaja": "Quién trabaja en",
+  "explicacion": "El acceso es por página: cada una tiene su propio equipo. Para sumar a alguien a otra página, cambiá de página en el switch de la izquierda.",
+  "soloMirar": "Podés ver el equipo, pero solo el propietario de la página invita y cambia accesos.",
+  "invitados": "Invitados, sin entrar todavía",
+  "invitadoHace": "invitado {cuando} · entra al iniciar sesión con ese correo",
+  "cancelar": "Cancelar",
+  "conAcceso": "Con acceso ({n})",
+  "vacio": {
+    "titulo": "Todavía no hay nadie más",
+    "detalle": "Invitá por correo a quien tenga que trabajar en esta página."
+  },
+  "invitar": {
+    "titulo": "Invitar a alguien",
+    "detalle": "Le llega un correo con una contraseña temporal. El acceso a esta página queda listo desde el momento en que entra.",
+    "placeholder": "persona@ejemplo.com",
+    "enviando": "Enviando…",
+    "boton": "Invitar"
+  },
+  "vos": "vos",
+  "desactivado": "desactivado",
+  "ultimoIngreso": "último ingreso {cuando}",
+  "sinIngresos": "sin ingresos todavía",
+  "quitar": "Quitar",
+  "no": "No",
+  "quitarTitulo": "Quitar el acceso a esta página",
+  "leyenda": {
+    "titulo": "Qué puede cada rol",
+    "nota": "Publicar no necesita cuenta de Facebook: sale con el token que quedó guardado al conectar la página. Reconectarla en Meta sí exige ser administrador de la fan page del lado de Facebook, y eso no lo decide esta app."
+  }
+}

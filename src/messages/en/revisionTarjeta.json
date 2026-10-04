@@ -1,0 +1,22 @@
+{
+  "sinVideo": "No video",
+  "expediente": "FILE #{numero}",
+  "sinNumerar": "UNNUMBERED",
+  "regeneraciones": " · {n} regen",
+  "partes": {
+    "apertura": "[hook] ",
+    "detalle": "[detail] ",
+    "revelacion": "[reveal] ",
+    "cierre": "[closing] "
+  },
+  "placeholderNota": "The hook is weak, make it more direct…",
+  "publicando": "Publishing…",
+  "aprobar": "Approve and publish",
+  "regenerarConNota": "Regenerate with a note",
+  "regenerando": "Regenerating…",
+  "enviarCorreccion": "Send correction",
+  "descartar": "Discard",
+  "sello": {
+    "creado": "created"
+  }
+}

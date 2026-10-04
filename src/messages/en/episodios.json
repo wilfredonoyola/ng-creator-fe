@@ -1,0 +1,85 @@
+{
+  "titulo": "Episodes",
+  "descripcion": "Long-form video podcast episodes. They upload straight to Bunny in chunks: if the connection drops, they pick up where they left off.",
+  "episodiosDe": "Episodes for",
+  "sinMarca": "No active brand: nowhere to upload.",
+  "subirEpisodio": "Upload an episode",
+  "formatos": "mp4, mov, webm or mkv · up to 50 GB",
+  "subido": "“{nombre}” uploaded. Bunny is processing it; it'll show up with its duration in a few minutes.",
+  "vacio": "No episodes in {marca} yet.",
+  "vacioSinNombre": "No episodes in this brand yet.",
+  "confirmarDescartar": "Discard \"{titulo}\"? What's already uploaded will be lost.",
+  "confirmarBorrar": "Delete \"{titulo}\"? It's also deleted from Bunny.",
+  "errores": {
+    "preparar": "Couldn't prepare the upload",
+    "iniciar": "Couldn't start the upload",
+    "reintentar": "Couldn't retry",
+    "transcripcion": "Couldn't request the transcription",
+    "borrar": "Couldn't delete"
+  },
+  "estados": {
+    "aMedioSubir": "Partially uploaded",
+    "procesandoEnBunny": "Processing in Bunny",
+    "listoParaTranscribir": "Ready to transcribe",
+    "fallo": "Failed",
+    "falloImportacion": "Import failed",
+    "bajando": "Downloading from Restream · {p}%",
+    "comprimiendo": "Compressing · {p}%",
+    "subiendoABunny": "Uploading to Bunny · {p}%",
+    "enFilaTraer": "Queued for import",
+    "enColaTranscribir": "Queued for transcription",
+    "transcribiendo": "Transcribing · {p}%",
+    "buscandoMomentos": "Finding moments",
+    "clipsSugeridos": "{n, plural, one {# suggested clip} other {# suggested clips}}",
+    "falloBusqueda": "Clip search failed",
+    "transcrito": "Transcribed",
+    "falloTranscripcion": "Transcription failed"
+  },
+  "panel": {
+    "retomando": "Resuming <n>{nombre}</n>",
+    "subiendo": "Uploading <n>{nombre}</n>",
+    "progreso": "{subidos} of {total} · {pct}%",
+    "velocidad": "{mbs} MB/s · {resta} left",
+    "enPausa": "Paused",
+    "conectando": "Connecting to Bunny…",
+    "reanudar": "Resume",
+    "pausar": "Pause",
+    "siCerras": "If you close the tab, come back here and pick the same file: it picks up where it left off."
+  },
+  "subida": {
+    "reintento": "Retry {n}…",
+    "sinConexion": "No connection. The upload resumes on its own when it's back.",
+    "firma": "Bunny rejected the upload signature. Try resuming; if it keeps happening, let us know.",
+    "tamano": "Bunny rejected the file because of its size.",
+    "frenada": "The upload stopped: {detalle}",
+    "frenadaStatus": "The upload stopped ({status}): {detalle}"
+  },
+  "fila": {
+    "reintentar": "Retry",
+    "transcribir": "Transcribe",
+    "aMedias": "Upload incomplete. Pick “{archivo}” again to resume it.",
+    "palabras": "{n, plural, one {{cantidad} word} other {{cantidad} words}}",
+    "costo": " · cost US${usd}",
+    "subido": "Uploaded",
+    "descartar": "Discard",
+    "borrar": "Delete"
+  },
+  "importando": {
+    "noSePudo": "Couldn't import: {error}",
+    "desconocido": "unknown error",
+    "reintentar": "Retry (picks up from what's already downloaded)",
+    "pasoSubiendo": "③ Uploading to Bunny",
+    "pasoComprimiendo": "② Compressing to 1440p at 30 fps (about half the size)",
+    "pasoBajando": "① Downloading from Restream",
+    "pasoEnFila": "Queued: starts in a few seconds",
+    "avance": "{paso} · {p}%. Then Bunny processes it and it's transcribed automatically; no need to keep the page open.",
+    "avanceConFalta": "{paso} · {p}% · ~{min} min left. Then Bunny processes it and it's transcribed automatically; no need to keep the page open."
+  },
+  "procesando": {
+    "bunny": "Bunny is processing it · {p}%.",
+    "transcribiendo": "Meanwhile, it's already being transcribed · {p}%.",
+    "enFila": "Meanwhile, it's already queued for transcription.",
+    "lista": "The transcription is done; clips show up when Bunny finishes.",
+    "despues": "It's transcribed automatically afterwards."
+  }
+}

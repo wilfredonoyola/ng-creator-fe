@@ -1,0 +1,11 @@
+{
+  "sinPublicar": "Sin publicar",
+  "formatos": {
+    "REEL": "Reel",
+    "HISTORIA_VIDEO": "Historia",
+    "IMAGEN": "Imagen",
+    "HISTORIA_IMAGEN": "Historia img"
+  },
+  "programadas": "{n, plural, one {Programada} other {# programadas}}",
+  "fallo": "Falló"
+}

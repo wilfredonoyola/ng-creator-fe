@@ -9,6 +9,7 @@ import { Pista } from "@/components/Pista";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   ajustarRegion,
   FUENTES,
@@ -164,6 +165,7 @@ export function EditorRecorte({
   /** Para el rótulo (ROTULO): va chico arriba del gancho. */
   nombreMarca?: string;
 }) {
+  const tr = useTranslations("editorRecorte");
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
   const lienzoRef = useRef<HTMLCanvasElement>(null);
@@ -191,6 +193,9 @@ export function EditorRecorte({
   // tramo donde está parado el video.
   const disenoActivo = activa.diseno;
   const paneles = panelesDe(formato, disenoActivo);
+  const formatos = FORMATOS.map((f) => ({ ...f, titulo: tr(`formatos.${f.valor}`) }));
+  const disenos = DISENOS.map((d) => ({ valor: d, etiqueta: tr(`disenos.${d}.etiqueta`), titulo: tr(`disenos.${d}.titulo`) }));
+  const fondos = FONDOS.map((f) => ({ valor: f, etiqueta: tr(`fondos.${f}.etiqueta`), titulo: tr(`fondos.${f}.titulo`) }));
 
   // Lo último, para leerlo desde el bucle de dibujo sin reiniciarlo.
   const conFondo = posiciones.some((p) => llevaFondo(formato, p.diseno));
@@ -457,14 +462,14 @@ export function EditorRecorte({
             lo que más se toca es el recuadro y el video, no esto. Lo que hace
             cada uno va en su pista (al pasar el mouse). */}
         <div className="mb-2 flex flex-wrap items-center gap-1.5">
-          <Pestanas opciones={FORMATOS} valor={formato} onCambio={onCambiarFormato} deshabilitado={!puedeEditar} />
+          <Pestanas opciones={formatos} valor={formato} onCambio={onCambiarFormato} deshabilitado={!puedeEditar} />
           <div
             className="flex rounded-lg border border-white/10 bg-black/30 p-0.5"
             role="group"
-            aria-label={posiciones.length > 1 ? "Diseño de este tramo" : "Diseño"}
+            aria-label={posiciones.length > 1 ? tr("disenoDelTramo") : tr("diseno")}
           >
-            {DISENOS.map((d) => (
-              <Pista key={d.valor} texto={`${d.etiqueta}: ${d.titulo}${posiciones.length > 1 ? " (en este tramo)" : ""}`}>
+            {disenos.map((d) => (
+              <Pista key={d.valor} texto={`${d.etiqueta}: ${d.titulo}${posiciones.length > 1 ? tr("enEsteTramo") : ""}`}>
                 <button
                   disabled={!puedeEditar}
                   onClick={() => cambiarDisenoTramo(d.valor)}
@@ -482,18 +487,20 @@ export function EditorRecorte({
             ))}
           </div>
           {conFondo && onCambiarFondo && (
-            <Pestanas opciones={FONDOS} valor={fondo} onCambio={onCambiarFondo} deshabilitado={!puedeEditar} />
+            <Pestanas opciones={fondos} valor={fondo} onCambio={onCambiarFondo} deshabilitado={!puedeEditar} />
           )}
           <span className="ml-auto flex items-center gap-1.5 whitespace-nowrap text-xs tabular-nums text-white/45">
             {posiciones.length > 1 && (
               <>
-                Tramo {activa.desdeSeg.toFixed(1)}–
-                {(indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1)} s
+                {tr("tramo", {
+                  desde: activa.desdeSeg.toFixed(1),
+                  hasta: (indiceActiva + 1 < posiciones.length ? posiciones[indiceActiva + 1].desdeSeg : duracion).toFixed(1),
+                })}
               </>
             )}
             {puedeEditar && (
-              <Pista texto="Arrastrá el recuadro para moverlo; la esquina, para agrandarlo." lado="abajo-derecha">
-                <Info size={14} className="text-white/40" aria-label="Cómo mover el recuadro" tabIndex={0} />
+              <Pista texto={tr("ayudaRecuadro")} lado="abajo-derecha">
+                <Info size={14} className="text-white/40" aria-label={tr("ayudaRecuadroEtiqueta")} tabIndex={0} />
               </Pista>
             )}
           </span>
@@ -552,7 +559,7 @@ export function EditorRecorte({
                 className="absolute left-1 top-1 rounded px-1 text-xs font-semibold text-black"
                 style={{ background: COLORES[i] }}
               >
-                {paneles.length > 1 ? (paneles[i].y > 0 || paneles[i].x > 0 ? "Abajo" : "Arriba") : formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"}
+                {paneles.length > 1 ? (paneles[i].y > 0 || paneles[i].x > 0 ? tr("abajo") : tr("arriba")) : formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"}
               </span>
               {puedeEditar && (
                 <div
@@ -570,7 +577,7 @@ export function EditorRecorte({
           <button
             onClick={alternar}
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-marca text-ng-tinta"
-            title={sonando ? "Pausa" : "Reproducir"}
+            title={sonando ? tr("pausa") : tr("reproducir")}
           >
             {sonando ? "❚❚" : "▶"}
           </button>
@@ -612,28 +619,28 @@ export function EditorRecorte({
         <div className="mt-3">
           <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1.5">
             <p className="flex items-center gap-1.5 whitespace-nowrap text-xs font-medium uppercase tracking-wide text-white/50">
-              Encuadres · {posiciones.length}
-              <Pista texto="Las posiciones del recorte: desde cada segundo, otro encuadre. Tocá una para ir a ese momento.">
-                <Info size={14} className="text-white/40" aria-label="Qué son los encuadres" tabIndex={0} />
+              {tr("encuadres", { n: posiciones.length })}
+              <Pista texto={tr("ayudaEncuadres")}>
+                <Info size={14} className="text-white/40" aria-label={tr("ayudaEncuadresEtiqueta")} tabIndex={0} />
               </Pista>
             </p>
             <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
               {puedeEditar && autoEncuadre && (
-                <Pista texto="Mira quién habla y arma los cambios de encuadre solo. Después los ajustás." lado="abajo-derecha">
+                <Pista texto={tr("ayudaAuto")} lado="abajo-derecha">
                   <button
                     onClick={autoEncuadre.onPedir}
                     disabled={autoEncuadre.analizando}
                     className="flex h-7 items-center gap-1.5 whitespace-nowrap rounded-lg bg-ng-violeta px-2.5 text-xs font-medium text-ng-tinta hover:brightness-110 disabled:opacity-70"
                   >
                     {autoEncuadre.analizando ? (
-                      `Mirando… ${autoEncuadre.progreso ? `${Math.round(autoEncuadre.progreso * 100)}%` : ""}`
+                      `${tr("mirando")} ${autoEncuadre.progreso ? `${Math.round(autoEncuadre.progreso * 100)}%` : ""}`
                     ) : (
                       <>
-                        ✨ Auto-encuadre
+                        {tr("autoEncuadre")}
                         {autoEncuadre.personas != null && (
                           <span
                             className="rounded-full bg-white/20 px-1.5 text-xs leading-4 tabular-nums"
-                            aria-label={`${autoEncuadre.personas} ${autoEncuadre.personas === 1 ? "persona" : "personas"}`}
+                            aria-label={tr("personas", { n: autoEncuadre.personas })}
                           >
                             {autoEncuadre.personas}
                           </span>
@@ -644,12 +651,12 @@ export function EditorRecorte({
                 </Pista>
               )}
               {puedeEditar && (
-                <Pista texto={`Desde este segundo (${tc.toFixed(1)} s), otro encuadre. Arranca igual al actual: movelo después.`} lado="abajo-derecha">
+                <Pista texto={tr("ayudaNuevo", { seg: tc.toFixed(1) })} lado="abajo-derecha">
                   <button
                     onClick={nuevaPosicion}
                     className="flex h-7 items-center whitespace-nowrap rounded-lg border border-white/15 px-2.5 text-xs text-white/80 hover:bg-white/5"
                   >
-                    + Encuadre aquí
+                    {tr("nuevoEncuadre")}
                   </button>
                 </Pista>
               )}
@@ -672,11 +679,11 @@ export function EditorRecorte({
                   <button onClick={() => ir(p.desdeSeg)}>
                     {p.desdeSeg.toFixed(1)}–{fin.toFixed(1)} s
                     {posiciones.some((x) => x.diseno !== posiciones[0].diseno) && (
-                      <span className="ml-1 text-white/45">· {DISENOS.find((d) => d.valor === p.diseno)?.etiqueta}</span>
+                      <span className="ml-1 text-white/45">· {disenos.find((d) => d.valor === p.diseno)?.etiqueta}</span>
                     )}
                   </button>
                   {puedeEditar && i > 0 && (
-                    <button onClick={() => quitarPosicion(i)} className="text-white/40 hover:text-red-400" title="Quitar">
+                    <button onClick={() => quitarPosicion(i)} className="text-white/40 hover:text-red-400" title={tr("quitar")}>
                       ✕
                     </button>
                   )}
@@ -692,7 +699,7 @@ export function EditorRecorte({
       <div className="editor-columna">
         <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
           <p className="mb-2 text-sm font-medium">
-            Vista previa ({formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9"})
+            {tr("vistaPrevia", { formato: formato === "VERTICAL" ? "9:16" : formato === "CUADRADO" ? "1:1" : "16:9" })}
           </p>
           {formato === "VERTICAL" && (
             <div className="mb-2">
@@ -745,14 +752,14 @@ export function EditorRecorte({
                     <div
                       onPointerDown={(e) => arrastrarSubtitulo(e, "mover")}
                       onClick={(e) => e.stopPropagation()}
-                      title={editableSub ? "Arrastrá para subir o bajar el subtítulo" : undefined}
+                      title={editableSub ? tr("arrastraSubtitulo") : undefined}
                       className={`group absolute inset-x-0 ${editableSub ? "cursor-ns-resize hover:outline-dashed hover:outline-1 hover:outline-white/50" : "pointer-events-none"}`}
                       style={{ top: sub.caja.y * k, height: sub.caja.alto * k }}
                     >
                       {editableSub && (
                         <span
                           onPointerDown={(e) => arrastrarSubtitulo(e, "tamano")}
-                          title="Arrastrá a los lados para agrandar o achicar"
+                          title={tr("arrastraTamano")}
                           className="absolute right-2 top-1/2 hidden h-4 w-4 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-ng-azul bg-white group-hover:block"
                         />
                       )}
@@ -774,7 +781,7 @@ export function EditorRecorte({
                   {deLlamada && (
                     <div
                       onClick={(e) => e.stopPropagation()}
-                      title="Llamada a la acción del Brand Kit"
+                      title={tr("llamadaBrandKit")}
                       className="absolute"
                       style={zona(deLlamada.caja)}
                     />
@@ -798,7 +805,7 @@ export function EditorRecorte({
                   key={i}
                   onPointerDown={deLaPlantilla ? undefined : (e) => arrastrarTexto(e, i)}
                   onClick={(e) => e.stopPropagation()}
-                  title={deLaPlantilla ? "Llamada a la acción del Brand Kit" : undefined}
+                  title={deLaPlantilla ? tr("llamadaBrandKit") : undefined}
                   className={`absolute text-center ${puedeEditar && !deLaPlantilla ? "cursor-move" : ""} ${
                     elegido ? "outline-dashed outline-1 outline-offset-4 outline-white/70" : ""
                   } ${visible ? "" : "opacity-40"}`}
@@ -858,7 +865,7 @@ export function EditorRecorte({
                 <div
                   onPointerDown={(e) => arrastrarSubtitulo(e, "mover")}
                   onClick={(e) => e.stopPropagation()}
-                  title={editable ? "Arrastrá para subir o bajar el subtítulo" : undefined}
+                  title={editable ? tr("arrastraSubtitulo") : undefined}
                   className={`group absolute inset-x-0 text-center ${editable ? "cursor-ns-resize hover:outline-dashed hover:outline-1 hover:outline-white/50" : "pointer-events-none"}`}
                   style={{
                     ...(sp
@@ -893,7 +900,7 @@ export function EditorRecorte({
                   {editable && (
                     <span
                       onPointerDown={(e) => arrastrarSubtitulo(e, "tamano")}
-                      title="Arrastrá a los lados para agrandar o achicar"
+                      title={tr("arrastraTamano")}
                       className="absolute right-2 top-1/2 hidden h-4 w-4 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-ng-azul bg-white group-hover:block"
                     />
                   )}
@@ -913,23 +920,15 @@ export function EditorRecorte({
   );
 }
 
-const FORMATOS: { valor: FormatoClip; etiqueta: string; titulo: string }[] = [
-  { valor: "VERTICAL", etiqueta: "9:16", titulo: "Reels, TikTok, Shorts" },
-  { valor: "CUADRADO", etiqueta: "1:1", titulo: "Feed" },
-  { valor: "HORIZONTAL", etiqueta: "16:9", titulo: "YouTube" },
-];
+const FORMATOS = [
+  { valor: "VERTICAL", etiqueta: "9:16" },
+  { valor: "CUADRADO", etiqueta: "1:1" },
+  { valor: "HORIZONTAL", etiqueta: "16:9" },
+] as const satisfies readonly { valor: FormatoClip; etiqueta: string }[];
 
-const DISENOS: { valor: DisenoClip; etiqueta: string; titulo: string }[] = [
-  { valor: "UNO", etiqueta: "Uno", titulo: "Un solo encuadre" },
-  { valor: "DIVIDIDO", etiqueta: "Dividido", titulo: "Dos, uno arriba del otro" },
-  { valor: "HORIZONTAL", etiqueta: "Horizontal", titulo: "El 16:9 entero, centrado" },
-  { valor: "CENTRADO", etiqueta: "Centrado", titulo: "Un cuadrado al medio" },
-];
+const DISENOS = ["UNO", "DIVIDIDO", "HORIZONTAL", "CENTRADO"] as const satisfies readonly DisenoClip[];
 
-const FONDOS: { valor: FondoClip; etiqueta: string; titulo: string }[] = [
-  { valor: "DESENFOCADO", etiqueta: "Desenfocado", titulo: "El mismo video, suave" },
-  { valor: "NEGRO", etiqueta: "Negro", titulo: "Franjas limpias para textos" },
-];
+const FONDOS = ["DESENFOCADO", "NEGRO"] as const satisfies readonly FondoClip[];
 
 /** El dibujito del diseño en su botón, el mismo que en la app. */
 function MiniDiseno({
@@ -1018,6 +1017,7 @@ function BarraDelTramo({
   onCambiar: (desde: number, hasta: number) => void;
   deshabilitado?: boolean;
 }) {
+  const tr = useTranslations("editorRecorte");
   const barra = useRef<HTMLDivElement>(null);
   const [fija, setFija] = useState<{ ini: number; fin: number } | null>(null);
   const margen = Math.max(30, (hasta - desde) * 0.6);
@@ -1065,9 +1065,9 @@ function BarraDelTramo({
     <div className="mt-3">
       <div className="mb-1.5 flex items-center justify-between gap-2 text-xs text-white/45">
         <span className="flex items-center gap-1.5 whitespace-nowrap font-medium uppercase tracking-wide text-white/50">
-          Tramo del clip
-          <Pista texto="Arrastrá los bordes para alargarlo o acortarlo. Los botones lo corren de a 5 s.">
-            <Info size={14} className="text-white/40" aria-label="Cómo cambiar el tramo" tabIndex={0} />
+          {tr("barra.titulo")}
+          <Pista texto={tr("barra.ayuda")}>
+            <Info size={14} className="text-white/40" aria-label={tr("barra.ayudaEtiqueta")} tabIndex={0} />
           </Pista>
         </span>
         <span className="whitespace-nowrap tabular-nums">
@@ -1085,12 +1085,12 @@ function BarraDelTramo({
           <div
             onPointerDown={(e) => arrastrar(e, "desde")}
             className="absolute -left-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
-            title="Arrastrá para mover el inicio"
+            title={tr("barra.arrastraInicio")}
           />
           <div
             onPointerDown={(e) => arrastrar(e, "hasta")}
             className="absolute -right-1.5 inset-y-0 w-3 cursor-ew-resize rounded-sm bg-marca"
-            title="Arrastrá para mover el final"
+            title={tr("barra.arrastraFinal")}
           />
         </div>
         {t >= ventana.ini && t <= ventana.fin && (
@@ -1105,20 +1105,20 @@ function BarraDelTramo({
       </div>
       <div className="mt-1.5 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1">
-          <span className="text-xs text-white/40">Inicio</span>
-          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde - 5, hasta))} title="Mover el inicio 5 s antes (el clip se alarga)">
+          <span className="text-xs text-white/40">{tr("barra.inicio")}</span>
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde - 5, hasta))} title={tr("barra.inicioAntes")}>
             ←5s
           </button>
-          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(Math.min(desde + 5, hasta - 1), hasta))} title="Mover el inicio 5 s después (el clip se acorta)">
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(Math.min(desde + 5, hasta - 1), hasta))} title={tr("barra.inicioDespues")}>
             5s→
           </button>
         </div>
         <div className="flex items-center gap-1">
-          <span className="text-xs text-white/40">Final</span>
-          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, Math.max(hasta - 5, desde + 1)))} title="Mover el final 5 s antes (el clip se acorta)">
+          <span className="text-xs text-white/40">{tr("barra.final")}</span>
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, Math.max(hasta - 5, desde + 1)))} title={tr("barra.finalAntes")}>
             ←5s
           </button>
-          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, hasta + 5))} title="Mover el final 5 s después (el clip se alarga)">
+          <button className={boton} disabled={deshabilitado} onClick={() => onCambiar(...acotar(desde, hasta + 5))} title={tr("barra.finalDespues")}>
             5s→
           </button>
         </div>

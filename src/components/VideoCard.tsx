@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { APROBAR, RECHAZAR, REGENERAR, COLA_DE_REVISION } from "@/graphql/operations";
 import {
   claseUrgencia,
@@ -52,21 +53,26 @@ const estadoColors: Record<string, { bg: string; text: string }> = {
   RECHAZADO: { bg: "bg-gray-500/20", text: "text-gray-400" },
 };
 
-const estadoLabels: Record<string, string> = {
-  EN_REVISION: "En revisión",
-  APROBADO: "Aprobado",
-  PUBLICADO: "Publicado",
-  FALLIDO: "Fallido",
-  RECHAZADO: "Rechazado",
-  INGESTADO: "Procesando",
-  TRANSCRIBIENDO: "Transcribiendo",
-  ESCRIBIENDO_GUION: "Escribiendo guión",
-  VALIDANDO: "Validando",
-  GENERANDO_VOZ: "Generando voz",
-  ENSAMBLANDO: "Ensamblando",
-};
+/** Los estados con nombre propio; el resto se muestra tal cual llega. */
+const ESTADOS_CON_NOMBRE = [
+  "EN_REVISION",
+  "APROBADO",
+  "PUBLICADO",
+  "FALLIDO",
+  "RECHAZADO",
+  "INGESTADO",
+  "TRANSCRIBIENDO",
+  "ESCRIBIENDO_GUION",
+  "VALIDANDO",
+  "GENERANDO_VOZ",
+  "ENSAMBLANDO",
+] as const;
+type EstadoConNombre = (typeof ESTADOS_CON_NOMBRE)[number];
+const tieneNombre = (e: string): e is EstadoConNombre => (ESTADOS_CON_NOMBRE as readonly string[]).includes(e);
 
 export function VideoCard({ exp }: { exp: Expediente }) {
+  const t = useTranslations("revisionVideoCard");
+  const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
   const [nota, setNota] = useState("");
   const [showRegenerate, setShowRegenerate] = useState(false);
@@ -86,7 +92,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
   const [regenerar, { loading: regenerando }] = useMutation(REGENERAR, { refetchQueries: refetch });
 
   const estadoStyle = estadoColors[exp.estado] || { bg: "bg-white/10", text: "text-white/60" };
-  const estadoLabel = estadoLabels[exp.estado] || exp.estado;
+  const estadoLabel = tieneNombre(exp.estado) ? t(`estados.${exp.estado}`) : exp.estado;
 
   const handleRegenerate = () => {
     if (!nota.trim()) return;
@@ -110,7 +116,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
           <div className="flex h-full items-center justify-center">
             <div className="text-center">
               <div className="mb-2 text-4xl opacity-30">🎬</div>
-              <p className="text-sm text-white/30">Video en proceso...</p>
+              <p className="text-sm text-white/30">{t("enProceso")}</p>
             </div>
           </div>
         )}
@@ -142,7 +148,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
           {exp.regeneraciones > 0 && (
             <>
               <span>•</span>
-              <span className="text-yellow-400">{exp.regeneraciones} regen</span>
+              <span className="text-yellow-400">{t("regeneraciones", { n: exp.regeneraciones })}</span>
             </>
           )}
         </div>
@@ -151,13 +157,13 @@ export function VideoCard({ exp }: { exp: Expediente }) {
         <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
           <span
             className={`flex items-center gap-1 ${claseUrgencia[urgencia]}`}
-            title={`Entró a la cola: ${fechaCompleta(exp.createdAt)}`}
+            title={t("entroCola", { fecha: fechaCompleta(exp.createdAt, locale) })}
           >
             <span aria-hidden>⏱</span>
-            En cola {tiempoRelativo(exp.createdAt, ahora)}
+            {t("enCola", { tiempo: tiempoRelativo(exp.createdAt, ahora, locale) })}
             {urgencia === "alta" && (
               <span className="ml-1 rounded bg-red-500/20 px-1.5 py-0.5 font-medium">
-                demorado
+                {t("demorado")}
               </span>
             )}
           </span>
@@ -165,9 +171,9 @@ export function VideoCard({ exp }: { exp: Expediente }) {
           {hayEjecucionPosterior && (
             <span
               className="text-white/40"
-              title={`Última ejecución del pipeline: ${fechaCompleta(exp.updatedAt)}`}
+              title={t("ultimaEjecucion", { fecha: fechaCompleta(exp.updatedAt, locale) })}
             >
-              · generado {tiempoRelativo(exp.updatedAt, ahora)}
+              {t("generado", { tiempo: tiempoRelativo(exp.updatedAt, ahora, locale) })}
             </span>
           )}
         </div>
@@ -186,25 +192,25 @@ export function VideoCard({ exp }: { exp: Expediente }) {
             <div className="space-y-2 rounded-xl bg-black/30 p-3">
               {exp.guion?.apertura && (
                 <p className="text-sm">
-                  <span className="font-medium text-ng-teal">[Hook]</span>{" "}
+                  <span className="font-medium text-ng-teal">{t("partes.apertura")}</span>{" "}
                   <span className="text-white/80">{exp.guion.apertura}</span>
                 </p>
               )}
               {exp.guion?.detalle && (
                 <p className="text-sm">
-                  <span className="font-medium text-ng-teal">[Detalle]</span>{" "}
+                  <span className="font-medium text-ng-teal">{t("partes.detalle")}</span>{" "}
                   <span className="text-white/80">{exp.guion.detalle}</span>
                 </p>
               )}
               {exp.guion?.revelacion && (
                 <p className="text-sm">
-                  <span className="font-medium text-ng-teal">[Revelación]</span>{" "}
+                  <span className="font-medium text-ng-teal">{t("partes.revelacion")}</span>{" "}
                   <span className="text-white/80">{exp.guion.revelacion}</span>
                 </p>
               )}
               {exp.guion?.cierre && (
                 <p className="text-sm">
-                  <span className="font-medium text-ng-teal">[Cierre]</span>{" "}
+                  <span className="font-medium text-ng-teal">{t("partes.cierre")}</span>{" "}
                   <span className="text-white/80">{exp.guion.cierre}</span>
                 </p>
               )}
@@ -234,7 +240,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
                 <textarea
                   value={nota}
                   onChange={(e) => setNota(e.target.value)}
-                  placeholder="Describe qué quieres mejorar..."
+                  placeholder={t("placeholderNota")}
                   className="w-full rounded-xl border border-white/10 bg-black/50 p-3 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul/50"
                   rows={2}
                 />
@@ -243,14 +249,14 @@ export function VideoCard({ exp }: { exp: Expediente }) {
                     onClick={() => setShowRegenerate(false)}
                     className="flex-1 rounded-lg border border-white/10 py-2 text-sm text-white/60 hover:bg-white/5"
                   >
-                    Cancelar
+                    {t("cancelar")}
                   </button>
                   <button
                     onClick={handleRegenerate}
                     disabled={regenerando || !nota.trim()}
                     className="flex-1 rounded-lg bg-marca py-2 text-sm font-medium text-ng-tinta disabled:opacity-50"
                   >
-                    {regenerando ? "..." : "Regenerar"}
+                    {regenerando ? "..." : t("regenerar")}
                   </button>
                 </div>
               </div>
@@ -264,7 +270,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
             onClick={() => setExpanded(!expanded)}
             className="flex-1 rounded-lg border border-white/10 py-2.5 text-sm text-white/60 transition hover:bg-white/5"
           >
-            {expanded ? "Ver menos" : "Ver más"}
+            {expanded ? t("verMenos") : t("verMas")}
           </button>
 
           {exp.estado === "EN_REVISION" && (
@@ -278,6 +284,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
               </button>
               <button
                 onClick={() => rechazar({ variables: { id: exp._id } })}
+                aria-label={t("rechazar")}
                 disabled={rechazando}
                 className="rounded-lg border border-red-500/30 px-4 py-2.5 text-sm text-red-400 transition hover:bg-red-500/10 disabled:opacity-50"
               >
@@ -288,7 +295,7 @@ export function VideoCard({ exp }: { exp: Expediente }) {
                 disabled={aprobando}
                 className="rounded-lg bg-marca px-4 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
-                {aprobando ? "..." : "Aprobar ✓"}
+                {aprobando ? "..." : t("aprobar")}
               </button>
             </>
           )}

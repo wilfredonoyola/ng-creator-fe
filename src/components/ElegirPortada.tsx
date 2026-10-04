@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { useMutation } from "@apollo/client";
-import { uploadPortada } from "@/lib/upload";
+import { useTranslations } from "next-intl";
+import { ErrorDeSubida, uploadPortada } from "@/lib/upload";
 import {
   ELEGIR_PORTADA,
   PUBLICATIONS,
@@ -35,6 +36,8 @@ export function ElegirPortada({
   videoUrl: string;
   posterUrl?: string | null;
 }) {
+  const t = useTranslations("marcoElegirPortada");
+  const tSubida = useTranslations("erroresSubida");
   const [abierto, setAbierto] = useState(false);
   const [modo, setModo] = useState<Modo>("cuadro");
   const [segundo, setSegundo] = useState(1.5);
@@ -77,7 +80,7 @@ export function ElegirPortada({
       });
       setGuardada(data?.elegirPortada?.posterUrl ?? null);
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo guardar la portada");
+      setError(e?.message ?? t("errorGuardar"));
     }
   }
 
@@ -96,7 +99,7 @@ export function ElegirPortada({
       });
       setGuardada(data?.usarPortadaSubida?.posterUrl ?? r.url);
     } catch (err: any) {
-      setError(err?.message ?? "No se pudo subir la imagen");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err?.message ?? t("errorSubir"));
     } finally {
       setSubiendo(false);
       e.target.value = "";
@@ -109,7 +112,7 @@ export function ElegirPortada({
         onClick={() => setAbierto(true)}
         className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2 text-sm text-white/60 transition hover:bg-white/5"
       >
-        🖼️ {posterUrl ? "Cambiar portada" : "Elegir portada"}
+        🖼️ {posterUrl ? t("cambiar") : t("elegir")}
       </button>
     );
   }
@@ -117,21 +120,21 @@ export function ElegirPortada({
   return (
     <div className="mt-2 rounded-xl border border-white/10 bg-black/30 p-3">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs font-medium text-white/70">Portada</span>
+        <span className="text-xs font-medium text-white/70">{t("portada")}</span>
         <button
           onClick={() => setAbierto(false)}
           className="text-xs text-white/40 transition hover:text-white"
         >
-          Cerrar
+          {t("cerrar")}
         </button>
       </div>
 
       <div className="mb-3 flex gap-1.5">
         <Pestana activa={modo === "cuadro"} onClick={() => setModo("cuadro")}>
-          Un cuadro del video
+          {t("pestanaCuadro")}
         </Pestana>
         <Pestana activa={modo === "imagen"} onClick={() => setModo("imagen")}>
-          Subir imagen
+          {t("pestanaImagen")}
         </Pestana>
       </div>
 
@@ -153,7 +156,7 @@ export function ElegirPortada({
 
           <label className="mt-2 block">
             <span className="flex items-center justify-between text-[11px] text-white/40">
-              Buscá el cuadro
+              {t("buscaCuadro")}
               <span className="text-white/60">{segundo.toFixed(1)}s</span>
             </span>
             <input
@@ -172,11 +175,7 @@ export function ElegirPortada({
             disabled={guardando || !!guardada}
             className="mt-2 w-full rounded-lg bg-marca py-2 text-xs font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
           >
-            {guardando
-              ? "Guardando…"
-              : guardada
-                ? "✓ Portada guardada"
-                : "Usar este cuadro"}
+            {guardando ? t("guardando") : guardada ? t("guardada") : t("usarCuadro")}
           </button>
         </>
       ) : (
@@ -186,7 +185,7 @@ export function ElegirPortada({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={posterUrl}
-              alt="Portada actual"
+              alt={t("actual")}
               className="w-full rounded-lg bg-black object-contain"
             />
           )}
@@ -200,33 +199,26 @@ export function ElegirPortada({
               disabled={subiendo}
             />
             <span className="text-xs text-white/60">
-              {subiendo
-                ? "Subiendo…"
-                : guardada
-                  ? "✓ Portada guardada · subir otra"
-                  : "Elegí una imagen de tu computadora"}
+              {subiendo ? t("subiendo") : guardada ? t("guardadaSubirOtra") : t("elegiImagen")}
             </span>
             <span className="mt-1 block text-[10px] text-white/30">
-              JPG, PNG o WEBP · hasta 10MB
+              {t("formatos")}
             </span>
           </label>
 
-          <p className="mt-2 text-[10px] text-white/30">
-            Usá la misma proporción que el video (9:16 en un Reel), o Meta la
-            recorta por su cuenta.
-          </p>
+          <p className="mt-2 text-[10px] text-white/30">{t("proporcion")}</p>
         </>
       )}
 
       {guardada && (
         <div className="mt-3 rounded-lg border border-ng-azul/30 bg-ng-teal/5 p-2">
           <p className="mb-1.5 text-[11px] font-medium text-ng-teal">
-            ✓ Así va a salir la portada
+            {t("asiSale")}
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={guardada}
-            alt="Portada guardada"
+            alt={t("altGuardada")}
             className="w-full rounded-md bg-black object-contain"
           />
         </div>
@@ -234,9 +226,7 @@ export function ElegirPortada({
 
       {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
 
-      <p className="mt-2 text-[10px] text-white/30">
-        Es la cubierta del Reel y lo que se publica si elegís formato de imagen.
-      </p>
+      <p className="mt-2 text-[10px] text-white/30">{t("explicacion")}</p>
     </div>
   );
 }

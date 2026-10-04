@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   CAMBIAR_ESTADO_POST,
   CONTEO_POR_ESTADO,
@@ -13,7 +14,6 @@ import {
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import {
-  ETIQUETA_ESTADO,
   TarjetaRevival,
   type EstadoRevival,
   type PostRevival,
@@ -54,6 +54,9 @@ const ORDEN_ESTADOS: EstadoRevival[] = [
  * forma de saber qué ya se evaluó.
  */
 export default function RevivalPage() {
+  const t = useTranslations("revival");
+  const tEstado = useTranslations("revivalTarjeta");
+  const locale = useLocale();
   const { activa } = useMarcaActiva();
   const [orden, setOrden] = useState<Orden>("SCORE");
   const [anioFiltro, setAnioFiltro] = useState<number | null>(null);
@@ -99,10 +102,7 @@ export default function RevivalPage() {
     onCompleted: (res) => {
       const r = res.sincronizarAnio;
       setSincronizandoAnio(null);
-      setAviso(
-        `${r.anio}: ${r.posts} publicaciones` +
-          (r.completo ? "" : " · quedó contenido sin traer, volvé a sincronizar"),
-      );
+      setAviso(t(r.completo ? "sincronizado" : "incompleto", { anio: r.anio, n: r.posts }));
       refetch();
       refetchAnios();
       refetchConteo();
@@ -110,7 +110,7 @@ export default function RevivalPage() {
     },
     onError: (err) => {
       setSincronizandoAnio(null);
-      setAviso(`Error: ${err.message}`);
+      setAviso(t("error", { mensaje: err.message }));
     },
   });
 
@@ -122,7 +122,7 @@ export default function RevivalPage() {
     },
     onError: (err) => {
       setPostOcupado(null);
-      setAviso(`Error: ${err.message}`);
+      setAviso(t("error", { mensaje: err.message }));
     },
   });
 
@@ -132,9 +132,7 @@ export default function RevivalPage() {
   const [refrescarProgramadas] = useMutation(REFRESCAR_PROGRAMADAS, {
     onCompleted: (res) => {
       if (res.refrescarProgramadas > 0) {
-        setAviso(
-          `${res.refrescarProgramadas} publicación(es) programada(s) ya salieron en Facebook`,
-        );
+        setAviso(t("yaSalieron", { n: res.refrescarProgramadas }));
         refetch();
         refetchConteo();
       }
@@ -153,7 +151,7 @@ export default function RevivalPage() {
   const conteos: ConteoEstado[] = dataConteo?.conteoPorEstado ?? [];
   const resumen = dataResumen?.resumenHistorial;
 
-  const numero = (n: number) => n.toLocaleString("es");
+  const numero = (n: number) => n.toLocaleString(locale);
   const totalPosts = conteos.reduce((s, c) => s + c.total, 0);
 
   // Se abre sola mientras no haya nada traído: ahí sincronizar es la única
@@ -169,15 +167,14 @@ export default function RevivalPage() {
   return (
     <DashboardLayout>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Revival</h1>
+        <h1 className="text-2xl font-bold">{t("titulo")}</h1>
         <p className="mt-1 text-white/50">
-          Las publicaciones que mejor funcionaron en{" "}
-          {activa ? activa.nombre : "tu fan page"}
+          {t("subtitulo", { pagina: activa ? activa.nombre : t("tuFanPage") })}
         </p>
         <p className="mt-1 text-xs text-white/30">
           {resumen?.total
-            ? `${numero(resumen.total)} publicaciones guardadas`
-            : "Todavía no se sincronizó ningún año"}
+            ? t("guardadas", { n: numero(resumen.total) })
+            : t("ningunAnio")}
         </p>
       </div>
 
@@ -190,8 +187,8 @@ export default function RevivalPage() {
       {!pageId ? (
         <Vacio
           icono="🔗"
-          titulo="Sin página de Facebook habilitada"
-          detalle="Un admin tiene que conectar y habilitar una página en Integraciones."
+          titulo={t("sinPagina.titulo")}
+          detalle={t("sinPagina.detalle")}
         />
       ) : (
         <>
@@ -207,12 +204,12 @@ export default function RevivalPage() {
               className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2.5 text-left transition hover:bg-white/5"
             >
               <span className="text-xs uppercase tracking-wider text-white/40">
-                Sincronizar por año
+                {t("porAnio")}
               </span>
               <span className="text-xs text-white/25">
                 {aniosSincronizados > 0
-                  ? `${aniosSincronizados} de ${anios.length} años`
-                  : "sin sincronizar"}
+                  ? t("aniosDe", { n: aniosSincronizados, total: anios.length })
+                  : t("sinSincronizar")}
               </span>
               <span
                 className={`ml-auto text-[10px] text-white/30 transition-transform ${
@@ -255,7 +252,7 @@ export default function RevivalPage() {
                           sincronizar({ variables: { pageId, anio: a.anio } });
                         }}
                         disabled={sincronizandoAnio !== null}
-                        title={`Sincronizar ${a.anio}`}
+                        title={t("sincronizarAnio", { anio: a.anio })}
                         className="rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-ng-celeste disabled:cursor-not-allowed disabled:opacity-30"
                       >
                         {activo ? (
@@ -266,19 +263,19 @@ export default function RevivalPage() {
                       </button>
                     </div>
                     <p className="mt-0.5 text-xs text-white/50">
-                      {a.posts ? `${numero(a.posts)} posts` : "sin datos"}
+                      {a.posts ? t("posts", { n: numero(a.posts) }) : t("sinDatos")}
                     </p>
                     <p className="text-[10px] text-white/25">
                       {activo
-                        ? "trayendo…"
+                        ? t("trayendo")
                         : a.sincronizadoEn
-                          ? new Date(a.sincronizadoEn).toLocaleDateString("es", {
+                          ? new Date(a.sincronizadoEn).toLocaleDateString(locale, {
                               day: "numeric",
                               month: "short",
                             })
-                          : "nunca"}
+                          : t("nunca")}
                       {!a.completo && (
-                        <span className="text-amber-400/70"> · incompleto</span>
+                        <span className="text-amber-400/70">{t("incompletoCorto")}</span>
                       )}
                     </p>
                   </div>
@@ -289,9 +286,7 @@ export default function RevivalPage() {
 
           {resumen && resumen.total > 0 && resumen.conMetricas === 0 && (
             <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200/80">
-              Sin reproducciones ni clics: falta el permiso{" "}
-              <code>read_insights</code>. Meta acepta la llamada igual y responde
-              vacío, por eso no ves un error. El ranking funciona sin eso.
+              {t.rich("sinInsights", { code: (c) => <code>{c}</code> })}
             </div>
           )}
 
@@ -303,7 +298,7 @@ export default function RevivalPage() {
             <Pestana
               activa={estadoFiltro === null}
               onClick={() => setEstadoFiltro(null)}
-              texto="Todos"
+              texto={t("todos")}
               total={totalPosts}
             />
             {ORDEN_ESTADOS.map((e) => {
@@ -313,7 +308,7 @@ export default function RevivalPage() {
                   key={e}
                   activa={estadoFiltro === e}
                   onClick={() => setEstadoFiltro(e)}
-                  texto={ETIQUETA_ESTADO[e]}
+                  texto={tEstado(`estados.${e}`)}
                   total={c?.total ?? 0}
                 />
               );
@@ -322,12 +317,7 @@ export default function RevivalPage() {
 
           {/* Orden y filtro de año */}
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            {(
-              [
-                ["SCORE", "Mejor rendimiento"],
-                ["FECHA", "Más recientes"],
-              ] as const
-            ).map(([valor, etiqueta]) => (
+            {(["SCORE", "FECHA"] as const).map((valor) => (
               <button
                 key={valor}
                 onClick={() => setOrden(valor)}
@@ -337,7 +327,7 @@ export default function RevivalPage() {
                     : "text-white/50 hover:bg-white/5 hover:text-white"
                 }`}
               >
-                {etiqueta}
+                {t(`ordenes.${valor}`)}
               </button>
             ))}
 
@@ -353,7 +343,7 @@ export default function RevivalPage() {
                     : "text-amber-300/70 hover:bg-amber-500/10"
                 }`}
               >
-                📱 Sin historia
+                {t("sinHistoria")}
                 <span className="ml-1.5 opacity-70">{resumen.sinHistoria}</span>
               </button>
             )}
@@ -363,7 +353,7 @@ export default function RevivalPage() {
                 onClick={() => setAnioFiltro(null)}
                 className="ml-auto rounded-lg bg-white/5 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/10"
               >
-                {anioFiltro} ✕
+                {t("quitarAnio", { anio: anioFiltro })}
               </button>
             )}
           </div>
@@ -378,13 +368,13 @@ export default function RevivalPage() {
               icono="♻️"
               titulo={
                 totalPosts === 0
-                  ? "Historial vacío"
-                  : "Nada en este filtro"
+                  ? t("vacio.titulo")
+                  : t("sinResultados.titulo")
               }
               detalle={
                 totalPosts === 0
-                  ? "Sincronizá un año con el botón ↻ de la grilla de arriba."
-                  : "Probá con otra pestaña o quitá el filtro de año."
+                  ? t("vacio.detalle")
+                  : t("sinResultados.detalle")
               }
             />
           ) : (

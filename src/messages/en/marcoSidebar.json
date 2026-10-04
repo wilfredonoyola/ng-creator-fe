@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "inicio": "Home",
+    "episodios": "Episodes",
+    "calendario": "Calendar",
+    "publicaciones": "Posts",
+    "crearVideo": "Create video",
+    "montaje": "Editor",
+    "revision": "Review",
+    "creators": "Creators",
+    "equipo": "Team",
+    "brandKit": "Brand Kit",
+    "redesConectadas": "Connected networks"
+  },
+  "cerrarMenu": "Close menu",
+  "trabajandoEnTitulo": "Working on {marca}. Expand the menu to switch.",
+  "trabajandoEnEtiqueta": "Working on {marca}. Expand the menu",
+  "videosReaccion": "Reaction videos",
+  "administracion": "Administration",
+  "rolDe": "{rol} of {marca}",
+  "laPagina": "the page",
+  "administrador": "Administrator",
+  "sinAcceso": "No page access",
+  "perfil": "Profile",
+  "perfilDe": "Profile · {nombre}",
+  "cerrarSesion": "Sign out",
+  "expandir": "Expand the menu",
+  "colapsar": "Collapse the menu"
+}

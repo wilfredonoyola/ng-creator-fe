@@ -1,0 +1,23 @@
+{
+  "sinUrl": "The backend didn't return the authorization URL",
+  "errorConectar": "Couldn't start the connection",
+  "errorOperacion": "The operation failed",
+  "eligeMarca": "Pick a brand in the sidebar.",
+  "reconectar": "Reconnect",
+  "deshabilitar": "Disable",
+  "habilitar": "Enable",
+  "desconectar": "Disconnect",
+  "titulo": "{marca} channels",
+  "tituloSinMarca": "Active brand channels",
+  "descripcion": "This brand's Shorts are uploaded to these channels. For another brand, switch it in the sidebar.",
+  "sinCredenciales": "The backend doesn't have the Google credentials yet (YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REDIRECT_URI).",
+  "revocado": "Google revoked access: it needs to be reconnected.",
+  "habilitado": "Enabled as a destination",
+  "deshabilitado": "Disabled",
+  "confirmarDesconectar": "Disconnect \"{nombre}\"? Anything scheduled for this channel will fail when it's due.",
+  "abriendo": "Opening Google…",
+  "conectarOtro": "Connect another channel",
+  "conectarPrimero": "Connect a YouTube channel",
+  "soloPropietario": "Only the brand owner can connect channels.",
+  "aprobacion": "Until Google approves the app, only accounts added as testers can connect and videos are uploaded as private."
+}

@@ -1,0 +1,52 @@
+{
+  "estados": {
+    "PROGRAMADA": "Scheduled",
+    "AGENDADA_EN_RED": "Scheduled",
+    "SUBIENDO": "Uploading",
+    "PROCESANDO": "Publishing",
+    "PUBLICADA": "Published",
+    "FALLIDA": "Failed",
+    "CANCELADA": "Canceled"
+  },
+  "titulo": "Calendar",
+  "subtitulo": "What's scheduled and what's already out.",
+  "subtituloEn": "What's scheduled and what's already out on {marca}.",
+  "horasDe": "Times in {zona}",
+  "semanaAnterior": "Previous week",
+  "semanaSiguiente": "Next week",
+  "hoy": "Today",
+  "programadas": "{n, plural, one {# scheduled} other {# scheduled}}",
+  "publicadas": "{n, plural, one {# published} other {# published}}",
+  "fallidas": "{n, plural, one {# failed} other {# failed}}",
+  "todas": "All",
+  "errorCargar": "Couldn't load the calendar: {mensaje}",
+  "nada": "Nothing",
+  "listos": {
+    "titulo": "Ready to schedule",
+    "vacio": "No clips waiting. When someone marks one as Ready in the editor, it shows up here.",
+    "listoPor": "Ready by {nombre} · {tiempo}",
+    "programar": "Schedule"
+  },
+  "tarjeta": {
+    "sinDescripcion": "No description",
+    "confirmarCancelar": "Cancel “{titulo}” on {red}? It won't go out.",
+    "errorCancelar": "Couldn't cancel",
+    "ver": "View ↗",
+    "cambiarHora": "Change time",
+    "cancelando": "Canceling…",
+    "cancelar": "Cancel",
+    "reintentando": "Retrying: ",
+    "canceladaPor": "Canceled by {nombre}"
+  },
+  "cambiarHora": {
+    "titulo": "Change time",
+    "publicacion": "Post",
+    "errorCambiar": "Couldn't change the time",
+    "ahoraSale": "It's set for {cuando}.",
+    "yaPaso": "That time has passed: pick one from now on. Times in {zona}.",
+    "vaASalir": "It'll go out {cuando}. Times in {zona}.",
+    "volver": "Back",
+    "guardando": "Saving…",
+    "guardar": "Save"
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { MARCAR_CLIP_LISTO } from "@/graphql/operations";
 import { diaYHora } from "@/lib/publicaciones";
 import type { Autoria } from "./TomarClip";
@@ -40,6 +41,8 @@ export function ListoClip({
   tieneVideo: boolean;
   puedeOperar: boolean;
 }) {
+  const t = useTranslations("editorListo");
+  const locale = useLocale();
   const [marcar, { loading }] = useMutation(MARCAR_CLIP_LISTO, {
     // Entra o sale de "Listos para programar" en el calendario.
     refetchQueries: ["ClipsListosSinProgramar"],
@@ -51,7 +54,7 @@ export function ListoClip({
     try {
       await marcar({ variables: { id: clipId, marcaId, listo } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo cambiar");
+      setError(e instanceof Error ? e.message : t("errorCambiar"));
     }
   }
 
@@ -62,10 +65,10 @@ export function ListoClip({
       {listoPor ? (
         <>
           <span
-            title={`Desde ${new Date(listoPor.en).toLocaleString("es")}`}
+            title={t("desde", { fecha: new Date(listoPor.en).toLocaleString(locale) })}
             className="rounded-full bg-ng-teal/15 px-2 py-0.5 text-[11px] text-ng-teal"
           >
-            ✓ Terminado · {listoPor.nombre}
+            {t("terminadoPor", { nombre: listoPor.nombre })}
           </span>
           {puedeOperar && (
             <button
@@ -73,7 +76,7 @@ export function ListoClip({
               disabled={loading}
               className="rounded-full border border-white/15 px-2 py-0.5 text-[11px] text-white/60 hover:bg-white/5 disabled:opacity-50"
             >
-              Volver a editar
+              {t("volverAEditar")}
             </button>
           )}
         </>
@@ -81,10 +84,10 @@ export function ListoClip({
         <button
           onClick={() => void cambiar(true)}
           disabled={loading}
-          title="Ya se puede programar: lo ve todo el equipo en el calendario"
+          title={t("marcarAyuda")}
           className="rounded-full border border-ng-teal/40 px-2 py-0.5 text-[11px] text-ng-teal hover:bg-ng-teal/10 disabled:opacity-50"
         >
-          {loading ? "Marcando…" : "Marcar terminado"}
+          {loading ? t("marcando") : t("marcarTerminado")}
         </button>
       )}
       {error && <span className="text-[11px] text-red-400">{error}</span>}
@@ -97,27 +100,31 @@ export function ListoClip({
  * todavía no se programó.
  */
 export function EstadoPublicacionClip({ publicacion }: { publicacion?: ResumenPublicacionClip | null }) {
+  const t = useTranslations("editorListo");
+  const locale = useLocale();
   if (!publicacion) return null;
   const { programadas, publicadas, fallidas, proximaEn } = publicacion;
   return (
     <>
       {programadas > 0 && (
         <span className="rounded-full bg-indigo-400/15 px-2 py-0.5 text-[11px] text-indigo-300">
-          Programado{proximaEn ? ` · ${diaYHora(new Date(proximaEn))}` : ""}
+          {t("programado")}
+          {proximaEn ? ` · ${diaYHora(new Date(proximaEn), locale)}` : ""}
           {programadas > 1 ? ` (${programadas})` : ""}
         </span>
       )}
       {publicadas > 0 && (
         <span className="rounded-full bg-ng-teal/15 px-2 py-0.5 text-[11px] text-ng-teal">
-          Publicado · {publicadas} {publicadas === 1 ? "red" : "redes"}
+          {t("publicadoEn", { n: publicadas })}
         </span>
       )}
       {fallidas > 0 && (
         <span
-          title="Una red rechazó la publicación: entrá a Programar para ver el motivo y reintentar"
+          title={t("fallaAyuda")}
           className="rounded-full bg-red-500/15 px-2 py-0.5 text-[11px] text-red-400"
         >
-          Falló en redes{fallidas > 1 ? ` (${fallidas})` : ""}
+          {t("fallo")}
+          {fallidas > 1 ? ` (${fallidas})` : ""}
         </span>
       )}
     </>

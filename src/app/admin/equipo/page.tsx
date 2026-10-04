@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
@@ -44,6 +45,8 @@ const ROLES: RolPagina[] = ["PROPIETARIO", "EDITOR", "LECTOR", "PROVEEDOR"];
  * para todas las cuentas de la marca.
  */
 export default function EquipoPage() {
+  const t = useTranslations("equipo");
+  const locale = useLocale();
   const { activa, cargando: cargandoPagina } = useMarcaActiva();
   const { usuario, esPropietario } = useSesion();
   const marcaId = activa?._id;
@@ -88,7 +91,7 @@ export default function EquipoPage() {
     try {
       await fn();
     } catch (e: any) {
-      setError(e?.message ?? "La operación falló");
+      setError(e?.message ?? t("errorOperacion"));
     }
   }
 
@@ -97,8 +100,8 @@ export default function EquipoPage() {
       <DashboardLayout>
         <EstadoVacio
           icono="🔗"
-          titulo="No hay ninguna página activa"
-          detalle="El equipo se administra por página. Habilitá una en Integraciones o pedí que te inviten a una."
+          titulo={t("sinPagina.titulo")}
+          detalle={t("sinPagina.detalle")}
         />
       </DashboardLayout>
     );
@@ -107,9 +110,9 @@ export default function EquipoPage() {
   return (
     <DashboardLayout>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Equipo</h1>
+        <h1 className="text-2xl font-bold">{t("titulo")}</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-white/50">
-          <span>Quién trabaja en</span>
+          <span>{t("quienTrabaja")}</span>
           {activa && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-sm text-white/80">
               <span
@@ -120,10 +123,7 @@ export default function EquipoPage() {
             </span>
           )}
         </p>
-        <p className="mt-2 max-w-2xl text-sm text-white/35">
-          El acceso es por página: cada una tiene su propio equipo. Para sumar a
-          alguien a otra página, cambiá de página en el switch de la izquierda.
-        </p>
+        <p className="mt-2 max-w-2xl text-sm text-white/35">{t("explicacion")}</p>
       </div>
 
       {error && (
@@ -141,10 +141,7 @@ export default function EquipoPage() {
         />
       ) : (
         <div className="mb-6 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-          <p className="text-sm text-white/60">
-            Podés ver el equipo, pero solo el propietario de la página invita y
-            cambia accesos.
-          </p>
+          <p className="text-sm text-white/60">{t("soloMirar")}</p>
         </div>
       )}
 
@@ -152,7 +149,7 @@ export default function EquipoPage() {
       {invitaciones.length > 0 && (
         <section className="mb-6">
           <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
-            Invitados, sin entrar todavía
+            {t("invitados")}
           </h2>
           <div className="space-y-2">
             {invitaciones.map((inv) => (
@@ -167,10 +164,9 @@ export default function EquipoPage() {
                   <p className="truncate text-sm text-white/80">{inv.email}</p>
                   <p
                     className="text-xs text-white/35"
-                    title={fechaCompleta(inv.createdAt)}
+                    title={fechaCompleta(inv.createdAt, locale)}
                   >
-                    invitado {tiempoRelativo(inv.createdAt)} · entra al iniciar
-                    sesión con ese correo
+                    {t("invitadoHace", { cuando: tiempoRelativo(inv.createdAt, Date.now(), locale) })}
                   </p>
                 </div>
                 <ChipRol rol={inv.rol} />
@@ -182,7 +178,7 @@ export default function EquipoPage() {
                   }
                   className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 transition hover:border-red-500/40 hover:text-red-400"
                 >
-                  Cancelar
+                  {t("cancelar")}
                 </button>
               </div>
             ))}
@@ -193,7 +189,7 @@ export default function EquipoPage() {
       {/* Quienes ya tienen acceso */}
       <section>
         <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
-          Con acceso ({miembros.length})
+          {t("conAcceso", { n: miembros.length })}
         </h2>
 
         {cargandoMiembros ? (
@@ -208,8 +204,8 @@ export default function EquipoPage() {
         ) : miembros.length === 0 ? (
           <EstadoVacio
             icono="👥"
-            titulo="Todavía no hay nadie más"
-            detalle="Invitá por correo a quien tenga que trabajar en esta página."
+            titulo={t("vacio.titulo")}
+            detalle={t("vacio.detalle")}
           />
         ) : (
           <div className="space-y-2">
@@ -250,6 +246,8 @@ function FormularioInvitar({
   invitando: boolean;
   onInvitar: (email: string, rol: RolPagina) => Promise<void>;
 }) {
+  const t = useTranslations("equipo.invitar");
+  const tRol = useTranslations("marcoRoles");
   const [email, setEmail] = useState("");
   const [rol, setRol] = useState<RolPagina>("EDITOR");
 
@@ -265,11 +263,8 @@ function FormularioInvitar({
       onSubmit={enviar}
       className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5"
     >
-      <h2 className="font-semibold">Invitar a alguien</h2>
-      <p className="mt-1 text-sm text-white/45">
-        Le llega un correo con una contraseña temporal. El acceso a esta página
-        queda listo desde el momento en que entra.
-      </p>
+      <h2 className="font-semibold">{t("titulo")}</h2>
+      <p className="mt-1 text-sm text-white/45">{t("detalle")}</p>
 
       {/* En móvil los tres controles van apilados: el correo necesita el ancho
           completo para verse entero mientras se escribe. */}
@@ -278,7 +273,7 @@ function FormularioInvitar({
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="persona@ejemplo.com"
+          placeholder={t("placeholder")}
           autoComplete="off"
           className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
         />
@@ -289,7 +284,7 @@ function FormularioInvitar({
         >
           {ROLES.map((r) => (
             <option key={r} value={r} className="bg-[#111]">
-              {ESTILO_ROL[r].etiqueta}
+              {tRol(`${r}.etiqueta`)}
             </option>
           ))}
         </select>
@@ -298,11 +293,11 @@ function FormularioInvitar({
           disabled={!email.trim() || invitando}
           className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
         >
-          {invitando ? "Enviando…" : "Invitar"}
+          {invitando ? t("enviando") : t("boton")}
         </button>
       </div>
 
-      <p className="mt-2 text-xs text-white/35">{ESTILO_ROL[rol].ayuda}</p>
+      <p className="mt-2 text-xs text-white/35">{tRol(`${rol}.ayuda`)}</p>
     </form>
   );
 }
@@ -320,6 +315,9 @@ function FilaMiembro({
   onCambiarRol: (rol: RolPagina) => void;
   onRevocar: () => void;
 }) {
+  const t = useTranslations("equipo");
+  const tRol = useTranslations("marcoRoles");
+  const locale = useLocale();
   const [confirmando, setConfirmando] = useState(false);
 
   // Quitarse a uno mismo no tiene vuelta desde la interfaz: habría que pedirle
@@ -337,23 +335,23 @@ function FilaMiembro({
           {miembro.nombre || miembro.email}
           {soyYo && (
             <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-normal text-white/50">
-              vos
+              {t("vos")}
             </span>
           )}
           {!miembro.activo && (
             <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-normal text-red-400">
-              desactivado
+              {t("desactivado")}
             </span>
           )}
         </p>
         <p className="truncate text-xs text-white/40">{miembro.email}</p>
         <p className="truncate text-[11px] text-white/25">
           {miembro.ultimoAccesoEn ? (
-            <span title={fechaCompleta(miembro.ultimoAccesoEn)}>
-              último ingreso {tiempoRelativo(miembro.ultimoAccesoEn)}
+            <span title={fechaCompleta(miembro.ultimoAccesoEn, locale)}>
+              {t("ultimoIngreso", { cuando: tiempoRelativo(miembro.ultimoAccesoEn, Date.now(), locale) })}
             </span>
           ) : (
-            "sin ingresos todavía"
+            t("sinIngresos")
           )}
         </p>
       </div>
@@ -362,12 +360,12 @@ function FilaMiembro({
         <select
           value={miembro.rol}
           onChange={(e) => onCambiarRol(e.target.value as RolPagina)}
-          title={ESTILO_ROL[miembro.rol].ayuda}
+          title={tRol(`${miembro.rol}.ayuda`)}
           className="rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-xs outline-none transition focus:border-ng-azul/50"
         >
           {ROLES.map((r) => (
             <option key={r} value={r} className="bg-[#111]">
-              {ESTILO_ROL[r].etiqueta}
+              {tRol(`${r}.etiqueta`)}
             </option>
           ))}
         </select>
@@ -382,22 +380,22 @@ function FilaMiembro({
               onClick={onRevocar}
               className="rounded-lg bg-red-500/15 px-3 py-1.5 text-xs font-medium text-red-400 transition hover:bg-red-500/25"
             >
-              Quitar
+              {t("quitar")}
             </button>
             <button
               onClick={() => setConfirmando(false)}
               className="rounded-lg px-2 py-1.5 text-xs text-white/40 transition hover:text-white/70"
             >
-              No
+              {t("no")}
             </button>
           </span>
         ) : (
           <button
             onClick={() => setConfirmando(true)}
-            title="Quitar el acceso a esta página"
+            title={t("quitarTitulo")}
             className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/50 transition hover:border-red-500/40 hover:text-red-400"
           >
-            Quitar
+            {t("quitar")}
           </button>
         ))}
     </div>
@@ -405,13 +403,13 @@ function FilaMiembro({
 }
 
 function ChipRol({ rol }: { rol: RolPagina }) {
-  const estilo = ESTILO_ROL[rol];
+  const tRol = useTranslations("marcoRoles");
   return (
     <span
-      title={estilo.ayuda}
-      className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${estilo.clase}`}
+      title={tRol(`${rol}.ayuda`)}
+      className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-medium ${ESTILO_ROL[rol].clase}`}
     >
-      {estilo.etiqueta}
+      {tRol(`${rol}.etiqueta`)}
     </span>
   );
 }
@@ -424,9 +422,11 @@ function ChipRol({ rol }: { rol: RolPagina }) {
  * y conviene que se lea antes de repartir accesos.
  */
 function LeyendaDeRoles() {
+  const t = useTranslations("equipo.leyenda");
+  const tRol = useTranslations("marcoRoles");
   return (
     <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-      <h2 className="text-sm font-semibold text-white/70">Qué puede cada rol</h2>
+      <h2 className="text-sm font-semibold text-white/70">{t("titulo")}</h2>
       <dl className="mt-3 space-y-3">
         {ROLES.map((r) => (
           <div key={r} className="flex flex-wrap items-start gap-3">
@@ -434,17 +434,12 @@ function LeyendaDeRoles() {
               <ChipRol rol={r} />
             </dt>
             <dd className="min-w-[12rem] flex-1 text-sm text-white/45">
-              {ESTILO_ROL[r].ayuda}
+              {tRol(`${r}.ayuda`)}
             </dd>
           </div>
         ))}
       </dl>
-      <p className="mt-4 border-t border-white/10 pt-3 text-xs text-white/30">
-        Publicar no necesita cuenta de Facebook: sale con el token que quedó
-        guardado al conectar la página. Reconectarla en Meta sí exige ser
-        administrador de la fan page del lado de Facebook, y eso no lo decide
-        esta app.
-      </p>
+      <p className="mt-4 border-t border-white/10 pt-3 text-xs text-white/30">{t("nota")}</p>
     </section>
   );
 }

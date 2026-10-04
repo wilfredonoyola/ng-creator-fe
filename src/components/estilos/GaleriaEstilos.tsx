@@ -15,13 +15,17 @@ import {
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const LIENZO = LIENZOS.VERTICAL;
 
-/** El gancho de muestra: lo que se ve arriba en cada miniatura. */
-const GANCHO_MUESTRA: Texto = {
-  contenido: "Lo que nadie te cuenta de vender",
-  destacadas: ["nadie"],
+/**
+ * El gancho de muestra: lo que se ve arriba en cada miniatura. Es solo de
+ * vista previa (no va al render), así que va en el idioma de la interfaz.
+ */
+const ganchoMuestra = (contenido: string, destacada: string): Texto => ({
+  contenido,
+  destacadas: [destacada],
   fuente: "ANTON",
   tamano: GANCHO_COMO_TEXTO.tamano,
   color: "#FFFFFF",
@@ -34,18 +38,26 @@ const GANCHO_MUESTRA: Texto = {
   ancho: GANCHO_COMO_TEXTO.ancho,
   desdeSeg: 0,
   hastaSeg: null,
-};
+});
 
-/** La línea de subtítulos de muestra: una palabra cada medio segundo. */
-const PALABRAS_MUESTRA = ["así", "se", "ven", "tus", "subtítulos"];
+/**
+ * La línea de subtítulos de muestra: una palabra cada medio segundo. Las
+ * palabras salen de los mensajes ("así se ven tus subtítulos"); en todos los
+ * idiomas son cinco, para que la vuelta dure lo mismo.
+ */
+const CANTIDAD_PALABRAS = 5;
 const PASO = 0.5;
-const LINEA_MUESTRA: LineaSubtituloEstilo = {
-  desde: 0,
-  hasta: PALABRAS_MUESTRA.length * PASO,
-  palabras: PALABRAS_MUESTRA.map((texto, i) => ({ texto, desde: i * PASO, hasta: (i + 1) * PASO })),
+const HASTA_LINEA = CANTIDAD_PALABRAS * PASO;
+const lineaMuestra = (frase: string): LineaSubtituloEstilo => {
+  const palabras = frase.split(" ").slice(0, CANTIDAD_PALABRAS);
+  return {
+    desde: 0,
+    hasta: HASTA_LINEA,
+    palabras: palabras.map((texto, i) => ({ texto, desde: i * PASO, hasta: (i + 1) * PASO })),
+  };
 };
 /** La vuelta entera: la línea y un respiro con la última palabra dicha. */
-const CICLO = LINEA_MUESTRA.hasta + 0.8;
+const CICLO = HASTA_LINEA + 0.8;
 /** Sin movimiento: la tercera palabra, ya asentada. */
 const QUIETO = 2 * PASO + 0.4;
 
@@ -113,14 +125,18 @@ export function MuestraEstilo({
   ancho?: number;
   children?: ReactNode;
 }) {
+  const tr = useTranslations("estilosGaleria");
+  const frase = tr("muestra.subtitulos");
+  const linea = useMemo(() => lineaMuestra(frase), [frase]);
+  const gancho = useMemo(() => ganchoMuestra(tr("muestra.gancho"), tr("muestra.destacada")), [tr]);
   const estilo = useMemo(() => resolverEstilo(def, tema), [def, tema]);
   const dibujos = useMemo(() => {
     const opciones = { duracionSeg: CICLO, nombreMarca };
     return [
-      dibujarSubtitulos(LINEA_MUESTRA, Math.min(t, LINEA_MUESTRA.hasta - 0.01), LIENZO, "UNO", estilo.subtitulos),
-      dibujarTexto(GANCHO_MUESTRA, estilo.gancho, LIENZO, opciones),
+      dibujarSubtitulos(linea, Math.min(t, linea.hasta - 0.01), LIENZO, "UNO", estilo.subtitulos),
+      dibujarTexto(gancho, estilo.gancho, LIENZO, opciones),
     ];
-  }, [estilo, t, nombreMarca]);
+  }, [estilo, t, nombreMarca, linea, gancho]);
   return (
     <div
       className="relative overflow-hidden rounded-lg bg-gradient-to-b from-[#3A3935] via-[#262624] to-[#0A0A0A]"
@@ -166,18 +182,22 @@ export function GaleriaEstilos({
   deLaMarca?: EstiloTexto;
   deshabilitado?: boolean;
 }) {
+  const tr = useTranslations("estilosGaleria");
+  const tn = useTranslations("estilosNombres");
   const { estilos, porEstilo, cargando, error } = useEstilosTexto();
   const t = useRelojMuestra();
   const ancho = compacta ? 64 : 104;
 
-  if (error) return <p className="text-xs text-red-400">No se pudieron cargar los estilos: {error.message}</p>;
+  if (error) return <p className="text-xs text-red-400">{tr("errorCargar", { error: error.message })}</p>;
   if (cargando && !estilos.length) return <div className={`${compacta ? "h-32" : "h-64"} animate-pulse rounded-xl bg-white/5`} />;
 
   const grupos = [
-    { titulo: "Virales", items: estilos.filter((e) => e.categoria === "VIRAL") },
-    { titulo: "Profesionales", items: estilos.filter((e) => e.categoria === "PROFESIONAL") },
+    { titulo: tr("virales"), items: estilos.filter((e) => e.categoria === "VIRAL") },
+    { titulo: tr("profesionales"), items: estilos.filter((e) => e.categoria === "PROFESIONAL") },
   ];
   const marca = deLaMarca ? porEstilo.get(deLaMarca) : undefined;
+  const nombre = (def: EstiloTextoDef) => tn(`nombres.${def.estilo}`);
+  const descripcion = (def: EstiloTextoDef) => tn(`descripciones.${def.estilo}`);
 
   const tarjeta = (def: EstiloTextoDef, elegido: boolean, etiqueta: string, alElegir: () => void, clave: string) => (
     <button
@@ -186,7 +206,7 @@ export function GaleriaEstilos({
       onClick={alElegir}
       disabled={deshabilitado}
       aria-pressed={elegido}
-      title={def.descripcion}
+      title={descripcion(def)}
       className={`group shrink-0 rounded-xl p-1 text-left transition disabled:cursor-not-allowed ${
         elegido ? "bg-ng-azul/20 ring-2 ring-ng-azul" : "hover:bg-white/5"
       } ${deshabilitado && !elegido ? "opacity-60" : ""}`}
@@ -207,14 +227,17 @@ export function GaleriaEstilos({
             onClick={() => onElegir(null)}
             disabled={deshabilitado}
             aria-pressed={elegidoMarca}
-            title={marca.descripcion}
+            title={descripcion(marca)}
             className={`flex w-full items-center gap-2.5 rounded-lg border px-2.5 py-2 text-left text-sm transition disabled:cursor-not-allowed ${
               elegidoMarca ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/10 text-white/75 hover:bg-white/5"
             }`}
           >
             <MuestraEstilo def={marca} tema={tema} t={t} nombreMarca={nombreMarca} ancho={22} />
             <span className="min-w-0 flex-1 truncate">
-              Como la marca <span className="text-white/45">({marca.nombre})</span>
+              {tr.rich("comoLaMarcaRico", {
+                nombre: nombre(marca),
+                g: (c) => <span className="text-white/45">{c}</span>,
+              })}
             </span>
             {elegidoMarca && <Check size={16} className="shrink-0 text-ng-celeste" aria-hidden />}
           </button>
@@ -232,14 +255,14 @@ export function GaleriaEstilos({
                     onClick={() => onElegir(def.estilo)}
                     disabled={deshabilitado}
                     aria-pressed={elegido}
-                    title={def.descripcion}
+                    title={descripcion(def)}
                     className={`min-w-0 rounded-lg p-1 text-left transition disabled:cursor-not-allowed ${
                       elegido ? "bg-ng-azul/20 ring-2 ring-ng-azul" : "hover:bg-white/5"
                     } ${deshabilitado && !elegido ? "opacity-60" : ""}`}
                   >
                     <MuestraEstilo def={def} tema={tema} t={t} nombreMarca={nombreMarca} />
                     <span className={`mt-1 block truncate px-0.5 text-xs ${elegido ? "font-semibold text-white" : "text-white/70"}`}>
-                      {def.nombre}
+                      {nombre(def)}
                     </span>
                   </button>
                 );
@@ -255,13 +278,13 @@ export function GaleriaEstilos({
     return (
       <div className="-mx-1 flex gap-1 overflow-x-auto pb-1">
         {marca &&
-          tarjeta(marca, valor === null, `Como la marca (${marca.nombre})`, () => onElegir(null), "marca")}
+          tarjeta(marca, valor === null, tr("comoLaMarca", { nombre: nombre(marca) }), () => onElegir(null), "marca")}
         {grupos.map((g) => (
           <div key={g.titulo} className="flex shrink-0 items-start gap-1 border-l border-white/10 pl-1">
             <span className="mt-1 w-3 shrink-0 text-[9px] font-medium uppercase tracking-wider text-white/35 [writing-mode:vertical-rl]">
               {g.titulo}
             </span>
-            {g.items.map((def) => tarjeta(def, valor === def.estilo, def.nombre, () => onElegir(def.estilo), def.estilo))}
+            {g.items.map((def) => tarjeta(def, valor === def.estilo, nombre(def), () => onElegir(def.estilo), def.estilo))}
           </div>
         ))}
       </div>
@@ -271,13 +294,13 @@ export function GaleriaEstilos({
   return (
     <div className="space-y-4">
       {marca && (
-        <div className="flex flex-wrap gap-2">{tarjeta(marca, valor === null, `Como la marca (${marca.nombre})`, () => onElegir(null), "marca")}</div>
+        <div className="flex flex-wrap gap-2">{tarjeta(marca, valor === null, tr("comoLaMarca", { nombre: nombre(marca) }), () => onElegir(null), "marca")}</div>
       )}
       {grupos.map((g) => (
         <div key={g.titulo}>
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/50">{g.titulo}</p>
           <div className="flex flex-wrap gap-2">
-            {g.items.map((def) => tarjeta(def, valor === def.estilo, def.nombre, () => onElegir(def.estilo), def.estilo))}
+            {g.items.map((def) => tarjeta(def, valor === def.estilo, nombre(def), () => onElegir(def.estilo), def.estilo))}
           </div>
         </div>
       ))}

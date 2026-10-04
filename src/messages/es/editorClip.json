@@ -1,0 +1,69 @@
+{
+  "errores": {
+    "guardar": "No se pudo guardar",
+    "auto": "No se pudo auto-encuadrar",
+    "deshacer": "No se pudo volver a como estaba",
+    "procesar": "No se pudo procesar el video"
+  },
+  "confirmarAuto": "El auto-encuadre reemplaza los cambios de encuadre por los suyos. ¿Seguir?",
+  "pestanas": {
+    "estilo": { "etiqueta": "Estilo", "titulo": "Estilo del texto" },
+    "textos": { "etiqueta": "Textos", "titulo": "Gancho y textos" },
+    "subtitulos": { "etiqueta": "Subtítulos" },
+    "marca": { "etiqueta": "Marca", "titulo": "Brand Kit" },
+    "transcripcion": { "etiqueta": "Transcripción", "titulo": "Tramo en la transcripción" }
+  },
+  "estiloAyuda": "El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en el <link>Brand Kit</link>.",
+  "textosConEstilo": "Con el estilo {estilo}, la letra, los colores, las mayúsculas y la caja de cada texto los pone el estilo. Acá cuentan el contenido, las palabras destacadas, el lugar, el tamaño y el tiempo.",
+  "subtitulosActivos": "Subtítulos con la palabra resaltada",
+  "malTranscrita": "¿Una palabra mal transcrita? <boton>Corregila en la transcripción</boton>. Cambia el subtítulo, no el tiempo.",
+  "corregidas": "{n} corregida(s).",
+  "marca": {
+    "ambos": "Logo y llamada a la acción al final de la marca en este clip",
+    "logo": "Logo de la marca en este clip",
+    "llamada": "llamada a la acción al final de la marca en este clip",
+    "brandKit": "Brand Kit de la marca en este clip",
+    "seConfigura": "Se configura una vez para todos los clips, en el <link>Brand Kit</link>.",
+    "sinBrandKit": "La marca no tiene Brand Kit. Con uno, cada clip sale con su logo y una llamada a la acción al final: <link>armalo en el Brand Kit</link>."
+  },
+  "modos": {
+    "inicio": "Tocar = inicio",
+    "fin": "Tocar = fin",
+    "corregir": "Tocar = corregir palabra"
+  },
+  "empieza": "Empieza",
+  "termina": "Termina",
+  "dura": "Dura {seg} s",
+  "guardarIgual": "Guardar igual",
+  "personas": "{n, plural, one {# persona} other {# personas}}",
+  "videoNoListo": "El video todavía no está listo en Bunny.",
+  "delEpisodio": "{etiqueta} (s del episodio)",
+  "correccion": {
+    "palabra": "“{palabra}” en {seg} s →",
+    "guardar": "Guardar",
+    "quitar": "Quitar del subtítulo",
+    "original": "Volver al original",
+    "cancelar": "Cancelar"
+  },
+  "subtitulo": {
+    "ayuda": "Arrastrá el subtítulo en la vista previa para subirlo o bajarlo; la bolita de la derecha lo agranda.",
+    "conEstilo": "Con el estilo {estilo}, la letra, los colores, el efecto y las mayúsculas los pone el estilo; acá cuentan el tamaño y el lugar.",
+    "letra": "Letra",
+    "efecto": "Efecto",
+    "efectos": {
+      "CONTORNO": "Contorno",
+      "SOMBRA": "Sombra",
+      "CAJA": "Caja",
+      "NINGUNO": "Nada"
+    },
+    "tamano": "Tamaño · {n}",
+    "lugar": "Lugar",
+    "lugares": {
+      "arriba": "Arriba",
+      "centro": "Centro",
+      "abajo": "Abajo"
+    },
+    "mayusculas": "MAYÚSCULAS",
+    "deSiempre": "Volver al subtítulo de siempre"
+  }
+}

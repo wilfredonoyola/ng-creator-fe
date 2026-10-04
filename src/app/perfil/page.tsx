@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { SelectorIdioma } from "@/components/SelectorIdioma";
 import { cerrarSesion } from "@/lib/auth";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
@@ -15,7 +17,6 @@ import {
   RESUMEN_ELIMINAR_CUENTA,
 } from "@/graphql/operations";
 import {
-  ESTILO_NOTIFICACION,
   TIPOS_NOTIFICACION,
   type PreferenciaNotificacion,
   type TipoNotificacion,
@@ -38,12 +39,14 @@ interface MarcaAlEliminar {
  * y por la regla de app y web con la misma funcionalidad está también acá.
  */
 export default function PerfilPage() {
+  const t = useTranslations("perfil");
+  const tRol = useTranslations("marcoRoles");
   const router = useRouter();
   const { usuario, accesos, esAdmin } = useSesion();
   const { marcas } = useMarcaActiva();
   const [eliminando, setEliminando] = useState(false);
 
-  const nombreDe = (marcaId: string) => marcas.find((m) => m._id === marcaId)?.nombre ?? "Marca";
+  const nombreDe = (marcaId: string) => marcas.find((m) => m._id === marcaId)?.nombre ?? t("marca");
 
   async function salir() {
     await cerrarSesion();
@@ -54,38 +57,38 @@ export default function PerfilPage() {
     <DashboardLayout>
       <div className="mx-auto max-w-2xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold">Perfil</h1>
-          <p className="mt-1 text-white/50">Tu cuenta en NG Creator.</p>
+          <h1 className="text-2xl font-bold">{t("titulo")}</h1>
+          <p className="mt-1 text-white/50">{t("subtitulo")}</p>
         </div>
 
         <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-          <h2 className="font-semibold">Tus datos</h2>
+          <h2 className="font-semibold">{t("datos.titulo")}</h2>
           <dl className="mt-4 space-y-3 text-sm">
             <div>
-              <dt className="text-xs text-white/40">Nombre</dt>
-              <dd>{usuario?.nombre || "Sin nombre"}</dd>
+              <dt className="text-xs text-white/40">{t("datos.nombre")}</dt>
+              <dd>{usuario?.nombre || t("datos.sinNombre")}</dd>
             </div>
             <div>
-              <dt className="text-xs text-white/40">Correo</dt>
+              <dt className="text-xs text-white/40">{t("datos.correo")}</dt>
               <dd className="break-all">{usuario?.email ?? "…"}</dd>
             </div>
             {esAdmin && (
               <div>
-                <dt className="text-xs text-white/40">Rol en el sistema</dt>
-                <dd>Administrador</dd>
+                <dt className="text-xs text-white/40">{t("datos.rolSistema")}</dt>
+                <dd>{t("datos.administrador")}</dd>
               </div>
             )}
           </dl>
 
           {accesos.length > 0 && (
             <>
-              <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">Tus marcas</p>
+              <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">{t("datos.tusMarcas")}</p>
               <ul className="mt-2 space-y-2">
                 {accesos.map((a) => (
                   <li key={a.marcaId} className="flex items-center justify-between gap-3 text-sm">
                     <span className="truncate">{nombreDe(a.marcaId)}</span>
                     <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[11px] ${ESTILO_ROL[a.rol].clase}`}>
-                      {ESTILO_ROL[a.rol].etiqueta}
+                      {tRol(`${a.rol}.etiqueta`)}
                     </span>
                   </li>
                 ))}
@@ -97,23 +100,29 @@ export default function PerfilPage() {
             onClick={salir}
             className="mt-6 rounded-lg border border-white/15 px-3 py-2 text-sm text-white/70 transition hover:bg-white/5"
           >
-            Cerrar sesión
+            {t("cerrarSesion")}
           </button>
+        </section>
+
+        {/* Lo que la persona elige para sí: el idioma y, abajo, qué avisos recibe. */}
+        <section className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+          <h2 className="font-semibold">{t("preferencias")}</h2>
+          <div className="mt-4">
+            <SelectorIdioma />
+          </div>
         </section>
 
         <PreferenciasDeAvisos />
 
         {/* Zona de peligro: separada y al final, para que no se toque por error. */}
         <section className="mt-8 rounded-2xl border border-red-500/30 bg-red-500/5 p-5">
-          <h2 className="font-semibold text-red-400">Zona de peligro</h2>
-          <p className="mt-2 text-sm text-white/60">
-            Eliminar tu cuenta borra tu usuario y tu acceso a todas las marcas. No se puede deshacer.
-          </p>
+          <h2 className="font-semibold text-red-400">{t("peligro.titulo")}</h2>
+          <p className="mt-2 text-sm text-white/60">{t("peligro.detalle")}</p>
           <button
             onClick={() => setEliminando(true)}
             className="mt-4 rounded-lg bg-red-500/15 px-3 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/25"
           >
-            Eliminar mi cuenta
+            {t("peligro.boton")}
           </button>
         </section>
       </div>
@@ -130,6 +139,7 @@ export default function PerfilPage() {
  * propietaria a otra en Equipo, y el botón queda deshabilitado.
  */
 function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
+  const t = useTranslations("perfil.eliminar");
   const router = useRouter();
   const { seleccionar } = useMarcaActiva();
   const [pedirResumen, { data, loading, error: errorResumen }] = useLazyQuery(RESUMEN_ELIMINAR_CUENTA, {
@@ -172,7 +182,7 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
     try {
       await eliminar({ variables: { confirmacion: PALABRA } });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo eliminar la cuenta");
+      setError(err instanceof Error ? err.message : t("error"));
       return;
     }
     // La cuenta ya no existe: el logout contra Cognito puede fallar, pero
@@ -194,42 +204,44 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id="titulo-eliminar-cuenta" className="text-lg font-semibold">
-          Eliminar mi cuenta
+          {t("titulo")}
         </h2>
 
         {loading || (!resumen && !errorResumen) ? (
-          <p className="mt-4 text-sm text-white/50">Revisando tus marcas…</p>
+          <p className="mt-4 text-sm text-white/50">{t("revisando")}</p>
         ) : errorResumen ? (
           <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
-            <p className="text-sm text-red-400">No pudimos revisar tus marcas: {errorResumen.message}</p>
+            <p className="text-sm text-red-400">{t("errorRevisar", { error: errorResumen.message })}</p>
           </div>
         ) : (
           <form onSubmit={confirmar}>
             <div className="mt-3 space-y-3 text-sm text-white/70">
               <p>
-                Vas a eliminar la cuenta <strong className="break-all text-white">{resumen?.email}</strong>. Esto
-                no se puede deshacer:
+                {t.rich("vasAEliminar", {
+                  email: resumen?.email ?? "",
+                  strong: (c) => <strong className="break-all text-white">{c}</strong>,
+                })}
               </p>
               <ul className="ml-5 list-disc space-y-1.5">
-                <li>se borran tu usuario y tu acceso a todas las marcas;</li>
-                <li>
-                  las marcas de las que sos el único miembro se archivan: se desconectan sus redes y se cancelan sus
-                  publicaciones programadas;
-                </li>
-                <li>en el historial de las marcas, tu nombre pasa a «Cuenta eliminada».</li>
+                <li>{t("consecuencias.acceso")}</li>
+                <li>{t("consecuencias.archivan")}</li>
+                <li>{t("consecuencias.historial")}</li>
               </ul>
               <p className="text-white/50">
-                El contenido de las marcas archivadas queda guardado y se puede recuperar pidiéndolo a{" "}
-                <a href={`mailto:${CONTACTO}`} className="text-ng-celeste hover:underline">
-                  {CONTACTO}
-                </a>{" "}
-                por 30 días.
+                {t.rich("recuperar", {
+                  contacto: CONTACTO,
+                  link: (c) => (
+                    <a href={`mailto:${CONTACTO}`} className="text-ng-celeste hover:underline">
+                      {c}
+                    </a>
+                  ),
+                })}
               </p>
             </div>
 
             {archivan.length > 0 && (
               <div className="mt-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-white/50">Se archivan</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-white/50">{t("seArchivan")}</p>
                 <ul className="mt-2 space-y-1.5">
                   {archivan.map((m) => (
                     <li key={m.marcaId} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm">
@@ -242,18 +254,14 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
 
             {bloquean.length > 0 && (
               <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-                <p className="text-sm text-amber-300">
-                  Sos el único propietario de {bloquean.length === 1 ? "esta marca" : "estas marcas"}, y hay más
-                  gente en {bloquean.length === 1 ? "ella" : "ellas"}. Antes de eliminar tu cuenta, hacé propietaria
-                  a otra persona en Equipo.
-                </p>
+                <p className="text-sm text-amber-300">{t("bloquean", { n: bloquean.length })}</p>
                 <ul className="mt-3 space-y-1.5">
                   {bloquean.map((m) => (
                     <li key={m.marcaId} className="flex items-center justify-between gap-3 text-sm">
                       <span className="min-w-0 truncate">
                         {m.nombre}{" "}
                         <span className="text-white/40">
-                          · {m.otrosMiembros} {m.otrosMiembros === 1 ? "persona más" : "personas más"}
+                          · {t("personasMas", { n: m.otrosMiembros })}
                         </span>
                       </span>
                       <button
@@ -261,7 +269,7 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
                         onClick={() => irAEquipo(m.marcaId)}
                         className="shrink-0 text-ng-celeste hover:underline"
                       >
-                        Ir a Equipo
+                        {t("irAEquipo")}
                       </button>
                     </li>
                   ))}
@@ -270,7 +278,10 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
             )}
 
             <label className="mt-5 block text-xs text-white/50">
-              Para confirmar, escribí <strong className="text-white">{PALABRA}</strong>
+              {t.rich("paraConfirmar", {
+                palabra: PALABRA,
+                strong: (c) => <strong className="text-white">{c}</strong>,
+              })}
             </label>
             <input
               value={texto}
@@ -295,14 +306,14 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
                 disabled={eliminando}
                 className="rounded-lg border border-white/15 px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5 disabled:opacity-50"
               >
-                Cancelar
+                {t("cancelar")}
               </button>
               <button
                 type="submit"
                 disabled={!puede}
                 className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {eliminando ? "Eliminando…" : "Eliminar mi cuenta"}
+                {eliminando ? t("eliminando") : t("boton")}
               </button>
             </div>
           </form>
@@ -314,7 +325,7 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
               onClick={onCerrar}
               className="rounded-lg border border-white/15 px-4 py-2.5 text-sm text-white/70 transition hover:bg-white/5"
             >
-              Cerrar
+              {t("cerrar")}
             </button>
           </div>
         )}
@@ -324,11 +335,7 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
 }
 
 /** Por dónde puede llegar un aviso: las columnas de la tabla. */
-const CANALES: { campo: "enApp" | "push" | "correo"; etiqueta: string }[] = [
-  { campo: "enApp", etiqueta: "En la app" },
-  { campo: "push", etiqueta: "En el teléfono" },
-  { campo: "correo", etiqueta: "Por correo" },
-];
+const CANALES: ("enApp" | "push" | "correo")[] = ["enApp", "push", "correo"];
 
 /**
  * Qué avisos le llegan a esta persona y por dónde. Son de la cuenta, no de la
@@ -339,6 +346,8 @@ const CANALES: { campo: "enApp" | "push" | "correo"; etiqueta: string }[] = [
  * lo vuelve atrás solo.
  */
 function PreferenciasDeAvisos() {
+  const t = useTranslations("perfil.avisos");
+  const tTipo = useTranslations("marcoNotificaciones");
   const { data, loading, error } = useQuery(PREFERENCIAS_NOTIFICACION, { errorPolicy: "all" });
   const [guardar] = useMutation(GUARDAR_PREFERENCIA_NOTIFICACION);
   const [errorAlGuardar, setErrorAlGuardar] = useState<string | null>(null);
@@ -364,33 +373,30 @@ function PreferenciasDeAvisos() {
         },
       });
     } catch (err) {
-      setErrorAlGuardar(err instanceof Error ? err.message : "No se pudo guardar");
+      setErrorAlGuardar(err instanceof Error ? err.message : t("errorGuardar"));
     }
   }
 
   return (
     <section id="notificaciones" className="mt-8 scroll-mt-20 rounded-2xl border border-white/10 bg-white/5 p-5">
-      <h2 className="font-semibold">Notificaciones</h2>
-      <p className="mt-1 text-sm text-white/50">
-        Los avisos le llegan a todo el equipo de la marca, menos a quien hizo la acción. Elegí cuáles querés recibir y
-        por dónde.
-      </p>
+      <h2 className="font-semibold">{t("titulo")}</h2>
+      <p className="mt-1 text-sm text-white/50">{t("detalle")}</p>
 
       {loading && !prefs.length ? (
-        <p className="mt-4 text-sm text-white/50">Cargando…</p>
+        <p className="mt-4 text-sm text-white/50">{t("cargando")}</p>
       ) : error && !prefs.length ? (
-        <p className="mt-4 text-sm text-red-400">No pudimos traer tus preferencias: {error.message}</p>
+        <p className="mt-4 text-sm text-red-400">{t("errorTraer", { error: error.message })}</p>
       ) : (
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-white/50">
                 <th className="pb-2 text-left font-medium">
-                  <span className="sr-only">Aviso</span>
+                  <span className="sr-only">{t("aviso")}</span>
                 </th>
                 {CANALES.map((c) => (
-                  <th key={c.campo} scope="col" className="w-16 px-1 pb-2 text-center font-medium sm:w-28">
-                    {c.etiqueta}
+                  <th key={c} scope="col" className="w-16 px-1 pb-2 text-center font-medium sm:w-28">
+                    {t(`canales.${c}`)}
                   </th>
                 ))}
               </tr>
@@ -399,18 +405,18 @@ function PreferenciasDeAvisos() {
               {TIPOS_NOTIFICACION.map((tipo) => {
                 const p = prefs.find((x) => x.tipo === tipo);
                 if (!p) return null;
-                const etiqueta = ESTILO_NOTIFICACION[tipo].etiqueta;
+                const etiqueta = tTipo(tipo);
                 return (
                   <tr key={tipo}>
                     <th scope="row" className="py-3 pr-2 text-left font-normal">
                       {etiqueta}
                     </th>
                     {CANALES.map((c) => (
-                      <td key={c.campo} className="px-1 py-3 text-center">
+                      <td key={c} className="px-1 py-3 text-center">
                         <Interruptor
-                          encendido={p[c.campo]}
-                          etiqueta={`${etiqueta}: ${c.etiqueta.toLowerCase()}`}
-                          onCambiar={(v) => cambiar(tipo, c.campo, v)}
+                          encendido={p[c]}
+                          etiqueta={t("interruptor", { aviso: etiqueta, canal: t(`canales.${c}`).toLowerCase() })}
+                          onCambiar={(v) => cambiar(tipo, c, v)}
                         />
                       </td>
                     ))}
@@ -422,13 +428,11 @@ function PreferenciasDeAvisos() {
         </div>
       )}
 
-      <p className="mt-3 text-xs text-white/40">
-        En el teléfono llegan si tenés la app instalada y le diste permiso para avisarte.
-      </p>
+      <p className="mt-3 text-xs text-white/40">{t("telefono")}</p>
 
       {errorAlGuardar && (
         <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3">
-          <p className="text-sm text-red-400">No se pudo guardar: {errorAlGuardar}</p>
+          <p className="text-sm text-red-400">{t("errorGuardarDetalle", { error: errorAlGuardar })}</p>
         </div>
       )}
     </section>

@@ -1,0 +1,8 @@
+{
+  "sinPublicaciones": "No posts in this period",
+  "leyenda": "Striped = fewer than {umbral} posts. The average isn't enough to draw conclusions and doesn't count toward the best slot.",
+  "publicaciones": "{n, plural, one {# post} other {# posts}}",
+  "scorePromedio": "Average score",
+  "interacciones": "{reacciones} reactions · {comentarios} comments · {compartidos} shares",
+  "pocosDatos": "Too little data to trust"
+}

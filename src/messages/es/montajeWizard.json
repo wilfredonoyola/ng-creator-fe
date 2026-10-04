@@ -1,0 +1,38 @@
+{
+  "errores": {
+    "preview": "Error al obtener preview",
+    "faltaClip": "Selecciona un clip y una licencia",
+    "sinPagina": "No hay página activa. Un admin tiene que habilitar una en Administrar páginas.",
+    "sinFuente": "No hay fuente de video",
+    "procesar": "Error al procesar"
+  },
+  "modoArchivo": "📁 Archivo",
+  "arrastra": "Arrastra o selecciona video",
+  "formatos": "MP4, MOV, WebM • Máx 500MB",
+  "placeholderTiktok": "https://www.tiktok.com/@usuario/video/...",
+  "obteniendoPreview": "Obteniendo preview...",
+  "altPreview": "Preview",
+  "continuar": "Continuar →",
+  "licencia": "Licencia *",
+  "seleccionarLicencia": "Seleccionar licencia",
+  "sinLicencias": "No hay licencias activas.",
+  "crearUna": "Crear una →",
+  "pagina": "Página",
+  "espacioActivo": "Espacio de trabajo activo · cámbialo en la barra lateral",
+  "sinPaginaTitulo": "Sin página activa",
+  "sinPaginaDetalle": "Un admin tiene que habilitar una página en Administrar páginas antes de poder crear videos.",
+  "sinPaginaTitle": "No hay página activa: habilitá una en Administrar páginas",
+  "tipo": "Tipo",
+  "tipos": {
+    "EXPEDIENTE_COMPLETO": "Expediente",
+    "VOZ_SIN_CAMARA": "Voz",
+    "XED": "XED"
+  },
+  "atras": "← Atrás",
+  "crear": "Crear 🚀",
+  "procesando": "Procesando...",
+  "subiendoArchivos": "Subiendo archivos",
+  "creado": "¡Video creado!",
+  "enCola": "Aparecerá en la cola de revisión",
+  "crearOtro": "Crear otro"
+}

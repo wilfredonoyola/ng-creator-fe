@@ -1,0 +1,51 @@
+{
+  "errores": {
+    "subirLogo": "Couldn't upload the logo",
+    "tema": "Each theme color goes as #RRGGBB.",
+    "guardar": "Couldn't save"
+  },
+  "sinMarca": "Pick a brand above to set up its Brand Kit.",
+  "loQueLleva": "What every clip carries for",
+  "intro": "The brand colors, the text style, your logo in a corner and, if you want, a call to action at the end. It applies automatically to all the brand's clips; in each clip's editor you can change the style and turn off the logo and the call to action. Clips already processed pick it up when you process them again.",
+  "cargando": "Loading…",
+  "estilo": {
+    "titulo": "Text style",
+    "ayuda": "How the hook and captions look on the brand's clips, with its colors. Each clip can change it in the editor. It's saved with the Brand Kit."
+  },
+  "enLosClips": "On clips",
+  "logo": {
+    "titulo": "Logo",
+    "alt": "Brand logo",
+    "sinLogo": "No logo",
+    "subiendo": "Uploading…",
+    "cambiar": "Change logo",
+    "subir": "Upload logo",
+    "ayuda": "PNG with a transparent background, if you have one. We remove the background anyway.",
+    "dondeVa": "Where it goes",
+    "tamano": "Size",
+    "delAncho": "{n}% of the width",
+    "opacidad": "Opacity"
+  },
+  "posicionesLogo": {
+    "ARRIBA_IZQUIERDA": "Top left",
+    "ARRIBA_DERECHA": "Top right",
+    "ABAJO_IZQUIERDA": "Bottom left",
+    "ABAJO_DERECHA": "Bottom right"
+  },
+  "cta": {
+    "titulo": "Call to action at the end",
+    "ejemplo": "Watch the full episode on YouTube",
+    "dura": "Duration",
+    "ultimos": "the last {n} s",
+    "conEstilo": "It goes in the center, in a box in your primary color, with the style's font.",
+    "sinEstilo": "It goes in the center, in a box, with the brand's hook colors."
+  },
+  "guardando": "Saving…",
+  "guardar": "Save Brand Kit",
+  "guardado": "Saved. New clips already come out like this.",
+  "vista": {
+    "titulo": "How it looks (9:16)",
+    "ayuda": "The hook lasts the first few seconds and the call to action only shows up at the end; here they're always visible so you can adjust them.",
+    "zonaSegura": "Whatever falls outside the dotted line is covered by the network."
+  }
+}

@@ -10,7 +10,25 @@ import { useEffect, useState } from "react";
  * fecha exacta queda en el tooltip.
  */
 
-const rtf = new Intl.RelativeTimeFormat("es", { numeric: "auto" });
+/** Un formateador por idioma: crearlos cuesta, y el idioma casi nunca cambia. */
+const formateadores = new Map<string, Intl.RelativeTimeFormat>();
+function rtfDe(locale: string): Intl.RelativeTimeFormat {
+  let rtf = formateadores.get(locale);
+  if (!rtf) {
+    rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+    formateadores.set(locale, rtf);
+  }
+  return rtf;
+}
+
+/**
+ * Lo de menos de 45 segundos. Intl dice "ahora" / "now" con 0, pero "hace
+ * instantes" es lo que la pantalla decía siempre.
+ */
+const INSTANTES: Record<string, { pasado: string; futuro: string }> = {
+  es: { pasado: "hace instantes", futuro: "en instantes" },
+  en: { pasado: "just now", futuro: "in a moment" },
+};
 
 /** Acepta ISO del backend o millis locales (Date.now()). */
 export type Instante = string | number | null | undefined;
@@ -22,14 +40,15 @@ function aMillis(valor: Instante): number | null {
 }
 
 /**
- * "hace 5 minutos", "hace 3 horas", "en 2 meses".
+ * "hace 5 minutos", "hace 3 horas", "en 2 meses", en el idioma de `locale`
+ * (el de `useLocale()`; si no se pasa, español).
  *
  * Sirve para las dos direcciones. La primera version solo miraba al pasado, y
  * con una fecha futura el calculo daba negativo: el corte `< 45` se cumplia
  * siempre y un token que vencia en dos meses se mostraba como "vence hace
  * instantes", o sea vencido.
  */
-export function tiempoRelativo(iso: Instante, ahora = Date.now()): string {
+export function tiempoRelativo(iso: Instante, ahora = Date.now(), locale: string): string {
   const ms = aMillis(iso);
   if (ms === null) return "—";
 
@@ -40,7 +59,11 @@ export function tiempoRelativo(iso: Instante, ahora = Date.now()): string {
   // futuro; el resto del calculo trabaja con el valor absoluto.
   const signo = futuro ? 1 : -1;
 
-  if (abs < 45) return futuro ? "en instantes" : "hace instantes";
+  if (abs < 45) {
+    const instantes = INSTANTES[locale] ?? INSTANTES.en;
+    return futuro ? instantes.futuro : instantes.pasado;
+  }
+  const rtf = rtfDe(locale);
 
   const min = Math.round(abs / 60);
   if (min < 60) return rtf.format(signo * min, "minute");
@@ -55,10 +78,10 @@ export function tiempoRelativo(iso: Instante, ahora = Date.now()): string {
 }
 
 /** Fecha y hora completas, para el tooltip. */
-export function fechaCompleta(iso: Instante): string {
+export function fechaCompleta(iso: Instante, locale: string): string {
   const ms = aMillis(iso);
   if (ms === null) return "";
-  return new Date(ms).toLocaleString("es", {
+  return new Date(ms).toLocaleString(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   });

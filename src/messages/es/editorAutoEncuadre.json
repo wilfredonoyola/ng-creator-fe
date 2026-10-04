@@ -1,0 +1,22 @@
+{
+  "etapas": {
+    "BAJANDO": "Bajando el tramo",
+    "CARAS": "Buscando caras",
+    "VOCES": "Escuchando quién habla",
+    "ARMANDO": "Armando los encuadres"
+  },
+  "faltanSeg": "faltan ~{s} s",
+  "faltanMin": "faltan ~{min} min",
+  "enFila": "En la fila, ya empieza…",
+  "mirando": "Mirando quién habla",
+  "seguiEditando": "Podés seguir editando textos y subtítulos: los encuadres llegan solos.",
+  "errorTitulo": "No se pudo auto-encuadrar",
+  "probarDeNuevo": "Probar de nuevo",
+  "cerrar": "Cerrar",
+  "listo": "✓ Listo: {personas, plural, one {# persona} other {# personas}} · {cambios, plural, one {# cambio} other {# cambios}} de encuadre",
+  "hablaUna": "Encontré a {n} personas, pero en este tramo habla una sola: el clip queda en esa persona.",
+  "noHabla": "no habla",
+  "verPrimerCambio": "▶ Ver el primer cambio",
+  "volverComoEstaba": "↩ Volver a como estaba",
+  "volverAntes": "↩ Volver a como estaba antes del auto-encuadre"
+}

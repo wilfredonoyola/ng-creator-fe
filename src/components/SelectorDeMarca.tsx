@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FotoMarca } from "./FotoMarca";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { colorDeMarca, useMarcaActiva, type Marca } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 
@@ -15,6 +16,7 @@ import { useSesion } from "@/lib/sesion";
  * mismo color.
  */
 export function SelectorDeMarca() {
+  const t = useTranslations("marcoSelectorDeMarca");
   const { marcas, activa, seleccionar, cargando } = useMarcaActiva();
   const { esAdmin } = useSesion();
   const [abierto, setAbierto] = useState(false);
@@ -41,17 +43,17 @@ export function SelectorDeMarca() {
   if (!marcas.length) {
     return (
       <div className="mx-3 mb-3 rounded-lg border border-dashed border-white/15 px-3 py-2.5">
-        <p className="text-xs text-white/40">Sin página conectada</p>
+        <p className="text-xs text-white/40">{t("sinPagina")}</p>
         {esAdmin ? (
           <Link
             href="/admin/facebook"
             className="mt-0.5 inline-block text-xs font-medium text-ng-teal hover:underline"
           >
-            Conectar Facebook →
+            {t("conectarFacebook")}
           </Link>
         ) : (
           <p className="mt-0.5 text-xs text-white/30">
-            Pedile a un admin que conecte una
+            {t("pedile")}
           </p>
         )}
       </div>
@@ -72,7 +74,7 @@ export function SelectorDeMarca() {
         <Avatar marca={activa} />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] uppercase tracking-wider text-white/35">
-            Trabajando en
+            {t("trabajandoEn")}
           </span>
           <span className="block truncate text-sm font-medium">
             {activa?.nombre}
@@ -111,7 +113,7 @@ export function SelectorDeMarca() {
                     {m.nombre}
                   </span>
                   <span className="block text-[10px] text-white/30">
-                    Espacio de trabajo propio
+                    {t("espacioPropio")}
                   </span>
                 </span>
                 {esActiva && <span className="text-xs text-ng-teal">✓</span>}
@@ -125,7 +127,7 @@ export function SelectorDeMarca() {
               onClick={() => setAbierto(false)}
               className="block border-t border-white/10 px-3 py-2.5 text-xs text-white/50 transition hover:bg-white/5 hover:text-white/80"
             >
-              ⚙ Administrar páginas
+              {t("administrar")}
             </Link>
           )}
         </div>

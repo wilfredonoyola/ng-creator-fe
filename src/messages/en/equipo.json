@@ -1,0 +1,37 @@
+{
+  "errorOperacion": "The operation failed",
+  "sinPagina": {
+    "titulo": "No active page",
+    "detalle": "Teams are managed per page. Enable one in Integrations or ask to be invited to one."
+  },
+  "titulo": "Team",
+  "quienTrabaja": "Who works on",
+  "explicacion": "Access is per page: each one has its own team. To add someone to another page, switch pages in the switcher on the left.",
+  "soloMirar": "You can see the team, but only the page owner invites people and changes access.",
+  "invitados": "Invited, not signed in yet",
+  "invitadoHace": "invited {cuando} · gets in by signing in with that email",
+  "cancelar": "Cancel",
+  "conAcceso": "With access ({n})",
+  "vacio": {
+    "titulo": "No one else yet",
+    "detalle": "Invite by email whoever needs to work on this page."
+  },
+  "invitar": {
+    "titulo": "Invite someone",
+    "detalle": "They'll get an email with a temporary password. Their access to this page is ready as soon as they sign in.",
+    "placeholder": "person@example.com",
+    "enviando": "Sending…",
+    "boton": "Invite"
+  },
+  "vos": "you",
+  "desactivado": "deactivated",
+  "ultimoIngreso": "last sign-in {cuando}",
+  "sinIngresos": "no sign-ins yet",
+  "quitar": "Remove",
+  "no": "No",
+  "quitarTitulo": "Remove access to this page",
+  "leyenda": {
+    "titulo": "What each role can do",
+    "nota": "Publishing doesn't need a Facebook account: it goes out with the token saved when the page was connected. Reconnecting it in Meta does require being an admin of the fan page on Facebook's side, and that isn't up to this app."
+  }
+}

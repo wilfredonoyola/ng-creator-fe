@@ -1,0 +1,50 @@
+{
+  "errorPublicar": "No se pudo publicar",
+  "sinCuenta": "Sin cuenta de TikTok habilitada para esta marca. El propietario la conecta en Redes conectadas.",
+  "publicarEn": "Publicar en <n>{nombre}</n>",
+  "publicadas": "{n, plural, one {# publicada} other {# publicadas}}",
+  "consultando": "Consultando la cuenta en TikTok…",
+  "muyLargo": "El video dura {dura}s y esta cuenta admite hasta {max}s en TikTok.",
+  "textoPlaceholder": "Texto del video, con #hashtags y @menciones (opcional)",
+  "textoLargo": "{largo}/{max}: TikTok no admite más.",
+  "quienPuedeVerlo": "Quién puede verlo",
+  "elegiOpcion": "Elegí una opción",
+  "privacidades": {
+    "PUBLIC_TO_EVERYONE": "Todos",
+    "MUTUAL_FOLLOW_FRIENDS": "Amigos",
+    "FOLLOWER_OF_CREATOR": "Seguidores",
+    "SELF_ONLY": "Solo yo"
+  },
+  "noDisponibleMarca": " (no disponible para contenido de marca)",
+  "permitir": "Permitir a los usuarios",
+  "comentar": "Comentar",
+  "duo": "Dúo",
+  "stitch": "Stitch",
+  "comercial": {
+    "etiqueta": "Divulgar contenido comercial",
+    "detalle": "Si el video promociona una marca, un producto o un servicio",
+    "tuMarca": "Tu marca",
+    "tuMarcaDetalle": "Promocionás tu propio negocio. Se etiqueta como \"Contenido promocional\".",
+    "deMarca": "Contenido de marca",
+    "deMarcaDetalle": "Promocionás a un tercero. Se etiqueta como \"Colaboración pagada\".",
+    "falta": "Elegí al menos una opción para declarar el contenido comercial."
+  },
+  "ia": {
+    "etiqueta": "Contenido generado con IA",
+    "detalle": "TikTok le agrega la etiqueta correspondiente"
+  },
+  "yaPublicado": "Ya se publicó en TikTok. Publicar otra vez crea un video nuevo.",
+  "ahora": "Ahora",
+  "programar": "Programar",
+  "noPrograma": "TikTok no programa: queda en nuestra cola y sale a esa hora. Si el servidor está caído a esa hora, sale cuando vuelva.",
+  "consentimientoMarca": "Al publicar, aceptás la <politica>Política de contenido de marca</politica> y la <musica>Confirmación de uso de música</musica> de TikTok.",
+  "consentimiento": "Al publicar, aceptás la <musica>Confirmación de uso de música</musica> de TikTok.",
+  "tardaEnAparecer": "Después de publicar, el video puede tardar unos minutos en aparecer en la cuenta.",
+  "ayudaPrivacidad": "Elegí quién puede verlo",
+  "ayudaComercial": "Completá la declaración de contenido comercial",
+  "agendando": "Agendando…",
+  "encolando": "Encolando…",
+  "programarEnTiktok": "Programar en TikTok",
+  "publicarEnTiktok": "Publicar en TikTok",
+  "deshabilitadaEnTiktok": "La cuenta lo tiene deshabilitado en TikTok"
+}

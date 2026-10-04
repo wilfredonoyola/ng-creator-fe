@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 /**
  * Lo que se ve del producto en la portada: un episodio y los clips que la IA
@@ -7,12 +8,13 @@ import { Sparkles } from "lucide-react";
  * datos son los del Programa #18 de Atlanta Sin Filtro, que existe.
  */
 const CLIPS = [
-  { puntaje: 85, titulo: "¿Cuál es tu mayor fantasía?", motivo: "Humor", dur: "0:31" },
-  { puntaje: 75, titulo: "El nombre más feo del mundo", motivo: "Humor", dur: "0:20" },
-  { puntaje: 75, titulo: "La última vez que lloré", motivo: "Emoción", dur: "0:29" },
-];
+  { puntaje: 85, clave: "fantasia", motivo: "humor", dur: "0:31" },
+  { puntaje: 75, clave: "nombreFeo", motivo: "humor", dur: "0:20" },
+  { puntaje: 75, clave: "llore", motivo: "emocion", dur: "0:29" },
+] as const;
 
 export function MaquetaProducto() {
+  const t = useTranslations("landingMaquetaProducto");
   return (
     <div className="relative mx-auto w-full max-w-md">
       <div
@@ -26,24 +28,24 @@ export function MaquetaProducto() {
             2:24:04
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">Atlanta Sin Filtro · Programa #18</p>
+            <p className="truncate text-sm font-semibold">{t("programa")}</p>
             <p className="mt-0.5 flex items-center gap-1 text-xs text-ng-teal">
-              <Sparkles size={12} aria-hidden /> 11 clips sugeridos por la IA
+              <Sparkles size={12} aria-hidden /> {t("sugeridos", { n: 11 })}
             </p>
           </div>
         </div>
         <ul className="mt-3 space-y-2">
           {CLIPS.map((c, i) => (
             <li
-              key={c.titulo}
+              key={c.clave}
               className={`rounded-ng-lg border p-3 ${i === 0 ? "border-ng-azul/60 brillo-marca" : "border-white/10"} bg-ng-superficie/60`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-[11px] text-ng-tenue">
-                    #{i + 1} · {c.motivo} · {c.dur}
+                    #{i + 1} · {t(`motivos.${c.motivo}`)} · {c.dur}
                   </p>
-                  <p className="mt-0.5 truncate text-sm font-semibold">“{c.titulo}”</p>
+                  <p className="mt-0.5 truncate text-sm font-semibold">“{t(`clips.${c.clave}`)}”</p>
                 </div>
                 <div className="text-right">
                   <p className="text-lg font-bold leading-none">{c.puntaje}</p>

@@ -1,0 +1,29 @@
+{
+  "formatos": {
+    "REEL": "Reel",
+    "HISTORIA_VIDEO": "Story",
+    "IMAGEN": "Image",
+    "HISTORIA_IMAGEN": "Image story"
+  },
+  "sinPagina": {
+    "titulo": "No page is active",
+    "detalle": "Videos are organized by page. Pick one in the switcher on the left."
+  },
+  "titulo": "Approved videos",
+  "en": "in",
+  "enOtras": "· {n} in your other pages",
+  "pestanas": {
+    "pendientes": "Not published",
+    "publicados": "Published",
+    "todos": "All"
+  },
+  "sinPortada": "No cover",
+  "vacio": {
+    "publicados": "You haven't published any yet",
+    "pendientes": "Nothing left to publish",
+    "todosEn": "No approved videos in {pagina} yet",
+    "todos": "No approved videos on this page yet",
+    "yaSalieron": "All approved videos are already on Facebook.",
+    "aparecen": "Videos show up here once they're approved in the review queue."
+  }
+}

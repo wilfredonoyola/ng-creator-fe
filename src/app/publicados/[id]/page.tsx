@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { EXPEDIENTE } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PublicarEnFacebook } from "@/components/PublicarEnFacebook";
@@ -31,6 +32,7 @@ export default function DetalleVideoPage({
   // navegador con un error generico de cliente.
   params: { id: string };
 }) {
+  const t = useTranslations("publicadosDetalle");
   const { id } = params;
   const { activa, marcas } = useMarcaActiva();
 
@@ -56,15 +58,15 @@ export default function DetalleVideoPage({
       <DashboardLayout>
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-12 text-center">
           <div className="mb-3 text-4xl opacity-30">🔍</div>
-          <p className="font-medium text-white/70">No encontramos ese video</p>
+          <p className="font-medium text-white/70">{t("noEncontrado")}</p>
           <p className="mt-1 text-sm text-white/40">
-            Puede ser de una página a la que no tenés acceso.
+            {t("sinAcceso")}
           </p>
           <Link
             href="/publicados"
             className="mt-4 inline-block text-sm text-ng-teal hover:underline"
           >
-            ← Volver a la lista
+            {t("volverLista")}
           </Link>
         </div>
       </DashboardLayout>
@@ -82,12 +84,12 @@ export default function DetalleVideoPage({
         href="/publicados"
         className="mb-4 inline-block text-sm text-white/40 transition hover:text-white"
       >
-        ← Listos para publicar
+        {t("listos")}
       </Link>
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-bold">
-          {exp.numero ? `Expediente #${exp.numero}` : "Sin numerar"}
+          {exp.numero ? t("expediente", { numero: exp.numero }) : t("sinNumerar")}
         </h1>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-sm text-white/70">
           <span
@@ -106,9 +108,7 @@ export default function DetalleVideoPage({
       {enOtraPagina && (
         <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
           <p className="text-sm text-amber-300">
-            Este video es de {nombrePagina}, pero estás trabajando en{" "}
-            {activa?.nombre}. Si publicás ahora, va a salir en{" "}
-            {activa?.nombre}.
+            {t("otraPagina", { pagina: nombrePagina ?? "", activa: activa?.nombre ?? "" })}
           </p>
         </div>
       )}
@@ -127,17 +127,17 @@ export default function DetalleVideoPage({
             />
           ) : (
             <div className="flex aspect-[9/16] items-center justify-center rounded-2xl bg-black/50 text-sm text-white/30">
-              Sin video
+              {t("sinVideo")}
             </div>
           )}
 
           <div className="mt-3 space-y-1 text-xs text-white/40">
             <p>{exp.tipoDeValor}</p>
             {exp.regeneraciones > 0 && (
-              <p>{exp.regeneraciones} regeneración(es)</p>
+              <p>{t("regeneraciones", { n: exp.regeneraciones })}</p>
             )}
-            <SelloDeAutoria accion="creado" autoria={exp.creadoPor} />
-            <SelloDeAutoria accion="aprobado" autoria={exp.revisadoPor} />
+            <SelloDeAutoria accion={t("sello.creado")} autoria={exp.creadoPor} />
+            <SelloDeAutoria accion={t("sello.aprobado")} autoria={exp.revisadoPor} />
           </div>
 
           {exp.videoFinalUrl && (
@@ -148,15 +148,15 @@ export default function DetalleVideoPage({
               download
               className="mt-3 block rounded-lg border border-white/10 py-2 text-center text-sm text-white/60 transition hover:bg-white/5"
             >
-              ⬇ Descargar el video
+              {t("descargar")}
             </a>
           )}
         </div>
 
         <div className="space-y-4">
           <Seccion
-            titulo="Portada"
-            detalle="Es la cubierta del Reel y lo que sale si publicás como imagen."
+            titulo={t("portada.titulo")}
+            detalle={t("portada.detalle")}
           >
             {exp.videoFinalUrl ? (
               <ElegirPortada
@@ -166,17 +166,17 @@ export default function DetalleVideoPage({
               />
             ) : (
               <p className="text-sm text-white/40">
-                Sin video no hay de dónde sacar la portada.
+                {t("portada.sinVideo")}
               </p>
             )}
           </Seccion>
 
           <Seccion
-            titulo="Publicar en Facebook"
+            titulo={t("facebook.titulo")}
             detalle={
               activa
-                ? `El destino es ${activa.nombre}, la página activa.`
-                : "Elegí una página activa para publicar."
+                ? t("facebook.destino", { pagina: activa.nombre })
+                : t("facebook.elegi")
             }
           >
             <PublicarEnFacebook
@@ -187,8 +187,8 @@ export default function DetalleVideoPage({
           </Seccion>
 
           <Seccion
-            titulo="Publicar en YouTube"
-            detalle="Sube el video final como Short a un canal de la marca activa."
+            titulo={t("youtube.titulo")}
+            detalle={t("youtube.detalle")}
           >
             <PublicarEnYoutube
               expedienteId={exp._id}
@@ -197,8 +197,8 @@ export default function DetalleVideoPage({
           </Seccion>
 
           <Seccion
-            titulo="Publicar en TikTok"
-            detalle="Publica el video final en una cuenta de la marca activa."
+            titulo={t("tiktok.titulo")}
+            detalle={t("tiktok.detalle")}
           >
             <PublicarEnTiktok
               expedienteId={exp._id}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { haySesion } from "@/lib/auth";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useMenuColapsado } from "@/lib/menu-colapsado";
@@ -34,6 +35,7 @@ export function DashboardLayout({
   /** Desde md, márgenes de 1rem (en vez de 2rem desde lg): para herramientas que usan toda la pantalla. */
   margenChico?: boolean;
 }) {
+  const t = useTranslations("marcoDashboard");
   const router = useRouter();
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
@@ -67,7 +69,7 @@ export function DashboardLayout({
       >
         <button
           onClick={() => setAbierto(true)}
-          aria-label="Abrir menú"
+          aria-label={t("abrirMenu")}
           className="-ml-1 rounded-lg p-2 text-white/70 transition hover:bg-white/10 hover:text-white"
         >
           {/* Tres barras dibujadas, para no depender de una librería de iconos */}

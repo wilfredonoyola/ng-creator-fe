@@ -1,0 +1,43 @@
+{
+  "sesion": {
+    "vencida": "This code no longer works: codes last 6 hours. Generate a new one on your computer and scan again.",
+    "usada": "This code was already used. Each code works for a single video: generate a new one on your computer.",
+    "errorVerificar": "We couldn't verify the code"
+  },
+  "errores": {
+    "sinPermiso": "You didn't allow camera or microphone access. Enable them for this site in your browser settings and come back.",
+    "sinCamara": "We couldn't find a camera on this device.",
+    "camara": "Couldn't use the camera: {mensaje}",
+    "desconocido": "unknown error",
+    "sinVideo": "There's no video to send. Record or choose one.",
+    "muyPesado": "The video is {peso} and the maximum is {maximo}. Record a shorter take.",
+    "enviar": "Couldn't send the video"
+  },
+  "login": {
+    "titulo": "You need to sign in",
+    "detalle": "Just once on this phone. Then scan the code again.",
+    "boton": "Sign in"
+  },
+  "listo": {
+    "titulo": "Video sent",
+    "detalle": "Continue on your computer: it's already loaded there.",
+    "otraToma": "Want to send another take? Generate a new code on your computer."
+  },
+  "verificando": "Verifying the code…",
+  "reintentar": "Try again",
+  "titulo": "Record for the edit",
+  "subtitulo": "It's sent to the computer where you're putting it together",
+  "guiaCirculo": "You'll see yourself here. This circle is how you'll look in the video.",
+  "reproducirToma": "Play the take",
+  "deSobra": "That's plenty. Recording more makes the upload slow.",
+  "grabarAca": "● Record here",
+  "elegirVideo": "Choose a video",
+  "explicacionCaminos": "Recording here shows you the real crop. Choosing a video opens your phone's camera, which records better.",
+  "detener": "■ Stop",
+  "tocaCirculo": "Tap the circle to watch the take · {peso}",
+  "usarEsta": "Use this one",
+  "repetir": "Redo",
+  "avisando": "Notifying your computer…",
+  "enviando": "Sending…",
+  "noCierres": "Don't close this screen until it finishes"
+}

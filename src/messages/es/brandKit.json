@@ -1,0 +1,51 @@
+{
+  "errores": {
+    "subirLogo": "No se pudo subir el logo",
+    "tema": "Cada color del tema va como #RRGGBB.",
+    "guardar": "No se pudo guardar"
+  },
+  "sinMarca": "Elegí una marca arriba para armar su Brand Kit.",
+  "loQueLleva": "Lo que lleva cada clip de",
+  "intro": "Los colores de la marca, el estilo de los textos, tu logo en una esquina y, si querés, una llamada a la acción al final. Se aplica sola a todos los clips de la marca; en el editor de cada clip se puede cambiar el estilo y apagar el logo y la llamada. Los clips ya procesados la toman al volver a procesarlos.",
+  "cargando": "Cargando…",
+  "estilo": {
+    "titulo": "Estilo de los textos",
+    "ayuda": "Cómo salen el gancho y los subtítulos de los clips de la marca, con sus colores. Cada clip lo puede cambiar en el editor. Se guarda con el Brand Kit."
+  },
+  "enLosClips": "En los clips",
+  "logo": {
+    "titulo": "Logo",
+    "alt": "Logo de la marca",
+    "sinLogo": "Sin logo",
+    "subiendo": "Subiendo…",
+    "cambiar": "Cambiar logo",
+    "subir": "Subir logo",
+    "ayuda": "PNG con fondo transparente, si tenés. Le sacamos el fondo igual.",
+    "dondeVa": "Dónde va",
+    "tamano": "Tamaño",
+    "delAncho": "{n} % del ancho",
+    "opacidad": "Opacidad"
+  },
+  "posicionesLogo": {
+    "ARRIBA_IZQUIERDA": "Arriba a la izquierda",
+    "ARRIBA_DERECHA": "Arriba a la derecha",
+    "ABAJO_IZQUIERDA": "Abajo a la izquierda",
+    "ABAJO_DERECHA": "Abajo a la derecha"
+  },
+  "cta": {
+    "titulo": "Llamada a la acción al final",
+    "ejemplo": "Mirá el episodio completo en YouTube",
+    "dura": "Dura",
+    "ultimos": "los últimos {n} s",
+    "conEstilo": "Va en el centro, en una caja de tu color primario, con la letra del estilo.",
+    "sinEstilo": "Va en el centro, en caja, con los colores del gancho de la marca."
+  },
+  "guardando": "Guardando…",
+  "guardar": "Guardar Brand Kit",
+  "guardado": "Guardado. Los clips nuevos ya salen así.",
+  "vista": {
+    "titulo": "Así sale (9:16)",
+    "ayuda": "El gancho dura los primeros segundos y la llamada a la acción aparece solo al final; acá se ven siempre para que los ajustes.",
+    "zonaSegura": "Lo que queda fuera de la línea punteada lo tapa la red."
+  }
+}

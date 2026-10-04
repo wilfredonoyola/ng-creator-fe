@@ -1,0 +1,59 @@
+{
+  "titulo": "Perfil",
+  "subtitulo": "Tu cuenta en NG Creator.",
+  "marca": "Marca",
+  "datos": {
+    "titulo": "Tus datos",
+    "nombre": "Nombre",
+    "sinNombre": "Sin nombre",
+    "correo": "Correo",
+    "rolSistema": "Rol en el sistema",
+    "administrador": "Administrador",
+    "tusMarcas": "Tus marcas"
+  },
+  "cerrarSesion": "Cerrar sesión",
+  "preferencias": "Preferencias",
+  "peligro": {
+    "titulo": "Zona de peligro",
+    "detalle": "Eliminar tu cuenta borra tu usuario y tu acceso a todas las marcas. No se puede deshacer.",
+    "boton": "Eliminar mi cuenta"
+  },
+  "eliminar": {
+    "titulo": "Eliminar mi cuenta",
+    "revisando": "Revisando tus marcas…",
+    "errorRevisar": "No pudimos revisar tus marcas: {error}",
+    "vasAEliminar": "Vas a eliminar la cuenta <strong>{email}</strong>. Esto no se puede deshacer:",
+    "consecuencias": {
+      "acceso": "se borran tu usuario y tu acceso a todas las marcas;",
+      "archivan": "las marcas de las que sos el único miembro se archivan: se desconectan sus redes y se cancelan sus publicaciones programadas;",
+      "historial": "en el historial de las marcas, tu nombre pasa a «Cuenta eliminada»."
+    },
+    "recuperar": "El contenido de las marcas archivadas queda guardado y se puede recuperar pidiéndolo a <link>{contacto}</link> por 30 días.",
+    "seArchivan": "Se archivan",
+    "bloquean": "Sos el único propietario de {n, plural, one {esta marca} other {estas marcas}}, y hay más gente en {n, plural, one {ella} other {ellas}}. Antes de eliminar tu cuenta, hacé propietaria a otra persona en Equipo.",
+    "personasMas": "{n, plural, one {# persona más} other {# personas más}}",
+    "irAEquipo": "Ir a Equipo",
+    "paraConfirmar": "Para confirmar, escribí <strong>{palabra}</strong>",
+    "error": "No se pudo eliminar la cuenta",
+    "cancelar": "Cancelar",
+    "eliminando": "Eliminando…",
+    "boton": "Eliminar mi cuenta",
+    "cerrar": "Cerrar"
+  },
+  "avisos": {
+    "titulo": "Notificaciones",
+    "detalle": "Los avisos le llegan a todo el equipo de la marca, menos a quien hizo la acción. Elegí cuáles querés recibir y por dónde.",
+    "cargando": "Cargando…",
+    "errorTraer": "No pudimos traer tus preferencias: {error}",
+    "aviso": "Aviso",
+    "canales": {
+      "enApp": "En la app",
+      "push": "En el teléfono",
+      "correo": "Por correo"
+    },
+    "interruptor": "{aviso}: {canal}",
+    "telefono": "En el teléfono llegan si tenés la app instalada y le diste permiso para avisarte.",
+    "errorGuardar": "No se pudo guardar",
+    "errorGuardarDetalle": "No se pudo guardar: {error}"
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   BORRAR_MONTAJE,
   DUPLICAR_MONTAJE,
@@ -35,6 +36,8 @@ export function HistorialMontajes({
   puede: boolean;
   onAbrir: (id: string) => void;
 }) {
+  const t = useTranslations("montajeHistorial");
+  const locale = useLocale();
   const { data, loading, refetch } = useQuery(MONTAJES_GUARDADOS, {
     variables: { marcaId, limite: 30 },
     fetchPolicy: "cache-and-network",
@@ -54,7 +57,7 @@ export function HistorialMontajes({
   return (
     <div className="mx-auto mb-6 w-full max-w-[1010px]">
       <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">
-        Tus montajes
+        {t("titulo")}
       </h2>
       <div className="divide-y divide-white/5 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
         {montajes.map((m) => (
@@ -68,7 +71,7 @@ export function HistorialMontajes({
             >
               <p className="truncate text-sm text-white/90">{m.nombre}</p>
               <p className="truncate text-xs text-white/35">
-                {cuando(m.updatedAt)}
+                {cuando(m.updatedAt, locale, (hora) => t("hoy", { hora }))}
                 {m.origenUrl ? ` · ${m.origenUrl}` : ""}
               </p>
             </button>
@@ -94,7 +97,7 @@ export function HistorialMontajes({
                   disabled={ocupado === m._id}
                   className="rounded-md px-2 py-1 text-xs text-white/50 transition hover:bg-white/10 hover:text-white disabled:opacity-40"
                 >
-                  Duplicar
+                  {t("duplicar")}
                 </button>
 
                 {confirmando === m._id ? (
@@ -112,13 +115,13 @@ export function HistorialMontajes({
                       }}
                       className="rounded-md px-2 py-1 text-xs text-red-400 transition hover:bg-red-500/10"
                     >
-                      Confirmar
+                      {t("confirmar")}
                     </button>
                     <button
                       onClick={() => setConfirmando(null)}
                       className="rounded-md px-2 py-1 text-xs text-white/40 hover:text-white/70"
                     >
-                      No
+                      {t("no")}
                     </button>
                   </>
                 ) : (
@@ -128,7 +131,7 @@ export function HistorialMontajes({
                     onClick={() => setConfirmando(m._id)}
                     className="rounded-md px-2 py-1 text-xs text-white/30 transition hover:bg-white/10 hover:text-white/70"
                   >
-                    Borrar
+                    {t("borrar")}
                   </button>
                 )}
               </div>
@@ -141,18 +144,21 @@ export function HistorialMontajes({
 }
 
 /** Fechas en cristiano: lo de hoy con hora, lo viejo con día. */
-function cuando(iso: string): string {
+function cuando(iso: string, locale: string, hoy: (hora: string) => string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
   const ahora = new Date();
   const mismoDia = d.toDateString() === ahora.toDateString();
   if (mismoDia) {
-    return `Hoy ${d.toLocaleTimeString("es", {
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`;
+    return hoy(
+      d.toLocaleTimeString(locale, {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    );
   }
-  return d.toLocaleDateString("es", {
+  return d.toLocaleDateString(locale, {
+
     day: "numeric",
     month: "short",
     year: d.getFullYear() === ahora.getFullYear() ? undefined : "numeric",

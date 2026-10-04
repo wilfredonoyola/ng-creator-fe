@@ -1,0 +1,16 @@
+{
+  "errores": {
+    "sinSesion": "El servidor no devolvió la sesión",
+    "generar": "No se pudo generar el código",
+    "consultar": "No podemos consultar la sesión"
+  },
+  "generando": "Generando código…",
+  "grabar": "📱 Grabar con el teléfono",
+  "cansado": "Dejamos de esperar: no llegó ningún video. Si seguís grabando, pedí un código nuevo.",
+  "altQr": "Código para abrir en el teléfono",
+  "escanea": "Escaneá con la cámara del teléfono",
+  "noCierres": "Grabás ahí y el video aparece acá solo. No cierres esta pestaña.",
+  "avisoConsulta": "No podemos consultar la sesión: {aviso}. Si acabás de mandar el video desde el teléfono, recargá esta página.",
+  "esperando": "Esperando la grabación…",
+  "cancelar": "Cancelar"
+}

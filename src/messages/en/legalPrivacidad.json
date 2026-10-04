@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "titulo": "Privacy policy",
+    "descripcion": "What data NG Creator processes, what for, which providers it's shared with, how long it's kept and how to request its deletion."
+  },
+  "titulo": "Privacy policy",
+  "s1": {
+    "titulo": "1. Who is responsible",
+    "p1": "NG Creator (hereinafter, “the service”) is a platform for turning video podcast episodes into clips for social media, editing them as a team and posting them. It is operated by {responsable}, based in El Salvador, which is responsible for the data described here. The service is used on the web (creator.ngstudios.co) and through the iPhone and Android apps.",
+    "p2": "For any questions about this policy or your data, write to <correo></correo>."
+  },
+  "s2": {
+    "titulo": "2. What data we process",
+    "cuenta": "<b>Account data.</b> Name, email address and password. The password is managed by Amazon Web Services (Cognito) and is never stored by us. In our database we store the account identifier, email, name, the brands you belong to, your role in each one and the date of your last sign-in.",
+    "contenido": "<b>Content you upload and generate.</b> The episode videos, the audio extracted from them, the word-by-word transcript, the moments suggested by AI with their score and reason, the clips and their edits (framing, text, captions) and the finished videos. The people who appear or speak in that content are part of it: it is your responsibility to have their authorization (see the Terms).",
+    "pago": "<b>Payment data.</b> Payments are processed by Wompi. Card details are entered on Wompi's page and stored by Wompi: we never receive or store the full number, the expiration date or the security code. For each subscription we store the plan, its status, the billing and expiration dates, the amount and the identifiers Wompi returns to us for each charge.",
+    "redes": "<b>Connected network data.</b> When an administrator connects a Facebook account, we receive its identifier and username, the permissions granted, a user access token and, for each page they manage, its identifier, name, category, image and a page access token. When a brand owner connects a YouTube channel, we receive from Google the channel's identifier, name and image, the permissions granted and a refresh token. When they connect a TikTok account, we receive from TikTok its identifier for our app (open_id), the display name, the username, the profile picture, the permissions granted, an access token and a refresh token, and what the account allows when posting (privacy options, whether it allows comments, duets and stitch, and its maximum video length). All tokens are stored encrypted. We do not read the videos, comments, followers or messages of those accounts. If the service adds other networks, this policy will be updated with what is received from each one before enabling them.",
+    "uso": "<b>Usage and operational data.</b> Logs for each episode, processing job and post, with their status, errors and timestamps, and each episode's usage (for example, minutes transcribed) to enforce each plan's limits.",
+    "movil": "<b>In the mobile app.</b> The session is stored in the phone's secure storage (Keychain on iPhone, Keystore on Android). The app does not access your location, contacts, microphone or camera, does not show ads and does not track you across third-party apps or websites."
+  },
+  "s3": {
+    "titulo": "3. What we use it for",
+    "li1": "To create and protect your account, and to control what each person can do based on their role.",
+    "li2": "To transcribe your episodes, suggest moments, render the clips and post them where you indicate.",
+    "li3": "To charge the subscription, apply your plan's limits and notify you about payments and expirations.",
+    "li4": "To send you emails required for the service: invitations, access codes and account notices.",
+    "li5": "To provide support, diagnose failures and prevent abuse.",
+    "li6": "To comply with legal, accounting and tax obligations.",
+    "p1": "We do not sell data, we do not transfer it to third parties for commercial purposes, we do not build advertising profiles and we do not use your content to train our own AI models."
+  },
+  "s4": {
+    "titulo": "4. Who it's shared with",
+    "p1": "To operate, the service uses these providers, each with its own privacy policy. They only receive what is necessary for their part of the work:",
+    "aws": "<b>Amazon Web Services</b> — account authentication (Cognito) and email delivery (SES).",
+    "mongo": "<b>MongoDB Atlas</b> — database.",
+    "bunny": "<b>Bunny.net</b> — storage and playback of videos, audio and images.",
+    "openai": "<b>OpenAI</b> — transcription of the episodes' audio and analysis of the transcript to suggest moments. Under its API terms, OpenAI does not use this data to train its models.",
+    "elevenlabs": "<b>ElevenLabs</b> — speech synthesis, only in the features that use it.",
+    "servidores": "<b>DigitalOcean, Contabo and Vercel</b> — servers where the application, video processing and website run.",
+    "wompi": "<b>Wompi</b> — subscription billing.",
+    "meta": "<b>Meta Platforms</b> — posting to authorized Facebook pages.",
+    "google": "<b>Google (YouTube API Services)</b> — posting to authorized YouTube channels. Google processes that data according to its <enlace>privacy policy</enlace>.",
+    "tiktok": "<b>TikTok</b> — posting to authorized TikTok accounts, according to its <enlace>privacy policy</enlace>.",
+    "expo": "<b>Expo</b> — distribution of mobile app updates.",
+    "p2": "Several of these providers are located outside El Salvador, mainly in the United States and Europe, so your data may be processed in those countries. We may also share data if required by a competent authority in accordance with the law."
+  },
+  "s5": {
+    "titulo": "5. Teams and brands",
+    "p1": "Content is organized by brand. Whoever creates a brand is its owner: they can invite people, assign them a role and remove them. The people in a brand see and edit that brand's content according to their role, and do not see other brands' content. If someone invites you, the owner of that brand can see what you do within it."
+  },
+  "s6": {
+    "titulo": "6. Network permissions and what they're used for",
+    "p1": "When connecting each network we request these permissions, and we use them exclusively for the purposes stated.",
+    "fbPagesShowList": "list the pages you manage, so you can choose which ones to enable as destinations.",
+    "fbPagesReadEngagement": "read basic data about those pages, such as name, category and image.",
+    "fbPagesManagePosts": "post the content you approve, such as a reel, story or image.",
+    "fbReadInsights": "read the statistics of those pages' posts (reach and impressions), to sort the history by performance. It is optional: if you don't grant it, everything else keeps working.",
+    "ytUpload": "upload to the channel the videos you post, with the title, description, tags and visibility you choose.",
+    "ytReadonly": "know which channel you chose when connecting (its identifier, name and image). We do not use it to read other videos, comments or channel statistics.",
+    "ytTerminos": "The service uses YouTube API Services. By posting to YouTube through the service, you agree to the <enlace>YouTube Terms of Service</enlace>.",
+    "ttUserInfo": "know which account you connected (identifier, display name and profile picture), to show it as a destination.",
+    "ttVideoPublish": "post to the account the videos you indicate, with the text, privacy, interactions and commercial content disclosure you choose for each post.",
+    "p2": "On all networks, we only post to the accounts and pages the brand owner has explicitly enabled, and only when someone on the team says so. The service never posts on its own: every post is confirmed by a person. If that person chooses a date and time, the post is scheduled and goes out at that time; until then it can be canceled or changed."
+  },
+  "s7": {
+    "titulo": "7. How long we keep data",
+    "li1": "Account data, for as long as the account exists.",
+    "li2": "Content, for as long as your subscription is active. Original episode files may be deleted 30 days after upload, once the clips have been made; transcripts, clips and finished videos are kept.",
+    "li3": "If you cancel or your plan expires, we keep the content for 90 days in case you come back. After that period we may delete it, with prior notice by email.",
+    "li4": "Payment records, for as long as accounting and tax law requires.",
+    "li5": "Network tokens, until they expire, are revoked or the account is disconnected."
+  },
+  "s8": {
+    "titulo": "8. Security",
+    "p1": "Access requires authentication and is limited by role and by brand. Network tokens are stored encrypted with AES-256-GCM and are not exposed in any interface or API response. All communication travels over HTTPS. No measure offers absolute security, but these are the ones we apply."
+  },
+  "s9": {
+    "titulo": "9. How to revoke access to the networks",
+    "p1": "In the service, under <em>Connected networks</em>, the “Disconnect” option for each page, channel or account deletes its tokens and stops using it as a destination; for YouTube and TikTok, it also asks the network to revoke access. You can also revoke it directly on each network, and it's a good idea to do both:",
+    "facebook": "<b>Facebook:</b> <em>Settings & privacy → Settings → Apps and websites</em>, removing the app.",
+    "youtube": "<b>YouTube:</b> on your <enlace>Google Account permissions page</enlace>, removing NG Creator's access.",
+    "tiktok": "<b>TikTok:</b> in the app, <em>Profile → Settings and privacy → Security and permissions → Apps and services</em>, removing NG Creator."
+  },
+  "s10": {
+    "titulo": "10. Your rights and how to delete your account",
+    "p1": "You can request access to your data, correct it, take it with you (finished clips can be downloaded as MP4 at any time) or delete it.",
+    "p2": "You can delete your account yourself, from the app or the web, under <em>Profile → Delete my account</em>. Before confirming, we show you which brands are affected. When you delete it:",
+    "li1": "we delete your user from the service and from AWS Cognito, along with your access to all brands;",
+    "li2": "brands where you are the only member are archived: their networks are disconnected (deleting their tokens) and their scheduled posts are canceled. Their content remains stored and can be recovered by requesting it at <correo></correo> for 30 days;",
+    "li3": "in the history of the brands you worked on, your name becomes “Deleted account”;",
+    "li4": "if you are the only owner of a brand that has other people, you first have to make someone else the owner under <em>Team</em>: the brand and its content still belong to its team.",
+    "p3": "You can also request deletion by writing to <correo></correo> from the email associated with your account; we carry it out within 30 days.",
+    "p4": "We keep only what the law requires us to keep, such as payment records. Content already posted on a social network is not deleted from here: it has to be deleted on that network, because once posted it is under the control of the network and of whoever manages the account."
+  },
+  "s11": {
+    "titulo": "11. Minors",
+    "p1": "The service is for people over 18. We do not knowingly collect data from minors; if you believe a minor has given us their data, write to us and we will delete it."
+  },
+  "s12": {
+    "titulo": "12. Changes to this policy",
+    "p1": "If what we do with data changes, we update this page and its date. If the change is significant, we will notify you by email before it takes effect."
+  }
+}

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { BUSCAR_EN_EPISODIO, CREAR_CLIP_EPISODIO, TRANSCRIPCION_EPISODIO } from "@/graphql/operations";
 import type { ControlReproductor } from "@/components/ReproductorEpisodio";
@@ -22,11 +23,12 @@ type Coincidencia = { desdeSeg: number; hastaSeg: number; antes: string; frase: 
 
 const MAXIMO_SEG = 180;
 const DURACIONES = [15, 30, 45, 60];
-const FORMATOS: { valor: FormatoClip; etiqueta: string; detalle: string }[] = [
-  { valor: "VERTICAL", etiqueta: "9:16", detalle: "Reels, TikTok, Shorts" },
-  { valor: "CUADRADO", etiqueta: "1:1", detalle: "Feed" },
-  { valor: "HORIZONTAL", etiqueta: "16:9", detalle: "YouTube" },
+const FORMATOS: { valor: FormatoClip; etiqueta: string; detalle: "vertical" | "cuadrado" | "horizontal" }[] = [
+  { valor: "VERTICAL", etiqueta: "9:16", detalle: "vertical" },
+  { valor: "CUADRADO", etiqueta: "1:1", detalle: "cuadrado" },
+  { valor: "HORIZONTAL", etiqueta: "16:9", detalle: "horizontal" },
 ];
+const PASOS = ["momento", "inicioFin", "crear"] as const;
 
 export function tiempo(seg: number): string {
   const s = Math.max(0, Math.floor(seg));
@@ -58,6 +60,7 @@ export function CrearClipGuiado({
   reproductor: RefObject<ControlReproductor | null>;
   onCerrar: () => void;
 }) {
+  const t = useTranslations("editorGuiado");
   const router = useRouter();
   const [paso, setPaso] = useState<1 | 2 | 3>(1);
   const [busqueda, setBusqueda] = useState("");
@@ -161,21 +164,21 @@ export function CrearClipGuiado({
       });
       router.push(`/episodios/${episodioId}/clips/${r.data.crearClipEpisodio._id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo crear el clip");
+      setError(e instanceof Error ? e.message : t("errorCrear"));
     }
   }
 
   return (
     <div className="rounded-xl border border-ng-violeta/40 bg-ng-violeta/[0.06] p-4">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-semibold">Crear un clip</h2>
-        <button onClick={onCerrar} className="text-white/40 hover:text-white/80" title="Cerrar">
+        <h2 className="font-semibold">{t("titulo")}</h2>
+        <button onClick={onCerrar} className="text-white/40 hover:text-white/80" title={t("cerrar")}>
           ✕
         </button>
       </div>
 
       <ol className="mb-4 flex items-center gap-2 text-xs">
-        {["El momento", "Inicio y fin", "Crear"].map((nombre, i) => {
+        {PASOS.map((nombre, i) => {
           const n = (i + 1) as 1 | 2 | 3;
           const hecho = n < paso;
           return (
@@ -192,7 +195,7 @@ export function CrearClipGuiado({
                 >
                   {hecho ? "✓" : n}
                 </span>
-                {nombre}
+                {t(`pasos.${nombre}`)}
               </button>
               {n < 3 && <span className="h-px flex-1 bg-white/10" />}
             </li>
@@ -202,19 +205,19 @@ export function CrearClipGuiado({
 
       {paso === 1 && (
         <div className="space-y-3">
-          <p className="text-sm text-white/70">¿Qué se dice en el momento que querés? Escribí unas palabras.</p>
+          <p className="text-sm text-white/70">{t("buscarPregunta")}</p>
           <input
             autoFocus
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Ej.: no lleves mujeres a tu casa"
+            placeholder={t("buscarEjemplo")}
             className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm outline-none focus:border-ng-violeta"
           />
           {texto.length >= 3 && (
             <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
-              {buscarQ.loading && <p className="text-xs text-white/40">Buscando…</p>}
+              {buscarQ.loading && <p className="text-xs text-white/40">{t("buscando")}</p>}
               {!buscarQ.loading && !coincidencias.length && (
-                <p className="text-xs text-white/50">No encontré esa frase. Probá con otras palabras o elegí el momento en el video.</p>
+                <p className="text-xs text-white/50">{t("sinCoincidencias")}</p>
               )}
               {coincidencias.map((c) => (
                 <button
@@ -231,13 +234,15 @@ export function CrearClipGuiado({
             </div>
           )}
           <div className="flex items-center gap-3 pt-1 text-xs text-white/40">
-            <span className="h-px flex-1 bg-white/10" />o<span className="h-px flex-1 bg-white/10" />
+            <span className="h-px flex-1 bg-white/10" />
+            {t("o")}
+            <span className="h-px flex-1 bg-white/10" />
           </div>
           <button
             onClick={() => elegir((reproductor.current?.tiempoActual() ?? 0) + 2)}
             className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 hover:bg-white/5"
           >
-            ▶ Empezar donde está el video ({tiempo(reproductor.current?.tiempoActual() ?? 0)})
+            {t("empezarDonde", { tiempo: tiempo(reproductor.current?.tiempoActual() ?? 0) })}
           </button>
         </div>
       )}
@@ -252,7 +257,7 @@ export function CrearClipGuiado({
               onClick={() => reproductor.current?.reproducirTramo(desde, hasta)}
               className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
             >
-              ▶ Escuchar el clip
+              {t("escuchar")}
             </button>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
@@ -268,9 +273,9 @@ export function CrearClipGuiado({
             <button
               onClick={() => setDesde((d) => Math.max(0, Math.round((d - 5) * 10) / 10))}
               className="rounded-lg border border-white/15 px-2.5 py-1 text-white/70 hover:bg-white/5"
-              title="Arranca 5 s antes: más contexto"
+              title={t("masContextoAyuda")}
             >
-              ← Más contexto
+              {t("masContexto")}
             </button>
           </div>
           <div className="flex gap-2 text-xs">
@@ -280,12 +285,12 @@ export function CrearClipGuiado({
                 onClick={() => setMarcando(m)}
                 className={`flex-1 rounded-lg border px-2 py-1.5 ${marcando === m ? "border-amber-300 bg-amber-300/10 text-white" : "border-white/15 text-white/60"}`}
               >
-                Tocá la palabra donde {m === "inicio" ? "empieza" : "termina"}
+                {m === "inicio" ? t("tocaInicio") : t("tocaFin")}
               </button>
             ))}
           </div>
           <div className="max-h-72 overflow-y-auto rounded-lg bg-black/25 p-3 text-sm leading-7">
-            {palabrasQ.loading && !palabras.length && <span className="text-white/40">Cargando la transcripción…</span>}
+            {palabrasQ.loading && !palabras.length && <span className="text-white/40">{t("cargandoTranscripcion")}</span>}
             {palabras.map((p) => {
               const adentro = p.desde >= desde - 0.05 && p.hasta <= hasta + 0.05;
               const borde = Math.abs(p.desde - desde) < 0.06 || Math.abs(p.hasta - hasta) < 0.06;
@@ -300,7 +305,7 @@ export function CrearClipGuiado({
               );
             })}
           </div>
-          {duracion > MAXIMO_SEG && <p className="text-xs text-red-400">Un clip puede durar hasta 3 minutos.</p>}
+          {duracion > MAXIMO_SEG && <p className="text-xs text-red-400">{t("maximo")}</p>}
           <button
             disabled={duracion < 1 || duracion > MAXIMO_SEG}
             onClick={() => {
@@ -309,7 +314,7 @@ export function CrearClipGuiado({
             }}
             className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
           >
-            Siguiente
+            {t("siguiente")}
           </button>
         </div>
       )}
@@ -317,7 +322,7 @@ export function CrearClipGuiado({
       {paso === 3 && (
         <div className="space-y-4">
           <label className="block text-sm">
-            <span className="mb-1 block text-white/60">Título</span>
+            <span className="mb-1 block text-white/60">{t("tituloCampo")}</span>
             <input
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
@@ -326,7 +331,7 @@ export function CrearClipGuiado({
             />
           </label>
           <div>
-            <span className="mb-1 block text-sm text-white/60">Formato</span>
+            <span className="mb-1 block text-sm text-white/60">{t("formato")}</span>
             <div className="grid grid-cols-3 gap-2">
               {FORMATOS.map((f) => (
                 <button
@@ -335,7 +340,7 @@ export function CrearClipGuiado({
                   className={`rounded-lg border px-2 py-2 text-center ${formato === f.valor ? "border-ng-azul bg-ng-azul/10" : "border-white/10 hover:border-white/25"}`}
                 >
                   <span className="block text-sm font-medium">{f.etiqueta}</span>
-                  <span className="block text-[11px] text-white/45">{f.detalle}</span>
+                  <span className="block text-[11px] text-white/45">{t(`formatos.${f.detalle}`)}</span>
                 </button>
               ))}
             </div>
@@ -343,8 +348,8 @@ export function CrearClipGuiado({
           <label className="flex cursor-pointer items-start gap-2 text-sm">
             <input type="checkbox" checked={autoEncuadre} onChange={(e) => setAutoEncuadre(e.target.checked)} className="mt-1" />
             <span>
-              ✨ Auto-encuadre
-              <span className="block text-xs text-white/50">Sigue al que habla. Tarda un minuto; mientras, podés editar textos y subtítulos.</span>
+              {t("autoEncuadre")}
+              <span className="block text-xs text-white/50">{t("autoEncuadreAyuda")}</span>
             </span>
           </label>
           <p className="text-xs text-white/50">
@@ -355,7 +360,7 @@ export function CrearClipGuiado({
             <AvisoCruces
               cruces={cruces}
               usuarioId={usuario?._id}
-              textoSeguir={creando ? "Creando…" : "Crear igual"}
+              textoSeguir={creando ? t("creando") : t("crearIgual")}
               onSeguir={() => void crearYEditar()}
               onCancelar={() => setCruces(null)}
             />
@@ -365,7 +370,7 @@ export function CrearClipGuiado({
               disabled={creando || revisando}
               className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
             >
-              {creando ? "Creando…" : revisando ? "Revisando…" : "Crear y abrir el editor"}
+              {creando ? t("creando") : revisando ? t("revisando") : t("crearYAbrir")}
             </button>
           )}
         </div>

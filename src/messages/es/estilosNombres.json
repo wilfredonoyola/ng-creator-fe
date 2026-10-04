@@ -1,0 +1,24 @@
+{
+  "nombres": {
+    "POP": "Pop",
+    "KARAOKE": "Karaoke",
+    "PASTILLA": "Pastilla",
+    "BESTIA": "Bestia",
+    "MARCA": "Marca",
+    "EDITORIAL": "Editorial",
+    "ROTULO": "Rotulo",
+    "MINIMO": "Minimo",
+    "KEYNOTE": "Keynote"
+  },
+  "descripciones": {
+    "POP": "Mayusculas pesadas; la palabra que se dice salta en tu color.",
+    "KARAOKE": "El de siempre: blanco con contorno y la palabra que se dice en tu color.",
+    "PASTILLA": "La palabra que se dice va dentro de una pildora de tu color.",
+    "BESTIA": "Letra enorme, contorno grueso y sombra corrida en 3D.",
+    "MARCA": "Gancho en dos bloques de tus colores; la palabra que se dice, sobre tu color.",
+    "EDITORIAL": "Minusculas de revista, un tramo en serif italica y subtitulos que se encienden al decirse.",
+    "ROTULO": "Como un rotulo de entrevista: barra de tu color, caja oscura y el nombre de la marca.",
+    "MINIMO": "Alineado a la izquierda, sin cajas, con una linea fina de tu color.",
+    "KEYNOTE": "Gancho en dos tonos y palabras que aparecen de a una."
+  }
+}

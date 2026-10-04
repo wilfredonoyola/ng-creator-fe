@@ -1,0 +1,13 @@
+{
+  "errorCambiar": "No se pudo cambiar",
+  "desde": "Desde {fecha}",
+  "terminadoPor": "✓ Terminado · {nombre}",
+  "volverAEditar": "Volver a editar",
+  "marcarAyuda": "Ya se puede programar: lo ve todo el equipo en el calendario",
+  "marcando": "Marcando…",
+  "marcarTerminado": "Marcar terminado",
+  "programado": "Programado",
+  "publicadoEn": "Publicado · {n, plural, one {# red} other {# redes}}",
+  "fallaAyuda": "Una red rechazó la publicación: entrá a Programar para ver el motivo y reintentar",
+  "fallo": "Falló en redes"
+}

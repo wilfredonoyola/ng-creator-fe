@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { Check, ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, RefreshCw, Send, Undo2, Clapperboard, X } from "lucide-react";
 import { MARCAR_CLIP_LISTO, SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/graphql/operations";
 import { diaYHora } from "@/lib/publicaciones";
@@ -77,6 +78,9 @@ export function BarraDelClip({
   };
   onProcesar: () => void;
 }) {
+  const t = useTranslations("editorBarra");
+  const tExportar = useTranslations("editorExportar");
+  const locale = useLocale();
   const { usuario } = useSesion();
   const [tomar, { loading: tomando }] = useMutation(TOMAR_CLIP_EPISODIO);
   const [soltar, { loading: soltando }] = useMutation(SOLTAR_CLIP_EPISODIO);
@@ -84,7 +88,7 @@ export function BarraDelClip({
   const [error, setError] = useState<string | null>(null);
   const mio = Boolean(tomadoPor && tomadoPor.usuarioId === usuario?._id);
   const bajada = useDescargarMp4(render.urlVideo, titulo);
-  const mp4 = estadoDelMp4(render);
+  const mp4 = estadoDelMp4(render, tExportar);
   // Sin un MP4 procesado no se puede terminar ni programar (el backend lo rechaza igual).
   const tieneVideo = render.estado === "LISTO" && Boolean(render.urlVideo);
 
@@ -97,24 +101,24 @@ export function BarraDelClip({
     }
   }
   const tomarlo = () => {
-    if (tomadoPor && !mio && !window.confirm(`Lo está editando ${tomadoPor.nombre}. ¿Tomarlo igual?`)) return;
-    void correr(() => tomar({ variables: { id: clipId, marcaId } }), "No se pudo tomar el clip");
+    if (tomadoPor && !mio && !window.confirm(t("confirmarTomar", { nombre: tomadoPor.nombre }))) return;
+    void correr(() => tomar({ variables: { id: clipId, marcaId } }), t("errores.tomar"));
   };
-  const liberarlo = () => void correr(() => soltar({ variables: { id: clipId, marcaId } }), "No se pudo liberar el clip");
+  const liberarlo = () => void correr(() => soltar({ variables: { id: clipId, marcaId } }), t("errores.liberar"));
   const terminar = (listo: boolean) =>
-    void correr(() => marcar({ variables: { id: clipId, marcaId, listo } }), "No se pudo cambiar el estado");
+    void correr(() => marcar({ variables: { id: clipId, marcaId, listo } }), t("errores.estado"));
 
   const { programadas = 0, publicadas = 0, fallidas = 0, proximaEn } = publicacion ?? {};
   const redes = fallidas
-    ? { texto: "Falló en redes", tono: "error" as const, ayuda: "Una red rechazó la publicación. Entrá a Programar para ver el motivo y reintentar." }
+    ? { texto: t("redes.fallo"), tono: "error" as const, ayuda: t("redes.falloAyuda") }
     : programadas
       ? {
-          texto: `Programado${proximaEn ? ` · ${diaYHora(new Date(proximaEn))}` : ""}`,
+          texto: `${t("redes.programado")}${proximaEn ? ` · ${diaYHora(new Date(proximaEn), locale)}` : ""}`,
           tono: "listo" as const,
-          ayuda: programadas > 1 ? `${programadas} publicaciones en camino.` : "Sale sola a esa hora.",
+          ayuda: programadas > 1 ? t("redes.enCamino", { n: programadas }) : t("redes.saleSola"),
         }
       : publicadas
-        ? { texto: `Publicado en ${publicadas} ${publicadas === 1 ? "red" : "redes"}`, tono: "listo" as const, ayuda: "Podés programarlo en otra red o a otra hora." }
+        ? { texto: t("redes.publicado", { n: publicadas }), tono: "listo" as const, ayuda: t("redes.publicadoAyuda") }
         : null;
 
   // ---- Las opciones de Exportar y de Listo, para su menú o para el "···" ----
@@ -123,16 +127,16 @@ export function BarraDelClip({
         texto: mp4.procesando
           ? mp4.texto
           : render.estado === "FALLIDO"
-            ? "Intentar de nuevo"
+            ? t("procesar.reintentar")
             : mp4.listo
-              ? "Volver a procesar"
-              : "Procesar video",
+              ? t("procesar.volver")
+              : t("procesar.procesar"),
         detalle: mp4.procesando
           ? mp4.detalle
           : mp4.listo && render.desactualizado
-            ? "Con los cambios que el MP4 todavía no tiene."
+            ? t("procesar.conCambios")
             : mp4.listo
-              ? "Ya está al día: solo si querés rehacerlo."
+              ? t("procesar.alDia")
               : undefined,
         icono: mp4.procesando ? <LoaderCircle size={16} className="animate-spin" /> : mp4.listo ? <RefreshCw size={16} /> : <Clapperboard size={16} />,
         deshabilitada: mp4.procesando,
@@ -141,8 +145,8 @@ export function BarraDelClip({
     : null;
   const opcionDescargar: OpcionMenu | null = mp4.listo
     ? {
-        texto: bajada.bajando ? "Descargando…" : render.desactualizado ? "Descargar el anterior" : "Descargar MP4",
-        detalle: render.desactualizado ? "Sin los últimos cambios." : undefined,
+        texto: bajada.bajando ? t("descargar.bajando") : render.desactualizado ? t("descargar.anterior") : t("descargar.mp4"),
+        detalle: render.desactualizado ? t("descargar.sinCambios") : undefined,
         icono: <Download size={16} />,
         deshabilitada: bajada.bajando,
         onClick: () => void bajada.descargar(),
@@ -151,10 +155,10 @@ export function BarraDelClip({
   const opcionListo: OpcionMenu | null = !puedeOperar
     ? null
     : listoPor
-      ? { texto: "Volver a editar", detalle: "Sale de “Listos para programar”.", icono: <Undo2 size={16} />, onClick: () => terminar(false) }
+      ? { texto: t("listo.volverAEditar"), detalle: t("listo.saleDeListos"), icono: <Undo2 size={16} />, onClick: () => terminar(false) }
       : {
-          texto: "Marcar listo",
-          detalle: tieneVideo ? "Lo ve el equipo en el calendario, para programarlo." : "Primero procesá el video.",
+          texto: t("listo.marcar"),
+          detalle: tieneVideo ? t("listo.marcarAyuda") : t("listo.primeroProcesa"),
           icono: <Check size={16} />,
           deshabilitada: !tieneVideo || marcando,
           onClick: () => terminar(true),
@@ -171,8 +175,8 @@ export function BarraDelClip({
     <div className="relative flex h-full min-w-0 items-center gap-2 sm:gap-3">
       <Link
         href={hrefVolver}
-        aria-label={`Volver a ${episodio}`}
-        title={`Volver a ${episodio}`}
+        aria-label={t("volverA", { episodio })}
+        title={t("volverA", { episodio })}
         className="-ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white/60 transition hover:bg-white/10 hover:text-white"
       >
         <ChevronLeft size={18} aria-hidden />
@@ -195,14 +199,14 @@ export function BarraDelClip({
             className="shrink-0"
             texto={
               !tomadoPor
-                ? "Tomalo para que el equipo sepa que lo estás haciendo vos."
+                ? t("tomado.pistaNadie")
                 : mio
-                  ? "El equipo ve que es tuyo. Liberalo si otra persona lo va a terminar."
-                  : "Si lo tomás, pasa a tu nombre y así lo ve todo el equipo."
+                  ? t("tomado.pistaMio")
+                  : t("tomado.pistaOtro")
             }
           >
             <span tabIndex={0} className={`inline-flex items-center gap-1 whitespace-nowrap outline-none ${!tomadoPor ? "" : mio ? TONOS.marca : TONOS.aviso}`}>
-              {!tomadoPor ? "Nadie lo tomó" : mio ? "Lo editás vos" : `Lo edita ${tomadoPor.nombre}`}
+              {!tomadoPor ? t("tomado.nadie") : mio ? t("tomado.mio") : t("tomado.otro", { nombre: tomadoPor.nombre })}
             </span>
           </Pista>
           <div className="flex h-4 min-w-0 shrink-[1000] flex-wrap items-center gap-x-1.5 overflow-hidden">
@@ -212,7 +216,7 @@ export function BarraDelClip({
                 disabled={tomando || soltando}
                 className="whitespace-nowrap text-ng-celeste underline-offset-2 hover:underline disabled:opacity-50"
               >
-                {tomando || soltando ? "…" : mio ? "Liberar" : tomadoPor ? "Tomarlo igual" : "Tomarlo"}
+                {tomando || soltando ? "…" : mio ? t("tomado.liberar") : tomadoPor ? t("tomado.tomarIgual") : t("tomado.tomar")}
               </button>
             )}
             <span className={`whitespace-nowrap ${TONOS[mp4.tono]}`} title={mp4.detalle}>
@@ -225,7 +229,7 @@ export function BarraDelClip({
           value={titulo}
           onChange={(e) => onCambiarTitulo(e.target.value)}
           disabled={!puedeOperar}
-          aria-label="Título del clip"
+          aria-label={t("tituloDelClip")}
           // Truncado con "…": el completo, al pasar el mouse.
           title={titulo}
           className="block w-full min-w-0 truncate bg-transparent text-base font-semibold leading-6 outline-none focus:underline disabled:opacity-100"
@@ -242,10 +246,13 @@ export function BarraDelClip({
             {error ?? (
               <>
                 {bajada.error}.{" "}
-                <a href={render.urlVideo ?? "#"} target="_blank" rel="noreferrer" className="underline">
-                  Abrilo en otra pestaña
-                </a>{" "}
-                y guardalo desde ahí.
+                {t.rich("abrirEnPestana", {
+                  link: (c) => (
+                    <a href={render.urlVideo ?? "#"} target="_blank" rel="noreferrer" className="underline">
+                      {c}
+                    </a>
+                  ),
+                })}
               </>
             )}
           </span>
@@ -254,7 +261,7 @@ export function BarraDelClip({
               setError(null);
               bajada.limpiarError();
             }}
-            aria-label="Cerrar"
+            aria-label={t("cerrar")}
             className="shrink-0 text-red-300/70 hover:text-red-200"
           >
             <X size={14} aria-hidden />
@@ -271,26 +278,26 @@ export function BarraDelClip({
           <div className="hidden md:block">
             {listoPor ? (
               <Menu
-                etiqueta={`Listo · ${listoPor.nombre}`}
+                etiqueta={t("listo.por", { nombre: listoPor.nombre })}
                 claseBoton={`${SECUNDARIO} border-ng-teal/30 text-ng-teal`}
                 boton={
                   <>
                     <Check size={16} aria-hidden />
-                    <span className="max-w-[9rem] truncate">Listo · {listoPor.nombre}</span>
+                    <span className="max-w-[9rem] truncate">{t("listo.por", { nombre: listoPor.nombre })}</span>
                     <ChevronDown size={14} aria-hidden className="opacity-60" />
                   </>
                 }
-                encabezado={<p className="text-white/55">Desde {new Date(listoPor.en).toLocaleString("es")}. Ya está en “Listos para programar”.</p>}
+                encabezado={<p className="text-white/55">{t("listo.desde", { fecha: new Date(listoPor.en).toLocaleString(locale) })}</p>}
                 opciones={[opcionListo]}
               />
             ) : (
               <Pista
                 lado="abajo-derecha"
-                texto={tieneVideo ? "Lo ve todo el equipo en el calendario, para programarlo." : "Procesá el video para poder marcarlo listo."}
+                texto={tieneVideo ? t("listo.pista") : t("listo.pistaSinVideo")}
               >
                 <button onClick={() => terminar(true)} disabled={!tieneVideo || marcando} className={SECUNDARIO}>
                   {marcando ? <LoaderCircle size={16} className="animate-spin" aria-hidden /> : <Check size={16} aria-hidden />}
-                  Listo
+                  {t("listo.listo")}
                 </button>
               </Pista>
             )}
@@ -300,7 +307,7 @@ export function BarraDelClip({
         {(opcionProcesar || opcionDescargar) && (
           <div className="hidden md:block">
             <Menu
-              etiqueta="Exportar"
+              etiqueta={t("exportar")}
               claseBoton={SECUNDARIO}
               encabezado={encabezadoExportar}
               opciones={[opcionProcesar, opcionDescargar]}
@@ -319,7 +326,7 @@ export function BarraDelClip({
                       )}
                     </span>
                   )}
-                  <span className="tabular-nums">{mp4.procesando ? `Procesando ${mp4.corto}` : "Exportar"}</span>
+                  <span className="tabular-nums">{mp4.procesando ? t("procesandoCorto", { corto: mp4.corto }) : t("exportar")}</span>
                   <ChevronDown size={14} aria-hidden className="opacity-60" />
                 </>
               }
@@ -331,7 +338,7 @@ export function BarraDelClip({
         {(opcionListo || opcionProcesar || opcionDescargar) && (
           <div className="md:hidden">
             <Menu
-              etiqueta="Más acciones"
+              etiqueta={t("masAcciones")}
               claseBoton={`${SECUNDARIO} w-9 px-0`}
               encabezado={encabezadoExportar}
               opciones={[opcionListo, opcionProcesar, opcionDescargar]}
@@ -349,23 +356,23 @@ export function BarraDelClip({
             si no, en la pista y en el aria-describedby del botón. */}
         {puedeOperar && !tieneVideo && (
           <span className="solo-barra-ancha max-w-[9rem] text-xs leading-tight text-ng-secundario">
-            {mp4.procesando ? "Se puede programar al terminar de procesar" : "Procesá el video para programar"}
+            {mp4.procesando ? t("programar.alTerminar") : t("programar.procesaPrimero")}
           </span>
         )}
 
         {puedeOperar &&
           (tieneVideo ? (
-            <Pista lado="abajo-derecha" texto={redes ? `${redes.texto}. ${redes.ayuda}` : "Elegí redes y hora."}>
+            <Pista lado="abajo-derecha" texto={redes ? `${redes.texto}. ${redes.ayuda}` : t("programar.elegi")}>
               <Link href={hrefProgramar} className={PRIMARIO}>
                 <Send size={16} aria-hidden />
-                {fallidas ? "Reintentar" : "Programar"}
+                {fallidas ? t("programar.reintentar") : t("programar.programar")}
               </Link>
             </Pista>
           ) : (
             <Pista
               id="motivo-programar"
               lado="abajo-derecha"
-              texto={mp4.procesando ? "Se procesa el video: cuando termine, se puede programar." : "Primero procesá el video, en Exportar. Sin MP4 no hay qué programar."}
+              texto={mp4.procesando ? t("programar.pistaProcesando") : t("programar.pistaSinVideo")}
             >
               <button
                 aria-disabled
@@ -374,7 +381,7 @@ export function BarraDelClip({
                 className={`${PRIMARIO} cursor-not-allowed opacity-50 hover:brightness-100`}
               >
                 <Send size={16} aria-hidden />
-                Programar
+                {t("programar.programar")}
               </button>
             </Pista>
           ))}

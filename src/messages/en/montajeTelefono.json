@@ -1,0 +1,16 @@
+{
+  "errores": {
+    "sinSesion": "The server didn't return the session",
+    "generar": "Couldn't generate the code",
+    "consultar": "We can't check the session"
+  },
+  "generando": "Generating code…",
+  "grabar": "📱 Record with your phone",
+  "cansado": "We stopped waiting: no video arrived. If you're still recording, request a new code.",
+  "altQr": "Code to open on your phone",
+  "escanea": "Scan it with your phone's camera",
+  "noCierres": "Record there and the video shows up here on its own. Don't close this tab.",
+  "avisoConsulta": "We can't check the session: {aviso}. If you just sent the video from your phone, reload this page.",
+  "esperando": "Waiting for the recording…",
+  "cancelar": "Cancel"
+}

@@ -1,0 +1,20 @@
+{
+  "subtitulo": "sí se <r>puede</r>",
+  "grabo": "Lo que grabó la cámara · 16:9",
+  "habla": "Habla",
+  "arma": "Lo que arma solo · 9:16",
+  "planos": {
+    "quienHabla": {
+      "rotulo": "Quien habla",
+      "detalle": "por la voz y los labios"
+    },
+    "dividido": {
+      "rotulo": "Dividido",
+      "detalle": "cuando discuten"
+    },
+    "reaccion": {
+      "rotulo": "Reacción",
+      "detalle": "en las tomas largas"
+    }
+  }
+}

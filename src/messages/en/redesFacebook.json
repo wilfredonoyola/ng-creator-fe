@@ -1,0 +1,62 @@
+{
+  "sinUrl": "The backend didn't return the authorization URL",
+  "errorConectar": "Couldn't start the connection",
+  "errorOperacion": "The operation failed",
+  "sinPaginas": "No pages to configure",
+  "sinPaginasDetalle": "Connecting new Facebook accounts is for admins. If you already work on a page, you'll see yours here.",
+  "titulo": "Facebook integration",
+  "subtituloAdmin": "Connect an account and choose which pages can be posted to.",
+  "subtituloPropietario": "Configure the pages you own.",
+  "paso1": {
+    "titulo": "Meta app credentials",
+    "listo": "The backend has the app credentials loaded.",
+    "falta": "The Meta app isn't configured in the backend yet. Create a Business-type app at developers.facebook.com and add to the <code>.env</code>:",
+    "permisos": "Permissions to request: <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>pages_manage_posts</code>. Optional: <code>read_insights</code> (reach and impressions for the history; without it Revival still ranks, but only by reactions, comments and shares).",
+    "redirect": "The redirect URI must be registered <em>exactly the same</em> in the app, or Meta rejects the login."
+  },
+  "paso2": {
+    "titulo": "Authorize the account",
+    "vence": "the token expires {cuando}",
+    "sincronizando": "Syncing…",
+    "sincronizar": "↻ Sync pages",
+    "reconectar": "Reconnect",
+    "duracion": "The Facebook token lasts about 60 days. When it expires you need to reconnect; enabled pages and their links are kept. Everyone connects their own account: syncing doesn't touch pages that already have another owner.",
+    "iniciaSesion": "Sign in with the account that manages the fan pages.",
+    "preparando": "Preparing…",
+    "conectar": "Connect with Facebook"
+  },
+  "paso3": {
+    "titulo": "Enable pages as destinations",
+    "espacio": "Each enabled page is its own workspace: its review queue and project numbering are independent. Connecting doesn't enable — explicitly mark where posting is allowed.",
+    "propietario": "Whoever connects a page becomes its owner. For someone else to work on it they don't need to reconnect it: invite them from <e>Team</e> and they post with the token already saved, without having to manage the fan page on Facebook."
+  },
+  "porId": {
+    "titulo": "Add a page by its ID",
+    "sinListado": "Meta doesn't return the page list while the app has standard access. Paste the ID shown in the authorization dialog, below the page name.",
+    "noAparece": "If a page you authorized doesn't show up above, add it by its ID.",
+    "verificando": "Verifying…",
+    "agregar": "Add"
+  },
+  "listo": "{n, plural, one {Done: # page enabled.} other {Done: # pages enabled.}}",
+  "listoDetalle": "They now show up in the sidebar switcher and as a destination when posting an approved video.",
+  "fila": {
+    "sinPermiso": "no permission to post",
+    "soloPropietario": "Only the page owner can enable it",
+    "requierePermiso": "Requires CREATE_CONTENT permission on the page",
+    "habilitada": "Enabled",
+    "habilitar": "Enable",
+    "desconectar": "Disconnect",
+    "no": "No",
+    "desconectarAyuda": "It stops being a posting destination. Its projects aren't deleted."
+  },
+  "logo": {
+    "error": "Couldn't upload the logo",
+    "sinLogo": "no logo",
+    "marcaDeAgua": "Watermark",
+    "seAplica": "Applied to this page's recycled content",
+    "sinLogoNoSe": "Without a logo, recycled content can't be posted",
+    "subiendo": "Uploading…",
+    "cambiar": "Change",
+    "subir": "Upload logo"
+  }
+}

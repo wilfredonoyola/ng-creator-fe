@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { CalendarDays, Clapperboard, House, Menu, Mic, MonitorPlay, type LucideIcon } from "lucide-react";
 import { useSesion } from "@/lib/sesion";
 
@@ -15,17 +16,18 @@ import { useSesion } from "@/lib/sesion";
 interface Tab {
   href: string;
   icon: LucideIcon;
-  label: string;
+  /** La clave de su nombre en `marcoNavInferior`. */
+  clave: "inicio" | "episodios" | "calendario" | "publicaciones" | "crear";
   tambien?: string[];
 }
 
 const TABS: Tab[] = [
-  { href: "/panel", icon: House, label: "Inicio" },
-  { href: "/episodios", icon: Mic, label: "Episodios" },
-  { href: "/calendario", icon: CalendarDays, label: "Calendario" },
-  { href: "/publicados", icon: MonitorPlay, label: "Publicaciones", tambien: ["/analisis"] },
+  { href: "/panel", icon: House, clave: "inicio" },
+  { href: "/episodios", icon: Mic, clave: "episodios" },
+  { href: "/calendario", icon: CalendarDays, clave: "calendario" },
+  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
 ];
-const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, label: "Crear" };
+const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, clave: "crear" };
 
 /**
  * Navegación inferior, solo en móvil.
@@ -38,6 +40,7 @@ const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, label: "Crear" }
  * obliga a recolocar la mano en cada salto.
  */
 export function NavInferior({ onMas, ocultarDesdeMd = false }: { onMas: () => void; ocultarDesdeMd?: boolean }) {
+  const t = useTranslations("marcoNavInferior");
   const pathname = usePathname();
   const router = useRouter();
   const { esAdmin } = useSesion();
@@ -48,20 +51,20 @@ export function NavInferior({ onMas, ocultarDesdeMd = false }: { onMas: () => vo
       className={`fixed inset-x-0 bottom-0 z-30 grid border-t border-white/10 bg-ng-fondo/95 backdrop-blur lg:hidden ${ocultarDesdeMd ? "md:hidden" : ""}`}
       style={{ paddingBottom: "env(safe-area-inset-bottom)", gridTemplateColumns: `repeat(${tabs.length + 1}, minmax(0, 1fr))` }}
     >
-      {tabs.map((t) => {
-        const activo = [t.href, ...(t.tambien ?? [])].some(
+      {tabs.map((tab) => {
+        const activo = [tab.href, ...(tab.tambien ?? [])].some(
           (r) => pathname === r || pathname.startsWith(`${r}/`),
         );
         return (
           <button
-            key={t.href}
-            onClick={() => router.push(t.href)}
+            key={tab.href}
+            onClick={() => router.push(tab.href)}
             className={`relative flex flex-col items-center gap-0.5 py-2 text-[10px] transition ${
               activo ? "text-ng-celeste" : "text-ng-tenue active:bg-white/5"
             }`}
           >
-            <t.icon size={20} strokeWidth={1.8} aria-hidden />
-            <span className="font-medium">{t.label}</span>
+            <tab.icon size={20} strokeWidth={1.8} aria-hidden />
+            <span className="font-medium">{t(tab.clave)}</span>
             {/* Línea superior en vez de un punto: marca la pestaña sin robarle
                 altura al objetivo tocable. */}
             <span
@@ -78,7 +81,7 @@ export function NavInferior({ onMas, ocultarDesdeMd = false }: { onMas: () => vo
         className="flex flex-col items-center gap-0.5 py-2 text-[10px] text-white/45 transition active:bg-white/5"
       >
         <Menu size={20} strokeWidth={1.8} aria-hidden />
-        <span className="font-medium">Más</span>
+        <span className="font-medium">{t("mas")}</span>
       </button>
     </nav>
   );

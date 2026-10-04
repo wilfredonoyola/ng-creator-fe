@@ -1,0 +1,23 @@
+{
+  "sinUrl": "El backend no devolvió la URL de autorización",
+  "errorConectar": "No se pudo iniciar la conexión",
+  "errorOperacion": "La operación falló",
+  "eligeMarca": "Elegí una marca en la barra lateral.",
+  "reconectar": "Reconectar",
+  "deshabilitar": "Deshabilitar",
+  "habilitar": "Habilitar",
+  "desconectar": "Desconectar",
+  "titulo": "Cuentas de {marca}",
+  "tituloSinMarca": "Cuentas de la marca activa",
+  "descripcion": "Los videos de esta marca se publican en estas cuentas. Para otra marca, cambiala en la barra lateral.",
+  "sinCredenciales": "El backend todavía no tiene las credenciales de TikTok (TIKTOK_CLIENT_KEY, TIKTOK_CLIENT_SECRET, TIKTOK_REDIRECT_URI).",
+  "revocado": "TikTok revocó el acceso: hay que reconectarla.",
+  "habilitada": "Habilitada como destino",
+  "deshabilitada": "Deshabilitada",
+  "confirmarDesconectar": "¿Desconectar \"{nombre}\"? Lo programado para esta cuenta va a fallar a su hora.",
+  "abriendo": "Abriendo TikTok…",
+  "conectarOtra": "Conectar otra cuenta",
+  "conectarPrimera": "Conectar una cuenta de TikTok",
+  "soloPropietario": "Conectar cuentas es del propietario de la marca.",
+  "auditoria": "Mientras TikTok no audite la app, solo conectan las cuentas de prueba y todo se publica como \"Solo yo\"."
+}

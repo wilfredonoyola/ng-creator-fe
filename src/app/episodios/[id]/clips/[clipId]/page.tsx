@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import {
   ACTUALIZAR_CLIP_EPISODIO,
   CLIP_EPISODIO,
@@ -85,6 +86,8 @@ export default function EditorClipPage({
   params: { id: string; clipId: string };
 }) {
   const { id: episodioId, clipId } = params;
+  const tr = useTranslations("editorClip");
+  const tn = useTranslations("estilosNombres");
   const { activa } = useMarcaActiva();
   const { puedeOperar, usuario } = useSesion();
   const { porEstilo } = useEstilosTexto();
@@ -266,13 +269,13 @@ export default function EditorClipPage({
         if (ultimo.current === borrador) setSinGuardar(false);
         return true;
       } catch (e) {
-        setError(e instanceof Error ? e.message : "No se pudo guardar");
+        setError(e instanceof Error ? e.message : tr("errores.guardar"));
         throw e;
       } finally {
         setGuardando(false);
       }
     },
-    [marcaId, clipId, episodioId, actualizar, cliente],
+    [marcaId, clipId, episodioId, actualizar, cliente, tr],
   );
 
   const primera = useRef(true);
@@ -448,7 +451,7 @@ export default function EditorClipPage({
 
   async function pedirAutoEncuadre() {
     if (!marcaId || !b) return;
-    if (b.posiciones.length > 1 && !window.confirm("El auto-encuadre reemplaza los cambios de encuadre por los suyos. ¿Seguir?")) {
+    if (b.posiciones.length > 1 && !window.confirm(tr("confirmarAuto"))) {
       return;
     }
     setError(null);
@@ -458,7 +461,7 @@ export default function EditorClipPage({
       if (!(await guardarAhora())) return;
       await autoEncuadrar({ variables: { id: clipId, marcaId } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo auto-encuadrar");
+      setError(e instanceof Error ? e.message : tr("errores.auto"));
     }
   }
 
@@ -472,7 +475,7 @@ export default function EditorClipPage({
       if (c) tomarEncuadres(c);
       setResumenAbierto(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo volver a como estaba");
+      setError(e instanceof Error ? e.message : tr("errores.deshacer"));
     }
   }
 
@@ -483,7 +486,7 @@ export default function EditorClipPage({
       if (!(await guardarAhora())) return;
       await renderizar({ variables: { id: clipId, marcaId } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo procesar el video");
+      setError(e instanceof Error ? e.message : tr("errores.procesar"));
     }
   }
 
@@ -505,8 +508,8 @@ export default function EditorClipPage({
   const pestanas: PestanaInspector<Pestana>[] = [
     {
       id: "estilo",
-      etiqueta: "Estilo",
-      titulo: "Estilo del texto",
+      etiqueta: tr("pestanas.estilo.etiqueta"),
+      titulo: tr("pestanas.estilo.titulo"),
       icono: Palette,
       contenido: (
         <>
@@ -520,26 +523,27 @@ export default function EditorClipPage({
             deshabilitado={!opera}
           />
           <p className="mt-3 text-xs text-white/40">
-            El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en el{" "}
-            <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-              Brand Kit
-            </Link>
-            .
+            {tr.rich("estiloAyuda", {
+              link: (c) => (
+                <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+                  {c}
+                </Link>
+              ),
+            })}
           </p>
         </>
       ),
     },
     {
       id: "textos",
-      etiqueta: "Textos",
-      titulo: "Gancho y textos",
+      etiqueta: tr("pestanas.textos.etiqueta"),
+      titulo: tr("pestanas.textos.titulo"),
       icono: Type,
       contenido: (
         <>
           {conEstilo && (
             <p className="mb-3 text-xs text-white/45">
-              Con el estilo {conEstilo.def.nombre}, la letra, los colores, las mayúsculas y la caja de cada texto los pone
-              el estilo. Acá cuentan el contenido, las palabras destacadas, el lugar, el tamaño y el tiempo.
+              {tr("textosConEstilo", { estilo: tn(`nombres.${conEstilo.def.estilo}`) })}
             </p>
           )}
           <PanelTextos
@@ -556,7 +560,7 @@ export default function EditorClipPage({
     },
     {
       id: "subtitulos",
-      etiqueta: "Subtítulos",
+      etiqueta: tr("pestanas.subtitulos.etiqueta"),
       icono: Captions,
       contenido: (
         <>
@@ -567,11 +571,11 @@ export default function EditorClipPage({
               onChange={(e) => cambiar({ subtitulosActivos: e.target.checked })}
               disabled={!opera}
             />
-            Subtítulos con la palabra resaltada
+            {tr("subtitulosActivos")}
           </label>
           {b.subtitulosActivos && (
             <EstiloSubtitulos
-              delEstilo={conEstilo?.def.nombre}
+              delEstilo={conEstilo ? tn(`nombres.${conEstilo.def.estilo}`) : undefined}
               valor={b.subtitulo}
               porDefecto={subtituloPorDefecto(LIENZOS[b.formato], b.diseno)}
               onCambiar={(subtitulo) => cambiar({ subtitulo })}
@@ -579,26 +583,28 @@ export default function EditorClipPage({
             />
           )}
           <p className="mt-3 text-xs text-white/40">
-            ¿Una palabra mal transcrita?{" "}
-            <button
-              onClick={() => {
-                setModo("corregir");
-                elegirPestana("transcripcion");
-              }}
-              className="text-ng-celeste hover:underline"
-            >
-              Corregila en la transcripción
-            </button>
-            . Cambia el subtítulo, no el tiempo.
-            {b.correcciones.length > 0 && ` ${b.correcciones.length} corregida(s).`}
+            {tr.rich("malTranscrita", {
+              boton: (c) => (
+                <button
+                  onClick={() => {
+                    setModo("corregir");
+                    elegirPestana("transcripcion");
+                  }}
+                  className="text-ng-celeste hover:underline"
+                >
+                  {c}
+                </button>
+              ),
+            })}
+            {b.correcciones.length > 0 && ` ${tr("corregidas", { n: b.correcciones.length })}`}
           </p>
         </>
       ),
     },
     {
       id: "marca",
-      etiqueta: "Marca",
-      titulo: "Brand Kit",
+      etiqueta: tr("pestanas.marca.etiqueta"),
+      titulo: tr("pestanas.marca.titulo"),
       icono: Stamp,
       contenido:
         estilo.plantilla && (estilo.plantilla.logoActivo || estilo.plantilla.ctaActivo) ? (
@@ -610,47 +616,51 @@ export default function EditorClipPage({
                 onChange={(e) => cambiar({ plantillaActiva: e.target.checked })}
                 disabled={!opera}
               />
-              {[
-                estilo.plantilla.logoActivo && (estilo.logoUrl ? "Logo" : null),
-                estilo.plantilla.ctaActivo && estilo.plantilla.ctaTexto.trim() ? "llamada a la acción al final" : null,
-              ]
-                .filter(Boolean)
-                .join(" y ") || "Brand Kit"}{" "}
-              de la marca en este clip
+              {(() => {
+                const conLogo = Boolean(estilo.plantilla.logoActivo && estilo.logoUrl);
+                const conLlamada = Boolean(estilo.plantilla.ctaActivo && estilo.plantilla.ctaTexto.trim());
+                return tr(
+                  conLogo && conLlamada
+                    ? "marca.ambos"
+                    : conLogo
+                      ? "marca.logo"
+                      : conLlamada
+                        ? "marca.llamada"
+                        : "marca.brandKit",
+                );
+              })()}
             </label>
             <p className="mt-1 text-xs text-white/40">
-              Se configura una vez para todos los clips, en el{" "}
-              <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-                Brand Kit
-              </Link>
-              .
+              {tr.rich("marca.seConfigura", {
+                link: (c) => (
+                  <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+                    {c}
+                  </Link>
+                ),
+              })}
             </p>
           </>
         ) : (
           <p className="text-xs text-white/50">
-            La marca no tiene Brand Kit. Con uno, cada clip sale con su logo y una llamada a la acción al final:{" "}
-            <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-              armalo en el Brand Kit
-            </Link>
-            .
+            {tr.rich("marca.sinBrandKit", {
+              link: (c) => (
+                <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+                  {c}
+                </Link>
+              ),
+            })}
           </p>
         ),
     },
     {
       id: "transcripcion",
-      etiqueta: "Transcripción",
-      titulo: "Tramo en la transcripción",
+      etiqueta: tr("pestanas.transcripcion.etiqueta"),
+      titulo: tr("pestanas.transcripcion.titulo"),
       icono: ScrollText,
       contenido: (
         <>
           <div className="mb-3 flex flex-wrap gap-2">
-            {(
-              [
-                ["inicio", "Tocar = inicio"],
-                ["fin", "Tocar = fin"],
-                ["corregir", "Tocar = corregir palabra"],
-              ] as const
-            ).map(([m, texto]) => (
+            {(["inicio", "fin", "corregir"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setModo(m)}
@@ -658,7 +668,7 @@ export default function EditorClipPage({
                   modo === m ? "bg-white text-black" : "border border-white/15 text-white/70"
                 }`}
               >
-                {texto}
+                {tr(`modos.${m}`)}
               </button>
             ))}
           </div>
@@ -691,19 +701,19 @@ export default function EditorClipPage({
           )}
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2">
             <AjusteFino
-              etiqueta="Empieza"
+              etiqueta={tr("empieza")}
               valor={b.desdeSeg}
               onCambio={(v) => cambiarTramo(Math.min(v, b.hastaSeg - 1), b.hastaSeg)}
               disabled={!opera}
             />
             <AjusteFino
-              etiqueta="Termina"
+              etiqueta={tr("termina")}
               valor={b.hastaSeg}
               onCambio={(v) => cambiarTramo(b.desdeSeg, Math.max(v, b.desdeSeg + 1))}
               disabled={!opera}
             />
           </div>
-          <p className="mt-2 text-xs text-white/45">Dura {duracion.toFixed(2)} s</p>
+          <p className="mt-2 text-xs text-white/45">{tr("dura", { seg: duracion.toFixed(2) })}</p>
         </>
       ),
     },
@@ -751,7 +761,7 @@ export default function EditorClipPage({
             <AvisoCruces
               cruces={cruces}
               usuarioId={usuario?._id}
-              textoSeguir="Guardar igual"
+              textoSeguir={tr("guardarIgual")}
               onSeguir={guardarIgual}
               onCancelar={() => {
                 // Vuelve al tramo guardado; lo demás que se cambió se guarda igual.
@@ -776,7 +786,7 @@ export default function EditorClipPage({
                 analizando: analizando || pidiendoAuto,
                 resumen:
                   estadoAuto === "LISTO" && clip.personasAutoEncuadre != null
-                    ? `${clip.personasAutoEncuadre} persona${clip.personasAutoEncuadre === 1 ? "" : "s"}`
+                    ? tr("personas", { n: clip.personasAutoEncuadre })
                     : null,
                 personas: estadoAuto === "LISTO" ? clip.personasAutoEncuadre : null,
                 progreso: clip.progresoAutoEncuadre,
@@ -833,7 +843,7 @@ export default function EditorClipPage({
           </div>
         ) : (
           <div className="space-y-4 md:grid md:min-h-0 md:flex-1 md:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] md:gap-4 md:space-y-0">
-            <p className="text-sm text-white/50">El video todavía no está listo en Bunny.</p>
+            <p className="text-sm text-white/50">{tr("videoNoListo")}</p>
             <div className="md:min-h-0">{inspector}</div>
           </div>
         )}
@@ -854,11 +864,12 @@ function AjusteFino({
   onCambio: (v: number) => void;
   disabled?: boolean;
 }) {
+  const tr = useTranslations("editorClip");
   const [texto, setTexto] = useState(valor.toFixed(3));
   useEffect(() => setTexto(valor.toFixed(3)), [valor]);
   return (
     <div>
-      <p className="mb-1 text-xs text-white/50">{etiqueta} (s del episodio)</p>
+      <p className="mb-1 text-xs text-white/50">{tr("delEpisodio", { etiqueta })}</p>
       <div className="flex items-center gap-1">
         <button disabled={disabled} onClick={() => onCambio(valor - 0.05)} className="rounded border border-white/15 px-2 py-1 text-xs">
           −50ms
@@ -893,11 +904,12 @@ function Correccion({
   onGuardar: (texto: string | null) => void;
   onCancelar: () => void;
 }) {
+  const tr = useTranslations("editorClip");
   const [texto, setTexto] = useState(actual ?? palabra.texto);
   return (
     <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-amber-400/30 bg-amber-400/5 p-3 text-sm">
       <span className="text-white/50">
-        “{palabra.texto}” en {palabra.desde.toFixed(2)} s →
+        {tr("correccion.palabra", { palabra: palabra.texto, seg: palabra.desde.toFixed(2) })}
       </span>
       <input
         autoFocus
@@ -908,18 +920,18 @@ function Correccion({
         className="rounded border border-white/15 bg-black/30 px-2 py-1"
       />
       <button onClick={() => onGuardar(texto.trim() === palabra.texto ? null : texto)} className="rounded bg-white px-2 py-1 text-xs text-black">
-        Guardar
+        {tr("correccion.guardar")}
       </button>
       <button onClick={() => onGuardar("")} className="rounded border border-white/15 px-2 py-1 text-xs">
-        Quitar del subtítulo
+        {tr("correccion.quitar")}
       </button>
       {actual !== undefined && (
         <button onClick={() => onGuardar(null)} className="rounded border border-white/15 px-2 py-1 text-xs">
-          Volver al original
+          {tr("correccion.original")}
         </button>
       )}
       <button onClick={onCancelar} className="text-xs text-white/40">
-        Cancelar
+        {tr("correccion.cancelar")}
       </button>
     </div>
   );
@@ -944,22 +956,22 @@ function EstiloSubtitulos({
   onCambiar: (s: SubtituloClip | null) => void;
   deshabilitado: boolean;
 }) {
+  const tr = useTranslations("editorClip");
   const s = valor ?? porDefecto;
   const poner = (parcial: Partial<SubtituloClip>) => onCambiar({ ...s, ...parcial });
   const boton = (activo: boolean) =>
     `rounded-md px-2.5 py-1 text-xs transition ${activo ? "bg-marca font-medium text-ng-tinta" : "border border-white/10 text-white/60 hover:text-white"}`;
   return (
     <div className="mt-3 space-y-3 rounded-lg border border-white/10 bg-black/20 p-3">
-      <p className="text-xs text-white/45">Arrastrá el subtítulo en la vista previa para subirlo o bajarlo; la bolita de la derecha lo agranda.</p>
+      <p className="text-xs text-white/45">{tr("subtitulo.ayuda")}</p>
       {delEstilo && (
         <p className="text-xs text-white/45">
-          Con el estilo {delEstilo}, la letra, los colores, el efecto y las mayúsculas los pone el estilo; acá cuentan el
-          tamaño y el lugar.
+          {tr("subtitulo.conEstilo", { estilo: delEstilo })}
         </p>
       )}
       {!delEstilo && (
         <>
-          <Fila etiqueta="Letra">
+          <Fila etiqueta={tr("subtitulo.letra")}>
             {(
               [
                 ["NUNITO", "Nunito"],
@@ -972,23 +984,16 @@ function EstiloSubtitulos({
               </button>
             ))}
           </Fila>
-          <Fila etiqueta="Efecto">
-            {(
-              [
-                ["CONTORNO", "Contorno"],
-                ["SOMBRA", "Sombra"],
-                ["CAJA", "Caja"],
-                ["NINGUNO", "Nada"],
-              ] as const
-            ).map(([e, t]) => (
+          <Fila etiqueta={tr("subtitulo.efecto")}>
+            {(["CONTORNO", "SOMBRA", "CAJA", "NINGUNO"] as const).map((e) => (
               <button key={e} disabled={deshabilitado} onClick={() => poner({ efecto: e })} className={boton(s.efecto === e)}>
-                {t}
+                {tr(`subtitulo.efectos.${e}`)}
               </button>
             ))}
           </Fila>
         </>
       )}
-      <Fila etiqueta={`Tamaño · ${Math.round(s.tamano)}`}>
+      <Fila etiqueta={tr("subtitulo.tamano", { n: Math.round(s.tamano) })}>
         <input
           type="range"
           min={SUBTITULO_TAMANO_MIN}
@@ -1000,28 +1005,28 @@ function EstiloSubtitulos({
           className="w-full accent-[#FFD400]"
         />
       </Fila>
-      <Fila etiqueta="Lugar">
+      <Fila etiqueta={tr("subtitulo.lugar")}>
         {(
           [
-            ["Arriba", 0.2],
-            ["Centro", 0.5],
-            ["Abajo", porDefecto.centroY],
+            ["arriba", 0.2],
+            ["centro", 0.5],
+            ["abajo", porDefecto.centroY],
           ] as const
-        ).map(([t, y]) => (
-          <button key={t} disabled={deshabilitado} onClick={() => poner({ centroY: y })} className={boton(Math.abs(s.centroY - y) < 0.01)}>
-            {t}
+        ).map(([lugar, y]) => (
+          <button key={lugar} disabled={deshabilitado} onClick={() => poner({ centroY: y })} className={boton(Math.abs(s.centroY - y) < 0.01)}>
+            {tr(`subtitulo.lugares.${lugar}`)}
           </button>
         ))}
         {!delEstilo && (
           <label className="ml-2 flex items-center gap-1.5 text-xs text-white/70">
             <input type="checkbox" checked={s.mayusculas} disabled={deshabilitado} onChange={(e) => poner({ mayusculas: e.target.checked })} />
-            MAYÚSCULAS
+            {tr("subtitulo.mayusculas")}
           </label>
         )}
       </Fila>
       {valor && (
         <button disabled={deshabilitado} onClick={() => onCambiar(null)} className="text-xs text-ng-celeste hover:underline">
-          Volver al subtítulo de siempre
+          {tr("subtitulo.deSiempre")}
         </button>
       )}
     </div>

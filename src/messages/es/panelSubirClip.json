@@ -1,0 +1,17 @@
+{
+  "seleccionaClip": "Selecciona un clip de video",
+  "subiendoClip": "Subiendo clip...",
+  "subiendoNota": "Subiendo nota de voz...",
+  "listo": "Listo!",
+  "errorSubir": "Error al subir",
+  "abrir": "+ Subir clip",
+  "titulo": "Subir nuevo clip",
+  "clipVideo": "Clip de video *",
+  "elegirVideo": "Haz clic para seleccionar video",
+  "notaVoz": "Nota de voz (opcional)",
+  "agregarNota": "+ Agregar nota de voz",
+  "cancelar": "Cancelar",
+  "subiendo": "Subiendo...",
+  "subir": "Subir",
+  "quitar": "Quitar"
+}

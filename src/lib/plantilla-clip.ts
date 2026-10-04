@@ -40,12 +40,8 @@ export const PLANTILLA_POR_DEFECTO: PlantillaClip = {
 /** Separación del logo con los bordes, en fracción del ANCHO del clip (arriba, abajo y a los costados). */
 export const MARGEN_LOGO = 0.04;
 
-export const POSICIONES_LOGO: { valor: PosicionLogo; etiqueta: string }[] = [
-  { valor: "ARRIBA_IZQUIERDA", etiqueta: "Arriba a la izquierda" },
-  { valor: "ARRIBA_DERECHA", etiqueta: "Arriba a la derecha" },
-  { valor: "ABAJO_IZQUIERDA", etiqueta: "Abajo a la izquierda" },
-  { valor: "ABAJO_DERECHA", etiqueta: "Abajo a la derecha" },
-];
+/** Las esquinas, en orden. La etiqueta se traduce al dibujar (`brandKit.posicionesLogo`). */
+export const POSICIONES_LOGO: readonly PosicionLogo[] = ["ARRIBA_IZQUIERDA", "ARRIBA_DERECHA", "ABAJO_IZQUIERDA", "ABAJO_DERECHA"];
 
 /** Dónde va el logo en una vista de `ancho` px: estilo absoluto para un `<img>`. */
 export function estiloDelLogo(p: Pick<PlantillaClip, "logoPosicion" | "logoTamano" | "logoOpacidad">, ancho: number) {

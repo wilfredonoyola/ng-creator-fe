@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 const PESTANAS = [
-  { href: "/publicados", label: "Publicados" },
-  { href: "/analisis", label: "Análisis" },
-];
+  { href: "/publicados", clave: "publicados" },
+  { href: "/analisis", clave: "analisis" },
+] as const;
 
 /**
  * Publicaciones es una sola sección del menú con dos pestañas: lo que salió y
@@ -14,6 +15,7 @@ const PESTANAS = [
  * rendimiento es parte de publicar.
  */
 export function PestanasPublicaciones() {
+  const t = useTranslations("publicadosPestanas");
   const pathname = usePathname();
   return (
     <div className="mb-6 flex gap-1 border-b border-white/10">
@@ -28,7 +30,7 @@ export function PestanasPublicaciones() {
               activa ? "border-ng-azul text-white" : "border-transparent text-ng-secundario hover:text-white"
             }`}
           >
-            {p.label}
+            {t(p.clave)}
           </Link>
         );
       })}

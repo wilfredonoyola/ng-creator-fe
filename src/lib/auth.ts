@@ -136,6 +136,18 @@ export async function confirmarPasswordNueva(
   await guardarSesion(result);
 }
 
+/**
+ * Error que viene del backend (Cognito), con un mensaje para mostrar tal cual.
+ * Cualquier otro error de este archivo (red, respuesta incompleta) lleva un
+ * mensaje solo para logs: la pantalla muestra su propio texto traducido.
+ */
+export class ErrorDeAutenticacion extends Error {
+  constructor(mensaje: string) {
+    super(mensaje);
+    this.name = "ErrorDeAutenticacion";
+  }
+}
+
 /** Manda una operacion sin sesion y devuelve su dato, o lanza el error. */
 async function pedir<T>(
   query: string,
@@ -151,7 +163,8 @@ async function pedir<T>(
   const json = await response.json();
 
   if (json.errors) {
-    throw new Error(json.errors[0]?.message ?? "Error de autenticacion");
+    const mensaje = json.errors[0]?.message;
+    throw mensaje ? new ErrorDeAutenticacion(mensaje) : new Error("Error de autenticacion");
   }
 
   return json.data[campo] as T;
