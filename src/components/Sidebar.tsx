@@ -70,7 +70,7 @@ export const NAV_REACCION: ItemNav[] = [
  */
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, label: "Equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
-const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, label: "Plantilla de clips" };
+const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, label: "Brand Kit" };
 const navAdmin: ItemNav[] = [{ href: "/admin/facebook", icon: Link2, label: "Redes conectadas" }];
 
 export function esActivo(item: ItemNav, pathname: string): boolean {

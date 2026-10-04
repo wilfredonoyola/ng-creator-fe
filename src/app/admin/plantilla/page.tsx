@@ -127,7 +127,7 @@ export default function PlantillaClipsPage() {
   if (!activa) {
     return (
       <DashboardLayout>
-        <p className="text-sm text-white/50">Elegí una marca arriba para armar su plantilla.</p>
+        <p className="text-sm text-white/50">Elegí una marca arriba para armar su Brand Kit.</p>
       </DashboardLayout>
     );
   }
@@ -135,7 +135,7 @@ export default function PlantillaClipsPage() {
   return (
     <DashboardLayout>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Plantilla de clips</h1>
+        <h1 className="text-2xl font-bold">Brand Kit</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-white/50">
           <span>Lo que lleva cada clip de</span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-sm text-white/80">
@@ -319,7 +319,7 @@ export default function PlantillaClipsPage() {
                   disabled={guardando}
                   className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-60"
                 >
-                  {guardando ? "Guardando…" : "Guardar plantilla"}
+                  {guardando ? "Guardando…" : "Guardar Brand Kit"}
                 </button>
                 {guardadoEn && <span className="text-sm text-ng-teal">Guardada. Los clips nuevos ya salen así.</span>}
               </div>

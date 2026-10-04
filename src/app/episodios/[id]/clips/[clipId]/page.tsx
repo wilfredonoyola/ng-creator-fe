@@ -520,9 +520,9 @@ export default function EditorClipPage({
             deshabilitado={!opera}
           />
           <p className="mt-3 text-xs text-white/40">
-            El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en{" "}
+            El gancho, los textos y los subtítulos, con los colores de la marca. El de la marca y sus colores se eligen en el{" "}
             <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-              Plantilla de clips
+              Brand Kit
             </Link>
             .
           </p>
@@ -598,7 +598,7 @@ export default function EditorClipPage({
     {
       id: "marca",
       etiqueta: "Marca",
-      titulo: "Plantilla de la marca",
+      titulo: "Brand Kit",
       icono: Stamp,
       contenido:
         estilo.plantilla && (estilo.plantilla.logoActivo || estilo.plantilla.ctaActivo) ? (
@@ -615,22 +615,22 @@ export default function EditorClipPage({
                 estilo.plantilla.ctaActivo && estilo.plantilla.ctaTexto.trim() ? "llamada a la acción al final" : null,
               ]
                 .filter(Boolean)
-                .join(" y ") || "Plantilla"}{" "}
+                .join(" y ") || "Brand Kit"}{" "}
               de la marca en este clip
             </label>
             <p className="mt-1 text-xs text-white/40">
-              Se configura una vez para todos los clips, en{" "}
+              Se configura una vez para todos los clips, en el{" "}
               <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-                Plantilla de clips
+                Brand Kit
               </Link>
               .
             </p>
           </>
         ) : (
           <p className="text-xs text-white/50">
-            La marca no tiene plantilla. Con una, cada clip sale con su logo y una llamada a la acción al final:{" "}
+            La marca no tiene Brand Kit. Con uno, cada clip sale con su logo y una llamada a la acción al final:{" "}
             <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
-              armala en Plantilla de clips
+              armalo en el Brand Kit
             </Link>
             .
           </p>
