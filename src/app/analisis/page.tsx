@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { ANALISIS_PAGINA } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
 import { BarrasRendimiento } from "@/components/analisis/BarrasRendimiento";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import {
-  DIAS,
-  DIAS_CORTOS,
   etiquetaHora,
   mejorTramo,
   umbralDeMuestra,
@@ -17,20 +16,18 @@ import {
   type Tramo,
 } from "@/lib/analitica";
 
-const PERIODOS = [
-  { id: 7, etiqueta: "7 días" },
-  { id: 28, etiqueta: "28 días" },
-  { id: 90, etiqueta: "90 días" },
-  { id: 0, etiqueta: "Todo el historial" },
-];
+/** Días hacia atrás; 0 es todo el historial. La etiqueta: `periodos.<id>`. */
+const PERIODOS = [7, 28, 90, 0] as const;
 
-const ETIQUETA_TIPO: Record<string, string> = {
-  IMAGEN: "Imagen",
-  VIDEO: "Video",
-  ENLACE: "Enlace",
-  TEXTO: "Texto",
-  OTRO: "Otro",
-};
+/** Los tipos con nombre propio (`tipos.<clave>`); otro se muestra tal cual. */
+const TIPOS = ["IMAGEN", "VIDEO", "ENLACE", "TEXTO", "OTRO"] as const;
+type Tipo = (typeof TIPOS)[number];
+const esTipo = (t: string): t is Tipo => (TIPOS as readonly string[]).includes(t);
+
+/** Los días llegan del 1 (domingo) al 7 (sábado). */
+const DIAS_SEMANA = ["1", "2", "3", "4", "5", "6", "7"] as const;
+type DiaSemana = (typeof DIAS_SEMANA)[number];
+const esDia = (d: string): d is DiaSemana => (DIAS_SEMANA as readonly string[]).includes(d);
 
 /**
  * Qué y cuándo conviene publicar, según el historial de la página.
@@ -41,6 +38,11 @@ const ETIQUETA_TIPO: Record<string, string> = {
  * sobre algo que ya se rompió una vez.
  */
 export default function AnalisisPage() {
+  const t = useTranslations("analisis");
+  const locale = useLocale();
+  const nombreTipo = (tipo: string) => (esTipo(tipo) ? t(`tipos.${tipo}`) : tipo);
+  const nombreDia = (d: number) => (esDia(String(d)) ? t(`dias.${String(d) as DiaSemana}`) : String(d));
+  const diaCorto = (d: number) => (esDia(String(d)) ? t(`diasCortos.${String(d) as DiaSemana}`) : String(d));
   const { activa, cargando: cargandoPagina } = useMarcaActiva();
   // El análisis es del historial de la página de Facebook de la marca.
   const pageId = activa?.paginaFacebook?.pageId;
@@ -68,8 +70,8 @@ export default function AnalisisPage() {
       <DashboardLayout>
         <PestanasPublicaciones />
         <Aviso
-          titulo="No hay ninguna página activa"
-          detalle="El análisis es del historial de una página. Elegí una en el switch de la izquierda."
+          titulo={t("sinPagina.titulo")}
+          detalle={t("sinPagina.detalle")}
         />
       </DashboardLayout>
     );
@@ -89,9 +91,9 @@ export default function AnalisisPage() {
     <DashboardLayout>
       <PestanasPublicaciones />
       <div className="mb-4">
-        <h1 className="text-2xl font-bold">Análisis</h1>
+        <h1 className="text-2xl font-bold">{t("titulo")}</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/50">
-          <span>Qué y cuándo conviene publicar en</span>
+          <span>{t("subtitulo")}</span>
           {activa && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-white/80">
               <span
@@ -108,23 +110,23 @@ export default function AnalisisPage() {
       <div className="mb-5 flex flex-wrap gap-2">
         {PERIODOS.map((p) => (
           <button
-            key={p.id}
-            onClick={() => setDias(p.id)}
+            key={p}
+            onClick={() => setDias(p)}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-              dias === p.id
+              dias === p
                 ? "bg-marca text-ng-tinta"
                 : "border border-white/10 text-white/60 hover:bg-white/5"
             }`}
           >
-            {p.etiqueta}
+            {t(`periodos.${p}`)}
           </button>
         ))}
       </div>
 
       {sinHistorial ? (
         <Aviso
-          titulo="Esta página no tiene historial sincronizado"
-          detalle="El análisis se arma con las publicaciones que ya trajimos de Facebook. Sincronizá algún año desde Revival y volvé."
+          titulo={t("sinHistorial.titulo")}
+          detalle={t("sinHistorial.detalle")}
         />
       ) : (
         <div className="space-y-4">
@@ -132,20 +134,20 @@ export default function AnalisisPage() {
           {resumen && (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <Cifra
-                titulo={`Publicaciones · ${resumen.dias}d`}
+                titulo={t("cifras.publicaciones", { dias: resumen.dias })}
                 valor={resumen.posts}
                 cambio={variacion(resumen.posts, resumen.postsAnterior)}
               />
               <Cifra
-                titulo="Score promedio"
+                titulo={t("cifras.scorePromedio")}
                 valor={Math.round(resumen.scorePromedio)}
                 cambio={variacion(
                   resumen.scorePromedio,
                   resumen.scorePromedioAnterior,
                 )}
               />
-              <Cifra titulo="Reacciones" valor={resumen.reacciones} />
-              <Cifra titulo="Comentarios" valor={resumen.comentarios} />
+              <Cifra titulo={t("cifras.reacciones")} valor={resumen.reacciones} />
+              <Cifra titulo={t("cifras.comentarios")} valor={resumen.comentarios} />
             </div>
           )}
 
@@ -153,78 +155,82 @@ export default function AnalisisPage() {
           {(mejorHora || mejorDia) && (
             <div className="rounded-2xl border border-ng-azul/25 bg-ng-teal/[0.04] p-5">
               <h2 className="text-sm font-semibold text-ng-teal">
-                Lo que dice tu historial
+                {t("conclusion.titulo")}
               </h2>
               <ul className="mt-2 space-y-1 text-sm text-white/70">
                 {mejorHora && (
                   <li>
-                    Tu mejor hora es alrededor de las{" "}
-                    <strong>{etiquetaHora(mejorHora.clave)}</strong>, sobre{" "}
-                    {mejorHora.posts} publicaciones.
+                    {t.rich("conclusion.hora", {
+                      hora: etiquetaHora(mejorHora.clave),
+                      n: mejorHora.posts,
+                      b: (c) => <strong>{c}</strong>,
+                    })}
                   </li>
                 )}
                 {mejorDia && (
                   <li>
-                    El mejor día es el <strong>{DIAS[mejorDia.clave]}</strong>,
-                    sobre {mejorDia.posts} publicaciones.
+                    {t.rich("conclusion.dia", {
+                      dia: nombreDia(mejorDia.clave),
+                      n: mejorDia.posts,
+                      b: (c) => <strong>{c}</strong>,
+                    })}
                   </li>
                 )}
                 {tipos.length > 0 && (
                   <li>
-                    El formato que mejor rinde es{" "}
-                    <strong>
-                      {ETIQUETA_TIPO[tipos[0].tipo] ?? tipos[0].tipo}
-                    </strong>
-                    , sobre {tipos[0].posts} publicaciones.
+                    {t.rich("conclusion.formato", {
+                      tipo: nombreTipo(tipos[0].tipo),
+                      n: tipos[0].posts,
+                      b: (c) => <strong>{c}</strong>,
+                    })}
                   </li>
                 )}
               </ul>
               <p className="mt-2 text-[11px] text-white/35">
-                Solo se consideran tramos con muestra suficiente. Las horas con
-                pocas publicaciones quedan afuera aunque tengan mejor promedio.
+                {t("conclusion.nota")}
               </p>
             </div>
           )}
 
           <BarrasRendimiento
-            titulo="Por hora del día"
-            descripcion={`Score promedio de cada hora, en tu zona horaria (${zonaHoraria}).`}
+            titulo={t("porHora.titulo")}
+            descripcion={t("porHora.descripcion", { zona: zonaHoraria })}
             tramos={horas}
             etiqueta={(h) => String(h).padStart(2, "0")}
           />
 
           <BarrasRendimiento
-            titulo="Por día de la semana"
-            descripcion="Score promedio según el día en que salió la publicación."
+            titulo={t("porDia.titulo")}
+            descripcion={t("porDia.descripcion")}
             tramos={diasSemana}
-            etiqueta={(d) => DIAS_CORTOS[d] ?? String(d)}
+            etiqueta={diaCorto}
           />
 
           {tipos.length > 0 && (
             <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-              <h2 className="text-sm font-semibold">Por tipo de contenido</h2>
+              <h2 className="text-sm font-semibold">{t("porTipo.titulo")}</h2>
               <p className="mt-0.5 text-xs text-white/35">
-                Ordenado por score promedio.
+                {t("porTipo.descripcion")}
               </p>
               <table className="mt-3 w-full text-sm">
                 <thead>
                   <tr className="text-left text-[11px] uppercase tracking-wider text-white/30">
-                    <th className="pb-1 font-medium">Tipo</th>
-                    <th className="pb-1 text-right font-medium">Posts</th>
-                    <th className="pb-1 text-right font-medium">Score prom.</th>
+                    <th className="pb-1 font-medium">{t("columnas.tipo")}</th>
+                    <th className="pb-1 text-right font-medium">{t("columnas.posts")}</th>
+                    <th className="pb-1 text-right font-medium">{t("columnas.score")}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {tipos.map((t: { tipo: string; posts: number; scorePromedio: number }) => (
-                    <tr key={t.tipo} className="border-t border-white/5">
+                  {tipos.map((tp: { tipo: string; posts: number; scorePromedio: number }) => (
+                    <tr key={tp.tipo} className="border-t border-white/5">
                       <td className="py-1.5">
-                        {ETIQUETA_TIPO[t.tipo] ?? t.tipo}
+                        {nombreTipo(tp.tipo)}
                       </td>
                       <td className="py-1.5 text-right text-white/50">
-                        {t.posts.toLocaleString("es")}
+                        {tp.posts.toLocaleString(locale)}
                       </td>
                       <td className="py-1.5 text-right">
-                        {Math.round(t.scorePromedio).toLocaleString("es")}
+                        {Math.round(tp.scorePromedio).toLocaleString(locale)}
                       </td>
                     </tr>
                   ))}
@@ -237,17 +243,17 @@ export default function AnalisisPage() {
               es la salida para quien no puede leer el gráfico. */}
           <details className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
             <summary className="cursor-pointer text-sm font-semibold">
-              Ver los números en tabla
+              {t("verTabla")}
             </summary>
             <TablaTramos
-              titulo="Por hora"
+              titulo={t("tablaHora")}
               tramos={horas}
               etiqueta={etiquetaHora}
             />
             <TablaTramos
-              titulo="Por día"
+              titulo={t("tablaDia")}
               tramos={diasSemana}
-              etiqueta={(d) => DIAS[d] ?? String(d)}
+              etiqueta={nombreDia}
             />
           </details>
         </div>
@@ -265,6 +271,8 @@ function TablaTramos({
   tramos: Tramo[];
   etiqueta: (clave: number) => string;
 }) {
+  const t = useTranslations("analisis");
+  const locale = useLocale();
   if (!tramos.length) return null;
   const umbral = umbralDeMuestra(tramos);
   return (
@@ -275,23 +283,23 @@ function TablaTramos({
       <table className="mt-1.5 w-full text-sm">
         <thead>
           <tr className="text-left text-[11px] uppercase tracking-wider text-white/25">
-            <th className="pb-1 font-medium">Tramo</th>
-            <th className="pb-1 text-right font-medium">Posts</th>
-            <th className="pb-1 text-right font-medium">Score prom.</th>
+            <th className="pb-1 font-medium">{t("columnas.tramo")}</th>
+            <th className="pb-1 text-right font-medium">{t("columnas.posts")}</th>
+            <th className="pb-1 text-right font-medium">{t("columnas.score")}</th>
           </tr>
         </thead>
         <tbody>
-          {tramos.map((t) => (
-            <tr key={t.clave} className="border-t border-white/5">
-              <td className="py-1">{etiqueta(t.clave)}</td>
+          {tramos.map((tr) => (
+            <tr key={tr.clave} className="border-t border-white/5">
+              <td className="py-1">{etiqueta(tr.clave)}</td>
               <td className="py-1 text-right text-white/50">
-                {t.posts}
-                {t.posts < umbral && (
+                {tr.posts}
+                {tr.posts < umbral && (
                   <span className="ml-1 text-amber-400/70">·</span>
                 )}
               </td>
               <td className="py-1 text-right">
-                {Math.round(t.scorePromedio).toLocaleString("es")}
+                {Math.round(tr.scorePromedio).toLocaleString(locale)}
               </td>
             </tr>
           ))}
@@ -310,20 +318,24 @@ function Cifra({
   valor: number;
   cambio?: number | null;
 }) {
+  const t = useTranslations("analisis");
+  const locale = useLocale();
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
       <p className="text-[11px] uppercase tracking-wider text-white/30">
         {titulo}
       </p>
-      <p className="mt-1 text-2xl font-bold">{valor.toLocaleString("es")}</p>
+      <p className="mt-1 text-2xl font-bold">{valor.toLocaleString(locale)}</p>
       {cambio != null && (
         <p
           className={`mt-0.5 text-xs ${
             cambio >= 0 ? "text-ng-teal" : "text-red-400"
           }`}
         >
-          {cambio >= 0 ? "▲" : "▼"} {Math.abs(cambio).toFixed(0)}% vs período
-          anterior
+          {t("cifras.vsAnterior", {
+            flecha: cambio >= 0 ? "▲" : "▼",
+            porcentaje: Math.abs(cambio).toFixed(0),
+          })}
         </p>
       )}
     </div>

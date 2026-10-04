@@ -1,0 +1,141 @@
+{
+  "titulo": "Editor",
+  "subtitulo": "From a link to a finished video: choose the useful area, write the headlines and generate. It goes to review; it isn't published automatically.",
+  "pasos": {
+    "1": { "titulo": "The video", "ayuda": "Paste the link and choose which part shows" },
+    "2": { "titulo": "What you're making", "ayuda": "The format decides how everything looks" },
+    "3": { "titulo": "Your part", "ayuda": "Record what you're going to say" },
+    "4": { "titulo": "Captions", "ayuda": "Optional, transcribed automatically" },
+    "5": { "titulo": "Headlines", "ayuda": "Optional, the text at the top and bottom" }
+  },
+  "errores": {
+    "linkTiktok": "Paste a TikTok link",
+    "sinRuta": "The server didn't return where the video was saved. Load the link again.",
+    "cargar": "Couldn't load the video",
+    "sinReferencia": "The reference to the video was lost. Load the link again.",
+    "iniciar": "Couldn't start the edit",
+    "fallo": "The edit failed",
+    "versionVieja": "That edit was saved with an older version of the editor and can no longer be opened.",
+    "abrir": "Couldn't open that edit",
+    "estilo": "Couldn't save the style"
+  },
+  "sinNombre": "Untitled edit",
+  "sinPagina": {
+    "titulo": "No active page",
+    "detalle": "The edit is saved as a case file for a page. Choose one in the switcher on the left."
+  },
+  "soloLectura": {
+    "titulo": "Read-only on this page",
+    "detalle": "Your role here doesn't allow creating content. Ask whoever manages it to make you an editor."
+  },
+  "render": {
+    "siguiente": "It's up next",
+    "esperando": "Waiting its turn · {n} ahead",
+    "subiendo": "Uploading the video",
+    "componiendo": "Composing the video · {progreso}%",
+    "podesCerrar": "You can close the tab: the video keeps rendering on the server and picks up again when you come back. When it's done it goes to review.",
+    "generado": "Video generated.",
+    "enRevision": "It's waiting in the review queue →"
+  },
+  "placeholderLink": "https://www.tiktok.com/@user/video/...",
+  "descargando": "Downloading…",
+  "cargarVideo": "Load video",
+  "pasoDe": "Step {paso} of {total}",
+  "verTodo": "Show the full editor",
+  "volverGuiado": "← Back to guided mode",
+  "bloques": {
+    "area": "Choose the useful area",
+    "titulares": "Headlines",
+    "aparecer": "Appear in the video",
+    "lienzo": "Canvas settings"
+  },
+  "audioVideo": "Video audio",
+  "volumenes": { "normal": "Normal", "bajo": "Low", "mudo": "Muted" },
+  "proporcion": "Aspect ratio",
+  "proporcionLibre": "Free",
+  "tramo": {
+    "titulo": "Video segment",
+    "recortado": "· of {total}s, trimmed to {limite}s",
+    "desde": "From",
+    "hasta": "To",
+    "demasiado": "{seg}s is too long for a Reel: Meta allows up to {limite}s. You'll be able to generate it, but it'll be rejected when you publish it as a Reel. And render time grows with the segment.",
+    "recortar": "Trim to {limite}s"
+  },
+  "pegaLink": "Paste a TikTok link above to get started",
+  "queArmar": "What do you want to make",
+  "formatosListos": {
+    "reaccion": {
+      "nombre": "Reaction",
+      "detalle": "The video on top and you below, both the whole time. The format for commenting on a play as it happens."
+    },
+    "comentario": {
+      "nombre": "Commentary",
+      "detalle": "The video fills the screen and you appear in a circle. To add something without covering it."
+    },
+    "simple": {
+      "nombre": "Just the video",
+      "detalle": "No camera. Just reframe and publish."
+    }
+  },
+  "subtitulos": {
+    "titulo": "Automatic captions",
+    "detalle": "Transcribes what's said —the video and you— and writes it word by word. Adds about half a minute to the render."
+  },
+  "titularCitado": "“{texto}”",
+  "sinTitulares": "No headlines",
+  "titularArriba": "Top headline",
+  "titularAbajo": "Bottom headline",
+  "momentosResumen": "{n, plural, one {# moment} other {# moments}}",
+  "noApareces": "You don't appear",
+  "atras": "Back",
+  "saltear": "Skip",
+  "siguiente": "Next",
+  "listoGenerar": "Done — generate the video with the button on the right",
+  "lienzo": {
+    "fondoLiso": "solid background",
+    "desenfoqueResumen": "blur",
+    "formato": "Format",
+    "tamano": "Size",
+    "posicion": "Position",
+    "centrar": "Center",
+    "fondo": "Background",
+    "color": "Color",
+    "desenfoque": "Blur"
+  },
+  "comoQueda": "How it will look",
+  "reproductor": {
+    "pausar": "⏸ Pause",
+    "reproducir": "▶ Play",
+    "alInicio": "Back to the start of the segment",
+    "silenciar": "Mute",
+    "activarSonido": "Turn sound on"
+  },
+  "enLaFila": "In the queue",
+  "generarVideo": "Generate video",
+  "generar": "Generate",
+  "estilo": {
+    "guardado": "Done: upcoming videos will start like this",
+    "guardar": "Save this as the page's style"
+  },
+  "licencia": {
+    "titulo": "License",
+    "elegidaCambiar": "License chosen · change",
+    "sinElegir": "No license · choose",
+    "conElegida": "With chosen license",
+    "sinVerificar": "Unverified license",
+    "opcionSinVerificar": "Unverified (I didn't ask permission)",
+    "conLicencia": "The content keeps the license you chose.",
+    "explicacionSinVerificar": "A license marked <marca>unverified</marca> is registered with the source link saved. You can sort it out later from <link>Creators</link>."
+  },
+  "finales": "{seg}s final",
+  "cerrar": "Close",
+  "listo": "Done",
+  "borrador": {
+    "error": "Couldn't save · will retry on the next change",
+    "guardando": "Saving…",
+    "guardado": "Saved"
+  },
+  "preview": {
+    "sinVideo": "Load a video to see the result"
+  }
+}

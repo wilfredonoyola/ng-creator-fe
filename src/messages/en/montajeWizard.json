@@ -1,0 +1,38 @@
+{
+  "errores": {
+    "preview": "Couldn't load the preview",
+    "faltaClip": "Select a clip and a license",
+    "sinPagina": "No active page. An admin has to enable one in Manage pages.",
+    "sinFuente": "No video source",
+    "procesar": "Processing failed"
+  },
+  "modoArchivo": "📁 File",
+  "arrastra": "Drag or select a video",
+  "formatos": "MP4, MOV, WebM • Max 500MB",
+  "placeholderTiktok": "https://www.tiktok.com/@user/video/...",
+  "obteniendoPreview": "Loading preview...",
+  "altPreview": "Preview",
+  "continuar": "Continue →",
+  "licencia": "License *",
+  "seleccionarLicencia": "Select a license",
+  "sinLicencias": "No active licenses.",
+  "crearUna": "Create one →",
+  "pagina": "Page",
+  "espacioActivo": "Active workspace · change it in the sidebar",
+  "sinPaginaTitulo": "No active page",
+  "sinPaginaDetalle": "An admin has to enable a page in Manage pages before you can create videos.",
+  "sinPaginaTitle": "No active page: enable one in Manage pages",
+  "tipo": "Type",
+  "tipos": {
+    "EXPEDIENTE_COMPLETO": "Case file",
+    "VOZ_SIN_CAMARA": "Voice",
+    "XED": "XED"
+  },
+  "atras": "← Back",
+  "crear": "Create 🚀",
+  "procesando": "Processing...",
+  "subiendoArchivos": "Uploading files",
+  "creado": "Video created!",
+  "enCola": "It will show up in the review queue",
+  "crearOtro": "Create another"
+}

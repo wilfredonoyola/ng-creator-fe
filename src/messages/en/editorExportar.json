@@ -1,0 +1,34 @@
+{
+  "guardado": {
+    "error": "Couldn't save",
+    "errorAyuda": "Check the notice below",
+    "guardando": "Saving…",
+    "guardandoAyuda": "It saves automatically",
+    "sinGuardar": "Unsaved",
+    "sinGuardarAyuda": "It'll save automatically in a moment",
+    "guardado": "Saved",
+    "guardadoAyuda": "All changes are saved"
+  },
+  "errorCdn": "The CDN responded {status}",
+  "errorDescargar": "Couldn't download",
+  "mp4": {
+    "enEspera": "Queued",
+    "procesandoEtiqueta": "Processing · {progreso}%",
+    "enEsperaEtiqueta": "Queued for processing",
+    "procesandoTexto": "Processing the video · {progreso}%",
+    "enEsperaTexto": "Queued for processing…",
+    "procesandoDetalle": "It takes a minute or two. You can move to another screen: it keeps processing.",
+    "fallo": "Failed",
+    "noSePudo": "Couldn't process",
+    "errorDesconocido": "Unknown error",
+    "conCambios": "Has changes",
+    "conCambiosSinProcesar": "Unprocessed changes",
+    "conCambiosDetalle": "You made changes after processing: the MP4 doesn't have them.",
+    "listo": "Ready",
+    "mp4Listo": "MP4 ready",
+    "listoDetalle": "It has all the changes.",
+    "sinProcesar": "Not processed",
+    "videoSinProcesar": "Video not processed",
+    "sinProcesarDetalle": "Process it to download or schedule it."
+  }
+}

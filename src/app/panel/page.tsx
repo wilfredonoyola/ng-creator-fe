@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useQuery } from "@apollo/client";
 import { ArrowRight, Clapperboard, Loader2, Mic, Play, Sparkles, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { CLIPS_DE_EPISODIO, COLA_DE_REVISION, EPISODIOS } from "@/graphql/operations";
 import { ReproductorEpisodio, type ControlReproductor } from "@/components/ReproductorEpisodio";
 import { MOTIVOS, reloj } from "@/lib/momentos";
@@ -26,30 +27,39 @@ interface EpisodioResumen {
   createdAt: string;
 }
 
+type Traductor = ReturnType<typeof useTranslations<"panel">>;
+
 /**
  * En qué punto del camino está un episodio, dicho como lo diría una persona.
  * `listo` es que ya tiene clips para editar; `falla` que necesita que alguien
  * lo mire.
  */
-function etapa(ep: EpisodioResumen): { texto: string; listo: boolean; falla: boolean } {
+function etapa(ep: EpisodioResumen, t: Traductor): { texto: string; listo: boolean; falla: boolean } {
   if (ep.estado === "FALLIDO" || ep.estadoTranscripcion === "FALLIDA" || ep.estadoMomentos === "FALLIDO")
-    return { texto: "Necesita revisión", listo: false, falla: true };
-  if (ep.estado === "SUBIENDO") return { texto: "A medio subir", listo: false, falla: false };
-  if (ep.estado === "PROCESANDO") return { texto: "Procesando el video", listo: false, falla: false };
+    return { texto: t("etapas.revision"), listo: false, falla: true };
+  if (ep.estado === "SUBIENDO") return { texto: t("etapas.subiendo"), listo: false, falla: false };
+  if (ep.estado === "PROCESANDO") return { texto: t("etapas.procesando"), listo: false, falla: false };
   if (ep.estadoTranscripcion === "TRANSCRIBIENDO")
-    return { texto: `Transcribiendo · ${ep.progresoTranscripcion ?? 0}%`, listo: false, falla: false };
-  if (ep.estadoTranscripcion !== "LISTA") return { texto: "En cola para transcribir", listo: false, falla: false };
+    return {
+      texto: t("etapas.transcribiendo", { progreso: ep.progresoTranscripcion ?? 0 }),
+      listo: false,
+      falla: false,
+    };
+  if (ep.estadoTranscripcion !== "LISTA") return { texto: t("etapas.enCola"), listo: false, falla: false };
   if (ep.estadoMomentos === "LISTO")
-    return { texto: `${ep.clipsSugeridos ?? 0} clips para editar`, listo: true, falla: false };
-  return { texto: "La IA busca los momentos", listo: false, falla: false };
+    return { texto: t("etapas.clips", { n: ep.clipsSugeridos ?? 0 }), listo: true, falla: false };
+  return { texto: t("etapas.buscando"), listo: false, falla: false };
 }
 
-function duracion(seg?: number | null) {
+function duracion(t: Traductor, seg?: number | null) {
   if (!seg) return null;
   const h = Math.floor(seg / 3600);
   const m = Math.round((seg % 3600) / 60);
-  return h ? `${h} h ${m} min` : `${m} min`;
+  return h ? t("duracionHoras", { h, m }) : t("duracionMinutos", { m });
 }
+
+/** Los motivos con nombre propio (`motivos.<clave>` en panel.json). */
+type Motivo = "GANCHO_FUERTE" | "OPINION_POLEMICA" | "HISTORIA_COMPLETA" | "FRASE_CITABLE" | "HUMOR" | "EMOCION" | "DATO_SORPRENDENTE";
 
 /** Un clip del episodio reciente, con lo que el Inicio muestra de él. */
 interface ClipResumen {
@@ -71,6 +81,7 @@ interface ClipResumen {
  * bloque lleva a una acción.
  */
 export default function InicioPage() {
+  const t = useTranslations("panel");
   const { activa } = useMarcaActiva();
   const { usuario, esAdmin } = useSesion();
   const marcaId = activa?._id ?? "";
@@ -86,7 +97,7 @@ export default function InicioPage() {
   });
 
   const episodios: EpisodioResumen[] = data?.episodios ?? [];
-  const conEtapa = episodios.map((ep) => ({ ep, e: etapa(ep) }));
+  const conEtapa = episodios.map((ep) => ({ ep, e: etapa(ep, t) }));
   const enCamino = conEtapa.filter(({ e }) => !e.listo);
   const listos = conEtapa.filter(({ e }) => e.listo);
   const reciente = listos[0]?.ep ?? null;
@@ -120,43 +131,43 @@ export default function InicioPage() {
     <DashboardLayout>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{nombre ? `Hola, ${nombre}` : "Inicio"}</h1>
+          <h1 className="text-2xl font-bold">{nombre ? t("hola", { nombre }) : t("inicio")}</h1>
           <p className="mt-1 text-ng-secundario">
-            {activa ? `Lo que te toca hoy en ${activa.nombre}.` : "Elegí una marca para empezar."}
+            {activa ? t("hoyEn", { marca: activa.nombre }) : t("elegiMarca")}
           </p>
         </div>
         <Link
           href="/episodios"
           className="inline-flex items-center gap-2 rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta brillo-marca hover:brightness-110"
         >
-          <Upload size={16} aria-hidden /> Subir episodio
+          <Upload size={16} aria-hidden /> {t("subirEpisodio")}
         </Link>
       </div>
 
       {episodios.length > 0 && (
         <div className="mb-6 flex flex-wrap gap-2 text-xs">
-          <Cifra valor={delMes} etiqueta="episodios este mes" />
-          <Cifra valor={enCamino.length} etiqueta="en proceso" />
-          <Cifra valor={clipsTotales} etiqueta="clips para editar" />
+          <Cifra valor={delMes} etiqueta={t("cifras.delMes")} />
+          <Cifra valor={enCamino.length} etiqueta={t("cifras.enProceso")} />
+          <Cifra valor={clipsTotales} etiqueta={t("cifras.clips")} />
         </div>
       )}
 
       {loading && !episodios.length ? (
         <div className="flex items-center gap-2 text-sm text-ng-secundario">
-          <Loader2 size={16} className="animate-spin" aria-hidden /> Cargando episodios…
+          <Loader2 size={16} className="animate-spin" aria-hidden /> {t("cargando")}
         </div>
       ) : !episodios.length ? (
         <div className="rounded-ng-xl border border-dashed border-white/15 bg-ng-tarjeta/60 p-10 text-center">
           <Mic size={36} className="mx-auto text-ng-celeste" aria-hidden />
-          <p className="mt-4 text-lg font-semibold">Subí tu primer episodio</p>
+          <p className="mt-4 text-lg font-semibold">{t("primero.titulo")}</p>
           <p className="mx-auto mt-1 max-w-md text-sm text-ng-secundario">
-            El video completo del podcast. Se transcribe solo y la IA te marca los mejores momentos para clips.
+            {t("primero.detalle")}
           </p>
           <Link
             href="/episodios"
             className="mt-6 inline-block rounded-ng-md bg-marca px-6 py-3 font-semibold text-ng-tinta hover:brightness-110"
           >
-            Subir episodio
+            {t("subirEpisodio")}
           </Link>
         </div>
       ) : (
@@ -167,8 +178,8 @@ export default function InicioPage() {
                 {/* ---- Episodio reciente ---- */}
                 <section ref={cajaReproductor} className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-4">
                   <Encabezado
-                    titulo="Episodio reciente"
-                    accion={{ href: `/episodios/${reciente._id}`, texto: "Abrir episodio" }}
+                    titulo={t("reciente.titulo")}
+                    accion={{ href: `/episodios/${reciente._id}`, texto: t("reciente.abrir") }}
                   />
                   {reciente.urlReproduccion ? (
                     <div className="overflow-hidden rounded-ng-lg bg-black">
@@ -179,8 +190,8 @@ export default function InicioPage() {
                   )}
                   <div className="mt-3 flex items-center justify-between gap-3">
                     <p className="truncate font-semibold">{reciente.titulo || reciente.nombreArchivo}</p>
-                    {duracion(reciente.duracionSeg) && (
-                      <span className="shrink-0 text-xs text-ng-tenue">{duracion(reciente.duracionSeg)}</span>
+                    {duracion(t, reciente.duracionSeg) && (
+                      <span className="shrink-0 text-xs text-ng-tenue">{duracion(t, reciente.duracionSeg)}</span>
                     )}
                   </div>
                 </section>
@@ -188,9 +199,9 @@ export default function InicioPage() {
                 {/* ---- Clips generados ---- */}
                 <section className="flex min-w-0 flex-col rounded-ng-xl border border-white/10 bg-ng-tarjeta p-4">
                   <Encabezado
-                    titulo="Clips generados"
+                    titulo={t("generados.titulo")}
                     cuenta={procesados.length}
-                    accion={{ href: `/episodios/${reciente._id}`, texto: "Ver todos" }}
+                    accion={{ href: `/episodios/${reciente._id}`, texto: t("generados.verTodos") }}
                   />
                   {procesados.length ? (
                     <div className="-mx-1 flex flex-1 gap-3 overflow-x-auto px-1 pb-1">
@@ -218,8 +229,8 @@ export default function InicioPage() {
                   ) : (
                     <div className="flex flex-1 flex-col items-center justify-center rounded-ng-lg border border-dashed border-white/10 p-6 text-center">
                       <Clapperboard size={26} className="text-ng-tenue" aria-hidden />
-                      <p className="mt-2 text-sm text-ng-secundario">Todavía no procesaste clips de este episodio.</p>
-                      <p className="mt-0.5 text-xs text-ng-tenue">Elegí un momento de abajo, ajustalo y procesalo: aparece acá.</p>
+                      <p className="mt-2 text-sm text-ng-secundario">{t("generados.vacio")}</p>
+                      <p className="mt-0.5 text-xs text-ng-tenue">{t("generados.ayuda")}</p>
                     </div>
                   )}
                 </section>
@@ -229,11 +240,11 @@ export default function InicioPage() {
               {destacados.length > 0 && (
                 <section className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-4">
                   <Encabezado
-                    titulo="Momentos destacados (IA)"
-                    detalle="Tocá uno para verlo arriba"
+                    titulo={t("destacados.titulo")}
+                    detalle={t("destacados.detalle")}
                     accion={{
                       href: `/episodios/${reciente._id}`,
-                      texto: `Ver los ${clips.length} momentos`,
+                      texto: t("destacados.verTodos", { n: clips.length }),
                       destacada: true,
                     }}
                   />
@@ -243,7 +254,7 @@ export default function InicioPage() {
                         <button
                           onClick={() => reproducir(c)}
                           className="relative block aspect-video w-full overflow-hidden rounded-ng-lg border border-white/10 text-left transition hover:border-ng-azul/50"
-                          title="Reproducir este momento arriba"
+                          title={t("destacados.reproducir")}
                         >
                           <Miniatura ep={reciente} className="h-full w-full rounded-none" />
                           <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
@@ -253,14 +264,14 @@ export default function InicioPage() {
                             {c.puntuacion}
                           </span>
                         </button>
-                        <p className="mt-2 text-[11px] uppercase tracking-wide text-ng-lila">{MOTIVOS[c.motivo] ?? c.motivo}</p>
+                        <p className="mt-2 text-[11px] uppercase tracking-wide text-ng-lila">{c.motivo in MOTIVOS ? t(`motivos.${c.motivo as Motivo}`) : c.motivo}</p>
                         <p className="mt-0.5 line-clamp-2 text-sm font-semibold leading-snug">{c.titulo}</p>
                         <div className="mt-1 flex items-center justify-between text-xs text-ng-tenue">
                           <span className="tabular-nums">
                             {reloj(c.desdeSeg)} – {reloj(c.hastaSeg)}
                           </span>
                           <Link href={`/episodios/${reciente._id}/clips/${c._id}`} className="text-ng-celeste hover:underline">
-                            Editar
+                            {t("destacados.editar")}
                           </Link>
                         </div>
                       </div>
@@ -273,7 +284,7 @@ export default function InicioPage() {
 
           {otrosListos.length > 0 && (
             <section>
-              <Encabezado titulo="Otros episodios listos para editar" detalle="La IA ya encontró los momentos" />
+              <Encabezado titulo={t("otros.titulo")} detalle={t("otros.detalle")} />
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {otrosListos.map(({ ep, e }) => (
                   <TarjetaEpisodio key={ep._id} ep={ep} etapa={e} />
@@ -284,7 +295,7 @@ export default function InicioPage() {
 
           {enCamino.length > 0 && (
             <section>
-              <Encabezado titulo="En proceso" detalle="Avanzan solos; se actualiza cada 20 segundos" />
+              <Encabezado titulo={t("enCamino.titulo")} detalle={t("enCamino.detalle")} />
               <ul className="divide-y divide-white/5 overflow-hidden rounded-ng-xl border border-white/10 bg-ng-tarjeta">
                 {enCamino.map(({ ep, e }) => (
                   <li key={ep._id}>
@@ -303,7 +314,7 @@ export default function InicioPage() {
           )}
 
           <Link href="/episodios" className="inline-flex items-center gap-1.5 text-sm text-ng-celeste hover:underline">
-            Ver todos los episodios <ArrowRight size={14} aria-hidden />
+            {t("verEpisodios")} <ArrowRight size={14} aria-hidden />
           </Link>
         </div>
       )}
@@ -315,9 +326,9 @@ export default function InicioPage() {
         >
           <Clapperboard size={20} className="text-ng-lila" aria-hidden />
           <div className="flex-1">
-            <p className="text-sm font-medium">Videos de reacción</p>
+            <p className="text-sm font-medium">{t("reaccion.titulo")}</p>
             <p className="text-xs text-ng-secundario">
-              {colaReaccion ? `${colaReaccion} esperando revisión` : "Nada esperando revisión"}
+              {colaReaccion ? t("reaccion.esperando", { n: colaReaccion }) : t("reaccion.nada")}
             </p>
           </div>
           <ArrowRight size={16} className="text-ng-tenue" aria-hidden />
@@ -384,6 +395,7 @@ function Miniatura({ ep, className }: { ep: EpisodioResumen; className: string }
 }
 
 function TarjetaEpisodio({ ep, etapa: e }: { ep: EpisodioResumen; etapa: ReturnType<typeof etapa> }) {
+  const t = useTranslations("panel");
   return (
     <Link
       href={`/episodios/${ep._id}`}
@@ -396,7 +408,7 @@ function TarjetaEpisodio({ ep, etapa: e }: { ep: EpisodioResumen; etapa: ReturnT
           <span className="flex items-center gap-1 text-ng-teal">
             <Sparkles size={12} aria-hidden /> {e.texto}
           </span>
-          {duracion(ep.duracionSeg) && <span className="text-ng-tenue">{duracion(ep.duracionSeg)}</span>}
+          {duracion(t, ep.duracionSeg) && <span className="text-ng-tenue">{duracion(t, ep.duracionSeg)}</span>}
         </div>
       </div>
     </Link>

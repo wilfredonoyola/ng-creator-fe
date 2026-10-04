@@ -1,0 +1,17 @@
+{
+  "seleccionaClip": "Select a video clip",
+  "subiendoClip": "Uploading clip...",
+  "subiendoNota": "Uploading voice note...",
+  "listo": "Done!",
+  "errorSubir": "Upload failed",
+  "abrir": "+ Upload clip",
+  "titulo": "Upload new clip",
+  "clipVideo": "Video clip *",
+  "elegirVideo": "Click to select a video",
+  "notaVoz": "Voice note (optional)",
+  "agregarNota": "+ Add voice note",
+  "cancelar": "Cancel",
+  "subiendo": "Uploading...",
+  "subir": "Upload",
+  "quitar": "Remove"
+}

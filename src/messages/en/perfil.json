@@ -1,0 +1,59 @@
+{
+  "titulo": "Profile",
+  "subtitulo": "Your NG Creator account.",
+  "marca": "Brand",
+  "datos": {
+    "titulo": "Your details",
+    "nombre": "Name",
+    "sinNombre": "No name",
+    "correo": "Email",
+    "rolSistema": "System role",
+    "administrador": "Administrator",
+    "tusMarcas": "Your brands"
+  },
+  "cerrarSesion": "Sign out",
+  "preferencias": "Preferences",
+  "peligro": {
+    "titulo": "Danger zone",
+    "detalle": "Deleting your account removes your user and your access to every brand. This can't be undone.",
+    "boton": "Delete my account"
+  },
+  "eliminar": {
+    "titulo": "Delete my account",
+    "revisando": "Checking your brands…",
+    "errorRevisar": "We couldn't check your brands: {error}",
+    "vasAEliminar": "You're about to delete the account <strong>{email}</strong>. This can't be undone:",
+    "consecuencias": {
+      "acceso": "your user and your access to every brand are deleted;",
+      "archivan": "brands where you're the only member are archived: their networks are disconnected and their scheduled posts are canceled;",
+      "historial": "in the brands' history, your name becomes “Deleted account”."
+    },
+    "recuperar": "The content of archived brands is kept and can be recovered for 30 days by asking <link>{contacto}</link>.",
+    "seArchivan": "Will be archived",
+    "bloquean": "You're the only owner of {n, plural, one {this brand} other {these brands}}, and there are other people in {n, plural, one {it} other {them}}. Before deleting your account, make someone else an owner in Team.",
+    "personasMas": "{n, plural, one {# more person} other {# more people}}",
+    "irAEquipo": "Go to Team",
+    "paraConfirmar": "To confirm, type <strong>{palabra}</strong>",
+    "error": "Couldn't delete the account",
+    "cancelar": "Cancel",
+    "eliminando": "Deleting…",
+    "boton": "Delete my account",
+    "cerrar": "Close"
+  },
+  "avisos": {
+    "titulo": "Notifications",
+    "detalle": "Notifications go to the brand's whole team, except whoever took the action. Choose which ones you want and where.",
+    "cargando": "Loading…",
+    "errorTraer": "We couldn't load your preferences: {error}",
+    "aviso": "Notification",
+    "canales": {
+      "enApp": "In the app",
+      "push": "On your phone",
+      "correo": "By email"
+    },
+    "interruptor": "{aviso}: {canal}",
+    "telefono": "Phone notifications arrive if you have the app installed and allowed it to notify you.",
+    "errorGuardar": "Couldn't save",
+    "errorGuardarDetalle": "Couldn't save: {error}"
+  }
+}

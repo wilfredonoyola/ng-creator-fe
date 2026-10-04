@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { uploadCamara } from "@/lib/upload";
+import { useTranslations } from "next-intl";
+import { ErrorDeSubida, uploadCamara } from "@/lib/upload";
 import { GrabarConTelefono } from "./GrabarConTelefono";
 import {
   LIMITE_REEL_SEG,
@@ -63,6 +64,8 @@ export function MomentosCamara({
   onCamara: (c: Camara | null) => void;
   onMomentos: (m: Momento[]) => void;
 }) {
+  const t = useTranslations("montajeMomentos");
+  const tSubida = useTranslations("erroresSubida");
   const [subiendo, setSubiendo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [duracionGrabacion, setDuracionGrabacion] = useState(0);
@@ -88,7 +91,7 @@ export function MomentosCamara({
       cambiar(id, { origenStoragePath: r.storagePath });
       setAbriendo(null);
     } catch (err: any) {
-      setError(err?.message ?? "No se pudo subir el video");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err?.message ?? t("errorSubir"));
     } finally {
       setSubiendoEn(null);
       e.target.value = "";
@@ -274,7 +277,7 @@ export function MomentosCamara({
       };
       v.src = url;
     } catch (err: any) {
-      setError(err?.message ?? "No se pudo subir el video");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err?.message ?? t("errorSubir"));
     } finally {
       setSubiendo(false);
       e.target.value = "";
@@ -289,7 +292,7 @@ export function MomentosCamara({
   return (
     <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
       <h3 className="text-xs font-medium uppercase tracking-wider text-white/35">
-        Aparecer en el video
+        {t("titulo")}
       </h3>
 
       {/* PRIMERO los momentos, DESPUES la grabacion.
@@ -301,7 +304,7 @@ export function MomentosCamara({
       <div className="mt-2 space-y-3">
         <div>
           <p className="mb-1.5 text-[11px] text-white/35">
-            Empezar desde una plantilla
+            {t("desdePlantilla")}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {PLANTILLAS.map((p) => {
@@ -312,8 +315,8 @@ export function MomentosCamara({
                   disabled={!entra}
                   title={
                     entra
-                      ? p.detalle
-                      : `Necesita un video de al menos ${p.minimoSeg}s`
+                      ? t(`plantillas.${p.id}.detalle`)
+                      : t("necesitaMinimo", { seg: p.minimoSeg })
                   }
                   onClick={() => {
                     asegurarCamara();
@@ -326,7 +329,7 @@ export function MomentosCamara({
                   }}
                   className="rounded-lg border border-white/10 px-2 py-1 text-[11px] text-white/55 transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-30"
                 >
-                  {p.nombre}
+                  {t(`plantillas.${p.id}.nombre`)}
                 </button>
               );
             })}
@@ -335,28 +338,26 @@ export function MomentosCamara({
 
         <div>
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <span className="text-[11px] text-white/35">Momentos</span>
+            <span className="text-[11px] text-white/35">{t("momentos")}</span>
             <span className="flex gap-1.5">
               <button
                 onClick={() => agregar("APARICION")}
                 className="rounded-lg border border-white/15 px-2 py-1 text-[11px] text-white/70 transition hover:bg-white/5"
               >
-                + Aparición
+                {t("agregarAparicion")}
               </button>
               <button
                 onClick={() => agregar("PAUSA")}
                 className="rounded-lg border border-white/15 px-2 py-1 text-[11px] text-white/70 transition hover:bg-white/5"
               >
-                + Pausa
+                {t("agregarPausa")}
               </button>
             </span>
           </div>
 
           {momentos.length === 0 ? (
             <p className="text-[11px] text-white/25">
-              Elegí primero dónde aparecés y cuánto dura cada parte. Después
-              grabás sabiendo qué decir. Una aparición va encima del video; una
-              pausa lo detiene y te deja la pantalla.
+              {t("vacio")}
             </p>
           ) : (
             <ul className="space-y-1.5">
@@ -370,10 +371,10 @@ export function MomentosCamara({
                       m.tipo === "PAUSA" ? "text-indigo-300" : "text-ng-teal"
                     }
                   >
-                    {m.tipo === "PAUSA" ? "⏸ Pausa" : "🔵 Aparición"}
+                    {m.tipo === "PAUSA" ? t("tipoPausa") : t("tipoAparicion")}
                   </span>
                   <label className="flex items-center gap-1 text-white/40">
-                    {m.tipo === "PAUSA" ? "en" : "desde"}
+                    {m.tipo === "PAUSA" ? t("en") : t("desde")}
                     <input
                       type="number"
                       inputMode="decimal"
@@ -389,7 +390,7 @@ export function MomentosCamara({
                     s
                   </label>
                   <label className="flex items-center gap-1 text-white/40">
-                    por
+                    {t("por")}
                     <input
                       type="number"
                       inputMode="decimal"
@@ -408,7 +409,7 @@ export function MomentosCamara({
                       onMomentos(momentos.filter((x) => x.id !== m.id))
                     }
                     className="ml-auto text-white/30 transition hover:text-red-400"
-                    aria-label="Quitar"
+                    aria-label={t("quitarMomento")}
                   >
                     ✕
                   </button>
@@ -418,29 +419,29 @@ export function MomentosCamara({
                       <div className="flex items-center gap-2 text-white/40">
                         <TomaChica
                           url={urlsPorRuta[m.origenStoragePath]}
-                          etiqueta="Toma propia de este momento"
+                          etiqueta={t("tomaPropiaEtiqueta")}
                         />
-                        <span>Toma propia</span>
+                        <span>{t("tomaPropia")}</span>
                         <button
                           onClick={() =>
                             cambiar(m.id, { origenStoragePath: undefined })
                           }
                           className="text-white/30 underline transition hover:text-white/60"
                         >
-                          usar la general
+                          {t("usarGeneral")}
                         </button>
                       </div>
                     ) : abriendo === m.id ? (
                       <div className="space-y-1.5 rounded-lg border border-white/10 p-2">
                         <div className="flex items-center justify-between">
                           <span className="text-white/40">
-                            Grabá {m.duracionSeg}s para este momento
+                            {t("grabaParaMomento", { seg: m.duracionSeg })}
                           </span>
                           <button
                             onClick={() => setAbriendo(null)}
                             className="text-white/30 underline"
                           >
-                            cancelar
+                            {t("cancelar")}
                           </button>
                         </div>
                         {enComputadora && (
@@ -461,10 +462,10 @@ export function MomentosCamara({
                             onChange={(e) => subirPara(m.id, e)}
                           />
                           {subiendoEn === m.id
-                            ? "Subiendo…"
+                            ? t("subiendo")
                             : enComputadora
-                              ? "…o subí un archivo"
-                              : "Elegir un video"}
+                              ? t("oSubiArchivo")
+                              : t("elegirVideo")}
                         </label>
                       </div>
                     ) : (
@@ -472,7 +473,7 @@ export function MomentosCamara({
                         onClick={() => setAbriendo(m.id)}
                         className="text-white/25 underline transition hover:text-white/50"
                       >
-                        + usar una toma propia para este momento
+                        {t("usarTomaPropia")}
                       </button>
                     )}
                   </div>
@@ -493,7 +494,7 @@ export function MomentosCamara({
                   {urlsPorRuta[camara.origenStoragePath] && (
                     <button
                       onClick={alternarVista}
-                      aria-label={viendo ? "Pausar la toma" : "Ver la toma"}
+                      aria-label={viendo ? t("pausarToma") : t("verToma")}
                       className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/15 bg-black"
                     >
                       <video
@@ -513,7 +514,7 @@ export function MomentosCamara({
                     </button>
                   )}
                   <span className="text-white/50">
-                    Toma general
+                    {t("tomaGeneral")}
                     {duracionGrabacion > 0 && ` · ${duracionGrabacion.toFixed(0)}s`}
                   </span>
                   <span className="ml-auto flex gap-3">
@@ -521,7 +522,7 @@ export function MomentosCamara({
                       onClick={() => setReemplazando(true)}
                       className="text-white/40 transition hover:text-white"
                     >
-                      Cambiar
+                      {t("cambiar")}
                     </button>
                     {/* Ya no borra los momentos: son lo primero que se define y
                         sacarles la toma no tiene por que borrarlos. */}
@@ -529,20 +530,16 @@ export function MomentosCamara({
                       onClick={quitar}
                       className="text-white/40 transition hover:text-red-400"
                     >
-                      Quitar
+                      {t("quitar")}
                     </button>
                   </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Dónde aparecés</span>
+                  <span className="text-[11px] text-white/35">{t("dondeAparecesTitulo")}</span>
                   {(
-                    [
-                      ["ABAJO_DERECHA", "Abajo derecha"],
-                      ["ABAJO_CENTRO", "Abajo centro"],
-                      ["BANDA_ABAJO", "Banda abajo"],
-                    ] as [PosicionCamara, string][]
-                  ).map(([valor, etiqueta]) => (
+                    ["ABAJO_DERECHA", "ABAJO_CENTRO", "BANDA_ABAJO"] as PosicionCamara[]
+                  ).map((valor) => (
                     <button
                       key={valor}
                       onClick={() => onCamara({ ...camara, posicion: valor })}
@@ -552,7 +549,7 @@ export function MomentosCamara({
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
-                      {etiqueta}
+                      {t(`posiciones.${valor}`)}
                     </button>
                   ))}
                 </div>
@@ -560,10 +557,10 @@ export function MomentosCamara({
                 {/* Tu voz. Distinto de la atenuacion del audio ajeno: eso baja
                     el video mientras hablas; esto es tu nivel. */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Tu voz</span>
+                  <span className="text-[11px] text-white/35">{t("tuVoz")}</span>
                   {VOLUMENES_VOZ.map((v) => (
                     <button
-                      key={v.etiqueta}
+                      key={v.clave}
                       onClick={() => onCamara({ ...camara, volumen: v.valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         Math.abs((camara.volumen ?? 1) - v.valor) < 0.05
@@ -571,16 +568,16 @@ export function MomentosCamara({
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
-                      {v.etiqueta}
+                      {t(`volumenesVoz.${v.clave}`)}
                     </button>
                   ))}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Piel</span>
+                  <span className="text-[11px] text-white/35">{t("piel")}</span>
                   {SUAVIZADOS.map((s) => (
                     <button
-                      key={s.etiqueta}
+                      key={s.clave}
                       onClick={() => onCamara({ ...camara, suavizado: s.valor })}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         Math.abs((camara.suavizado ?? 0) - s.valor) < 0.05
@@ -588,7 +585,7 @@ export function MomentosCamara({
                           : "border border-white/10 text-white/50 hover:bg-white/5"
                       }`}
                     >
-                      {s.etiqueta}
+                      {t(`suavizados.${s.clave}`)}
                     </button>
                   ))}
                 </div>
@@ -596,8 +593,8 @@ export function MomentosCamara({
                 <label className="block">
                   <span className="flex items-center justify-between text-[11px] text-white/40">
                     {camara.posicion === "BANDA_ABAJO"
-                      ? "Alto de la banda"
-                      : "Tamaño del círculo"}
+                      ? t("altoBanda")
+                      : t("tamanoCirculo")}
                     <span className="text-white/60">
                       {Math.round(camara.tamano * 100)}%
                     </span>
@@ -619,18 +616,18 @@ export function MomentosCamara({
               <div className="space-y-2">
                 <div className="flex items-center justify-between gap-2 text-[11px]">
                   <span className="text-white/50">
-                    Grabá <strong className="text-white/80">
-                      {necesaria.toFixed(1)}s
-                    </strong>{" "}
-                    corridos para {compartida}{" "}
-                    {compartida === 1 ? "momento" : "momentos"}
+                    {t.rich("grabaCorridos", {
+                      seg: necesaria.toFixed(1),
+                      n: compartida,
+                      strong: (c) => <strong className="text-white/80">{c}</strong>,
+                    })}
                   </span>
                   {reemplazando && (
                     <button
                       onClick={() => setReemplazando(false)}
                       className="shrink-0 text-white/40 underline"
                     >
-                      cancelar
+                      {t("cancelar")}
                     </button>
                   )}
                 </div>
@@ -647,13 +644,13 @@ export function MomentosCamara({
                   />
                   <span className="text-xs text-white/60">
                     {subiendo
-                      ? "Subiendo…"
+                      ? t("subiendo")
                       : enComputadora
-                        ? "…o subí un video desde acá"
-                        : "Grabar o elegir un video"}
+                        ? t("oSubiVideo")
+                        : t("grabarOElegir")}
                   </span>
                   <span className="mt-1 block text-[10px] text-white/30">
-                    Una sola toma corrida; los momentos la reparten en orden
+                    {t("unaSolaToma")}
                   </span>
                 </label>
               </div>
@@ -665,35 +662,38 @@ export function MomentosCamara({
         {momentos.length > 0 && (
           <div className="space-y-1 border-t border-white/10 pt-3 text-[11px]">
             <p className={seExcede ? "text-amber-300" : "text-white/50"}>
-              Duración final: <strong>{final.toFixed(1)}s</strong>
+              {t.rich("duracionFinal", {
+                seg: final.toFixed(1),
+                strong: (c) => <strong>{c}</strong>,
+              })}
               {final !== duracionBase && (
                 <span className="text-white/30">
                   {" "}
-                  ({duracionBase.toFixed(1)}s +{" "}
-                  {(final - duracionBase).toFixed(1)}s de pausas)
+                  {t("conPausas", {
+                    base: duracionBase.toFixed(1),
+                    pausas: (final - duracionBase).toFixed(1),
+                  })}
                 </span>
               )}
             </p>
             {seExcede && (
               <p className="text-amber-300">
-                Pasa los {LIMITE_REEL_SEG}s de un Reel. Acortá una pausa o el
-                tramo del video.
+                {t("pasaReel", { seg: LIMITE_REEL_SEG })}
               </p>
             )}
             {/* Antes esto lo rechazaba el backend despues de minutos de render. */}
             {sinGrabar > 0 && (
               <p className="text-amber-300">
-                Falta la grabación de {sinGrabar}{" "}
-                {sinGrabar === 1 ? "momento" : "momentos"}. Sin eso el montaje no
-                se puede generar.
+                {t("faltaGrabacion", { n: sinGrabar })}
               </p>
             )}
             {faltaGrabacion && (
               <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-2.5">
                 <p className="text-red-400">
-                  Los momentos piden {necesaria.toFixed(1)}s de la toma general y
-                  tu video tiene {duracionGrabacion.toFixed(1)}s. Así no se puede
-                  generar.
+                  {t("noAlcanza", {
+                    necesaria: necesaria.toFixed(1),
+                    tiene: duracionGrabacion.toFixed(1),
+                  })}
                 </p>
                 {/* Resolverlo a mano es repartir la diferencia entre N momentos
                     con una calculadora. La proporcion la puede hacer la app. */}
@@ -701,7 +701,8 @@ export function MomentosCamara({
                   onClick={ajustarALaGrabacion}
                   className="mt-2 rounded-lg bg-red-500/80 px-2.5 py-1 font-medium text-white"
                 >
-                  Acortar los momentos para que entren
+                  {t("acortar")}
+
                 </button>
               </div>
             )}

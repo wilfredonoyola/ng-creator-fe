@@ -1,0 +1,34 @@
+{
+  "noEncontrado": "We couldn't find that video",
+  "sinAcceso": "It may belong to a page you don't have access to.",
+  "volverLista": "← Back to the list",
+  "listos": "← Ready to publish",
+  "expediente": "File #{numero}",
+  "sinNumerar": "Unnumbered",
+  "otraPagina": "This video belongs to {pagina}, but you're working in {activa}. If you publish now, it'll go out on {activa}.",
+  "sinVideo": "No video",
+  "regeneraciones": "{n, plural, one {# regeneration} other {# regenerations}}",
+  "descargar": "⬇ Download the video",
+  "portada": {
+    "titulo": "Cover",
+    "detalle": "It's the Reel's cover and what goes out if you publish as an image.",
+    "sinVideo": "Without a video there's nothing to take the cover from."
+  },
+  "facebook": {
+    "titulo": "Publish on Facebook",
+    "destino": "It goes to {pagina}, the active page.",
+    "elegi": "Pick an active page to publish."
+  },
+  "youtube": {
+    "titulo": "Publish on YouTube",
+    "detalle": "Uploads the final video as a Short to a channel of the active brand."
+  },
+  "tiktok": {
+    "titulo": "Publish on TikTok",
+    "detalle": "Publishes the final video to an account of the active brand."
+  },
+  "sello": {
+    "creado": "created",
+    "aprobado": "approved"
+  }
+}

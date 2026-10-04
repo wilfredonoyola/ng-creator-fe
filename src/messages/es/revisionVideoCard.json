@@ -1,0 +1,35 @@
+{
+  "estados": {
+    "EN_REVISION": "En revisión",
+    "APROBADO": "Aprobado",
+    "PUBLICADO": "Publicado",
+    "FALLIDO": "Fallido",
+    "RECHAZADO": "Rechazado",
+    "INGESTADO": "Procesando",
+    "TRANSCRIBIENDO": "Transcribiendo",
+    "ESCRIBIENDO_GUION": "Escribiendo guión",
+    "VALIDANDO": "Validando",
+    "GENERANDO_VOZ": "Generando voz",
+    "ENSAMBLANDO": "Ensamblando"
+  },
+  "enProceso": "Video en proceso...",
+  "regeneraciones": "{n} regen",
+  "entroCola": "Entró a la cola: {fecha}",
+  "enCola": "En cola {tiempo}",
+  "demorado": "demorado",
+  "ultimaEjecucion": "Última ejecución del pipeline: {fecha}",
+  "generado": "· generado {tiempo}",
+  "partes": {
+    "apertura": "[Hook]",
+    "detalle": "[Detalle]",
+    "revelacion": "[Revelación]",
+    "cierre": "[Cierre]"
+  },
+  "placeholderNota": "Describe qué quieres mejorar...",
+  "cancelar": "Cancelar",
+  "regenerar": "Regenerar",
+  "verMenos": "Ver menos",
+  "verMas": "Ver más",
+  "rechazar": "Rechazar",
+  "aprobar": "Aprobar ✓"
+}

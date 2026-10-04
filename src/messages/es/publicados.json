@@ -1,0 +1,29 @@
+{
+  "formatos": {
+    "REEL": "Reel",
+    "HISTORIA_VIDEO": "Historia",
+    "IMAGEN": "Imagen",
+    "HISTORIA_IMAGEN": "Historia img"
+  },
+  "sinPagina": {
+    "titulo": "No hay ninguna página activa",
+    "detalle": "Los videos se organizan por página. Elegí una en el switch de la izquierda."
+  },
+  "titulo": "Videos aprobados",
+  "en": "en",
+  "enOtras": "· {n} en tus otras páginas",
+  "pestanas": {
+    "pendientes": "Sin publicar",
+    "publicados": "Ya publicados",
+    "todos": "Todos"
+  },
+  "sinPortada": "Sin portada",
+  "vacio": {
+    "publicados": "Todavía no publicaste ninguno",
+    "pendientes": "No te queda nada por publicar",
+    "todosEn": "Todavía no hay videos aprobados en {pagina}",
+    "todos": "Todavía no hay videos aprobados en esta página",
+    "yaSalieron": "Todos los videos aprobados ya salieron a Facebook.",
+    "aparecen": "Los videos aparecen acá cuando se aprueban en la cola de revisión."
+  }
+}

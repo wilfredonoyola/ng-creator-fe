@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CloudAlert, CloudCheck, CloudUpload } from "lucide-react";
 
 export type EstadoRender = "EN_COLA" | "RENDERIZANDO" | "LISTO" | "FALLIDO";
@@ -22,13 +23,14 @@ export function EstadoGuardado({
   sinGuardar: boolean;
   error: boolean;
 }) {
+  const t = useTranslations("editorExportar");
   const { icono, texto, clase, ayuda } = error
-    ? { icono: <CloudAlert size={16} aria-hidden />, texto: "No se pudo guardar", clase: "text-red-400", ayuda: "Revisá el aviso de abajo" }
+    ? { icono: <CloudAlert size={16} aria-hidden />, texto: t("guardado.error"), clase: "text-red-400", ayuda: t("guardado.errorAyuda") }
     : guardando
-      ? { icono: <CloudUpload size={16} aria-hidden className="animate-pulse" />, texto: "Guardando…", clase: "text-white/60", ayuda: "Se guarda solo" }
+      ? { icono: <CloudUpload size={16} aria-hidden className="animate-pulse" />, texto: t("guardado.guardando"), clase: "text-white/60", ayuda: t("guardado.guardandoAyuda") }
       : sinGuardar
-        ? { icono: <CloudUpload size={16} aria-hidden />, texto: "Sin guardar", clase: "text-white/60", ayuda: "Se guarda solo en un momento" }
-        : { icono: <CloudCheck size={16} aria-hidden />, texto: "Guardado", clase: "text-ng-secundario", ayuda: "Todos los cambios están guardados" };
+        ? { icono: <CloudUpload size={16} aria-hidden />, texto: t("guardado.sinGuardar"), clase: "text-white/60", ayuda: t("guardado.sinGuardarAyuda") }
+        : { icono: <CloudCheck size={16} aria-hidden />, texto: t("guardado.guardado"), clase: "text-ng-secundario", ayuda: t("guardado.guardadoAyuda") };
   return (
     <span role="status" title={ayuda} className={`inline-flex h-9 shrink-0 items-center gap-1.5 px-1 text-xs ${clase}`}>
       {icono}
@@ -43,6 +45,7 @@ export function EstadoGuardado({
  * Por eso se baja con fetch —el CDN permite CORS— y se guarda desde un blob.
  */
 export function useDescargarMp4(urlVideo: string | null | undefined, titulo: string) {
+  const t = useTranslations("editorExportar");
   const [bajando, setBajando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +55,7 @@ export function useDescargarMp4(urlVideo: string | null | undefined, titulo: str
     setError(null);
     try {
       const res = await fetch(urlVideo);
-      if (!res.ok) throw new Error(`El CDN respondió ${res.status}`);
+      if (!res.ok) throw new Error(t("errorCdn", { status: res.status }));
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -63,7 +66,7 @@ export function useDescargarMp4(urlVideo: string | null | undefined, titulo: str
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo descargar");
+      setError(e instanceof Error ? e.message : t("errorDescargar"));
     } finally {
       setBajando(false);
     }
@@ -76,21 +79,24 @@ export function useDescargarMp4(urlVideo: string | null | undefined, titulo: str
  * En qué está el MP4, en palabras: lo que dice el menú Exportar arriba de sus
  * opciones. Antes era un panel de tres pasos debajo de la vista previa.
  */
-export function estadoDelMp4({
-  estado,
-  progreso,
-  pidiendo,
-  urlVideo,
-  desactualizado,
-  error,
-}: {
-  estado: EstadoRender | string | null;
-  progreso: number;
-  pidiendo: boolean;
-  urlVideo?: string | null;
-  desactualizado: boolean;
-  error?: string | null;
-}) {
+export function estadoDelMp4(
+  {
+    estado,
+    progreso,
+    pidiendo,
+    urlVideo,
+    desactualizado,
+    error,
+  }: {
+    estado: EstadoRender | string | null;
+    progreso: number;
+    pidiendo: boolean;
+    urlVideo?: string | null;
+    desactualizado: boolean;
+    error?: string | null;
+  },
+  t: ReturnType<typeof useTranslations<"editorExportar">>,
+) {
   const procesando = estado === "EN_COLA" || estado === "RENDERIZANDO" || pidiendo;
   const listo = estado === "LISTO" && Boolean(urlVideo);
   if (procesando) {
@@ -98,28 +104,28 @@ export function estadoDelMp4({
       procesando,
       listo,
       tono: "proceso" as const,
-      corto: estado === "RENDERIZANDO" ? `${progreso}%` : "En espera",
-      etiqueta: estado === "RENDERIZANDO" ? `Procesando · ${progreso}%` : "En espera para procesar",
-      texto: estado === "RENDERIZANDO" ? `Procesando el video · ${progreso}%` : "En espera para procesar…",
-      detalle: "Tarda uno o dos minutos. Podés seguir en otra pantalla: se procesa igual.",
+      corto: estado === "RENDERIZANDO" ? `${progreso}%` : t("mp4.enEspera"),
+      etiqueta: estado === "RENDERIZANDO" ? t("mp4.procesandoEtiqueta", { progreso }) : t("mp4.enEsperaEtiqueta"),
+      texto: estado === "RENDERIZANDO" ? t("mp4.procesandoTexto", { progreso }) : t("mp4.enEsperaTexto"),
+      detalle: t("mp4.procesandoDetalle"),
     };
   }
   if (estado === "FALLIDO") {
-    return { procesando, listo, tono: "error" as const, corto: "Falló", etiqueta: "No se pudo procesar", texto: "No se pudo procesar", detalle: error ?? "Error desconocido" };
+    return { procesando, listo, tono: "error" as const, corto: t("mp4.fallo"), etiqueta: t("mp4.noSePudo"), texto: t("mp4.noSePudo"), detalle: error ?? t("mp4.errorDesconocido") };
   }
   if (listo && desactualizado) {
     return {
       procesando,
       listo,
       tono: "aviso" as const,
-      corto: "Con cambios",
-      etiqueta: "Con cambios sin procesar",
-      texto: "Con cambios sin procesar",
-      detalle: "Hiciste cambios después de procesar: el MP4 no los tiene.",
+      corto: t("mp4.conCambios"),
+      etiqueta: t("mp4.conCambiosSinProcesar"),
+      texto: t("mp4.conCambiosSinProcesar"),
+      detalle: t("mp4.conCambiosDetalle"),
     };
   }
-  if (listo) return { procesando, listo, tono: "listo" as const, corto: "Listo", etiqueta: "MP4 listo", texto: "MP4 listo", detalle: "Tiene todos los cambios." };
-  return { procesando, listo, tono: "tenue" as const, corto: "Sin procesar", etiqueta: "Video sin procesar", texto: "Sin procesar", detalle: "Procesalo para descargarlo o programarlo." };
+  if (listo) return { procesando, listo, tono: "listo" as const, corto: t("mp4.listo"), etiqueta: t("mp4.mp4Listo"), texto: t("mp4.mp4Listo"), detalle: t("mp4.listoDetalle") };
+  return { procesando, listo, tono: "tenue" as const, corto: t("mp4.sinProcesar"), etiqueta: t("mp4.videoSinProcesar"), texto: t("mp4.sinProcesar"), detalle: t("mp4.sinProcesarDetalle") };
 }
 
 /** "La fantasía de Bori" → "la-fantasia-de-bori". */

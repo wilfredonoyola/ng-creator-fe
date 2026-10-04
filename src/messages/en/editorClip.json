@@ -1,0 +1,69 @@
+{
+  "errores": {
+    "guardar": "Couldn't save",
+    "auto": "Couldn't auto-frame",
+    "deshacer": "Couldn't go back to how it was",
+    "procesar": "Couldn't process the video"
+  },
+  "confirmarAuto": "Auto-framing replaces your framing changes with its own. Continue?",
+  "pestanas": {
+    "estilo": { "etiqueta": "Style", "titulo": "Text style" },
+    "textos": { "etiqueta": "Text", "titulo": "Hook and text" },
+    "subtitulos": { "etiqueta": "Captions" },
+    "marca": { "etiqueta": "Brand", "titulo": "Brand Kit" },
+    "transcripcion": { "etiqueta": "Transcript", "titulo": "Segment in the transcript" }
+  },
+  "estiloAyuda": "The hook, text and captions, in the brand's colors. The brand's default and its colors are chosen in the <link>Brand Kit</link>.",
+  "textosConEstilo": "With the {estilo} style, the style sets each text's font, colors, capitalization and box. Here you control the content, highlighted words, position, size and timing.",
+  "subtitulosActivos": "Captions with the highlighted word",
+  "malTranscrita": "A word transcribed wrong? <boton>Fix it in the transcript</boton>. It changes the caption, not the timing.",
+  "corregidas": "{n} fixed.",
+  "marca": {
+    "ambos": "Brand logo and end call to action on this clip",
+    "logo": "Brand logo on this clip",
+    "llamada": "Brand end call to action on this clip",
+    "brandKit": "Brand Kit on this clip",
+    "seConfigura": "Set it up once for all clips, in the <link>Brand Kit</link>.",
+    "sinBrandKit": "The brand has no Brand Kit. With one, every clip comes out with its logo and a call to action at the end: <link>set it up in the Brand Kit</link>."
+  },
+  "modos": {
+    "inicio": "Tap = start",
+    "fin": "Tap = end",
+    "corregir": "Tap = fix word"
+  },
+  "empieza": "Starts",
+  "termina": "Ends",
+  "dura": "Length {seg} s",
+  "guardarIgual": "Save anyway",
+  "personas": "{n, plural, one {# person} other {# people}}",
+  "videoNoListo": "The video isn't ready on Bunny yet.",
+  "delEpisodio": "{etiqueta} (episode s)",
+  "correccion": {
+    "palabra": "“{palabra}” at {seg} s →",
+    "guardar": "Save",
+    "quitar": "Remove from caption",
+    "original": "Back to original",
+    "cancelar": "Cancel"
+  },
+  "subtitulo": {
+    "ayuda": "Drag the caption in the preview to move it up or down; the dot on the right resizes it.",
+    "conEstilo": "With the {estilo} style, the style sets the font, colors, effect and capitalization; here you control size and position.",
+    "letra": "Font",
+    "efecto": "Effect",
+    "efectos": {
+      "CONTORNO": "Outline",
+      "SOMBRA": "Shadow",
+      "CAJA": "Box",
+      "NINGUNO": "None"
+    },
+    "tamano": "Size · {n}",
+    "lugar": "Position",
+    "lugares": {
+      "arriba": "Top",
+      "centro": "Center",
+      "abajo": "Bottom"
+    },
+    "mayusculas": "ALL CAPS",
+    "deSiempre": "Back to the default caption"
+  }
+}

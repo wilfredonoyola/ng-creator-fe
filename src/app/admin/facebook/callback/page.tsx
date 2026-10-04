@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import {
   FACEBOOK_CONECTAR,
@@ -18,6 +19,7 @@ import {
  * el único que tiene el app secret.
  */
 function Callback() {
+  const t = useTranslations("redesCallback");
   const params = useSearchParams();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -43,30 +45,30 @@ function Callback() {
     const descripcion = params.get("error_description");
 
     if (denegado) {
-      setError(descripcion ?? "Cancelaste la autorización en Facebook");
+      setError(descripcion ?? t("cancelaste", { red: "Facebook" }));
       return;
     }
     if (!code || !state) {
-      setError("Facebook no devolvió el código de autorización");
+      setError(t("sinCodigo", { red: "Facebook" }));
       return;
     }
 
     conectar({ variables: { code, state } })
       .then(() => router.replace("/admin/facebook"))
-      .catch((e) => setError(e?.message ?? "No se pudo completar la conexión"));
-  }, [params, conectar, router]);
+      .catch((e) => setError(e?.message ?? t("errorCompletar")));
+  }, [params, conectar, router, t]);
 
   if (error) {
     return (
       <div className="mx-auto max-w-lg rounded-2xl border border-red-500/30 bg-red-500/5 p-8 text-center">
         <div className="mb-3 text-4xl opacity-60">⚠️</div>
-        <p className="font-medium text-red-400">No se conectó</p>
+        <p className="font-medium text-red-400">{t("noSeConecto.facebook")}</p>
         <p className="mt-2 break-words text-sm text-white/60">{error}</p>
         <button
           onClick={() => router.replace("/admin/facebook")}
           className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110"
         >
-          Volver a intentar
+          {t("volverAIntentar")}
         </button>
       </div>
     );
@@ -75,9 +77,9 @@ function Callback() {
   return (
     <div className="flex flex-col items-center justify-center py-24">
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
-      <p className="mt-4 text-sm text-white/60">Conectando con Facebook…</p>
+      <p className="mt-4 text-sm text-white/60">{t("conectando", { red: "Facebook" })}</p>
       <p className="mt-1 text-xs text-white/35">
-        Canjeando el código y trayendo tus páginas
+        {t("canjeando")}
       </p>
     </div>
   );

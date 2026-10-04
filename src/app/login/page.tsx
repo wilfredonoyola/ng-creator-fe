@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   confirmarPasswordNueva,
+  ErrorDeAutenticacion,
   establecerPassword,
   iniciarSesion,
   pedirCodigoPassword,
@@ -92,8 +93,8 @@ export default function LoginPage() {
         return;
       }
       router.push(destinoSeguro());
-    } catch (err: any) {
-      setError(err?.message ?? t("errorEntrar"));
+    } catch (err) {
+      setError(err instanceof ErrorDeAutenticacion ? err.message : t("errorEntrar"));
     } finally {
       setCargando(false);
     }
@@ -110,8 +111,8 @@ export default function LoginPage() {
     try {
       await establecerPassword(correo, nueva, sesionDesafio!);
       router.push(destinoSeguro());
-    } catch (err: any) {
-      setError(err?.message ?? t("errorGuardar"));
+    } catch (err) {
+      setError(err instanceof ErrorDeAutenticacion ? err.message : t("errorGuardar"));
     } finally {
       setCargando(false);
     }
@@ -129,8 +130,8 @@ export default function LoginPage() {
       setRepetida("");
       setCodigo("");
       setAviso(t("codigoEnviado", { correo: correo.trim() }));
-    } catch (err: any) {
-      setError(err?.message ?? t("errorCodigo"));
+    } catch (err) {
+      setError(err instanceof ErrorDeAutenticacion ? err.message : t("errorCodigo"));
     } finally {
       setCargando(false);
     }
@@ -147,8 +148,8 @@ export default function LoginPage() {
     try {
       await confirmarPasswordNueva(correo.trim(), codigo, nueva);
       router.push(destinoSeguro());
-    } catch (err: any) {
-      setError(err?.message ?? t("errorCambiar"));
+    } catch (err) {
+      setError(err instanceof ErrorDeAutenticacion ? err.message : t("errorCambiar"));
     } finally {
       setCargando(false);
     }

@@ -1,0 +1,12 @@
+{
+  "muestra": {
+    "gancho": "Lo que nadie te cuenta de vender",
+    "destacada": "nadie",
+    "subtitulos": "así se ven tus subtítulos"
+  },
+  "errorCargar": "No se pudieron cargar los estilos: {error}",
+  "virales": "Virales",
+  "profesionales": "Profesionales",
+  "comoLaMarca": "Como la marca ({nombre})",
+  "comoLaMarcaRico": "Como la marca <g>({nombre})</g>"
+}

@@ -1,15 +1,14 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { PUBLICACIONES_DE_EXPEDIENTE } from "@/graphql/operations";
 import type { Publicacion } from "@/lib/publicaciones";
 
-const ETIQUETA: Record<string, string> = {
-  REEL: "Reel",
-  HISTORIA_VIDEO: "Historia",
-  IMAGEN: "Imagen",
-  HISTORIA_IMAGEN: "Historia img",
-};
+/** Los formatos con nombre en `redesEstadoFacebook.formatos`. */
+const FORMATOS = ["REEL", "HISTORIA_VIDEO", "IMAGEN", "HISTORIA_IMAGEN"] as const;
+const esFormato = (f: string): f is (typeof FORMATOS)[number] =>
+  (FORMATOS as readonly string[]).includes(f);
 
 /**
  * Si el video ya salió a Facebook, y en qué formatos.
@@ -29,6 +28,7 @@ export function EstadoEnFacebook({
   expedienteId: string;
   marcaIdDelVideo: string;
 }) {
+  const t = useTranslations("redesEstadoFacebook");
   const { data } = useQuery(PUBLICACIONES_DE_EXPEDIENTE, {
     variables: { marcaId: marcaIdDelVideo, expedienteId },
     errorPolicy: "all",
@@ -50,7 +50,7 @@ export function EstadoEnFacebook({
   if (!salieron.length && !fallaron.length && !pendientes.length) {
     return (
       <span className="rounded-md bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white/50">
-        Sin publicar
+        {t("sinPublicar")}
       </span>
     );
   }
@@ -66,12 +66,12 @@ export function EstadoEnFacebook({
           key={f}
           className="rounded-md bg-marca px-2 py-0.5 text-[10px] font-semibold text-ng-tinta"
         >
-          {ETIQUETA[f] ?? f}
+          {esFormato(f) ? t(`formatos.${f}`) : f}
         </span>
       ))}
       {pendientes.length > 0 && (
         <span className="rounded-md bg-indigo-500/70 px-2 py-0.5 text-[10px] font-semibold text-white">
-          {pendientes.length === 1 ? "Programada" : `${pendientes.length} programadas`}
+          {t("programadas", { n: pendientes.length })}
         </span>
       )}
       {/* El motivo va en el tooltip: la tarjeta dice que falló y por qué sin
@@ -81,7 +81,7 @@ export function EstadoEnFacebook({
           className="rounded-md bg-red-500/80 px-2 py-0.5 text-[10px] font-semibold text-white"
           title={fallaron[0].error ?? undefined}
         >
-          Falló
+          {t("fallo")}
         </span>
       )}
     </span>

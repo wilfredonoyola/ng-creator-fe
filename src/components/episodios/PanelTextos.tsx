@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   FUENTES,
   medidasEfecto,
@@ -20,38 +21,31 @@ export const MAXIMO_TEXTOS = 4;
 export function disenosDeTexto(colorMarca: string) {
   return [
     {
-      id: "impacto",
-      nombre: "Impacto",
+      id: "impacto" as const,
       estilo: { fuente: "ANTON", tamano: 110, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "CONTORNO", colorEfecto: "#000000", mayusculas: true },
     },
     {
-      id: "caja",
-      nombre: "Caja negra",
+      id: "caja" as const,
       estilo: { fuente: "BEBAS", tamano: 96, color: "#FFFFFF", colorDestacado: "#FF3B30", efecto: "CAJA", colorEfecto: "#000000", mayusculas: true },
     },
     {
-      id: "marca",
-      nombre: "Caja de la marca",
+      id: "marca" as const,
       estilo: { fuente: "ANTON", tamano: 90, color: "#000000", colorDestacado: "#FFFFFF", efecto: "CAJA", colorEfecto: colorMarca, mayusculas: true },
     },
     {
-      id: "amarillo",
-      nombre: "Amarillo",
+      id: "amarillo" as const,
       estilo: { fuente: "ANTON", tamano: 110, color: "#FFE600", colorDestacado: "#FFFFFF", efecto: "CONTORNO", colorEfecto: "#000000", mayusculas: true },
     },
     {
-      id: "sombra",
-      nombre: "Sombra",
+      id: "sombra" as const,
       estilo: { fuente: "NUNITO", tamano: 84, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "SOMBRA", colorEfecto: "#000000", mayusculas: false },
     },
     {
-      id: "limpio",
-      nombre: "Limpio",
+      id: "limpio" as const,
       estilo: { fuente: "NUNITO", tamano: 72, color: "#FFFFFF", colorDestacado: "#14D8C4", efecto: "NINGUNO", colorEfecto: "#000000", mayusculas: false },
     },
   ] satisfies {
     id: string;
-    nombre: string;
     estilo: Pick<Texto, "fuente" | "tamano" | "color" | "colorDestacado" | "efecto" | "colorEfecto" | "mayusculas">;
   }[];
 }
@@ -71,18 +65,13 @@ const FUENTES_ELEGIBLES: { valor: FuenteTexto; etiqueta: string }[] = [
   { valor: "NUNITO", etiqueta: "Nunito" },
 ];
 
-const EFECTOS: { valor: EfectoTexto; etiqueta: string }[] = [
-  { valor: "CONTORNO", etiqueta: "Contorno" },
-  { valor: "SOMBRA", etiqueta: "Sombra" },
-  { valor: "CAJA", etiqueta: "Caja" },
-  { valor: "NINGUNO", etiqueta: "Nada" },
-];
+const EFECTOS: EfectoTexto[] = ["CONTORNO", "SOMBRA", "CAJA", "NINGUNO"];
 
 const POSICIONES = [
-  { etiqueta: "Arriba", centroY: 0.15 },
-  { etiqueta: "Centro", centroY: 0.5 },
-  { etiqueta: "Abajo", centroY: 0.85 },
-];
+  { clave: "arriba", centroY: 0.15 },
+  { clave: "centro", centroY: 0.5 },
+  { clave: "abajo", centroY: 0.85 },
+] as const;
 
 /**
  * Los textos del clip: hasta cuatro, cada uno con su diseño.
@@ -109,13 +98,14 @@ export function PanelTextos({
   colorMarca: string;
   deshabilitado?: boolean;
 }) {
+  const tr = useTranslations("editorTextos");
   const disenos = disenosDeTexto(colorMarca);
 
   function agregar(d: (typeof disenos)[number]) {
     if (textos.length >= MAXIMO_TEXTOS) return;
     // Cada nuevo un poco más abajo que el anterior, para que no se pisen.
     const centroY = [0.15, 0.3, 0.7, 0.85][textos.length] ?? 0.5;
-    onCambiar([...textos, textoNuevo(d.estilo, "Escribí el texto", centroY)]);
+    onCambiar([...textos, textoNuevo(d.estilo, tr("textoNuevo"), centroY)]);
     onElegir(textos.length);
   }
 
@@ -142,28 +132,28 @@ export function PanelTextos({
               elegido === i ? "border-ng-azul text-white" : "border-white/15 text-white/60"
             }`}
           >
-            {i + 1}. {tx.contenido || "(vacío)"}
+            {i + 1}. {tx.contenido || tr("vacio")}
           </button>
         ))}
-        {textos.length === 0 && <p className="text-xs text-white/40">Todavía no hay textos en este clip.</p>}
+        {textos.length === 0 && <p className="text-xs text-white/40">{tr("sinTextos")}</p>}
       </div>
 
       {/* ---- Agregar con un diseño ---- */}
       {!deshabilitado && textos.length < MAXIMO_TEXTOS && (
         <div className="mb-4">
           <p className="mb-2 text-xs text-white/50">
-            Agregar texto ({textos.length}/{MAXIMO_TEXTOS}) · elegí un diseño
+            {tr("agregar", { n: textos.length, max: MAXIMO_TEXTOS })}
           </p>
           <div className="grid grid-cols-3 gap-2">
             {disenos.map((d) => (
               <button
                 key={d.id}
                 onClick={() => agregar(d)}
-                title={d.nombre}
+                title={tr(`disenos.${d.id}`)}
                 className="flex h-16 flex-col items-center justify-center gap-1 rounded-lg border border-white/10 bg-ng-elevada hover:border-white/30"
               >
                 <MuestraDiseno estilo={d.estilo} />
-                <span className="text-[10px] text-white/45">{d.nombre}</span>
+                <span className="text-[10px] text-white/45">{tr(`disenos.${d.id}`)}</span>
               </button>
             ))}
           </div>
@@ -183,7 +173,7 @@ export function PanelTextos({
           />
 
           <div>
-            <p className="mb-1.5 text-xs text-white/50">Tocá las palabras que van destacadas</p>
+            <p className="mb-1.5 text-xs text-white/50">{tr("tocaDestacadas")}</p>
             <div className="flex flex-wrap gap-1">
               {palabrasDelTexto(t).map((w, j) => (
                 <button
@@ -208,7 +198,7 @@ export function PanelTextos({
             </div>
           </div>
 
-          <Fila etiqueta="Letra">
+          <Fila etiqueta={tr("filas.letra")}>
             {FUENTES_ELEGIBLES.map((f) => (
               <Opcion key={f.valor} activa={t.fuente === f.valor} onClick={() => cambiar(elegido, { fuente: f.valor })} deshabilitado={deshabilitado}>
                 <span style={{ fontFamily: `'${FUENTES[f.valor].familia}'`, fontWeight: f.valor === "NUNITO" ? 900 : 400 }}>
@@ -221,20 +211,20 @@ export function PanelTextos({
             </Opcion>
           </Fila>
 
-          <Fila etiqueta="Alrededor">
+          <Fila etiqueta={tr("filas.alrededor")}>
             {EFECTOS.map((e) => (
-              <Opcion key={e.valor} activa={t.efecto === e.valor} onClick={() => cambiar(elegido, { efecto: e.valor })} deshabilitado={deshabilitado}>
-                {e.etiqueta}
+              <Opcion key={e} activa={t.efecto === e} onClick={() => cambiar(elegido, { efecto: e })} deshabilitado={deshabilitado}>
+                {tr(`efectos.${e}`)}
               </Opcion>
             ))}
           </Fila>
 
-          <Fila etiqueta="Colores">
-            <Color etiqueta="Texto" valor={t.color} onCambio={(color) => cambiar(elegido, { color })} deshabilitado={deshabilitado} />
-            <Color etiqueta="Destacado" valor={t.colorDestacado} onCambio={(colorDestacado) => cambiar(elegido, { colorDestacado })} deshabilitado={deshabilitado} />
+          <Fila etiqueta={tr("filas.colores")}>
+            <Color etiqueta={tr("colores.texto")} valor={t.color} onCambio={(color) => cambiar(elegido, { color })} deshabilitado={deshabilitado} />
+            <Color etiqueta={tr("colores.destacado")} valor={t.colorDestacado} onCambio={(colorDestacado) => cambiar(elegido, { colorDestacado })} deshabilitado={deshabilitado} />
             {t.efecto !== "NINGUNO" && (
               <Color
-                etiqueta={t.efecto === "CAJA" ? "Caja" : t.efecto === "SOMBRA" ? "Sombra" : "Contorno"}
+                etiqueta={tr(`colores.${t.efecto === "CAJA" ? "caja" : t.efecto === "SOMBRA" ? "sombra" : "contorno"}`)}
                 valor={t.colorEfecto}
                 onCambio={(colorEfecto) => cambiar(elegido, { colorEfecto })}
                 deshabilitado={deshabilitado}
@@ -243,37 +233,37 @@ export function PanelTextos({
           </Fila>
 
           <label className="block text-xs text-white/50">
-            Tamaño {Math.round(t.tamano)}
+            {tr("tamano", { n: Math.round(t.tamano) })}
             <input type="range" min={40} max={200} step={1} value={t.tamano} disabled={deshabilitado}
               onChange={(e) => cambiar(elegido, { tamano: parseFloat(e.target.value) })} className="mt-1 block w-full" />
           </label>
           <label className="block text-xs text-white/50">
-            Ancho máximo {Math.round(t.ancho * 100)}%
+            {tr("anchoMaximo", { n: Math.round(t.ancho * 100) })}
             <input type="range" min={0.3} max={1} step={0.01} value={t.ancho} disabled={deshabilitado}
               onChange={(e) => cambiar(elegido, { ancho: parseFloat(e.target.value) })} className="mt-1 block w-full" />
           </label>
 
-          <Fila etiqueta="Lugar">
+          <Fila etiqueta={tr("filas.lugar")}>
             {POSICIONES.map((p) => (
-              <Opcion key={p.etiqueta} activa={Math.abs(t.centroY - p.centroY) < 0.02 && Math.abs(t.centroX - 0.5) < 0.02}
+              <Opcion key={p.clave} activa={Math.abs(t.centroY - p.centroY) < 0.02 && Math.abs(t.centroX - 0.5) < 0.02}
                 onClick={() => cambiar(elegido, { centroX: 0.5, centroY: p.centroY })} deshabilitado={deshabilitado}>
-                {p.etiqueta}
+                {tr(`posiciones.${p.clave}`)}
               </Opcion>
             ))}
-            <span className="text-[11px] text-white/35">o arrastralo en la vista previa</span>
+            <span className="text-[11px] text-white/35">{tr("oArrastralo")}</span>
           </Fila>
 
-          <Fila etiqueta="Cuándo">
+          <Fila etiqueta={tr("filas.cuando")}>
             <Opcion activa={!t.hastaSeg && t.desdeSeg === 0} onClick={() => cambiar(elegido, { desdeSeg: 0, hastaSeg: null })} deshabilitado={deshabilitado}>
-              Todo el clip
+              {tr("todoElClip")}
             </Opcion>
             <Opcion activa={t.desdeSeg === 0 && t.hastaSeg === 3} onClick={() => cambiar(elegido, { desdeSeg: 0, hastaSeg: 3 })} deshabilitado={deshabilitado}>
-              Primeros 3 s
+              {tr("primeros3")}
             </Opcion>
             <span className="flex items-center gap-1 text-[11px] text-white/50">
-              de
+              {tr("de")}
               <Segundos valor={t.desdeSeg} max={duracion} onCambio={(desdeSeg) => cambiar(elegido, { desdeSeg })} deshabilitado={deshabilitado} />
-              a
+              {tr("a")}
               <Segundos valor={t.hastaSeg ?? duracion} max={duracion}
                 onCambio={(v) => cambiar(elegido, { hastaSeg: v >= duracion - 0.05 ? null : v })} deshabilitado={deshabilitado} />
               s
@@ -282,7 +272,7 @@ export function PanelTextos({
 
           {!deshabilitado && (
             <button onClick={() => quitar(elegido)} className="text-xs text-red-400/80 hover:text-red-400">
-              Quitar este texto
+              {tr("quitar")}
             </button>
           )}
         </div>
@@ -293,6 +283,7 @@ export function PanelTextos({
 
 /** Cómo se ve un diseño, en chico, para elegirlo. */
 function MuestraDiseno({ estilo }: { estilo: ReturnType<typeof disenosDeTexto>[number]["estilo"] }) {
+  const tr = useTranslations("editorTextos");
   const f = FUENTES[estilo.fuente];
   const escala = 0.28;
   const { borde, sombra } = medidasEfecto(estilo.efecto, estilo.tamano);
@@ -310,7 +301,7 @@ function MuestraDiseno({ estilo }: { estilo: ReturnType<typeof disenosDeTexto>[n
         ...(estilo.efecto === "CAJA" ? { background: estilo.colorEfecto, padding: `1px ${borde * escala}px` } : {}),
       }}
     >
-      Hola <span style={{ color: estilo.colorDestacado }}>tú</span>
+      {tr.rich("muestra", { d: (c) => <span style={{ color: estilo.colorDestacado }}>{c}</span> })}
     </span>
   );
 }

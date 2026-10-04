@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "inicio": "Inicio",
+    "episodios": "Episodios",
+    "calendario": "Calendario",
+    "publicaciones": "Publicaciones",
+    "crearVideo": "Crear video",
+    "montaje": "Montaje",
+    "revision": "Revisión",
+    "creators": "Creators",
+    "equipo": "Equipo",
+    "brandKit": "Brand Kit",
+    "redesConectadas": "Redes conectadas"
+  },
+  "cerrarMenu": "Cerrar menú",
+  "trabajandoEnTitulo": "Trabajando en {marca}. Expandí el menú para cambiarla.",
+  "trabajandoEnEtiqueta": "Trabajando en {marca}. Expandir el menú",
+  "videosReaccion": "Videos de reacción",
+  "administracion": "Administración",
+  "rolDe": "{rol} de {marca}",
+  "laPagina": "la página",
+  "administrador": "Administrador",
+  "sinAcceso": "Sin acceso a páginas",
+  "perfil": "Perfil",
+  "perfilDe": "Perfil · {nombre}",
+  "cerrarSesion": "Cerrar sesión",
+  "expandir": "Expandir el menú",
+  "colapsar": "Colapsar el menú"
+}

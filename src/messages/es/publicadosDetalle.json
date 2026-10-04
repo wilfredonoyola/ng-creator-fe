@@ -1,0 +1,34 @@
+{
+  "noEncontrado": "No encontramos ese video",
+  "sinAcceso": "Puede ser de una página a la que no tenés acceso.",
+  "volverLista": "← Volver a la lista",
+  "listos": "← Listos para publicar",
+  "expediente": "Expediente #{numero}",
+  "sinNumerar": "Sin numerar",
+  "otraPagina": "Este video es de {pagina}, pero estás trabajando en {activa}. Si publicás ahora, va a salir en {activa}.",
+  "sinVideo": "Sin video",
+  "regeneraciones": "{n} regeneración(es)",
+  "descargar": "⬇ Descargar el video",
+  "portada": {
+    "titulo": "Portada",
+    "detalle": "Es la cubierta del Reel y lo que sale si publicás como imagen.",
+    "sinVideo": "Sin video no hay de dónde sacar la portada."
+  },
+  "facebook": {
+    "titulo": "Publicar en Facebook",
+    "destino": "El destino es {pagina}, la página activa.",
+    "elegi": "Elegí una página activa para publicar."
+  },
+  "youtube": {
+    "titulo": "Publicar en YouTube",
+    "detalle": "Sube el video final como Short a un canal de la marca activa."
+  },
+  "tiktok": {
+    "titulo": "Publicar en TikTok",
+    "detalle": "Publica el video final en una cuenta de la marca activa."
+  },
+  "sello": {
+    "creado": "creado",
+    "aprobado": "aprobado"
+  }
+}

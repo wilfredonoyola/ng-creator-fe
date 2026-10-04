@@ -1,0 +1,18 @@
+{
+  "PROPIETARIO": {
+    "etiqueta": "Owner",
+    "ayuda": "Sets up the page, reconnects it in Meta and decides who else gets in."
+  },
+  "EDITOR": {
+    "etiqueta": "Editor",
+    "ayuda": "Creates, reviews, approves and publishes. Doesn't need a Facebook account."
+  },
+  "LECTOR": {
+    "etiqueta": "Viewer",
+    "ayuda": "Sees the page's work, doesn't change it."
+  },
+  "PROVEEDOR": {
+    "etiqueta": "Supplier",
+    "ayuda": "A content owner we have a deal with: uploads their videos and tracks their status, without entering the workspace. Their screen isn't built yet."
+  }
+}

@@ -14,6 +14,44 @@ export type UploadResult = {
   storagePath: string;
 };
 
+/**
+ * Los errores propios de estas funciones, con una clave del namespace
+ * `erroresSubida` para que la pantalla los muestre en su idioma
+ * (`err instanceof ErrorDeSubida ? t(err.clave, err.datos) : err.message`).
+ * El mensaje sigue en español para quien todavía lo muestra tal cual. Lo que
+ * responde el backend llega como un `Error` común, como llega.
+ */
+export type ClaveErrorSubida =
+  | "sesionClips" | "soloVideo" | "clipMuyPesado" | "errorClip" | "sinUrlClip"
+  | "sesionNotaVoz" | "soloAudio" | "notaVozMuyPesada" | "errorNotaVoz" | "sinUrlNotaVoz"
+  | "noSeLeyo" | "sesion" | "urlTiktok" | "errorPreview" | "sesionDescargar"
+  | "errorDescargar" | "errorProcesar" | "sinDatosVideo" | "sesionEvidencia"
+  | "soloImagenesEvidencia" | "evidenciaMuyPesada" | "errorScreenshot" | "sinUrlScreenshot"
+  | "sesionImagenes" | "noEsImagen" | "imagenMuyPesada" | "errorImagen" | "sesionPortada"
+  | "errorPortada" | "sesionVideo" | "errorVideo" | "seCorto" | "seCancelo" | "sesionLogo"
+  | "logoNoImagen" | "logoMuyPesado" | "errorLogo";
+
+export class ErrorDeSubida extends Error {
+  constructor(
+    readonly clave: ClaveErrorSubida,
+    mensaje: string,
+    readonly datos: { status?: number } = {},
+  ) {
+    super(mensaje);
+    this.name = "ErrorDeSubida";
+  }
+}
+
+/** El mensaje del backend si vino; si no, el propio con su clave. */
+function fallo(
+  backend: string | undefined,
+  clave: ClaveErrorSubida,
+  mensaje: string,
+  status: number,
+): Error {
+  return backend ? new Error(backend) : new ErrorDeSubida(clave, mensaje, { status });
+}
+
 function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("idToken");
@@ -26,7 +64,7 @@ function getAuthToken(): string | null {
 export async function uploadClip(file: File): Promise<UploadResult> {
   const token = getAuthToken();
   if (!token) {
-    throw new Error("Sesión requerida para subir clips");
+    throw new ErrorDeSubida("sesionClips", "Sesión requerida para subir clips");
   }
 
   // Validar tipo de archivo
@@ -37,12 +75,12 @@ export async function uploadClip(file: File): Promise<UploadResult> {
   const isVideoExtension = validExtensions.includes(ext);
 
   if (!isVideoMimetype && !isVideoExtension) {
-    throw new Error("Solo se permiten archivos de video (mp4, mov, webm)");
+    throw new ErrorDeSubida("soloVideo", "Solo se permiten archivos de video (mp4, mov, webm)");
   }
 
   // Validar tamaño (500MB max)
   if (file.size > 500 * 1024 * 1024) {
-    throw new Error("El archivo debe pesar menos de 500MB");
+    throw new ErrorDeSubida("clipMuyPesado", "El archivo debe pesar menos de 500MB");
   }
 
   const formData = new FormData();
@@ -57,20 +95,19 @@ export async function uploadClip(file: File): Promise<UploadResult> {
   });
 
   if (!response.ok) {
-    let errorMsg = `Error al subir clip (${response.status})`;
+    let backend: string | undefined;
     try {
-      const json = await response.json();
-      errorMsg = json.message || errorMsg;
+      backend = (await response.json()).message;
     } catch {
-      // ignore
+      // el backend no siempre responde JSON
     }
-    throw new Error(errorMsg);
+    throw fallo(backend, "errorClip", `Error al subir clip (${response.status})`, response.status);
   }
 
   const json = await response.json();
 
   if (!json.url) {
-    throw new Error("El servidor no devolvió la URL del clip");
+    throw new ErrorDeSubida("sinUrlClip", "El servidor no devolvió la URL del clip");
   }
 
   return {
@@ -86,7 +123,7 @@ export async function uploadClip(file: File): Promise<UploadResult> {
 export async function uploadVoiceNote(file: File): Promise<UploadResult> {
   const token = getAuthToken();
   if (!token) {
-    throw new Error("Sesión requerida para subir notas de voz");
+    throw new ErrorDeSubida("sesionNotaVoz", "Sesión requerida para subir notas de voz");
   }
 
   // Validar tipo de archivo
@@ -97,12 +134,12 @@ export async function uploadVoiceNote(file: File): Promise<UploadResult> {
   const isAudioExtension = validExtensions.includes(ext);
 
   if (!isAudioMimetype && !isAudioExtension) {
-    throw new Error("Solo se permiten archivos de audio");
+    throw new ErrorDeSubida("soloAudio", "Solo se permiten archivos de audio");
   }
 
   // Validar tamaño (50MB max)
   if (file.size > 50 * 1024 * 1024) {
-    throw new Error("El archivo debe pesar menos de 50MB");
+    throw new ErrorDeSubida("notaVozMuyPesada", "El archivo debe pesar menos de 50MB");
   }
 
   const formData = new FormData();
@@ -117,20 +154,19 @@ export async function uploadVoiceNote(file: File): Promise<UploadResult> {
   });
 
   if (!response.ok) {
-    let errorMsg = `Error al subir nota de voz (${response.status})`;
+    let backend: string | undefined;
     try {
-      const json = await response.json();
-      errorMsg = json.message || errorMsg;
+      backend = (await response.json()).message;
     } catch {
-      // ignore
+      // el backend no siempre responde JSON
     }
-    throw new Error(errorMsg);
+    throw fallo(backend, "errorNotaVoz", `Error al subir nota de voz (${response.status})`, response.status);
   }
 
   const json = await response.json();
 
   if (!json.url) {
-    throw new Error("El servidor no devolvió la URL de la nota de voz");
+    throw new ErrorDeSubida("sinUrlNotaVoz", "El servidor no devolvió la URL de la nota de voz");
   }
 
   return {
@@ -147,7 +183,7 @@ export function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
+    reader.onerror = () => reject(new ErrorDeSubida("noSeLeyo", "No se pudo leer el archivo"));
     reader.readAsDataURL(file);
   });
 }
@@ -166,11 +202,11 @@ export type TikTokPreview = {
 export async function getTikTokPreview(url: string): Promise<TikTokPreview> {
   const token = getAuthToken();
   if (!token) {
-    throw new Error("Sesión requerida");
+    throw new ErrorDeSubida("sesion", "Sesión requerida");
   }
 
   if (!url.includes("tiktok.com")) {
-    throw new Error("El URL debe ser de TikTok");
+    throw new ErrorDeSubida("urlTiktok", "El URL debe ser de TikTok");
   }
 
   const response = await fetch(`${API_BASE_URL}/uploads/tiktok/preview`, {
@@ -183,14 +219,13 @@ export async function getTikTokPreview(url: string): Promise<TikTokPreview> {
   });
 
   if (!response.ok) {
-    let errorMsg = `Error al obtener preview (${response.status})`;
+    let backend: string | undefined;
     try {
-      const json = await response.json();
-      errorMsg = json.message || errorMsg;
+      backend = (await response.json()).message;
     } catch {
-      // ignore
+      // el backend no siempre responde JSON
     }
-    throw new Error(errorMsg);
+    throw fallo(backend, "errorPreview", `Error al obtener preview (${response.status})`, response.status);
   }
 
   return response.json();
@@ -203,12 +238,12 @@ export async function getTikTokPreview(url: string): Promise<TikTokPreview> {
 export async function downloadFromTikTok(url: string): Promise<UploadResult> {
   const token = getAuthToken();
   if (!token) {
-    throw new Error("Sesión requerida para descargar videos");
+    throw new ErrorDeSubida("sesionDescargar", "Sesión requerida para descargar videos");
   }
 
   // Validar que sea un URL de TikTok
   if (!url.includes("tiktok.com")) {
-    throw new Error("El URL debe ser de TikTok");
+    throw new ErrorDeSubida("urlTiktok", "El URL debe ser de TikTok");
   }
 
   const response = await fetch(`${API_BASE_URL}/uploads/tiktok`, {
@@ -224,18 +259,17 @@ export async function downloadFromTikTok(url: string): Promise<UploadResult> {
 
   // Verificar errores HTTP
   if (!response.ok) {
-    const errorMsg = json.message || `Error al descargar video (${response.status})`;
-    throw new Error(errorMsg);
+    throw fallo(json.message, "errorDescargar", `Error al descargar video (${response.status})`, response.status);
   }
 
   // Verificar que la respuesta sea exitosa
   if (!json.success) {
-    throw new Error(json.message || "El servidor reportó un error al procesar el video");
+    throw json.message ? new Error(json.message) : new ErrorDeSubida("errorProcesar", "El servidor reportó un error al procesar el video");
   }
 
   // Verificar que tengamos los datos necesarios
   if (!json.url || !json.storagePath) {
-    throw new Error("El servidor no devolvió los datos del video correctamente");
+    throw new ErrorDeSubida("sinDatosVideo", "El servidor no devolvió los datos del video correctamente");
   }
 
   return {
@@ -251,7 +285,7 @@ export async function downloadFromTikTok(url: string): Promise<UploadResult> {
 export async function uploadLicenseScreenshot(file: File): Promise<UploadResult> {
   const token = getAuthToken();
   if (!token) {
-    throw new Error("Sesión requerida para subir evidencia");
+    throw new ErrorDeSubida("sesionEvidencia", "Sesión requerida para subir evidencia");
   }
 
   // Validar tipo de archivo
@@ -261,12 +295,12 @@ export async function uploadLicenseScreenshot(file: File): Promise<UploadResult>
   const isImageExtension = validExtensions.includes(ext);
 
   if (!isImageMimetype && !isImageExtension) {
-    throw new Error("Solo se permiten imágenes (jpg, png, webp, gif)");
+    throw new ErrorDeSubida("soloImagenesEvidencia", "Solo se permiten imágenes (jpg, png, webp, gif)");
   }
 
   // Validar tamaño (10MB max)
   if (file.size > 10 * 1024 * 1024) {
-    throw new Error("El archivo debe pesar menos de 10MB");
+    throw new ErrorDeSubida("evidenciaMuyPesada", "El archivo debe pesar menos de 10MB");
   }
 
   const formData = new FormData();
@@ -281,20 +315,19 @@ export async function uploadLicenseScreenshot(file: File): Promise<UploadResult>
   });
 
   if (!response.ok) {
-    let errorMsg = `Error al subir screenshot (${response.status})`;
+    let backend: string | undefined;
     try {
-      const json = await response.json();
-      errorMsg = json.message || errorMsg;
+      backend = (await response.json()).message;
     } catch {
-      // ignore
+      // el backend no siempre responde JSON
     }
-    throw new Error(errorMsg);
+    throw fallo(backend, "errorScreenshot", `Error al subir screenshot (${response.status})`, response.status);
   }
 
   const json = await response.json();
 
   if (!json.url) {
-    throw new Error("El servidor no devolvió la URL del screenshot");
+    throw new ErrorDeSubida("sinUrlScreenshot", "El servidor no devolvió la URL del screenshot");
   }
 
   return {
@@ -334,12 +367,12 @@ async function subirImagen(
   campos: Record<string, string>,
 ): Promise<UploadResult> {
   const token = getAuthToken();
-  if (!token) throw new Error("Sesión requerida para subir imágenes");
+  if (!token) throw new ErrorDeSubida("sesionImagenes", "Sesión requerida para subir imágenes");
   if (!file.type.startsWith("image/")) {
-    throw new Error("El archivo tiene que ser una imagen");
+    throw new ErrorDeSubida("noEsImagen", "El archivo tiene que ser una imagen");
   }
   if (file.size > 25 * 1024 * 1024) {
-    throw new Error("La imagen debe pesar menos de 25MB");
+    throw new ErrorDeSubida("imagenMuyPesada", "La imagen debe pesar menos de 25MB");
   }
 
   const formData = new FormData();
@@ -353,13 +386,13 @@ async function subirImagen(
   });
 
   if (!response.ok) {
-    let msg = `Error al subir la imagen (${response.status})`;
+    let backend: string | undefined;
     try {
-      msg = (await response.json()).message || msg;
+      backend = (await response.json()).message;
     } catch {
       // el backend no siempre responde JSON
     }
-    throw new Error(msg);
+    throw fallo(backend, "errorImagen", `Error al subir la imagen (${response.status})`, response.status);
   }
 
   const json = await response.json();
@@ -377,7 +410,7 @@ export async function uploadPortada(
   expedienteId: string
 ): Promise<UploadResult> {
   const token = getAuthToken();
-  if (!token) throw new Error("Sesión requerida para subir la portada");
+  if (!token) throw new ErrorDeSubida("sesionPortada", "Sesión requerida para subir la portada");
 
   const formData = new FormData();
   formData.append("file", file);
@@ -391,7 +424,7 @@ export async function uploadPortada(
 
   const json = await response.json().catch(() => ({}));
   if (!response.ok || !json.success) {
-    throw new Error(json.message || "No se pudo subir la portada");
+    throw json.message ? new Error(json.message) : new ErrorDeSubida("errorPortada", "No se pudo subir la portada");
   }
   return { url: json.url, path: json.path, storagePath: json.storagePath };
 }
@@ -414,7 +447,7 @@ export function uploadCamara(
 ): Promise<UploadResult> {
   const token = getAuthToken();
   if (!token) {
-    return Promise.reject(new Error("Sesión requerida para subir el video"));
+    return Promise.reject(new ErrorDeSubida("sesionVideo", "Sesión requerida para subir el video"));
   }
 
   const formData = new FormData();
@@ -440,7 +473,7 @@ export function uploadCamara(
         // llegar al handler; el status de abajo es el que decide.
       }
       if (xhr.status < 200 || xhr.status >= 300 || !json.success) {
-        reject(new Error(json.message || "No se pudo subir el video"));
+        reject(json.message ? new Error(json.message) : new ErrorDeSubida("errorVideo", "No se pudo subir el video"));
         return;
       }
       resolve({ url: json.url, path: json.path, storagePath: json.storagePath });
@@ -449,8 +482,8 @@ export function uploadCamara(
     // Un corte de red no deja mensaje propio: sin esto el error que llega es un
     // ProgressEvent vacio y la pantalla no sabe que decir.
     xhr.onerror = () =>
-      reject(new Error("Se cortó la conexión mientras se subía el video"));
-    xhr.onabort = () => reject(new Error("Se canceló la subida"));
+      reject(new ErrorDeSubida("seCorto", "Se cortó la conexión mientras se subía el video"));
+    xhr.onabort = () => reject(new ErrorDeSubida("seCancelo", "Se canceló la subida"));
 
     xhr.send(formData);
   });
@@ -462,9 +495,9 @@ export function uploadCamara(
  */
 export async function uploadMarcaLogo(file: File, marcaId: string): Promise<string> {
   const token = getAuthToken();
-  if (!token) throw new Error("Sesión requerida para subir el logo");
-  if (!file.type.startsWith("image/")) throw new Error("El logo tiene que ser una imagen (PNG o JPG)");
-  if (file.size > 10 * 1024 * 1024) throw new Error("El logo debe pesar menos de 10 MB");
+  if (!token) throw new ErrorDeSubida("sesionLogo", "Sesión requerida para subir el logo");
+  if (!file.type.startsWith("image/")) throw new ErrorDeSubida("logoNoImagen", "El logo tiene que ser una imagen (PNG o JPG)");
+  if (file.size > 10 * 1024 * 1024) throw new ErrorDeSubida("logoMuyPesado", "El logo debe pesar menos de 10 MB");
 
   const formData = new FormData();
   formData.append("file", file);
@@ -475,13 +508,13 @@ export async function uploadMarcaLogo(file: File, marcaId: string): Promise<stri
     body: formData,
   });
   if (!response.ok) {
-    let mensaje = `No se pudo subir el logo (${response.status})`;
+    let backend: string | undefined;
     try {
-      mensaje = (await response.json()).message || mensaje;
+      backend = (await response.json()).message;
     } catch {
-      // sin cuerpo
+      // el backend no siempre responde JSON
     }
-    throw new Error(mensaje);
+    throw fallo(backend, "errorLogo", `No se pudo subir el logo (${response.status})`, response.status);
   }
   return (await response.json()).url as string;
 }

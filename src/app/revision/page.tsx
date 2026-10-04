@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { NetworkStatus, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { COLA_DE_REVISION, EXPEDIENTES_FALLIDOS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { VideoCard, Expediente } from "@/components/VideoCard";
@@ -10,10 +11,7 @@ import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 
 type Orden = "ANTIGUOS" | "RECIENTES";
 
-const ORDENES: Array<{ valor: Orden; label: string }> = [
-  { valor: "ANTIGUOS", label: "Más antiguos" },
-  { valor: "RECIENTES", label: "Más recientes" },
-];
+const ORDENES: Orden[] = ["ANTIGUOS", "RECIENTES"];
 
 interface ExpedienteFallido {
   _id: string;
@@ -28,6 +26,8 @@ export default function RevisionPage() {
   // La cola es del espacio de trabajo activo: no hay filtro de marca suelto,
   // porque ver la cola de una marca mientras trabajas en otra es la confusion
   // que el selector de marca existe para evitar.
+  const t = useTranslations("revision");
+  const locale = useLocale();
   const { activa: marcaActiva } = useMarcaActiva();
   const [showFallidos, setShowFallidos] = useState(false);
   const [orden, setOrden] = useState<Orden>("ANTIGUOS");
@@ -71,21 +71,21 @@ export default function RevisionPage() {
       {/* Header */}
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Cola de Revisión</h1>
+          <h1 className="text-2xl font-bold">{t("titulo")}</h1>
           <p className="mt-1 text-white/50">
-            {cola.length} video{cola.length !== 1 ? "s" : ""} pendiente{cola.length !== 1 ? "s" : ""} de revisión
+            {t("pendientes", { n: cola.length })}
           </p>
           <p
             className="mt-1 text-xs text-white/30"
             title={
               ultimaActualizacion
-                ? `Última consulta: ${fechaCompleta(ultimaActualizacion)}`
+                ? t("ultimaConsulta", { fecha: fechaCompleta(ultimaActualizacion, locale) })
                 : undefined
             }
           >
             {ultimaActualizacion
-              ? `Actualizado ${tiempoRelativo(ultimaActualizacion, ahora)} · se refresca cada 15s`
-              : "Cargando…"}
+              ? t("actualizado", { tiempo: tiempoRelativo(ultimaActualizacion, ahora, locale) })
+              : t("cargando")}
           </p>
         </div>
 
@@ -94,9 +94,9 @@ export default function RevisionPage() {
             onClick={() => refetch()}
             disabled={recargando}
             className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/60 transition hover:bg-white/5 disabled:opacity-50"
-            title="Volver a consultar ahora"
+            title={t("consultarAhora")}
           >
-            {recargando ? "Actualizando…" : "↻ Actualizar"}
+            {recargando ? t("actualizando") : t("actualizar")}
           </button>
           {fallidos.length > 0 && (
             <button
@@ -107,7 +107,7 @@ export default function RevisionPage() {
                   : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
               }`}
             >
-              {showFallidos ? "Ocultar" : "Ver"} fallidos ({fallidos.length})
+              {t(showFallidos ? "ocultarFallidos" : "verFallidos", { n: fallidos.length })}
             </button>
           )}
         </div>
@@ -122,7 +122,7 @@ export default function RevisionPage() {
           >
             <span>
               <span className="block text-[10px] uppercase tracking-wider text-white/35">
-                Cola de
+                {t("colaDe")}
               </span>
               <span className="block text-sm font-medium">
                 {marcaActiva.nombre}
@@ -131,25 +131,25 @@ export default function RevisionPage() {
           </div>
         ) : (
           <p className="text-sm text-amber-400">
-            Sin página activa: no hay cola que mostrar
+            {t("sinPagina")}
           </p>
         )}
 
         {/* Orden: por defecto FIFO, para que nada se quede atrás en la cola */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-white/40">Orden</span>
+          <span className="text-xs text-white/40">{t("orden")}</span>
           <div className="flex overflow-hidden rounded-lg border border-white/10">
             {ORDENES.map((o) => (
               <button
-                key={o.valor}
-                onClick={() => setOrden(o.valor)}
+                key={o}
+                onClick={() => setOrden(o)}
                 className={`px-3 py-2 text-xs font-medium transition ${
-                  orden === o.valor
+                  orden === o
                     ? "bg-white/15 text-white"
                     : "text-white/50 hover:bg-white/5"
                 }`}
               >
-                {o.label}
+                {t(`ordenes.${o}`)}
               </button>
             ))}
           </div>
@@ -160,7 +160,7 @@ export default function RevisionPage() {
       {showFallidos && fallidos.length > 0 && (
         <div className="mb-8">
           <h2 className="mb-4 text-lg font-semibold text-red-400">
-            Expedientes Fallidos
+            {t("fallidosTitulo")}
           </h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {fallidos.map((exp) => (
@@ -170,25 +170,25 @@ export default function RevisionPage() {
               >
                 <div className="mb-3 flex items-center justify-between">
                   <span className="rounded bg-red-500/20 px-2 py-1 text-xs font-medium text-red-400">
-                    FALLIDO
+                    {t("fallido")}
                   </span>
                   <span className="text-xs text-white/40">
-                    {exp.createdAt ? new Date(exp.createdAt).toLocaleString() : ""}
+                    {exp.createdAt ? new Date(exp.createdAt).toLocaleString(locale) : ""}
                   </span>
                 </div>
                 <div className="space-y-1 text-sm">
                   <p>
-                    <span className="text-white/40">Página:</span>{" "}
+                    <span className="text-white/40">{t("pagina")}</span>{" "}
                     <span className="text-white/70">
                       {marcaActiva?.nombre ?? exp.marcaId}
                     </span>
                   </p>
                   <p>
-                    <span className="text-white/40">Tipo:</span>{" "}
+                    <span className="text-white/40">{t("tipo")}</span>{" "}
                     <span className="text-white/70">{exp.tipoDeValor}</span>
                   </p>
                   <p className="truncate">
-                    <span className="text-white/40">ID:</span>{" "}
+                    <span className="text-white/40">{t("id")}</span>{" "}
                     <span className="font-mono text-xs text-white/50">{exp._id}</span>
                   </p>
                 </div>
@@ -222,12 +222,12 @@ export default function RevisionPage() {
         <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
           <div className="mb-4 text-5xl opacity-30">✅</div>
           <p className="text-lg font-medium text-white/60">
-            No hay videos en revisión
+            {t("vacio")}
           </p>
           <p className="mt-1 text-sm text-white/40">
             {marcaActiva
-              ? `Nada pendiente en ${marcaActiva.nombre}`
-              : "Todos los videos han sido procesados"}
+              ? t("nadaEn", { marca: marcaActiva.nombre })
+              : t("todoProcesado")}
           </p>
         </div>
       )}

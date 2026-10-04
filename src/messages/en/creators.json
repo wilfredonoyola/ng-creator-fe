@@ -1,0 +1,87 @@
+{
+  "plantillas": {
+    "solicitudUso": {
+      "nombre": "Usage request",
+      "texto": "Hi {nombre}!\n\nWe're the NG Video Creator team and we loved your video. We'd like to know if you'd give us permission to use it on our social media.\n\nWe'd credit you as @{handle} in every post.\n\nThanks!"
+    },
+    "solicitudExclusiva": {
+      "nombre": "Meta exclusive request",
+      "texto": "Hi {nombre}!\n\nWe're NG Video Creator. We're interested in publishing your content exclusively on Meta (Facebook/Instagram).\n\nThat means we'd be the only ones who could publish your video on these platforms, and we'd always give you credit.\n\nDoes that sound good? We can talk through the details.\n\nThanks!"
+    },
+    "agradecimiento": {
+      "nombre": "Thanks for permission",
+      "texto": "Thanks {nombre}!\n\nWe confirm we have your permission to use your content. We'll let you know when we publish and we'll always credit you as @{handle}.\n\nCheers!"
+    },
+    "recordatorio": {
+      "nombre": "Request reminder",
+      "texto": "Hi {nombre}!\n\nWe wrote to you a few days ago asking for permission to use your video. We'd love to know if you're interested.\n\nLooking forward to hearing from you!"
+    }
+  },
+  "errorScreenshot": "Error uploading screenshot",
+  "confirmarEliminar": "Delete this evidence?",
+  "errorEliminar": "Error deleting",
+  "titulo": "Creators",
+  "subtitulo": "Manage creators and their licenses",
+  "nuevaLicencia": "+ License",
+  "nuevoCreator": "+ Creator",
+  "stats": {
+    "totales": "Total creators",
+    "propios": "In-house",
+    "licenciasActivas": "Active licenses"
+  },
+  "propio": "In-house",
+  "externo": "External",
+  "licencias": "{n, plural, one {# license} other {# licenses}}",
+  "cargandoEvidencias": "Loading evidence...",
+  "eliminar": "Delete",
+  "altScreenshot": "Screenshot",
+  "sinEvidencias": "No evidence",
+  "agregarMensaje": "+ Message",
+  "agregarCaptura": "+ Screenshot",
+  "vacio": {
+    "titulo": "No creators yet",
+    "detalle": "Create your first creator to get started",
+    "crear": "Create Creator"
+  },
+  "modalCreator": {
+    "titulo": "New Creator",
+    "nombre": "Name *",
+    "placeholderNombre": "Creator name",
+    "handle": "Handle",
+    "placeholderHandle": "@username (optional)"
+  },
+  "modalLicencia": {
+    "titulo": "New License",
+    "creator": "Creator *",
+    "seleccionarCreator": "Select creator",
+    "tipo": "License type *",
+    "seleccionarTipo": "Select type",
+    "PROPIO": "In-house - Our own material",
+    "META_EXCLUSIVO": "Meta Exclusive - Facebook/Instagram only",
+    "SOLO_PUBLICACION": "Single Post - One-time use"
+  },
+  "modalMensaje": {
+    "titulo": "Add Message",
+    "para": "To: {nombre}",
+    "template": "Template",
+    "mensaje": "Message",
+    "placeholder": "Write or pick a template...",
+    "copiar": "Copy"
+  },
+  "modalCaptura": {
+    "titulo": "Upload Screenshot",
+    "altPreview": "Preview",
+    "quitar": "Remove image",
+    "elegir": "Click to select an image",
+    "nota": "Note (optional)",
+    "placeholderNota": "E.g.: Confirmed via DM"
+  },
+  "cancelar": "Cancel",
+  "creando": "Creating...",
+  "crear": "Create",
+  "guardando": "Saving...",
+  "guardar": "Save",
+  "subiendo": "Uploading...",
+  "subir": "Upload",
+  "altEvidencia": "Evidence"
+}

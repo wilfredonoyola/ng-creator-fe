@@ -1,0 +1,78 @@
+{
+  "periodos": {
+    "7": "7 días",
+    "28": "28 días",
+    "90": "90 días",
+    "0": "Todo el historial"
+  },
+  "tipos": {
+    "IMAGEN": "Imagen",
+    "VIDEO": "Video",
+    "ENLACE": "Enlace",
+    "TEXTO": "Texto",
+    "OTRO": "Otro"
+  },
+  "dias": {
+    "1": "Domingo",
+    "2": "Lunes",
+    "3": "Martes",
+    "4": "Miércoles",
+    "5": "Jueves",
+    "6": "Viernes",
+    "7": "Sábado"
+  },
+  "diasCortos": {
+    "1": "Dom",
+    "2": "Lun",
+    "3": "Mar",
+    "4": "Mié",
+    "5": "Jue",
+    "6": "Vie",
+    "7": "Sáb"
+  },
+  "sinPagina": {
+    "titulo": "No hay ninguna página activa",
+    "detalle": "El análisis es del historial de una página. Elegí una en el switch de la izquierda."
+  },
+  "titulo": "Análisis",
+  "subtitulo": "Qué y cuándo conviene publicar en",
+  "sinHistorial": {
+    "titulo": "Esta página no tiene historial sincronizado",
+    "detalle": "El análisis se arma con las publicaciones que ya trajimos de Facebook. Sincronizá algún año desde Revival y volvé."
+  },
+  "cifras": {
+    "publicaciones": "Publicaciones · {dias}d",
+    "scorePromedio": "Score promedio",
+    "reacciones": "Reacciones",
+    "comentarios": "Comentarios",
+    "vsAnterior": "{flecha} {porcentaje}% vs período anterior"
+  },
+  "conclusion": {
+    "titulo": "Lo que dice tu historial",
+    "hora": "Tu mejor hora es alrededor de las <b>{hora}</b>, sobre {n} publicaciones.",
+    "dia": "El mejor día es el <b>{dia}</b>, sobre {n} publicaciones.",
+    "formato": "El formato que mejor rinde es <b>{tipo}</b>, sobre {n} publicaciones.",
+    "nota": "Solo se consideran tramos con muestra suficiente. Las horas con pocas publicaciones quedan afuera aunque tengan mejor promedio."
+  },
+  "porHora": {
+    "titulo": "Por hora del día",
+    "descripcion": "Score promedio de cada hora, en tu zona horaria ({zona})."
+  },
+  "porDia": {
+    "titulo": "Por día de la semana",
+    "descripcion": "Score promedio según el día en que salió la publicación."
+  },
+  "porTipo": {
+    "titulo": "Por tipo de contenido",
+    "descripcion": "Ordenado por score promedio."
+  },
+  "columnas": {
+    "tipo": "Tipo",
+    "tramo": "Tramo",
+    "posts": "Posts",
+    "score": "Score prom."
+  },
+  "verTabla": "Ver los números en tabla",
+  "tablaHora": "Por hora",
+  "tablaDia": "Por día"
+}

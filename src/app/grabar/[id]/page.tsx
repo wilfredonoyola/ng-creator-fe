@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/client";
-import { uploadCamara } from "@/lib/upload";
+import { useTranslations } from "next-intl";
+import { ErrorDeSubida, uploadCamara } from "@/lib/upload";
 import { ADJUNTAR_GRABACION, SESION_GRABACION } from "@/graphql/operations";
 import { haySesion } from "@/lib/auth";
 
@@ -54,6 +55,8 @@ function enMegas(bytes: number): string {
  */
 export default function GrabarPage({ params }: { params: { id: string } }) {
   const { id } = params;
+  const tr = useTranslations("grabar");
+  const tSubida = useTranslations("erroresSubida");
   /**
    * Si el componente ya corrio en el navegador.
    *
@@ -84,8 +87,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         if (!s) {
           setSesion({
             tipo: "rota",
-            mensaje:
-              "Este código ya no sirve: los códigos duran 6 horas. Generá uno nuevo en la computadora y volvé a escanear.",
+            mensaje: tr("sesion.vencida"),
             reintentable: false,
           });
         } else if (s.storagePath) {
@@ -94,8 +96,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           // que se mande ahora no llega a ninguna parte.
           setSesion({
             tipo: "rota",
-            mensaje:
-              "Este código ya se usó. Cada código sirve para un solo video: generá uno nuevo en la computadora.",
+            mensaje: tr("sesion.usada"),
             reintentable: false,
           });
         } else {
@@ -105,7 +106,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
         if (!vivo) return;
         setSesion({
           tipo: "rota",
-          mensaje: e?.message ?? "No pudimos verificar el código",
+          mensaje: e?.message ?? tr("sesion.errorVerificar"),
           reintentable: true,
         });
       }
@@ -113,7 +114,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     return () => {
       vivo = false;
     };
-  }, [montado, id, cliente, intento]);
+  }, [montado, id, cliente, intento, tr]);
 
   const [estado, setEstado] = useState<Estado>("eligiendo");
   const [error, setError] = useState<string | null>(null);
@@ -225,10 +226,10 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       // decir dónde se habilita, o la pantalla queda muda sin explicar nada.
       setError(
         e?.name === "NotAllowedError"
-          ? "No diste permiso de cámara o micrófono. Habilitalos para este sitio en la configuración del navegador y volvé a entrar."
+          ? tr("errores.sinPermiso")
           : e?.name === "NotFoundError"
-            ? "No encontramos cámara en este dispositivo."
-            : `No se pudo usar la cámara: ${e?.message ?? "error desconocido"}`,
+            ? tr("errores.sinCamara")
+            : tr("errores.camara", { mensaje: e?.message ?? tr("errores.desconocido") }),
       );
     }
   }
@@ -250,14 +251,15 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     // Antes esto salia en silencio si faltaba algo: se tocaba "Usar esta" y no
     // pasaba nada, sin ninguna pista de por que.
     if (!grabado) {
-      setError("No hay ningún video para enviar. Grabá o elegí uno.");
+      setError(tr("errores.sinVideo"));
       return;
     }
     if (grabado.blob.size > TOPE_BYTES) {
       setError(
-        `El video pesa ${enMegas(grabado.blob.size)} y el máximo son ${enMegas(
-          TOPE_BYTES,
-        )}. Grabá una toma más corta.`,
+        tr("errores.muyPesado", {
+          peso: enMegas(grabado.blob.size),
+          maximo: enMegas(TOPE_BYTES),
+        }),
       );
       return;
     }
@@ -280,7 +282,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       });
       setEstado("listo");
     } catch (err: any) {
-      setError(err?.message ?? "No se pudo enviar el video");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err?.message ?? tr("errores.enviar"));
       setEstado("revisando");
     }
   }
@@ -296,9 +298,9 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
   if (!haySesion()) {
     return (
       <Marco>
-        <p className="text-sm text-white/70">Necesitás iniciar sesión</p>
+        <p className="text-sm text-white/70">{tr("login.titulo")}</p>
         <p className="mt-1 text-xs text-white/40">
-          Es una sola vez en este teléfono. Después volvé a escanear el código.
+          {tr("login.detalle")}
         </p>
         {/* Vuelve a ESTA pantalla al entrar. Sin esto se caia en el tablero y
             habia que volver a escanear el codigo, que se sentia como que el
@@ -307,7 +309,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           href={`/login?volverA=${encodeURIComponent(`/grabar/${id}`)}`}
           className="mt-4 inline-block rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta"
         >
-          Iniciar sesión
+          {tr("login.boton")}
         </a>
       </Marco>
     );
@@ -317,15 +319,15 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     return (
       <Marco>
         <div className="text-5xl">✓</div>
-        <p className="mt-3 text-lg font-semibold text-ng-teal">Video enviado</p>
+        <p className="mt-3 text-lg font-semibold text-ng-teal">{tr("listo.titulo")}</p>
         <p className="mt-1 text-sm text-white/50">
-          Seguí en la computadora: ya te aparece cargado.
+          {tr("listo.detalle")}
         </p>
         {/* Antes habia un "Grabar otro" que mentia: la computadora deja de
             escuchar en cuanto recoge el video, asi que el segundo salia, decia
             que se habia enviado, y no llegaba nunca a ninguna parte. */}
         <p className="mt-6 text-xs text-white/30">
-          ¿Querés mandar otra toma? Generá un código nuevo en la computadora.
+          {tr("listo.otraToma")}
         </p>
       </Marco>
     );
@@ -335,7 +337,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
     return (
       <Marco>
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
-        <p className="mt-3 text-xs text-white/40">Verificando el código…</p>
+        <p className="mt-3 text-xs text-white/40">{tr("verificando")}</p>
       </Marco>
     );
   }
@@ -350,7 +352,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             onClick={() => setIntento((n) => n + 1)}
             className="mt-5 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta"
           >
-            Reintentar
+            {tr("reintentar")}
           </button>
         )}
       </Marco>
@@ -370,10 +372,10 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
       }}
     >
       <h1 className="text-center text-sm font-semibold">
-        Grabar para el montaje
+        {tr("titulo")}
       </h1>
       <p className="mt-1 text-center text-xs text-white/35">
-        Se envía a la computadora donde lo estás armando
+        {tr("subtitulo")}
       </p>
 
       {/* El círculo NO es decoración: es el recorte exacto que va a salir en el
@@ -411,7 +413,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
               <span className="text-3xl opacity-40">📷</span>
               <p className="mt-2 text-[11px] leading-snug text-white/35">
-                Acá vas a verte. Así, en círculo, es como sale en el video.
+                {tr("guiaCirculo")}
               </p>
             </div>
           )}
@@ -419,7 +421,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           {estado === "revisando" && !reproduciendo && (
             <button
               onClick={alternarRevision}
-              aria-label="Reproducir la toma"
+              aria-label={tr("reproducirToma")}
               className="absolute inset-0 flex items-center justify-center bg-black/30"
             >
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-marca text-xl text-ng-tinta">
@@ -438,7 +440,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
 
       {estado === "grabando" && segundos > AVISO_MIN * 60 && (
         <p className="mt-3 text-center text-[11px] text-amber-300">
-          Con esto ya tenés de sobra. Grabar más hace la subida lenta.
+          {tr("deSobra")}
         </p>
       )}
 
@@ -455,7 +457,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               onClick={empezar}
               className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-ng-tinta"
             >
-              ● Grabar acá
+              {tr("grabarAca")}
             </button>
             <label className="block w-full cursor-pointer rounded-xl border border-white/15 py-4 text-center text-base text-white/70">
               <input
@@ -464,11 +466,10 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
                 className="hidden"
                 onChange={elegirArchivo}
               />
-              Elegir un video
+              {tr("elegirVideo")}
             </label>
             <p className="text-center text-[11px] text-white/25">
-              Grabar acá te muestra el recorte real. Elegir un video abre la
-              cámara del teléfono, que graba mejor.
+              {tr("explicacionCaminos")}
             </p>
           </>
         )}
@@ -478,7 +479,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
             onClick={detener}
             className="w-full rounded-xl bg-red-500 py-4 text-base font-semibold text-white"
           >
-            ■ Detener
+            {tr("detener")}
           </button>
         )}
 
@@ -486,14 +487,14 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           <>
             {grabado && (
               <p className="text-center text-[11px] text-white/30">
-                Tocá el círculo para ver la toma · {enMegas(grabado.blob.size)}
+                {tr("tocaCirculo", { peso: enMegas(grabado.blob.size) })}
               </p>
             )}
             <button
               onClick={enviar}
               className="w-full rounded-xl bg-marca py-4 text-base font-semibold text-ng-tinta"
             >
-              Usar esta
+              {tr("usarEsta")}
             </button>
             <button
               onClick={() => {
@@ -503,7 +504,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               }}
               className="w-full rounded-xl border border-white/15 py-3 text-sm text-white/60"
             >
-              Repetir
+              {tr("repetir")}
             </button>
           </>
         )}
@@ -512,7 +513,7 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
           <div className="py-2">
             <div className="mb-2 flex items-center justify-between text-sm">
               <span className="text-white/60">
-                {avance >= 100 ? "Avisando a la computadora…" : "Enviando…"}
+                {avance >= 100 ? tr("avisando") : tr("enviando")}
               </span>
               <span className="tabular-nums text-white/40">{avance}%</span>
             </div>
@@ -526,7 +527,8 @@ export default function GrabarPage({ params }: { params: { id: string } }) {
               />
             </div>
             <p className="mt-2 text-center text-[11px] text-white/25">
-              No cierres esta pantalla hasta que termine
+              {tr("noCierres")}
+
             </p>
           </div>
         )}

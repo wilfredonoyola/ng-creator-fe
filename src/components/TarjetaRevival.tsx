@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { Autoria, SelloDeAutoria } from "./SelloDeAutoria";
 
 export type EstadoRevival =
@@ -39,15 +40,7 @@ export interface PostRevival {
   estado: EstadoRevival;
 }
 
-export const ETIQUETA_ESTADO: Record<EstadoRevival, string> = {
-  NUEVO: "Nuevo",
-  PARA_TRABAJAR: "Para trabajar",
-  EN_TRABAJO: "En trabajo",
-  EN_REVISION: "En revisión",
-  PROGRAMADO: "Programado",
-  PUBLICADO: "Publicado",
-  DESCARTADO: "Descartado",
-};
+/** El nombre de cada estado está en `revivalTarjeta.json` (`estados.<estado>`). */
 
 const COLOR_ESTADO: Record<EstadoRevival, string> = {
   NUEVO: "bg-white/10 text-white/50",
@@ -74,28 +67,18 @@ const ICONO_TIPO: Record<PostRevival["tipo"], string> = {
  * estado con un botón: abren el panel de trabajo, donde el avance depende de
  * generar el prompt, subir la imagen y publicar.
  */
-const SIGUIENTE: Partial<
-  Record<EstadoRevival, { estado: EstadoRevival; texto: string }>
-> = {
-  NUEVO: { estado: "PARA_TRABAJAR", texto: "Trabajar" },
-  PARA_TRABAJAR: { estado: "EN_TRABAJO", texto: "Empezar" },
-  DESCARTADO: { estado: "NUEVO", texto: "Recuperar" },
-};
+const SIGUIENTE = {
+  NUEVO: "PARA_TRABAJAR",
+  PARA_TRABAJAR: "EN_TRABAJO",
+  DESCARTADO: "NUEVO",
+} as const satisfies Partial<Record<EstadoRevival, EstadoRevival>>;
+type ConSiguiente = keyof typeof SIGUIENTE;
+const tieneSiguiente = (e: EstadoRevival): e is ConSiguiente => e in SIGUIENTE;
 
 /** Etapas cuyo trabajo ocurre dentro del panel, no con un cambio de estado. */
-const ABRE_PANEL: EstadoRevival[] = [
-  "EN_TRABAJO",
-  "EN_REVISION",
-  "PROGRAMADO",
-  "PUBLICADO",
-];
-
-const TEXTO_PANEL: Partial<Record<EstadoRevival, string>> = {
-  EN_TRABAJO: "Generar imagen",
-  EN_REVISION: "Revisar y publicar",
-  PROGRAMADO: "Ver programación",
-  PUBLICADO: "Ver resultado",
-};
+const ABRE_PANEL = ["EN_TRABAJO", "EN_REVISION", "PROGRAMADO", "PUBLICADO"] as const;
+type AbrePanel = (typeof ABRE_PANEL)[number];
+const abrePanel = (e: EstadoRevival): e is AbrePanel => (ABRE_PANEL as readonly string[]).includes(e);
 
 /**
  * Una publicación del historial, con su imagen a tamaño útil.
@@ -117,9 +100,10 @@ export function TarjetaRevival({
 }) {
   // La copia en Bunny es permanente; la de Facebook caduca. Se prefiere la
   // nuestra cuando existe.
+  const t = useTranslations("revivalTarjeta");
+  const locale = useLocale();
   const imagen = post.imagenGuardadaUrl || post.imagenUrl;
-  const siguiente = SIGUIENTE[post.estado];
-  const numero = (n: number) => n.toLocaleString("es");
+  const numero = (n: number) => n.toLocaleString(locale);
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
@@ -143,7 +127,7 @@ export function TarjetaRevival({
         <span
           className={`absolute left-2 top-2 rounded-md px-2 py-0.5 text-[10px] font-medium ${COLOR_ESTADO[post.estado]}`}
         >
-          {ETIQUETA_ESTADO[post.estado]}
+          {t(`estados.${post.estado}`)}
         </span>
         <span className="absolute right-2 top-2 rounded-md bg-black/70 px-2 py-0.5 text-[11px] font-bold text-ng-teal">
           {numero(post.score)}
@@ -157,8 +141,8 @@ export function TarjetaRevival({
           <span
             title={
               post.historiaPublicadaEn
-                ? "Historia publicada"
-                : "Falta subir la historia"
+                ? t("historiaPublicada")
+                : t("faltaHistoria")
             }
             className={`absolute bottom-2 left-2 rounded-md px-2 py-0.5 text-[10px] font-medium ${
               post.historiaPublicadaEn
@@ -166,28 +150,28 @@ export function TarjetaRevival({
                 : "bg-amber-500/25 text-amber-200"
             }`}
           >
-            {post.historiaPublicadaEn ? "📱 Historia" : "📱 Falta"}
+            {post.historiaPublicadaEn ? t("historia") : t("falta")}
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col p-3">
         <p className="line-clamp-2 min-h-[2.5rem] text-xs text-white/70">
-          {post.mensaje || <span className="text-white/25">Sin texto</span>}
+          {post.mensaje || <span className="text-white/25">{t("sinTexto")}</span>}
         </p>
 
         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-white/40">
-          <span title="Reacciones">❤️ {numero(post.reacciones)}</span>
-          <span title="Comentarios">💬 {numero(post.comentarios)}</span>
-          <span title="Compartidos">🔁 {numero(post.compartidos)}</span>
+          <span title={t("reacciones")}>❤️ {numero(post.reacciones)}</span>
+          <span title={t("comentarios")}>💬 {numero(post.comentarios)}</span>
+          <span title={t("compartidos")}>🔁 {numero(post.compartidos)}</span>
           {post.reproducciones != null && (
-            <span title="Reproducciones">▶️ {numero(post.reproducciones)}</span>
+            <span title={t("reproducciones")}>▶️ {numero(post.reproducciones)}</span>
           )}
         </div>
 
         <div className="mt-1 flex items-center gap-2 text-[10px] text-white/25">
           <span>
-            {new Date(post.publicadoEn).toLocaleDateString("es", {
+            {new Date(post.publicadoEn).toLocaleDateString(locale, {
               day: "numeric",
               month: "short",
               year: "numeric",
@@ -200,7 +184,7 @@ export function TarjetaRevival({
               rel="noopener noreferrer"
               className="hover:text-ng-celeste"
             >
-              ver original
+              {t("verOriginal")}
             </a>
           )}
         </div>
@@ -210,44 +194,44 @@ export function TarjetaRevival({
             Lo que se pregunta al ver algo programado es quién lo puso ahí. */}
         {post.estado === "PROGRAMADO" || post.estado === "PUBLICADO" ? (
           <SelloDeAutoria
-            accion={post.estado === "PROGRAMADO" ? "programado" : "publicado"}
+            accion={post.estado === "PROGRAMADO" ? t("sello.programado") : t("sello.publicado")}
             autoria={post.publicadoPor}
           />
         ) : (
-          <SelloDeAutoria accion="imagen subida" autoria={post.imagenSubidaPor} />
+          <SelloDeAutoria accion={t("sello.imagenSubida")} autoria={post.imagenSubidaPor} />
         )}
 
         {/* py-2.5 para que el objetivo sea cómodo de tocar: a dos columnas en
             un teléfono la tarjeta mide unos 170px y los botones quedan chicos. */}
         <div className="mt-3 flex gap-2">
-          {ABRE_PANEL.includes(post.estado) ? (
+          {abrePanel(post.estado) ? (
             <button
               onClick={() => onAbrirPanel(post)}
               className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110"
             >
-              {TEXTO_PANEL[post.estado]}
+              {t(`panel.${post.estado}`)}
             </button>
-          ) : siguiente ? (
+          ) : tieneSiguiente(post.estado) ? (
             <button
-              onClick={() => onCambiarEstado(post.postId, siguiente.estado)}
+              onClick={() => onCambiarEstado(post.postId, SIGUIENTE[post.estado as ConSiguiente])}
               disabled={ocupado}
               className="flex-1 rounded-lg bg-marca py-2.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
             >
-              {siguiente.texto}
+              {t(`siguiente.${post.estado}`)}
             </button>
           ) : null}
           {post.estado !== "DESCARTADO" && (
             <button
               onClick={() => onCambiarEstado(post.postId, "DESCARTADO")}
               disabled={ocupado}
-              title="Descartar"
-              aria-label="Descartar"
+              title={t("descartar")}
+              aria-label={t("descartar")}
               className="shrink-0 rounded-lg border border-white/10 px-3 py-2.5 text-xs text-white/40 transition hover:border-red-500/40 hover:text-red-400 disabled:opacity-40"
             >
               {/* La palabra no entra junto al botón principal en una tarjeta
                   angosta; el icono sí, y el aria-label mantiene el sentido. */}
               <span className="sm:hidden">✕</span>
-              <span className="hidden sm:inline">Descartar</span>
+              <span className="hidden sm:inline">{t("descartar")}</span>
             </button>
           )}
         </div>

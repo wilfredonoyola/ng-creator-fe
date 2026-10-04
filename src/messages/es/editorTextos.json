@@ -1,0 +1,49 @@
+{
+  "disenos": {
+    "impacto": "Impacto",
+    "caja": "Caja negra",
+    "marca": "Caja de la marca",
+    "amarillo": "Amarillo",
+    "sombra": "Sombra",
+    "limpio": "Limpio"
+  },
+  "efectos": {
+    "CONTORNO": "Contorno",
+    "SOMBRA": "Sombra",
+    "CAJA": "Caja",
+    "NINGUNO": "Nada"
+  },
+  "posiciones": {
+    "arriba": "Arriba",
+    "centro": "Centro",
+    "abajo": "Abajo"
+  },
+  "filas": {
+    "letra": "Letra",
+    "alrededor": "Alrededor",
+    "colores": "Colores",
+    "lugar": "Lugar",
+    "cuando": "Cuándo"
+  },
+  "colores": {
+    "texto": "Texto",
+    "destacado": "Destacado",
+    "caja": "Caja",
+    "sombra": "Sombra",
+    "contorno": "Contorno"
+  },
+  "textoNuevo": "Escribí el texto",
+  "vacio": "(vacío)",
+  "sinTextos": "Todavía no hay textos en este clip.",
+  "agregar": "Agregar texto ({n}/{max}) · elegí un diseño",
+  "tocaDestacadas": "Tocá las palabras que van destacadas",
+  "tamano": "Tamaño {n}",
+  "anchoMaximo": "Ancho máximo {n}%",
+  "oArrastralo": "o arrastralo en la vista previa",
+  "todoElClip": "Todo el clip",
+  "primeros3": "Primeros 3 s",
+  "de": "de",
+  "a": "a",
+  "quitar": "Quitar este texto",
+  "muestra": "Hola <d>tú</d>"
+}

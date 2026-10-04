@@ -1,0 +1,23 @@
+{
+  "errorGuardar": "Couldn't save the cover",
+  "errorSubir": "Couldn't upload the image",
+  "cambiar": "Change cover",
+  "elegir": "Choose cover",
+  "portada": "Cover",
+  "cerrar": "Close",
+  "pestanaCuadro": "A frame from the video",
+  "pestanaImagen": "Upload image",
+  "buscaCuadro": "Find the frame",
+  "guardando": "Saving…",
+  "guardada": "✓ Cover saved",
+  "usarCuadro": "Use this frame",
+  "actual": "Current cover",
+  "subiendo": "Uploading…",
+  "guardadaSubirOtra": "✓ Cover saved · upload another",
+  "elegiImagen": "Choose an image from your computer",
+  "formatos": "JPG, PNG or WEBP · up to 10MB",
+  "proporcion": "Use the same aspect ratio as the video (9:16 for a Reel), or Meta will crop it on its own.",
+  "asiSale": "✓ This is how the cover will look",
+  "altGuardada": "Saved cover",
+  "explicacion": "It's the Reel's cover and what gets published if you choose an image format."
+}

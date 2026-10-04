@@ -1,53 +1,17 @@
-export interface MessageTemplate {
-  id: string;
-  nombre: string;
-  texto: string;
-}
+/**
+ * Las plantillas de mensaje a creators. El nombre y el texto de cada una están
+ * en `creators.json` (`plantillas.<clave>.nombre` / `.texto`), en el idioma de
+ * la interfaz; el texto se lee con `t.raw` porque sus `{nombre}` y `{handle}`
+ * los reemplaza `aplicarTemplate`, no next-intl.
+ */
+export const MESSAGE_TEMPLATES = [
+  { id: "solicitud_uso", clave: "solicitudUso" },
+  { id: "solicitud_exclusiva", clave: "solicitudExclusiva" },
+  { id: "agradecimiento", clave: "agradecimiento" },
+  { id: "recordatorio", clave: "recordatorio" },
+] as const;
 
-export const MESSAGE_TEMPLATES: MessageTemplate[] = [
-  {
-    id: "solicitud_uso",
-    nombre: "Solicitud de uso",
-    texto: `Hola {nombre}!
-
-Somos el equipo de NG Video Creator y nos encanto tu video. Nos gustaria saber si nos darias permiso para usarlo en nuestras redes sociales.
-
-Te dariamos credito como @{handle} en todas las publicaciones.
-
-Gracias!`,
-  },
-  {
-    id: "solicitud_exclusiva",
-    nombre: "Solicitud exclusiva Meta",
-    texto: `Hola {nombre}!
-
-Somos NG Video Creator. Nos interesa tu contenido para publicar de forma exclusiva en Meta (Facebook/Instagram).
-
-Esto significa que seriamos los unicos que podrian publicar tu video en estas plataformas, y te dariamos credito siempre.
-
-Te parece bien? Podemos hablar de los detalles.
-
-Gracias!`,
-  },
-  {
-    id: "agradecimiento",
-    nombre: "Agradecimiento por permiso",
-    texto: `Gracias {nombre}!
-
-Confirmamos que tenemos tu permiso para usar tu contenido. Te avisaremos cuando publiquemos y siempre te daremos credito como @{handle}.
-
-Saludos!`,
-  },
-  {
-    id: "recordatorio",
-    nombre: "Recordatorio de solicitud",
-    texto: `Hola {nombre}!
-
-Te escribimos hace unos dias para pedirte permiso para usar tu video. Nos gustaria saber si te interesa.
-
-Esperamos tu respuesta!`,
-  },
-];
+export type MessageTemplate = (typeof MESSAGE_TEMPLATES)[number];
 
 export function aplicarTemplate(
   template: string,

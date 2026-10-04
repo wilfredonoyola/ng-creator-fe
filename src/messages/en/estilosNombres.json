@@ -1,0 +1,24 @@
+{
+  "nombres": {
+    "POP": "Pop",
+    "KARAOKE": "Karaoke",
+    "PASTILLA": "Pill",
+    "BESTIA": "Beast",
+    "MARCA": "Brand",
+    "EDITORIAL": "Editorial",
+    "ROTULO": "Lower third",
+    "MINIMO": "Minimal",
+    "KEYNOTE": "Keynote"
+  },
+  "descripciones": {
+    "POP": "Heavy caps; the spoken word pops in your color.",
+    "KARAOKE": "The classic: white with an outline and the spoken word in your color.",
+    "PASTILLA": "The spoken word sits inside a pill in your color.",
+    "BESTIA": "Huge letters, thick outline and an offset 3D shadow.",
+    "MARCA": "Hook in two blocks of your colors; the spoken word on your color.",
+    "EDITORIAL": "Magazine lowercase, a stretch in italic serif and captions that light up as they're spoken.",
+    "ROTULO": "Like an interview lower third: a bar in your color, a dark box and the brand name.",
+    "MINIMO": "Left-aligned, no boxes, with a thin line in your color.",
+    "KEYNOTE": "Two-tone hook and words that appear one at a time."
+  }
+}

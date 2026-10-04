@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 
 export interface Autoria {
@@ -24,18 +25,24 @@ export function SelloDeAutoria({
   accion: string;
   autoria?: Autoria | null;
 }) {
+  const t = useTranslations("marcoSelloDeAutoria");
+  const locale = useLocale();
   if (!autoria) return null;
 
   return (
     <p
       className="mt-1 text-[10px] text-white/30"
-      title={fechaCompleta(autoria.en)}
+      title={fechaCompleta(autoria.en, locale)}
     >
       <span aria-hidden className="mr-1">
         ⤷
       </span>
-      {accion} por <span className="text-white/50">{autoria.nombre}</span>,{" "}
-      {tiempoRelativo(autoria.en)}
+      {t.rich("sello", {
+        accion,
+        nombre: autoria.nombre,
+        cuando: tiempoRelativo(autoria.en, Date.now(), locale),
+        destacado: (c) => <span className="text-white/50">{c}</span>,
+      })}
     </p>
   );
 }

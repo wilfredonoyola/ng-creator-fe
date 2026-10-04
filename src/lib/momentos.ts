@@ -1,4 +1,27 @@
-/** Por qué la IA eligió un momento (ng-creator-be#68), dicho para la pantalla. */
+/**
+ * Los motivos por los que la IA elige un momento (ng-creator-be#68). Cada uno
+ * se dice en pantalla con el namespace `episodiosMotivos`:
+ * `esMotivo(m) ? t(m) : m`.
+ */
+export const CLAVES_MOTIVO = [
+  "GANCHO_FUERTE",
+  "OPINION_POLEMICA",
+  "HISTORIA_COMPLETA",
+  "FRASE_CITABLE",
+  "HUMOR",
+  "EMOCION",
+  "DATO_SORPRENDENTE",
+] as const;
+export type Motivo = (typeof CLAVES_MOTIVO)[number];
+
+export function esMotivo(m: string): m is Motivo {
+  return (CLAVES_MOTIVO as readonly string[]).includes(m);
+}
+
+/**
+ * Por qué la IA eligió un momento, en español fijo.
+ * @deprecated Usar `esMotivo` + el namespace `episodiosMotivos`.
+ */
 export const MOTIVOS: Record<string, string> = {
   GANCHO_FUERTE: "Gancho fuerte",
   OPINION_POLEMICA: "Opinión polémica",

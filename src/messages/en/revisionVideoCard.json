@@ -1,0 +1,35 @@
+{
+  "estados": {
+    "EN_REVISION": "In review",
+    "APROBADO": "Approved",
+    "PUBLICADO": "Published",
+    "FALLIDO": "Failed",
+    "RECHAZADO": "Rejected",
+    "INGESTADO": "Processing",
+    "TRANSCRIBIENDO": "Transcribing",
+    "ESCRIBIENDO_GUION": "Writing script",
+    "VALIDANDO": "Validating",
+    "GENERANDO_VOZ": "Generating voice",
+    "ENSAMBLANDO": "Assembling"
+  },
+  "enProceso": "Video processing...",
+  "regeneraciones": "{n} regen",
+  "entroCola": "Entered the queue: {fecha}",
+  "enCola": "Queued {tiempo}",
+  "demorado": "overdue",
+  "ultimaEjecucion": "Last pipeline run: {fecha}",
+  "generado": "· generated {tiempo}",
+  "partes": {
+    "apertura": "[Hook]",
+    "detalle": "[Detail]",
+    "revelacion": "[Reveal]",
+    "cierre": "[Closing]"
+  },
+  "placeholderNota": "Describe what you want to improve...",
+  "cancelar": "Cancel",
+  "regenerar": "Regenerate",
+  "verMenos": "Show less",
+  "verMas": "Show more",
+  "rechazar": "Reject",
+  "aprobar": "Approve ✓"
+}

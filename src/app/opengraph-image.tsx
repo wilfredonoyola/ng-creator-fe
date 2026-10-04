@@ -1,11 +1,22 @@
 import { ImageResponse } from "next/og";
+import { getTranslations } from "next-intl/server";
 
 /** La imagen que aparece al compartir el enlace en WhatsApp, redes o Slack. */
-export const alt = "NG Creator — De tu podcast a clips listos para publicar";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+const size = { width: 1200, height: 630 };
+const contentType = "image/png";
 
-export default function Imagen() {
+/**
+ * Con `generateImageMetadata` en vez de `export const alt` para que el alt
+ * salga en el idioma del pedido. El `id` es fijo: el texto no depende de la
+ * URL sino del idioma de quien la pide (el mismo criterio que la página).
+ */
+export async function generateImageMetadata() {
+  const t = await getTranslations("landingImagen");
+  return [{ id: "imagen", alt: t("alt"), size, contentType }];
+}
+
+export default async function Imagen() {
+  const t = await getTranslations("landingImagen");
   return new ImageResponse(
     (
       <div
@@ -23,10 +34,10 @@ export default function Imagen() {
       >
         <div style={{ fontSize: 34, color: "#FFD400", letterSpacing: 6 }}>NG CREATOR</div>
         <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, marginTop: 24, maxWidth: 950 }}>
-          Subí el episodio. Publicá los clips. Todo en un solo lugar.
+          {t("titulo")}
         </div>
         <div style={{ fontSize: 32, color: "#A3A29C", marginTop: 28 }}>
-          Transcripción · momentos con IA · edición en equipo · todas tus redes
+          {t("pie")}
         </div>
       </div>
     ),

@@ -1,0 +1,7 @@
+{
+  "titulo": "In the queue · {n}",
+  "armandose": "Rendering · {progreso}%",
+  "siguiente": "Up next",
+  "esperando": "Waiting · {n} ahead",
+  "explicacion": "They run one at a time: the server has a single core, and two at once would take longer than queuing them. You can close the tab."
+}

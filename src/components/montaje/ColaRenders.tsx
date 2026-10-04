@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { MONTAJES_EN_COLA } from "@/graphql/operations";
 
 interface EnCola {
@@ -28,6 +29,7 @@ export function ColaRenders({
   marcaId: string;
   excluir?: string | null;
 }) {
+  const tr = useTranslations("montajeColaRenders");
   // Cada 3 segundos: el que está armándose mueve su barra, y los que esperan
   // cambian de posición cuando termina cualquier otro.
   const { data } = useQuery(MONTAJES_EN_COLA, {
@@ -44,17 +46,17 @@ export function ColaRenders({
   return (
     <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
       <p className="mb-2 text-xs font-medium uppercase tracking-wide text-white/40">
-        En la fila · {items.length}
+        {tr("titulo", { n: items.length })}
       </p>
       <div className="space-y-2">
         {items.map((t) => (
           <div key={t._id} className="flex items-center gap-3 text-xs">
             <span className="w-28 shrink-0 text-white/60">
               {t.estado === "RENDERIZANDO"
-                ? `Armándose · ${Math.round(t.progreso)}%`
+                ? tr("armandose", { progreso: Math.round(t.progreso) })
                 : t.posicionEnCola === 0
-                  ? "Siguiente"
-                  : `Esperando · ${t.posicionEnCola} delante`}
+                  ? tr("siguiente")
+                  : tr("esperando", { n: t.posicionEnCola })}
             </span>
             <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
               <div
@@ -76,8 +78,8 @@ export function ColaRenders({
         ))}
       </div>
       <p className="mt-2 text-xs text-white/40">
-        Se hacen de uno en uno: el servidor tiene un solo núcleo y dos a la vez
-        tardarían más que en fila. Podés cerrar la pestaña.
+        {tr("explicacion")}
+
       </p>
     </div>
   );

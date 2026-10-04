@@ -1,0 +1,13 @@
+{
+  "errorCambiar": "Couldn't change it",
+  "desde": "Since {fecha}",
+  "terminadoPor": "✓ Done · {nombre}",
+  "volverAEditar": "Back to editing",
+  "marcarAyuda": "Ready to schedule: the whole team sees it on the calendar",
+  "marcando": "Marking…",
+  "marcarTerminado": "Mark as done",
+  "programado": "Scheduled",
+  "publicadoEn": "Published · {n, plural, one {# network} other {# networks}}",
+  "fallaAyuda": "A network rejected the post: go to Schedule to see why and retry",
+  "fallo": "Failed on networks"
+}

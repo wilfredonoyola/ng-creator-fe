@@ -1,0 +1,11 @@
+{
+  "sinPublicar": "Not posted",
+  "formatos": {
+    "REEL": "Reel",
+    "HISTORIA_VIDEO": "Story",
+    "IMAGEN": "Image",
+    "HISTORIA_IMAGEN": "Image story"
+  },
+  "programadas": "{n, plural, one {Scheduled} other {# scheduled}}",
+  "fallo": "Failed"
+}

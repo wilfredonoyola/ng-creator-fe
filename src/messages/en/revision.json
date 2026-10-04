@@ -1,0 +1,27 @@
+{
+  "ordenes": {
+    "ANTIGUOS": "Oldest",
+    "RECIENTES": "Newest"
+  },
+  "titulo": "Review Queue",
+  "pendientes": "{n, plural, one {# video} other {# videos}} awaiting review",
+  "ultimaConsulta": "Last checked: {fecha}",
+  "actualizado": "Updated {tiempo} · refreshes every 15s",
+  "cargando": "Loading…",
+  "consultarAhora": "Check again now",
+  "actualizando": "Refreshing…",
+  "actualizar": "↻ Refresh",
+  "verFallidos": "Show failed ({n})",
+  "ocultarFallidos": "Hide failed ({n})",
+  "colaDe": "Queue for",
+  "sinPagina": "No active page: there's no queue to show",
+  "orden": "Sort",
+  "fallidosTitulo": "Failed Files",
+  "fallido": "FAILED",
+  "pagina": "Page:",
+  "tipo": "Type:",
+  "id": "ID:",
+  "vacio": "No videos in review",
+  "nadaEn": "Nothing pending in {marca}",
+  "todoProcesado": "All videos have been processed"
+}

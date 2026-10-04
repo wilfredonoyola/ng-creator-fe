@@ -1,0 +1,69 @@
+{
+  "confirmarTomar": "Lo está editando {nombre}. ¿Tomarlo igual?",
+  "errores": {
+    "tomar": "No se pudo tomar el clip",
+    "liberar": "No se pudo liberar el clip",
+    "estado": "No se pudo cambiar el estado"
+  },
+  "redes": {
+    "fallo": "Falló en redes",
+    "falloAyuda": "Una red rechazó la publicación. Entrá a Programar para ver el motivo y reintentar.",
+    "programado": "Programado",
+    "enCamino": "{n} publicaciones en camino.",
+    "saleSola": "Sale sola a esa hora.",
+    "publicado": "Publicado en {n, plural, one {# red} other {# redes}}",
+    "publicadoAyuda": "Podés programarlo en otra red o a otra hora."
+  },
+  "procesar": {
+    "reintentar": "Intentar de nuevo",
+    "volver": "Volver a procesar",
+    "procesar": "Procesar video",
+    "conCambios": "Con los cambios que el MP4 todavía no tiene.",
+    "alDia": "Ya está al día: solo si querés rehacerlo."
+  },
+  "descargar": {
+    "bajando": "Descargando…",
+    "anterior": "Descargar el anterior",
+    "mp4": "Descargar MP4",
+    "sinCambios": "Sin los últimos cambios."
+  },
+  "listo": {
+    "volverAEditar": "Volver a editar",
+    "saleDeListos": "Sale de “Listos para programar”.",
+    "marcar": "Marcar listo",
+    "marcarAyuda": "Lo ve el equipo en el calendario, para programarlo.",
+    "primeroProcesa": "Primero procesá el video.",
+    "por": "Listo · {nombre}",
+    "desde": "Desde {fecha}. Ya está en “Listos para programar”.",
+    "pista": "Lo ve todo el equipo en el calendario, para programarlo.",
+    "pistaSinVideo": "Procesá el video para poder marcarlo listo.",
+    "listo": "Listo"
+  },
+  "volverA": "Volver a {episodio}",
+  "tomado": {
+    "pistaNadie": "Tomalo para que el equipo sepa que lo estás haciendo vos.",
+    "pistaMio": "El equipo ve que es tuyo. Liberalo si otra persona lo va a terminar.",
+    "pistaOtro": "Si lo tomás, pasa a tu nombre y así lo ve todo el equipo.",
+    "nadie": "Nadie lo tomó",
+    "mio": "Lo editás vos",
+    "otro": "Lo edita {nombre}",
+    "liberar": "Liberar",
+    "tomarIgual": "Tomarlo igual",
+    "tomar": "Tomarlo"
+  },
+  "tituloDelClip": "Título del clip",
+  "abrirEnPestana": "<link>Abrilo en otra pestaña</link> y guardalo desde ahí.",
+  "cerrar": "Cerrar",
+  "exportar": "Exportar",
+  "procesandoCorto": "Procesando {corto}",
+  "masAcciones": "Más acciones",
+  "programar": {
+    "alTerminar": "Se puede programar al terminar de procesar",
+    "procesaPrimero": "Procesá el video para programar",
+    "elegi": "Elegí redes y hora.",
+    "reintentar": "Reintentar",
+    "programar": "Programar",
+    "pistaProcesando": "Se procesa el video: cuando termine, se puede programar.",
+    "pistaSinVideo": "Primero procesá el video, en Exportar. Sin MP4 no hay qué programar."
+  }
+}

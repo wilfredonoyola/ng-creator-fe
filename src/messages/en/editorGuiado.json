@@ -1,0 +1,37 @@
+{
+  "formatos": {
+    "vertical": "Reels, TikTok, Shorts",
+    "cuadrado": "Feed",
+    "horizontal": "YouTube"
+  },
+  "pasos": {
+    "momento": "The moment",
+    "inicioFin": "Start and end",
+    "crear": "Create"
+  },
+  "errorCrear": "Couldn't create the clip",
+  "titulo": "Create a clip",
+  "cerrar": "Close",
+  "buscarPregunta": "What's said at the moment you want? Type a few words.",
+  "buscarEjemplo": "E.g.: don't bring women to your house",
+  "buscando": "Searching…",
+  "sinCoincidencias": "I couldn't find that phrase. Try other words or pick the moment in the video.",
+  "o": "or",
+  "empezarDonde": "▶ Start where the video is ({tiempo})",
+  "escuchar": "▶ Listen to the clip",
+  "masContextoAyuda": "Starts 5 s earlier: more context",
+  "masContexto": "← More context",
+  "tocaInicio": "Tap the word where it starts",
+  "tocaFin": "Tap the word where it ends",
+  "cargandoTranscripcion": "Loading the transcript…",
+  "maximo": "A clip can be up to 3 minutes long.",
+  "siguiente": "Next",
+  "tituloCampo": "Title",
+  "formato": "Format",
+  "autoEncuadre": "✨ Auto-framing",
+  "autoEncuadreAyuda": "Follows whoever is speaking. It takes a minute; meanwhile, you can edit text and captions.",
+  "creando": "Creating…",
+  "crearIgual": "Create anyway",
+  "revisando": "Checking…",
+  "crearYAbrir": "Create and open the editor"
+}

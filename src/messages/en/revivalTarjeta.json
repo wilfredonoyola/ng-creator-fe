@@ -1,0 +1,38 @@
+{
+  "estados": {
+    "NUEVO": "New",
+    "PARA_TRABAJAR": "To work on",
+    "EN_TRABAJO": "In progress",
+    "EN_REVISION": "In review",
+    "PROGRAMADO": "Scheduled",
+    "PUBLICADO": "Published",
+    "DESCARTADO": "Discarded"
+  },
+  "siguiente": {
+    "NUEVO": "Work on it",
+    "PARA_TRABAJAR": "Start",
+    "DESCARTADO": "Restore"
+  },
+  "panel": {
+    "EN_TRABAJO": "Generate image",
+    "EN_REVISION": "Review and publish",
+    "PROGRAMADO": "View schedule",
+    "PUBLICADO": "View result"
+  },
+  "historiaPublicada": "Story published",
+  "faltaHistoria": "Story not uploaded yet",
+  "historia": "📱 Story",
+  "falta": "📱 Missing",
+  "sinTexto": "No text",
+  "reacciones": "Reactions",
+  "comentarios": "Comments",
+  "compartidos": "Shares",
+  "reproducciones": "Plays",
+  "verOriginal": "view original",
+  "sello": {
+    "programado": "scheduled",
+    "publicado": "published",
+    "imagenSubida": "image uploaded"
+  },
+  "descartar": "Discard"
+}

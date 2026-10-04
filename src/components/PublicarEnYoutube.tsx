@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import {
   PROGRAMAR_PUBLICACION,
   PUBLICACIONES_DE_EXPEDIENTE,
@@ -14,11 +15,8 @@ import { FilaPublicacion, Opcion } from "@/components/PublicarEnFacebook";
 
 type Visibilidad = "public" | "unlisted" | "private";
 
-const VISIBILIDADES: Array<{ valor: Visibilidad; label: string }> = [
-  { valor: "public", label: "Público" },
-  { valor: "unlisted", label: "No listado" },
-  { valor: "private", label: "Privado" },
-];
+/** Se dicen con `publicarYoutube.visibilidades.<valor>`. */
+const VISIBILIDADES: Visibilidad[] = ["public", "unlisted", "private"];
 
 /** Lo mismo que valida el backend, para no enterarse al apretar el botón. */
 const TITULO_MAX = 100;
@@ -39,6 +37,7 @@ export function PublicarEnYoutube({
   expedienteId: string;
   marcaIdDelVideo: string;
 }) {
+  const t = useTranslations("publicarYoutube");
   const { activa: marca } = useMarcaActiva();
   const marcaId = marca?._id;
 
@@ -127,15 +126,14 @@ export function PublicarEnYoutube({
       setFecha("");
       setCuando("ahora");
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo publicar");
+      setError(e?.message ?? t("errorPublicar"));
     }
   }
 
   if (!canal || !marca) {
     return (
       <div className="rounded-xl border border-dashed border-white/15 p-3 text-xs text-white/40">
-        Sin canal de YouTube habilitado para esta marca. El propietario lo
-        conecta en Redes conectadas.
+        {t("sinCanal")}
         {previas.length > 0 && (
           <div className="mt-2 space-y-1.5 border-t border-white/10 pt-2">
             {previas.map((p) => (
@@ -167,12 +165,15 @@ export function PublicarEnYoutube({
           </select>
         ) : (
           <p className="text-xs text-white/50">
-            Short en <span className="font-medium text-white/80">{canal.nombre}</span>
+            {t.rich("shortEn", {
+              nombre: canal.nombre,
+              n: (c) => <span className="font-medium text-white/80">{c}</span>,
+            })}
           </p>
         )}
         {publicadas.length > 0 && (
           <span className="rounded bg-ng-teal/15 px-2 py-0.5 text-[10px] font-medium text-ng-teal">
-            {publicadas.length} publicada{publicadas.length !== 1 ? "s" : ""}
+            {t("publicadas", { n: publicadas.length })}
           </span>
         )}
       </div>
@@ -181,12 +182,12 @@ export function PublicarEnYoutube({
         <input
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
-          placeholder="Título (si queda vacío, la primera línea de la descripción)"
+          placeholder={t("tituloPlaceholder")}
           className={input}
         />
         {tituloLargo && (
           <p className="mt-1 text-[10px] text-red-400">
-            {tituloFinal.length}/{TITULO_MAX}: YouTube no admite más.
+            {t("tituloLargo", { largo: tituloFinal.length, max: TITULO_MAX })}
           </p>
         )}
       </div>
@@ -194,7 +195,7 @@ export function PublicarEnYoutube({
       <textarea
         value={descripcion}
         onChange={(e) => setDescripcion(e.target.value)}
-        placeholder="Descripción (opcional)"
+        placeholder={t("descripcionPlaceholder")}
         rows={2}
         className={input}
       />
@@ -202,18 +203,18 @@ export function PublicarEnYoutube({
       <input
         value={etiquetas}
         onChange={(e) => setEtiquetas(e.target.value)}
-        placeholder="Etiquetas separadas por coma (opcional)"
+        placeholder={t("etiquetasPlaceholder")}
         className={input}
       />
 
       <div className="flex gap-1.5">
         {VISIBILIDADES.map((v) => (
           <Opcion
-            key={v.valor}
-            activa={visibilidad === v.valor}
-            onClick={() => setVisibilidad(v.valor)}
+            key={v}
+            activa={visibilidad === v}
+            onClick={() => setVisibilidad(v)}
           >
-            {v.label}
+            {t(`visibilidades.${v}`)}
           </Opcion>
         ))}
       </div>
@@ -224,22 +225,22 @@ export function PublicarEnYoutube({
           checked={paraNinos}
           onChange={(e) => setParaNinos(e.target.checked)}
         />
-        Hecho para niños (lo exige YouTube; apaga comentarios y anuncios)
+        {t("paraNinos")}
       </label>
 
       {publicadas.length > 0 && (
         <p className="text-[11px] text-yellow-400/80">
-          Ya se subió a YouTube. Publicar otra vez crea un video nuevo.
+          {t("yaSubido")}
         </p>
       )}
 
       <div className="space-y-2">
         <div className="flex gap-1.5">
           <Opcion activa={cuando === "ahora"} onClick={() => setCuando("ahora")}>
-            Ahora
+            {t("ahora")}
           </Opcion>
           <Opcion activa={cuando === "despues"} onClick={() => setCuando("despues")}>
-            Programar
+            {t("programar")}
           </Opcion>
         </div>
         {cuando === "despues" && (
@@ -252,9 +253,7 @@ export function PublicarEnYoutube({
               className="w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-2 text-xs outline-none focus:border-ng-azul/50"
             />
             <p className="text-[10px] text-white/30">
-              Queda en nuestra cola y sube a esa hora. Hasta entonces se puede
-              cancelar o cambiar la hora. Si el servidor está caído a esa hora,
-              sale cuando vuelva.
+              {t("ayudaCola")}
             </p>
           </>
         )}
@@ -263,16 +262,16 @@ export function PublicarEnYoutube({
       <button
         onClick={enviar}
         disabled={loading || faltaFecha || faltaTitulo || tituloLargo}
-        title={faltaTitulo ? "YouTube exige un título" : undefined}
+        title={faltaTitulo ? t("exigeTitulo") : undefined}
         className="w-full rounded-lg bg-[#FF0000] py-2.5 text-sm font-medium text-white transition hover:bg-[#FF0000]/90 disabled:opacity-50"
       >
         {loading
           ? cuando === "despues"
-            ? "Agendando…"
-            : "Encolando…"
+            ? t("agendando")
+            : t("encolando")
           : cuando === "despues"
-            ? "Programar en YouTube"
-            : "Subir a YouTube"}
+            ? t("programarEnYoutube")
+            : t("subirAYoutube")}
       </button>
 
       {error && (

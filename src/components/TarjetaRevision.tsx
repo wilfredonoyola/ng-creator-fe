@@ -3,6 +3,7 @@
 import { Autoria, SelloDeAutoria } from "./SelloDeAutoria";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import { APROBAR, RECHAZAR, REGENERAR, COLA_DE_REVISION } from "@/graphql/operations";
 
 interface Guion {
@@ -36,6 +37,7 @@ export interface Expediente {
 }
 
 export function TarjetaRevision({ exp }: { exp: Expediente }) {
+  const t = useTranslations("revisionTarjeta");
   const [nota, setNota] = useState("");
   const [mostrarNota, setMostrarNota] = useState(false);
 
@@ -65,7 +67,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
           />
         ) : (
           <div className="flex aspect-[9/16] items-center justify-center text-xs text-white/40">
-            Sin video
+            {t("sinVideo")}
           </div>
         )}
       </div>
@@ -76,42 +78,42 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
           <span
             className="rounded bg-marca px-2 py-0.5 text-xs font-bold text-ng-tinta"
           >
-            {exp.numero ? `EXPEDIENTE #${exp.numero}` : "SIN NUMERAR"}
+            {exp.numero ? t("expediente", { numero: exp.numero }) : t("sinNumerar")}
           </span>
           <span className="text-xs text-white/40">
             {exp.tipoDeValor}
-            {exp.regeneraciones > 0 && ` · ${exp.regeneraciones} regen`}
+            {exp.regeneraciones > 0 && t("regeneraciones", { n: exp.regeneraciones })}
           </span>
         </div>
 
         {/* De quién es el trabajo que se está por aprobar. Va acá arriba, antes
             del guion: cambia cómo se lee una corrección saber a quién se la
             estás haciendo. */}
-        <SelloDeAutoria accion="creado" autoria={exp.creadoPor} />
+        <SelloDeAutoria accion={t("sello.creado")} autoria={exp.creadoPor} />
 
         {/* Guion */}
         <div className="mb-3 space-y-1 rounded-lg border border-white/10 bg-black/40 p-3 text-sm">
           {exp.guion?.apertura && (
             <p>
-              <span className="text-ng-teal">[hook] </span>
+              <span className="text-ng-teal">{t("partes.apertura")}</span>
               {exp.guion.apertura}
             </p>
           )}
           {exp.guion?.detalle && (
             <p>
-              <span className="text-ng-teal">[detalle] </span>
+              <span className="text-ng-teal">{t("partes.detalle")}</span>
               {exp.guion.detalle}
             </p>
           )}
           {exp.guion?.revelacion && (
             <p>
-              <span className="text-ng-teal">[revelación] </span>
+              <span className="text-ng-teal">{t("partes.revelacion")}</span>
               {exp.guion.revelacion}
             </p>
           )}
           {exp.guion?.cierre && (
             <p>
-              <span className="text-ng-teal">[cierre] </span>
+              <span className="text-ng-teal">{t("partes.cierre")}</span>
               {exp.guion.cierre}
             </p>
           )}
@@ -138,7 +140,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
           <textarea
             value={nota}
             onChange={(e) => setNota(e.target.value)}
-            placeholder="El hook está flojo, hazlo más directo…"
+            placeholder={t("placeholderNota")}
             className="mb-3 w-full rounded-lg border border-white/10 bg-black/50 p-2 text-sm outline-none focus:border-ng-azul"
             rows={2}
           />
@@ -151,7 +153,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
             disabled={aprobando}
             className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta brillo-marca disabled:opacity-50"
           >
-            {aprobando ? "Publicando…" : "Aprobar y publicar"}
+            {aprobando ? t("publicando") : t("aprobar")}
           </button>
 
           {!mostrarNota ? (
@@ -159,7 +161,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
               onClick={() => setMostrarNota(true)}
               className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/5"
             >
-              Regenerar con nota
+              {t("regenerarConNota")}
             </button>
           ) : (
             <button
@@ -173,7 +175,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
               disabled={regenerando || !nota.trim()}
               className="rounded-lg border border-white/20 px-4 py-2 text-sm hover:bg-white/5 disabled:opacity-50"
             >
-              {regenerando ? "Regenerando…" : "Enviar corrección"}
+              {regenerando ? t("regenerando") : t("enviarCorreccion")}
             </button>
           )}
 
@@ -182,7 +184,7 @@ export function TarjetaRevision({ exp }: { exp: Expediente }) {
             disabled={rechazando}
             className="rounded-lg border border-white/10 px-4 py-2 text-sm text-white/50 hover:bg-white/5 disabled:opacity-50"
           >
-            Descartar
+            {t("descartar")}
           </button>
         </div>
       </div>

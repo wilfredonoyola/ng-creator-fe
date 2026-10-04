@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface VoiceRecorderProps {
   onRecordingComplete: (blob: Blob) => void;
@@ -11,6 +12,7 @@ interface VoiceRecorderProps {
 }
 
 export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, videoRef }: VoiceRecorderProps) {
+  const t = useTranslations("montajeVoz");
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, vide
       }, 1000);
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      alert("No se pudo acceder al micrófono. Verifica los permisos.");
+      alert(t("errorMicrofono"));
     }
   };
 
@@ -135,8 +137,8 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, vide
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
           <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500"></span>
         </span>
-        <span className="text-red-400">Grabando... {formatTime(duration)}</span>
-        <span className="text-xs text-white/40">(click para detener)</span>
+        <span className="text-red-400">{t("grabando", { tiempo: formatTime(duration) })}</span>
+        <span className="text-xs text-white/40">{t("clickDetener")}</span>
       </button>
     );
   }
@@ -148,8 +150,9 @@ export function VoiceRecorder({ onRecordingComplete, onClear, hasRecording, vide
       className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/20 bg-white/5 py-3 text-sm text-white/60 transition hover:border-ng-azul/50 hover:bg-ng-teal/5 hover:text-ng-celeste"
     >
       <span className="text-lg">🎙️</span>
-      <span>Grabar nota de voz</span>
-      <span className="text-xs text-white/30">(describe el video)</span>
+      <span>{t("grabar")}</span>
+      <span className="text-xs text-white/30">{t("describe")}</span>
+
     </button>
   );
 }

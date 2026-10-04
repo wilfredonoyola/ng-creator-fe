@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   BORRAR_EPISODIO,
   CONFIRMAR_SUBIDA_EPISODIO,
@@ -19,6 +20,7 @@ import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 import {
   iniciarSubidaTus,
+  type AvisoSubida,
   type CredencialesTus,
   type EstadoSubida,
   type SubidaEpisodio,
@@ -63,43 +65,50 @@ interface SubidaActiva {
   subidos: number;
   total: number;
   estado: EstadoSubida;
-  mensaje?: string;
+  aviso?: AvisoSubida;
   /** Para la velocidad: bytes y hora en que arrancó esta sesión de subida. */
   inicio: { bytes: number; en: number } | null;
 }
 
-const ESTILO_ESTADO: Record<EstadoEpisodio, { etiqueta: string; clase: string }> = {
-  SUBIENDO: { etiqueta: "A medio subir", clase: "bg-amber-500/15 text-amber-300" },
-  PROCESANDO: { etiqueta: "Procesando en Bunny", clase: "bg-sky-500/15 text-sky-300" },
-  LISTO: { etiqueta: "Listo para transcribir", clase: "bg-ng-teal/15 text-ng-teal" },
-  FALLIDO: { etiqueta: "Falló", clase: "bg-red-500/15 text-red-400" },
+type T = ReturnType<typeof useTranslations<"episodios">>;
+
+const ESTILO_ESTADO: Record<EstadoEpisodio, { clave: "aMedioSubir" | "procesandoEnBunny" | "listoParaTranscribir" | "fallo"; clase: string }> = {
+  SUBIENDO: { clave: "aMedioSubir", clase: "bg-amber-500/15 text-amber-300" },
+  PROCESANDO: { clave: "procesandoEnBunny", clase: "bg-sky-500/15 text-sky-300" },
+  LISTO: { clave: "listoParaTranscribir", clase: "bg-ng-teal/15 text-ng-teal" },
+  FALLIDO: { clave: "fallo", clase: "bg-red-500/15 text-red-400" },
 };
 
+function estiloFijo(t: T, estado: EstadoEpisodio): { etiqueta: string; clase: string } {
+  const e = ESTILO_ESTADO[estado];
+  return { etiqueta: t(`estados.${e.clave}`), clase: e.clase };
+}
+
 /** Un episodio LISTO en Bunny se muestra por el estado de su transcripción. */
-function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
+function estiloDe(t: T, ep: Episodio): { etiqueta: string; clase: string } {
   if (ep.estado === "SUBIENDO" && ep.importadoDe) {
     switch (ep.estadoImportacion) {
       case "FALLIDA":
-        return { etiqueta: "Falló la importación", clase: "bg-red-500/15 text-red-400" };
+        return { etiqueta: t("estados.falloImportacion"), clase: "bg-red-500/15 text-red-400" };
       case "BAJANDO":
-        return { etiqueta: `Bajando de Restream · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
+        return { etiqueta: t("estados.bajando", { p: ep.progresoImportacion ?? 0 }), clase: "bg-sky-500/15 text-sky-300" };
       case "COMPRIMIENDO":
-        return { etiqueta: `Comprimiendo · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
+        return { etiqueta: t("estados.comprimiendo", { p: ep.progresoImportacion ?? 0 }), clase: "bg-sky-500/15 text-sky-300" };
       case "SUBIENDO":
-        return { etiqueta: `Subiendo a Bunny · ${ep.progresoImportacion ?? 0}%`, clase: "bg-sky-500/15 text-sky-300" };
+        return { etiqueta: t("estados.subiendoABunny", { p: ep.progresoImportacion ?? 0 }), clase: "bg-sky-500/15 text-sky-300" };
       case "LISTA":
-        return ESTILO_ESTADO.PROCESANDO;
+        return estiloFijo(t, "PROCESANDO");
       default:
-        return { etiqueta: "En fila para traer", clase: "bg-sky-500/15 text-sky-300" };
+        return { etiqueta: t("estados.enFilaTraer"), clase: "bg-sky-500/15 text-sky-300" };
     }
   }
-  if (ep.estado !== "LISTO" || !ep.estadoTranscripcion) return ESTILO_ESTADO[ep.estado];
+  if (ep.estado !== "LISTO" || !ep.estadoTranscripcion) return estiloFijo(t, ep.estado);
   switch (ep.estadoTranscripcion) {
     case "EN_COLA":
-      return { etiqueta: "En cola para transcribir", clase: "bg-sky-500/15 text-sky-300" };
+      return { etiqueta: t("estados.enColaTranscribir"), clase: "bg-sky-500/15 text-sky-300" };
     case "TRANSCRIBIENDO":
       return {
-        etiqueta: `Transcribiendo · ${ep.progresoTranscripcion ?? 0}%`,
+        etiqueta: t("estados.transcribiendo", { p: ep.progresoTranscripcion ?? 0 }),
         clase: "bg-sky-500/15 text-sky-300",
       };
     case "LISTA":
@@ -107,23 +116,24 @@ function estiloDe(ep: Episodio): { etiqueta: string; clase: string } {
       switch (ep.estadoMomentos) {
         case "EN_COLA":
         case "ANALIZANDO":
-          return { etiqueta: "Buscando momentos", clase: "bg-sky-500/15 text-sky-300" };
+          return { etiqueta: t("estados.buscandoMomentos"), clase: "bg-sky-500/15 text-sky-300" };
         case "LISTO":
           return {
-            etiqueta: `${ep.clipsSugeridos ?? 0} clips sugeridos`,
+            etiqueta: t("estados.clipsSugeridos", { n: ep.clipsSugeridos ?? 0 }),
             clase: "bg-ng-teal/15 text-ng-teal",
           };
         case "FALLIDO":
-          return { etiqueta: "Falló la búsqueda de clips", clase: "bg-red-500/15 text-red-400" };
+          return { etiqueta: t("estados.falloBusqueda"), clase: "bg-red-500/15 text-red-400" };
         default:
-          return { etiqueta: "Transcrito", clase: "bg-ng-teal/15 text-ng-teal" };
+          return { etiqueta: t("estados.transcrito"), clase: "bg-ng-teal/15 text-ng-teal" };
       }
     case "FALLIDA":
-      return { etiqueta: "Falló la transcripción", clase: "bg-red-500/15 text-red-400" };
+      return { etiqueta: t("estados.falloTranscripcion"), clase: "bg-red-500/15 text-red-400" };
   }
 }
 
 export default function EpisodiosPage() {
+  const t = useTranslations("episodios");
   const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
   // Los episodios son de la marca, no de una cuenta: uno largo se recorta
@@ -210,7 +220,7 @@ export default function EpisodiosPage() {
       });
       cred = r.data.prepararSubidaEpisodio;
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo preparar la subida");
+      setError(e instanceof Error ? e.message : t("errores.preparar"));
       return;
     }
 
@@ -247,12 +257,12 @@ export default function EpisodiosPage() {
               inicio: s.inicio ?? { bytes: subidos, en: Date.now() },
             },
           ),
-        onEstado: (estado, mensaje) => {
+        onEstado: (estado, aviso) => {
           setSubida((s) =>
             s && {
               ...s,
               estado,
-              mensaje,
+              aviso,
               inicio: estado === "subiendo" ? s.inicio : null,
             },
           );
@@ -260,7 +270,7 @@ export default function EpisodiosPage() {
         },
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo iniciar la subida");
+      setError(e instanceof Error ? e.message : t("errores.iniciar"));
     }
   }
 
@@ -283,7 +293,7 @@ export default function EpisodiosPage() {
       await importarDeRestream({ variables: { marcaId, eventoId } });
       void refetch();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo reintentar");
+      setError(e instanceof Error ? e.message : t("errores.reintentar"));
     }
   }
 
@@ -293,7 +303,7 @@ export default function EpisodiosPage() {
       await pedirTranscripcion({ variables: { id: ep._id, marcaId } });
       void refetch();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo pedir la transcripción");
+      setError(e instanceof Error ? e.message : t("errores.transcripcion"));
     }
   }
 
@@ -301,8 +311,8 @@ export default function EpisodiosPage() {
     if (!marcaId) return;
     const aviso =
       ep.estado === "SUBIENDO"
-        ? `¿Descartar "${ep.titulo}"? Se pierde lo que ya se subió.`
-        : `¿Borrar "${ep.titulo}"? Se borra también de Bunny.`;
+        ? t("confirmarDescartar", { titulo: ep.titulo })
+        : t("confirmarBorrar", { titulo: ep.titulo });
     if (!window.confirm(aviso)) return;
     if (subida?.episodioId === ep._id) {
       control.current?.detener();
@@ -313,7 +323,7 @@ export default function EpisodiosPage() {
       await borrar({ variables: { id: ep._id, marcaId } });
       void refetch();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo borrar");
+      setError(e instanceof Error ? e.message : t("errores.borrar"));
     }
   }
 
@@ -321,10 +331,9 @@ export default function EpisodiosPage() {
     <DashboardLayout>
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Episodios</h1>
+          <h1 className="text-2xl font-bold">{t("titulo")}</h1>
           <p className="mt-1 max-w-xl text-white/50">
-            Episodios largos de podcast en video. Se suben directo a Bunny, por
-            partes: si se corta la conexión, siguen desde donde quedaron.
+            {t("descripcion")}
           </p>
         </div>
         {activa && (
@@ -333,7 +342,7 @@ export default function EpisodiosPage() {
             className="rounded-lg border border-l-4 border-white/10 bg-white/5 px-3 py-2"
           >
             <span className="block text-[10px] uppercase tracking-wider text-white/35">
-              Episodios de
+              {t("episodiosDe")}
             </span>
             <span className="block text-sm font-medium">{activa.nombre}</span>
           </div>
@@ -341,7 +350,7 @@ export default function EpisodiosPage() {
       </div>
 
       {!marcaId ? (
-        <p className="text-sm text-amber-400">Sin marca activa: no hay dónde subir.</p>
+        <p className="text-sm text-amber-400">{t("sinMarca")}</p>
       ) : (
         <>
           {opera && (
@@ -372,17 +381,16 @@ export default function EpisodiosPage() {
                   className="w-full rounded-xl border-2 border-dashed border-white/20 py-10 text-sm text-white/60 transition hover:border-ng-azul/60 hover:text-white"
                 >
                   <span className="block text-3xl">🎙️</span>
-                  <span className="mt-2 block font-medium">Subir un episodio</span>
+                  <span className="mt-2 block font-medium">{t("subirEpisodio")}</span>
                   <span className="mt-1 block text-xs text-white/40">
-                    mp4, mov, webm o mkv · hasta 50 GB
+                    {t("formatos")}
                   </span>
                 </button>
               )}
 
               {subida?.estado === "terminada" && (
                 <p className="mt-3 text-sm text-ng-teal">
-                  “{subida.nombre}” subido. Bunny lo está procesando; en unos
-                  minutos aparece con su duración.
+                  {t("subido", { nombre: subida.nombre })}
                 </p>
               )}
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
@@ -396,7 +404,7 @@ export default function EpisodiosPage() {
             </div>
           ) : episodios.length === 0 ? (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-white/50">
-              Todavía no hay episodios en {activa?.nombre ?? "esta marca"}.
+              {activa?.nombre ? t("vacio", { marca: activa.nombre }) : t("vacioSinNombre")}
             </div>
           ) : (
             <ul className="space-y-3">
@@ -428,6 +436,7 @@ function PanelSubida({
   onPausar: () => void;
   onReanudar: () => void;
 }) {
+  const t = useTranslations("episodios");
   const pct = subida.total ? (subida.subidos / subida.total) * 100 : 0;
   const velocidad = velocidadBytesPorSeg(subida);
   const restanteSeg =
@@ -441,11 +450,13 @@ function PanelSubida({
     <div>
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
         <p className="truncate text-sm font-medium">
-          {subida.retomada ? "Retomando " : "Subiendo "}
-          <span className="text-white/70">{subida.nombre}</span>
+          {t.rich(subida.retomada ? "panel.retomando" : "panel.subiendo", {
+            nombre: subida.nombre,
+            n: (c) => <span className="text-white/70">{c}</span>,
+          })}
         </p>
         <p className="text-xs tabular-nums text-white/50">
-          {gb(subida.subidos)} de {gb(subida.total)} · {pct.toFixed(1)}%
+          {t("panel.progreso", { subidos: gb(subida.subidos), total: gb(subida.total), pct: pct.toFixed(1) })}
         </p>
       </div>
 
@@ -461,33 +472,34 @@ function PanelSubida({
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-white/45">
         <span>
           {subida.estado === "subiendo" && velocidad > 0
-            ? `${(velocidad / 1024 / 1024).toFixed(1)} MB/s · quedan ${duracion(restanteSeg ?? 0)}`
+            ? t("panel.velocidad", { mbs: (velocidad / 1024 / 1024).toFixed(1), resta: duracion(restanteSeg ?? 0) })
             : subida.estado === "pausada"
-              ? "En pausa"
-              : (subida.mensaje ?? "Conectando con Bunny…")}
+              ? t("panel.enPausa")
+              : subida.aviso
+                ? textoAviso(t, subida.aviso)
+                : t("panel.conectando")}
         </span>
         {frenada ? (
           <button
             onClick={onReanudar}
             className="rounded-lg bg-marca px-3 py-1.5 font-medium text-ng-tinta"
           >
-            Reanudar
+            {t("panel.reanudar")}
           </button>
         ) : (
           <button
             onClick={onPausar}
             className="rounded-lg border border-white/15 px-3 py-1.5 text-white/70 hover:bg-white/5"
           >
-            Pausar
+            {t("panel.pausar")}
           </button>
         )}
       </div>
-      {(subida.estado === "error" || subida.estado === "sin-conexion") && subida.mensaje && (
-        <p className="mt-2 text-xs text-amber-300">{subida.mensaje}</p>
+      {(subida.estado === "error" || subida.estado === "sin-conexion") && subida.aviso && (
+        <p className="mt-2 text-xs text-amber-300">{textoAviso(t, subida.aviso)}</p>
       )}
       <p className="mt-3 text-[11px] text-white/30">
-        Si cerrás la pestaña, volvé acá y elegí el mismo archivo: sigue desde
-        donde quedó.
+        {t("panel.siCerras")}
       </p>
     </div>
   );
@@ -509,14 +521,16 @@ function FilaEpisodio({
   onTranscribir?: () => void;
   onReintentarImportacion?: () => void;
 }) {
-  const estilo = estiloDe(ep);
+  const t = useTranslations("episodios");
+  const locale = useLocale();
+  const estilo = estiloDe(t, ep);
   // Los nuevos entran solos a la fila. El botón es para los que quedaron
   // listos antes de la transcripción, y para reintentar los que fallaron.
   const botonTranscribir =
     ep.estado === "LISTO" && (!ep.estadoTranscripcion || ep.estadoTranscripcion === "FALLIDA")
       ? ep.estadoTranscripcion === "FALLIDA"
-        ? "Reintentar"
-        : "Transcribir"
+        ? t("fila.reintentar")
+        : t("fila.transcribir")
       : null;
   return (
     <li className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
@@ -554,7 +568,7 @@ function FilaEpisodio({
         )}
         {ep.estado === "SUBIENDO" && !ep.importadoDe && !enEstaPestana && (
           <p className="mt-0.5 text-xs text-amber-300/80">
-            Quedó a medias. Elegí “{ep.nombreArchivo}” otra vez para retomarlo.
+            {t("fila.aMedias", { archivo: ep.nombreArchivo })}
           </p>
         )}
         {ep.error && !ep.importadoDe && <p className="mt-0.5 text-xs text-red-400">{ep.error}</p>}
@@ -563,12 +577,12 @@ function FilaEpisodio({
         )}
         {ep.estadoTranscripcion === "LISTA" && (
           <p className="mt-0.5 text-xs text-white/45">
-            {(ep.palabrasTranscritas ?? 0).toLocaleString("es")} palabras
+            {t("fila.palabras", { n: ep.palabrasTranscritas ?? 0, cantidad: (ep.palabrasTranscritas ?? 0).toLocaleString(locale) })}
             {ep.costoTranscripcionUsd != null &&
-              ` · costó US$${ep.costoTranscripcionUsd.toFixed(2)}`}
+              t("fila.costo", { usd: ep.costoTranscripcionUsd.toFixed(2) })}
           </p>
         )}
-        <SelloDeAutoria accion="Subido" autoria={ep.subidoPor} />
+        <SelloDeAutoria accion={t("fila.subido")} autoria={ep.subidoPor} />
       </div>
       <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${estilo.clase}`}>
         {estilo.etiqueta}
@@ -584,7 +598,7 @@ function FilaEpisodio({
       {puedeBorrar && (
         <button
           onClick={onBorrar}
-          title={ep.estado === "SUBIENDO" ? "Descartar" : "Borrar"}
+          title={ep.estado === "SUBIENDO" ? t("fila.descartar") : t("fila.borrar")}
           className="shrink-0 rounded-lg px-2 py-1 text-white/30 transition hover:bg-red-500/10 hover:text-red-400"
         >
           ✕
@@ -609,6 +623,7 @@ function useAhora(ms: number): number {
  * falló, el motivo y "Reintentar" (sigue desde lo que ya bajó).
  */
 function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: () => void }) {
+  const t = useTranslations("episodios");
   const ahora = useAhora(5_000);
   const p = ep.progresoImportacion ?? 0;
   // La primera vez que se ve avanzar: con eso se calcula cuánto falta.
@@ -619,10 +634,10 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
   if (ep.estadoImportacion === "FALLIDA" || ep.estado === "FALLIDO") {
     return (
       <div className="mt-1.5 max-w-md text-xs">
-        <p className="text-red-400">No se pudo traer: {ep.errorImportacion ?? ep.error ?? "error desconocido"}</p>
+        <p className="text-red-400">{t("importando.noSePudo", { error: ep.errorImportacion ?? ep.error ?? t("importando.desconocido") })}</p>
         {onReintentar && (
           <button onClick={onReintentar} className="mt-1 rounded-lg bg-marca px-2.5 py-1 font-medium text-ng-tinta">
-            Reintentar (sigue desde lo que ya bajó)
+            {t("importando.reintentar")}
           </button>
         )}
       </div>
@@ -630,20 +645,21 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
   }
   const paso =
     ep.estadoImportacion === "SUBIENDO"
-      ? "③ Subiendo a Bunny"
+      ? t("importando.pasoSubiendo")
       : ep.estadoImportacion === "COMPRIMIENDO"
-        ? "② Comprimiendo a 1440p y 30 fps (pesa ~la mitad)"
+        ? t("importando.pasoComprimiendo")
         : ep.estadoImportacion === "BAJANDO"
-          ? "① Bajando de Restream"
-          : "En fila: arranca en unos segundos";
+          ? t("importando.pasoBajando")
+          : t("importando.pasoEnFila");
   return (
     <div className="mt-1.5 max-w-md">
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full bg-sky-400 transition-all duration-700" style={{ width: `${Math.max(3, p)}%` }} />
       </div>
       <p className="mt-1 text-xs text-sky-300/80">
-        {paso} · {p}%{falta != null ? ` · faltan ~${Math.max(1, falta)} min` : ""}. Después Bunny lo procesa y se transcribe
-        solo; no hace falta dejar la página abierta.
+        {falta != null
+          ? t("importando.avanceConFalta", { paso, p, min: Math.max(1, falta) })
+          : t("importando.avance", { paso, p })}
       </p>
     </div>
   );
@@ -651,23 +667,41 @@ function BarraImportando({ ep, onReintentar }: { ep: Episodio; onReintentar?: ()
 
 /** Bunny procesando: acá sí informa el porcentaje. */
 function BarraProcesando({ progreso, transcripcion }: { progreso: number; transcripcion?: number | string | null }) {
+  const t = useTranslations("episodios");
   return (
     <div className="mt-1.5 max-w-md">
       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full bg-sky-400 transition-all duration-700" style={{ width: `${Math.max(3, progreso)}%` }} />
       </div>
       <p className="mt-1 text-xs text-sky-300/80">
-        Bunny lo está procesando · {progreso}%.{" "}
+        {t("procesando.bunny", { p: progreso })}{" "}
         {typeof transcripcion === "number"
-          ? `Mientras, ya se está transcribiendo · ${transcripcion}%.`
+          ? t("procesando.transcribiendo", { p: transcripcion })
           : transcripcion === "EN_COLA"
-            ? "Mientras, ya está en fila para transcribir."
+            ? t("procesando.enFila")
             : transcripcion === "LISTA"
-              ? "La transcripción ya está; los clips aparecen cuando Bunny termine."
-              : "Después se transcribe solo."}
+              ? t("procesando.lista")
+              : t("procesando.despues")}
       </p>
     </div>
   );
+}
+
+function textoAviso(t: T, a: AvisoSubida): string {
+  switch (a.tipo) {
+    case "reintento":
+      return t("subida.reintento", { n: a.intento });
+    case "sinConexion":
+      return t("subida.sinConexion");
+    case "firma":
+      return t("subida.firma");
+    case "tamano":
+      return t("subida.tamano");
+    case "frenada":
+      return a.status
+        ? t("subida.frenadaStatus", { status: a.status, detalle: a.detalle })
+        : t("subida.frenada", { detalle: a.detalle });
+  }
 }
 
 function velocidadBytesPorSeg(s: SubidaActiva): number {

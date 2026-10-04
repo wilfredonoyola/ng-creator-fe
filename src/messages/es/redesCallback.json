@@ -1,0 +1,16 @@
+{
+  "cancelaste": "Cancelaste la autorización en {red}",
+  "devolvioError": "{red} devolvió un error: {error}",
+  "sinCodigo": "{red} no devolvió el código de autorización",
+  "errorCompletar": "No se pudo completar la conexión",
+  "noSeConecto": {
+    "facebook": "No se conectó",
+    "canal": "No se conectó el canal",
+    "cuenta": "No se conectó la cuenta",
+    "restream": "No se conectó Restream"
+  },
+  "volver": "Volver",
+  "volverAIntentar": "Volver a intentar",
+  "conectando": "Conectando con {red}…",
+  "canjeando": "Canjeando el código y trayendo tus páginas"
+}

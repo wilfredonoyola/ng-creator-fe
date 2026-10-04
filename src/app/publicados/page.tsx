@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { FORMATOS_PUBLICADOS, PUBLICATIONS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
@@ -21,12 +22,10 @@ interface Publication {
 
 type Pestana = "pendientes" | "publicados" | "todos";
 
-const ETIQUETA_FORMATO: Record<string, string> = {
-  REEL: "Reel",
-  HISTORIA_VIDEO: "Historia",
-  IMAGEN: "Imagen",
-  HISTORIA_IMAGEN: "Historia img",
-};
+/** Los formatos con nombre propio (`formatos.<clave>`); otro se muestra tal cual. */
+const FORMATOS = ["REEL", "HISTORIA_VIDEO", "IMAGEN", "HISTORIA_IMAGEN"] as const;
+type Formato = (typeof FORMATOS)[number];
+const esFormato = (f: string): f is Formato => (FORMATOS as readonly string[]).includes(f);
 
 /**
  * Los videos aprobados de la página activa.
@@ -42,6 +41,8 @@ const ETIQUETA_FORMATO: Record<string, string> = {
  * lugar equivocado.
  */
 export default function PublicadosPage() {
+  const t = useTranslations("publicados");
+  const locale = useLocale();
   const { data, loading } = useQuery(PUBLICATIONS);
   const { data: estadoData } = useQuery(FORMATOS_PUBLICADOS, {
     errorPolicy: "all",
@@ -80,8 +81,8 @@ export default function PublicadosPage() {
         <PestanasPublicaciones />
         <Vacio
           icono="🔗"
-          titulo="No hay ninguna página activa"
-          detalle="Los videos se organizan por página. Elegí una en el switch de la izquierda."
+          titulo={t("sinPagina.titulo")}
+          detalle={t("sinPagina.detalle")}
         />
       </DashboardLayout>
     );
@@ -91,9 +92,9 @@ export default function PublicadosPage() {
     <DashboardLayout>
       <PestanasPublicaciones />
       <div className="mb-4">
-        <h1 className="text-2xl font-bold">Videos aprobados</h1>
+        <h1 className="text-2xl font-bold">{t("titulo")}</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-white/50">
-          <span>en</span>
+          <span>{t("en")}</span>
           {activa && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-white/80">
               <span
@@ -105,7 +106,7 @@ export default function PublicadosPage() {
           )}
           {enOtrasPaginas > 0 && (
             <span className="text-xs text-white/30">
-              · {enOtrasPaginas} en tus otras páginas
+              {t("enOtras", { n: enOtrasPaginas })}
             </span>
           )}
         </p>
@@ -119,18 +120,18 @@ export default function PublicadosPage() {
           activa={pestana === "pendientes"}
           onClick={() => setPestana("pendientes")}
         >
-          Sin publicar
+          {t("pestanas.pendientes")}
           <Contador n={pendientes.length} />
         </Tab>
         <Tab
           activa={pestana === "publicados"}
           onClick={() => setPestana("publicados")}
         >
-          Ya publicados
+          {t("pestanas.publicados")}
           <Contador n={yaSalieron.length} />
         </Tab>
         <Tab activa={pestana === "todos"} onClick={() => setPestana("todos")}>
-          Todos
+          {t("pestanas.todos")}
           <Contador n={deLaPagina.length} />
         </Tab>
       </div>
@@ -165,7 +166,7 @@ export default function PublicadosPage() {
                   />
                 ) : (
                   <div className="flex aspect-[9/16] items-center justify-center text-xs text-white/25">
-                    Sin portada
+                    {t("sinPortada")}
                   </div>
                 )}
 
@@ -180,7 +181,7 @@ export default function PublicadosPage() {
                         key={f}
                         className="rounded bg-marca px-1.5 py-0.5 text-[10px] font-semibold text-ng-tinta"
                       >
-                        {ETIQUETA_FORMATO[f] ?? f}
+                        {esFormato(f) ? t(`formatos.${f}`) : f}
                       </span>
                     ))}
                   </span>
@@ -189,8 +190,8 @@ export default function PublicadosPage() {
 
               <div className="px-2 py-1.5 text-[11px] text-white/35">
                 {pub.publicadoEn ? (
-                  <span title={fechaCompleta(pub.publicadoEn)}>
-                    {tiempoRelativo(pub.publicadoEn)}
+                  <span title={fechaCompleta(pub.publicadoEn, locale)}>
+                    {tiempoRelativo(pub.publicadoEn, undefined, locale)}
                   </span>
                 ) : (
                   <span>—</span>
@@ -204,15 +205,17 @@ export default function PublicadosPage() {
           icono={pestana === "publicados" ? "📺" : "✅"}
           titulo={
             pestana === "publicados"
-              ? "Todavía no publicaste ninguno"
+              ? t("vacio.publicados")
               : pestana === "pendientes"
-                ? "No te queda nada por publicar"
-                : `Todavía no hay videos aprobados en ${activa?.nombre ?? "esta página"}`
+                ? t("vacio.pendientes")
+                : activa?.nombre
+                  ? t("vacio.todosEn", { pagina: activa.nombre })
+                  : t("vacio.todos")
           }
           detalle={
             pestana === "pendientes" && deLaPagina.length > 0
-              ? "Todos los videos aprobados ya salieron a Facebook."
-              : "Los videos aparecen acá cuando se aprueban en la cola de revisión."
+              ? t("vacio.yaSalieron")
+              : t("vacio.aparecen")
           }
         />
       )}

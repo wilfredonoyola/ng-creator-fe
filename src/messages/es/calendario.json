@@ -1,0 +1,52 @@
+{
+  "estados": {
+    "PROGRAMADA": "Programada",
+    "AGENDADA_EN_RED": "Agendada",
+    "SUBIENDO": "Subiendo",
+    "PROCESANDO": "Publicando",
+    "PUBLICADA": "Publicada",
+    "FALLIDA": "Falló",
+    "CANCELADA": "Cancelada"
+  },
+  "titulo": "Calendario",
+  "subtitulo": "Qué está programado y qué ya salió.",
+  "subtituloEn": "Qué está programado y qué ya salió en {marca}.",
+  "horasDe": "Horas de {zona}",
+  "semanaAnterior": "Semana anterior",
+  "semanaSiguiente": "Semana siguiente",
+  "hoy": "Hoy",
+  "programadas": "{n, plural, one {# programada} other {# programadas}}",
+  "publicadas": "{n, plural, one {# publicada} other {# publicadas}}",
+  "fallidas": "{n, plural, one {# fallida} other {# fallidas}}",
+  "todas": "Todas",
+  "errorCargar": "No se pudo cargar el calendario: {mensaje}",
+  "nada": "Nada",
+  "listos": {
+    "titulo": "Listos para programar",
+    "vacio": "No hay clips esperando. Cuando alguien marque uno como Listo en el editor, aparece acá.",
+    "listoPor": "Listo por {nombre} · {tiempo}",
+    "programar": "Programar"
+  },
+  "tarjeta": {
+    "sinDescripcion": "Sin descripción",
+    "confirmarCancelar": "¿Cancelar «{titulo}» en {red}? No sale.",
+    "errorCancelar": "No se pudo cancelar",
+    "ver": "Ver ↗",
+    "cambiarHora": "Cambiar hora",
+    "cancelando": "Cancelando…",
+    "cancelar": "Cancelar",
+    "reintentando": "Reintentando: ",
+    "canceladaPor": "Cancelada por {nombre}"
+  },
+  "cambiarHora": {
+    "titulo": "Cambiar hora",
+    "publicacion": "Publicación",
+    "errorCambiar": "No se pudo cambiar la hora",
+    "ahoraSale": "Ahora sale el {cuando}.",
+    "yaPaso": "Esa hora ya pasó: elegí una de acá en adelante. Hora de {zona}.",
+    "vaASalir": "Va a salir el {cuando}. Hora de {zona}.",
+    "volver": "Volver",
+    "guardando": "Guardando…",
+    "guardar": "Guardar"
+  }
+}

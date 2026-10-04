@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "titulo": "Política de privacidad",
+    "descripcion": "Qué datos trata NG Creator, para qué, con qué proveedores se comparten, cuánto se conservan y cómo pedir su eliminación."
+  },
+  "titulo": "Política de privacidad",
+  "s1": {
+    "titulo": "1. Quién es responsable",
+    "p1": "NG Creator (en adelante, «el servicio») es una plataforma para convertir episodios de podcast en video en clips para redes sociales, editarlos en equipo y publicarlos. La opera {responsable}, con domicilio en El Salvador, que es la responsable de los datos que se describen aquí. El servicio se usa desde la web (creator.ngstudios.co) y desde las apps para iPhone y Android.",
+    "p2": "Para cualquier consulta sobre esta política o sobre tus datos, escribí a <correo></correo>."
+  },
+  "s2": {
+    "titulo": "2. Qué datos tratamos",
+    "cuenta": "<b>Datos de cuenta.</b> Nombre, correo electrónico y contraseña. La contraseña la gestiona Amazon Web Services (Cognito) y nunca la guardamos nosotros. En nuestra base guardamos el identificador de la cuenta, el correo, el nombre, las marcas a las que pertenecés, tu rol en cada una y la fecha del último acceso.",
+    "contenido": "<b>Contenido que subís y generás.</b> Los videos de los episodios, el audio que se extrae de ellos, la transcripción palabra por palabra, los momentos que sugiere la IA con su puntaje y motivo, los clips y sus ediciones (encuadre, textos, subtítulos) y los videos terminados. Las personas que aparecen o hablan en ese contenido son parte de él: es tu responsabilidad contar con su autorización (ver los Términos).",
+    "pago": "<b>Datos de pago.</b> Los pagos los procesa Wompi. Los datos de la tarjeta se ingresan en la página de Wompi y los guarda Wompi: nosotros nunca recibimos ni guardamos el número completo, la fecha de vencimiento ni el código de seguridad. De cada suscripción guardamos el plan, su estado, las fechas de cobro y vencimiento, el monto y los identificadores que Wompi nos devuelve para cada cobro.",
+    "redes": "<b>Datos de las redes conectadas.</b> Cuando un administrador conecta una cuenta de Facebook, recibimos su identificador y nombre de usuario, los permisos concedidos, un token de acceso de usuario y, por cada página que administra, su identificador, nombre, categoría, imagen y un token de acceso de página. Cuando el propietario de una marca conecta un canal de YouTube, recibimos de Google el identificador, el nombre y la imagen del canal, los permisos concedidos y un token de actualización. Cuando conecta una cuenta de TikTok, recibimos de TikTok su identificador para nuestra app (open_id), el nombre visible, el nombre de usuario, la imagen de perfil, los permisos concedidos, un token de acceso y uno de actualización, y lo que la cuenta permite al publicar (opciones de privacidad, si admite comentarios, dúos y stitch, y la duración máxima de sus videos). Todos los tokens se guardan cifrados. No leemos los videos, los comentarios, los seguidores ni los mensajes de esas cuentas. Si el servicio suma otras redes, esta política se actualizará con lo que se recibe de cada una antes de habilitarlas.",
+    "uso": "<b>Datos de uso y operación.</b> Registros de cada episodio, trabajo de procesamiento y publicación, con su estado, errores y marcas de tiempo, y el consumo de cada episodio (por ejemplo, minutos transcritos) para controlar los límites de cada plan.",
+    "movil": "<b>En la app móvil.</b> La sesión se guarda en el almacenamiento seguro del teléfono (Keychain en iPhone, Keystore en Android). La app no accede a tu ubicación, contactos, micrófono ni cámara, no muestra publicidad y no te rastrea entre apps o sitios de terceros."
+  },
+  "s3": {
+    "titulo": "3. Para qué los usamos",
+    "li1": "Crear y proteger tu cuenta, y controlar qué puede hacer cada persona según su rol.",
+    "li2": "Transcribir tus episodios, sugerir momentos, renderizar los clips y publicarlos donde lo indiques.",
+    "li3": "Cobrar la suscripción, aplicar los límites de tu plan y avisarte de pagos y vencimientos.",
+    "li4": "Mandarte correos necesarios para el servicio: invitaciones, códigos de acceso y avisos de la cuenta.",
+    "li5": "Darte soporte, diagnosticar fallos y prevenir abusos.",
+    "li6": "Cumplir obligaciones legales, contables y tributarias.",
+    "p1": "No vendemos datos, no los cedemos a terceros con fines comerciales, no construimos perfiles publicitarios y no usamos tu contenido para entrenar modelos de IA propios."
+  },
+  "s4": {
+    "titulo": "4. Con quién se comparten",
+    "p1": "Para funcionar, el servicio usa estos proveedores, cada uno con su propia política de privacidad. Solo reciben lo necesario para su parte del trabajo:",
+    "aws": "<b>Amazon Web Services</b> — autenticación de las cuentas (Cognito) y envío de correos (SES).",
+    "mongo": "<b>MongoDB Atlas</b> — base de datos.",
+    "bunny": "<b>Bunny.net</b> — almacenamiento y reproducción de los videos, el audio y las imágenes.",
+    "openai": "<b>OpenAI</b> — transcripción del audio de los episodios y análisis de la transcripción para sugerir momentos. Según sus condiciones para la API, OpenAI no usa estos datos para entrenar sus modelos.",
+    "elevenlabs": "<b>ElevenLabs</b> — síntesis de voz, solo en las funciones que la usan.",
+    "servidores": "<b>DigitalOcean, Contabo y Vercel</b> — servidores donde corren la aplicación, el procesamiento de video y la web.",
+    "wompi": "<b>Wompi</b> — cobro de la suscripción.",
+    "meta": "<b>Meta Platforms</b> — publicación en las páginas de Facebook autorizadas.",
+    "google": "<b>Google (YouTube API Services)</b> — publicación en los canales de YouTube autorizados. Google trata esos datos según su <enlace>política de privacidad</enlace>.",
+    "tiktok": "<b>TikTok</b> — publicación en las cuentas de TikTok autorizadas, según su <enlace>política de privacidad</enlace>.",
+    "expo": "<b>Expo</b> — distribución de las actualizaciones de la app móvil.",
+    "p2": "Varios de estos proveedores están fuera de El Salvador, principalmente en Estados Unidos y Europa, así que tus datos pueden procesarse en esos países. También podemos compartir datos si lo exige una autoridad competente conforme a la ley."
+  },
+  "s5": {
+    "titulo": "5. Equipos y marcas",
+    "p1": "El contenido se organiza por marca. Quien crea una marca es su propietario: puede invitar personas, darles un rol y quitarlas. Las personas de una marca ven y editan el contenido de esa marca según su rol, y no ven el de otras marcas. Si alguien te invita, el propietario de esa marca puede ver lo que hagas dentro de ella."
+  },
+  "s6": {
+    "titulo": "6. Permisos de las redes y para qué se usan",
+    "p1": "Al conectar cada red solicitamos estos permisos, y los usamos exclusivamente para lo indicado.",
+    "fbPagesShowList": "listar las páginas que administrás, para que puedas elegir cuáles habilitar como destino.",
+    "fbPagesReadEngagement": "leer los datos básicos de esas páginas, como nombre, categoría e imagen.",
+    "fbPagesManagePosts": "publicar el contenido que apruebes, como reel, historia o imagen.",
+    "fbReadInsights": "leer las estadísticas de las publicaciones de esas páginas (alcance e impresiones), para ordenar el historial por rendimiento. Es opcional: si no lo concedés, todo lo demás sigue funcionando.",
+    "ytUpload": "subir al canal los videos que publiques, con el título, la descripción, las etiquetas y la visibilidad que elijas.",
+    "ytReadonly": "saber qué canal elegiste al conectar (su identificador, nombre e imagen). No lo usamos para leer otros videos, comentarios ni estadísticas del canal.",
+    "ytTerminos": "El servicio usa los YouTube API Services. Al publicar en YouTube a través del servicio, aceptás los <enlace>Términos del servicio de YouTube</enlace>.",
+    "ttUserInfo": "saber qué cuenta conectaste (identificador, nombre visible e imagen de perfil), para mostrarla como destino.",
+    "ttVideoPublish": "publicar en la cuenta los videos que indiques, con el texto, la privacidad, las interacciones y la declaración de contenido comercial que elijas en cada publicación.",
+    "p2": "En todas las redes, solo publicamos en las cuentas y páginas que el propietario de la marca habilitó de forma explícita, y solo cuando alguien del equipo lo indica. El servicio nunca publica por su cuenta: cada publicación la confirma una persona. Si esa persona elige una fecha y hora, la publicación queda programada y sale a esa hora; hasta entonces se puede cancelar o cambiar."
+  },
+  "s7": {
+    "titulo": "7. Cuánto tiempo conservamos los datos",
+    "li1": "Los datos de cuenta, mientras la cuenta exista.",
+    "li2": "El contenido, mientras tu suscripción esté activa. Los archivos originales de los episodios pueden eliminarse pasados 30 días desde su subida, una vez sacados los clips; las transcripciones, los clips y los videos terminados se conservan.",
+    "li3": "Si cancelás o tu plan vence, conservamos el contenido 90 días por si volvés. Pasado ese plazo podemos eliminarlo, con aviso previo por correo.",
+    "li4": "Los registros de pago, el tiempo que exija la ley contable y tributaria.",
+    "li5": "Los tokens de las redes, hasta que expiran, se revocan o se desconecta la cuenta."
+  },
+  "s8": {
+    "titulo": "8. Seguridad",
+    "p1": "El acceso exige autenticación y está limitado por roles y por marca. Los tokens de las redes se guardan cifrados con AES-256-GCM y no se exponen en ninguna interfaz ni respuesta de la API. Toda la comunicación viaja por HTTPS. Ninguna medida ofrece seguridad absoluta, pero estas son las que aplicamos."
+  },
+  "s9": {
+    "titulo": "9. Cómo revocar el acceso a las redes",
+    "p1": "Desde el servicio, en <em>Redes conectadas</em>, la opción «Desconectar» de cada página, canal o cuenta borra sus tokens y la deja de usar como destino; en YouTube y TikTok, además, le pide a la red que revoque el acceso. También podés revocarlo directamente en cada red, y conviene hacer las dos cosas:",
+    "facebook": "<b>Facebook:</b> <em>Configuración y privacidad → Configuración → Apps y sitios web</em>, eliminando la app.",
+    "youtube": "<b>YouTube:</b> en la <enlace>página de permisos de tu cuenta de Google</enlace>, quitando el acceso de NG Creator.",
+    "tiktok": "<b>TikTok:</b> en la app, <em>Perfil → Configuración y privacidad → Seguridad y permisos → Apps y servicios</em>, quitando NG Creator."
+  },
+  "s10": {
+    "titulo": "10. Tus derechos y cómo eliminar tu cuenta",
+    "p1": "Podés pedir acceso a tus datos, corregirlos, llevártelos (los clips terminados se descargan como MP4 en cualquier momento) o eliminarlos.",
+    "p2": "Tu cuenta la podés eliminar vos mismo, desde la app o desde la web, en <em>Perfil → Eliminar mi cuenta</em>. Antes de confirmar te mostramos qué marcas se ven afectadas. Al eliminarla:",
+    "li1": "eliminamos tu usuario del servicio y de AWS Cognito, junto con tu acceso a todas las marcas;",
+    "li2": "las marcas de las que sos el único miembro se archivan: se desconectan sus redes (borrando sus tokens) y se cancelan sus publicaciones programadas. Su contenido queda guardado y se puede recuperar pidiéndolo a <correo></correo> por 30 días;",
+    "li3": "en el historial de las marcas en las que trabajaste, tu nombre pasa a «Cuenta eliminada»;",
+    "li4": "si sos el único propietario de una marca en la que hay más personas, primero tenés que hacer propietaria a otra persona en <em>Equipo</em>: la marca y su contenido siguen siendo de su equipo.",
+    "p3": "También podés pedir la eliminación escribiendo a <correo></correo> desde el correo asociado a tu cuenta; la hacemos en un plazo de 30 días.",
+    "p4": "Conservamos solo lo que la ley nos obligue a guardar, como los registros de pago. El contenido ya publicado en una red social no se elimina desde acá: hay que borrarlo en esa red, porque desde la publicación queda bajo su control y el de quien administra la cuenta."
+  },
+  "s11": {
+    "titulo": "11. Menores de edad",
+    "p1": "El servicio es para personas mayores de 18 años. No recopilamos a sabiendas datos de menores; si creés que un menor nos dio sus datos, escribinos y los eliminamos."
+  },
+  "s12": {
+    "titulo": "12. Cambios en esta política",
+    "p1": "Si cambia lo que hacemos con los datos, actualizamos esta página y su fecha. Si el cambio es importante, te avisamos por correo antes de que rija."
+  }
+}

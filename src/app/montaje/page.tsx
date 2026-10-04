@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EditorRecorte } from "@/components/montaje/EditorRecorte";
@@ -10,7 +11,7 @@ import { ControlesTexto } from "@/components/montaje/ControlesTexto";
 import { MomentosCamara } from "@/components/montaje/MomentosCamara";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import { downloadFromTikTok } from "@/lib/upload";
+import { ErrorDeSubida, downloadFromTikTok } from "@/lib/upload";
 import {
   FORMATOS,
   FORMATOS_LISTOS,
@@ -129,6 +130,8 @@ interface Fuente {
  * su licencia, y sale por la cola de siempre.
  */
 export default function MontajePage() {
+  const tr = useTranslations("montaje");
+  const tSubida = useTranslations("erroresSubida");
   const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
   const puede = puedeOperar(activa?._id);
@@ -268,13 +271,12 @@ export default function MontajePage() {
     if (g === "completo") setModo("completo");
   }, []);
 
-  const PASOS = [
-    { n: 1, titulo: "El video", ayuda: "Pegá el link y elegí qué parte se ve" },
-    { n: 2, titulo: "Qué armás", ayuda: "El formato decide cómo se ve todo" },
-    { n: 3, titulo: "Tu parte", ayuda: "Grabá lo que vas a decir" },
-    { n: 4, titulo: "Subtítulos", ayuda: "Opcional, se transcribe solo" },
-    { n: 5, titulo: "Titulares", ayuda: "Opcional, el texto de arriba y abajo" },
-  ];
+  // El título y la ayuda de cada paso salen de `montaje.pasos.<n>`.
+  const PASOS = ([1, 2, 3, 4, 5] as const).map((n) => ({
+    n,
+    titulo: tr(`pasos.${n}.titulo`),
+    ayuda: tr(`pasos.${n}.ayuda`),
+  }));
   const guiado = modo === "guiado";
   const ve = (n: number) => !guiado || paso === n;
 
@@ -374,7 +376,7 @@ export default function MontajePage() {
 
   async function cargar() {
     if (!url.includes("tiktok.com")) {
-      setError("Pegá un link de TikTok");
+      setError(tr("errores.linkTiktok"));
       return;
     }
     setError(null);
@@ -389,10 +391,7 @@ export default function MontajePage() {
       // `origenStoragePath` que llego como la cadena "undefined".
       const ruta = r.storagePath || r.path;
       if (typeof ruta !== "string" || !ruta.trim() || ruta === "undefined") {
-        throw new Error(
-          "El servidor no devolvio donde quedo guardado el video. " +
-            "Volve a cargar el link.",
-        );
+        throw new Error(tr("errores.sinRuta"));
       }
 
       // Las dimensiones reales las reporta el <video> al cargar los metadatos;
@@ -414,7 +413,7 @@ export default function MontajePage() {
       // otro video borraria el trabajo del primero sin avisar.
       borrador.adoptar(null, null);
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo cargar el video");
+      setError(e instanceof ErrorDeSubida ? tSubida(e.clave, e.datos) : e?.message ?? tr("errores.cargar"));
     } finally {
       setCargando(false);
     }
@@ -423,7 +422,7 @@ export default function MontajePage() {
   async function generar() {
     if (!activa || !fuente) return;
     if (!fuente.storagePath) {
-      setError("Se perdio la referencia al video. Volve a cargar el link.");
+      setError(tr("errores.sinReferencia"));
       return;
     }
     setError(null);
@@ -473,7 +472,7 @@ export default function MontajePage() {
         localStorage.setItem(CLAVE_TRABAJO, t._id);
       }
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo iniciar el montaje");
+      setError(e?.message ?? tr("errores.iniciar"));
     }
   }
 
@@ -516,7 +515,7 @@ export default function MontajePage() {
         if (e !== "RENDERIZANDO" && e !== "EN_COLA") {
           localStorage.removeItem(CLAVE_TRABAJO);
           if (data.montajeTrabajo.estado === "FALLIDO") {
-            setError(data.montajeTrabajo.error ?? "El montaje falló");
+            setError(data.montajeTrabajo.error ?? tr("errores.fallo"));
           }
         }
       } catch {
@@ -528,7 +527,7 @@ export default function MontajePage() {
       vivo = false;
       clearInterval(t);
     };
-  }, [trabajo, activa, cliente]);
+  }, [trabajo, activa, cliente, tr]);
 
   // Al abrir la pantalla, retomar un montaje que haya quedado corriendo.
   useEffect(() => {
@@ -578,10 +577,10 @@ export default function MontajePage() {
         formatoElegido,
         licenciaId,
       },
-      nombre: nombreDeBorrador(montaje, fuente),
+      nombre: nombreDeBorrador(montaje, fuente, tr("sinNombre")),
       origenUrl: fuente.origenUrl,
     };
-  }, [fuente, montaje, proporcion, formatoElegido, licenciaId]);
+  }, [fuente, montaje, proporcion, formatoElegido, licenciaId, tr]);
 
   const borrador = useGuardadoAutomatico({
     marcaId: activa?._id,
@@ -628,15 +627,13 @@ export default function MontajePage() {
         });
         const g = data?.montajeGuardado;
         if (!g?.config || !aplicarBorrador(g._id, g.config)) {
-          setError(
-            "Ese montaje se guardó con una versión anterior del editor y ya no se puede abrir.",
-          );
+          setError(tr("errores.versionVieja"));
         }
       } catch {
-        setError("No se pudo abrir ese montaje");
+        setError(tr("errores.abrir"));
       }
     },
-    [activa, cliente, aplicarBorrador],
+    [activa, cliente, aplicarBorrador, tr],
   );
 
   // Al abrir la pantalla, retomar el borrador que quedó a medias.
@@ -680,8 +677,8 @@ export default function MontajePage() {
     return (
       <DashboardLayout>
         <Aviso
-          titulo="No hay ninguna página activa"
-          detalle="El montaje se guarda como expediente de una página. Elegí una en el switch de la izquierda."
+          titulo={tr("sinPagina.titulo")}
+          detalle={tr("sinPagina.detalle")}
         />
       </DashboardLayout>
     );
@@ -691,8 +688,8 @@ export default function MontajePage() {
     return (
       <DashboardLayout>
         <Aviso
-          titulo="Solo lectura en esta página"
-          detalle="Tu rol acá no permite crear material. Pedile a quien la administra que te haga editor."
+          titulo={tr("soloLectura.titulo")}
+          detalle={tr("soloLectura.detalle")}
         />
       </DashboardLayout>
     );
@@ -702,12 +699,11 @@ export default function MontajePage() {
     <DashboardLayout>
       <div className="mb-6">
         <div className="flex items-baseline gap-3">
-          <h1 className="text-2xl font-bold">Montaje</h1>
+          <h1 className="text-2xl font-bold">{tr("titulo")}</h1>
           {fuente && <EstadoBorrador estado={borrador.estado} />}
         </div>
         <p className="mt-1 text-sm text-white/50">
-          De un link a un video listo: elegí el área útil, escribí los titulares
-          y generá. Queda en revisión, no se publica solo.
+          {tr("subtitulo")}
         </p>
       </div>
 
@@ -724,11 +720,13 @@ export default function MontajePage() {
                   colgado justo cuando todo esta bien. */}
               {trabajo?.estado === "EN_COLA"
                 ? (trabajo?.posicionEnCola ?? 0) === 0
-                  ? "Es el siguiente"
-                  : `Esperando turno · ${trabajo?.posicionEnCola} delante`
+                  ? tr("render.siguiente")
+                  : tr("render.esperando", { n: trabajo?.posicionEnCola ?? 0 })
                 : (trabajo?.progreso ?? 0) >= 95
-                  ? "Subiendo el video"
-                  : `Componiendo el video · ${Math.round(trabajo?.progreso ?? 0)}%`}
+                  ? tr("render.subiendo")
+                  : tr("render.componiendo", {
+                      progreso: Math.round(trabajo?.progreso ?? 0),
+                    })}
             </span>
             <span className="text-xs text-white/40">
               {Math.floor(segundos / 60)}:
@@ -742,8 +740,7 @@ export default function MontajePage() {
             />
           </div>
           <p className="mt-2 text-xs text-white/45">
-            Podés cerrar la pestaña: el video se sigue armando en el servidor y
-            al volver acá se retoma. Cuando termine queda en revisión.
+            {tr("render.podesCerrar")}
           </p>
         </div>
       )}
@@ -752,12 +749,12 @@ export default function MontajePage() {
 
       {trabajo?.estado === "LISTO" && (
         <div className="mb-4 rounded-xl border border-ng-azul/30 bg-ng-teal/5 p-4">
-          <p className="text-sm text-ng-teal">Video generado.</p>
+          <p className="text-sm text-ng-teal">{tr("render.generado")}</p>
           <Link
             href="/revision"
             className="mt-1 inline-block text-xs text-white/60 underline hover:text-white"
           >
-            Está esperando en la cola de revisión →
+            {tr("render.enRevision")}
           </Link>
         </div>
       )}
@@ -768,7 +765,7 @@ export default function MontajePage() {
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://www.tiktok.com/@usuario/video/..."
+          placeholder={tr("placeholderLink")}
 
           className="min-w-0 flex-1 disabled:opacity-40 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
         />
@@ -777,7 +774,7 @@ export default function MontajePage() {
           disabled={cargando || !url.trim()}
           className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
         >
-          {cargando ? "Descargando…" : "Cargar video"}
+          {cargando ? tr("descargando") : tr("cargarVideo")}
         </button>
       </div>
       )}
@@ -817,7 +814,7 @@ export default function MontajePage() {
                 <div className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <span className="text-[11px] text-white/35">
-                      Paso {paso} de {PASOS.length}
+                      {tr("pasoDe", { paso, total: PASOS.length })}
                     </span>
                     <p className="truncate text-sm font-semibold text-white/90">
                       {PASOS[paso - 1].titulo}
@@ -830,7 +827,7 @@ export default function MontajePage() {
                     onClick={() => cambiarModo("completo")}
                     className="shrink-0 text-[11px] text-white/35 underline transition hover:text-white/70"
                   >
-                    Ver todo el editor
+                    {tr("verTodo")}
                   </button>
                 </div>
                 <div className="mt-2.5 flex gap-1">
@@ -856,11 +853,11 @@ export default function MontajePage() {
                 }}
                 className="self-start text-[11px] text-white/35 underline transition hover:text-white/70"
               >
-                ← Volver al modo guiado
+                {tr("volverGuiado")}
               </button>
             )}
 
-            <Bloque numero={1} titulo="Elegí el área útil" oculto={!ve(1)}>
+            <Bloque numero={1} titulo={tr("bloques.area")} oculto={!ve(1)}>
           {fuente ? (
             <>
               {/* Se acota el ANCHO para que el alto derivado entre en el
@@ -911,27 +908,27 @@ export default function MontajePage() {
                   aparicion: eso baja el original solo mientras hablas encima,
                   esto es el nivel de base. */}
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] text-white/35">Audio del video</span>
+                <span className="text-[11px] text-white/35">{tr("audioVideo")}</span>
                 {VOLUMENES.map((v) => (
                   <Chip
-                    key={v.etiqueta}
+                    key={v.clave}
                     activo={Math.abs(montaje.volumenVideo - v.valor) < 0.05}
                     onClick={() => cambiar({ volumenVideo: v.valor })}
                   >
-                    {v.etiqueta}
+                    {tr(`volumenes.${v.clave}`)}
                   </Chip>
                 ))}
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[11px] text-white/35">Proporción</span>
+                <span className="text-[11px] text-white/35">{tr("proporcion")}</span>
                 {PROPORCIONES.map((p) => (
                   <Chip
                     key={p.id}
                     activo={proporcion === p.id}
                     onClick={() => setProporcion(p.id)}
                   >
-                    {p.etiqueta}
+                    {p.etiqueta ?? tr("proporcionLibre")}
                   </Chip>
                 ))}
               </div>
@@ -941,11 +938,13 @@ export default function MontajePage() {
                 <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                   <div className="mb-2 flex items-center justify-between text-[11px] text-white/40">
                     <span>
-                      Tramo del video
+                      {tr("tramo.titulo")}
                       {fuente.duracion > LIMITE_REEL_SEG && (
                         <span className="ml-1.5 text-white/25">
-                          · de {fuente.duracion.toFixed(0)}s, recortado a{" "}
-                          {LIMITE_REEL_SEG}s
+                          {tr("tramo.recortado", {
+                            total: fuente.duracion.toFixed(0),
+                            limite: LIMITE_REEL_SEG,
+                          })}
                         </span>
                       )}
                     </span>
@@ -954,7 +953,7 @@ export default function MontajePage() {
                     </span>
                   </div>
                   <Deslizador
-                    etiqueta="Desde"
+                    etiqueta={tr("tramo.desde")}
                     valor={montaje.trim.desdeSeg}
                     min={0}
                     max={fuente.duracion}
@@ -970,7 +969,7 @@ export default function MontajePage() {
                     }
                   />
                   <Deslizador
-                    etiqueta="Hasta"
+                    etiqueta={tr("tramo.hasta")}
                     valor={montaje.trim.hastaSeg}
                     min={0}
                     max={fuente.duracion}
@@ -991,10 +990,10 @@ export default function MontajePage() {
                       segundo de tramo es tiempo de CPU en el servidor. */}
                   {duracionTrim > LIMITE_REEL_SEG && (
                     <p className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-2 text-[11px] text-amber-300">
-                      {duracionTrim.toFixed(0)}s es demasiado para un Reel: Meta
-                      admite hasta {LIMITE_REEL_SEG}s. Se va a poder generar,
-                      pero al publicarlo como Reel te lo va a rechazar. Y el
-                      render tarda en proporcion al tramo.
+                      {tr("tramo.demasiado", {
+                        seg: duracionTrim.toFixed(0),
+                        limite: LIMITE_REEL_SEG,
+                      })}
                       <button
                         onClick={() =>
                           cambiar({
@@ -1007,7 +1006,7 @@ export default function MontajePage() {
                         }
                         className="ml-1 underline hover:text-amber-200"
                       >
-                        Recortar a {LIMITE_REEL_SEG}s
+                        {tr("tramo.recortar", { limite: LIMITE_REEL_SEG })}
                       </button>
                     </p>
                   )}
@@ -1019,7 +1018,7 @@ export default function MontajePage() {
             </>
           ) : (
             <div className="flex items-center justify-center rounded-xl border border-dashed border-white/15 px-6 py-10 text-center text-xs text-white/25">
-              Pegá un link de TikTok arriba para empezar
+              {tr("pegaLink")}
             </div>
           )}
             </Bloque>
@@ -1034,7 +1033,7 @@ export default function MontajePage() {
             {fuente && ve(2) && (
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <h3 className="text-xs font-medium uppercase tracking-wider text-white/35">
-                  Qué querés armar
+                  {tr("queArmar")}
                 </h3>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3">
                   {FORMATOS_LISTOS.map((f) => (
@@ -1052,10 +1051,10 @@ export default function MontajePage() {
                           formatoElegido === f.id ? "text-ng-teal" : "text-white/80"
                         }`}
                       >
-                        {f.nombre}
+                        {tr(`formatosListos.${f.id}.nombre`)}
                       </span>
                       <span className="mt-1 block text-[11px] leading-snug text-white/40">
-                        {f.detalle}
+                        {tr(`formatosListos.${f.id}.detalle`)}
                       </span>
                     </button>
                   ))}
@@ -1086,11 +1085,10 @@ export default function MontajePage() {
                     />
                     <span>
                       <span className="block text-xs font-medium text-white/80">
-                        Subtítulos automáticos
+                        {tr("subtitulos.titulo")}
                       </span>
                       <span className="mt-0.5 block text-[11px] leading-snug text-white/40">
-                        Transcribe lo que se dice —el video y vos— y lo escribe
-                        palabra por palabra. Suma medio minuto al render.
+                        {tr("subtitulos.detalle")}
                       </span>
                     </span>
                   </label>
@@ -1099,24 +1097,24 @@ export default function MontajePage() {
 
             <BloqueOpcional
               numero={2}
-              titulo="Titulares"
+              titulo={tr("bloques.titulares")}
               oculto={!ve(5)}
               abierto={guiado}
               resumen={
                 [montaje.textoSuperior, montaje.textoInferior]
                   .filter((t) => t.contenido.trim())
-                  .map((t) => `“${t.contenido.trim().slice(0, 22)}”`)
-                  .join(" · ") || "Sin titulares"
+                  .map((t) => tr("titularCitado", { texto: t.contenido.trim().slice(0, 22) }))
+                  .join(" · ") || tr("sinTitulares")
               }
             >
               <div className="grid gap-4">
                 <ControlesTexto
-                  titulo="Titular de arriba"
+                  titulo={tr("titularArriba")}
                   texto={montaje.textoSuperior}
                   onCambio={(textoSuperior) => cambiar({ textoSuperior })}
                 />
                 <ControlesTexto
-                  titulo="Titular de abajo"
+                  titulo={tr("titularAbajo")}
                   texto={montaje.textoInferior}
                   onCambio={(textoInferior) => cambiar({ textoInferior })}
                 />
@@ -1125,13 +1123,13 @@ export default function MontajePage() {
 
             <BloqueOpcional
               numero={3}
-              titulo="Aparecer en el video"
+              titulo={tr("bloques.aparecer")}
               oculto={!ve(3)}
               abierto={guiado}
               resumen={
                 montaje.camara
-                  ? `${montaje.momentos.length} momento${montaje.momentos.length !== 1 ? "s" : ""}`
-                  : "No aparecés"
+                  ? tr("momentosResumen", { n: montaje.momentos.length })
+                  : tr("noApareces")
               }
             >
               <MomentosCamara
@@ -1153,7 +1151,7 @@ export default function MontajePage() {
                   disabled={paso === 1}
                   className="rounded-lg border border-white/15 px-4 py-2.5 text-xs text-white/60 transition hover:bg-white/5 disabled:opacity-30"
                 >
-                  Atrás
+                  {tr("atras")}
                 </button>
                 {paso < PASOS.length ? (
                   <button
@@ -1162,11 +1160,11 @@ export default function MontajePage() {
                   >
                     {/* Los opcionales lo dicen: seguir sin tocarlos es una
                         opcion valida, no algo que uno se saltea mal. */}
-                    {paso === 4 || paso === 5 ? "Saltear" : "Siguiente"}
+                    {paso === 4 || paso === 5 ? tr("saltear") : tr("siguiente")}
                   </button>
                 ) : (
                   <span className="text-[11px] text-white/35">
-                    Listo — generá el video con el botón de la derecha
+                    {tr("listoGenerar")}
                   </span>
                 )}
               </div>
@@ -1179,15 +1177,15 @@ export default function MontajePage() {
                 donde se decide, y plegados: casi nunca hay que tocarlos. */}
             <BloqueOpcional
               numero={4}
-              titulo="Ajustes del lienzo"
+              titulo={tr("bloques.lienzo")}
               oculto={guiado}
               resumen={`${montaje.lienzo.ancho}×${montaje.lienzo.alto} · ${
-                montaje.fondo.tipo === "SOLIDO" ? "fondo liso" : "desenfoque"
+                montaje.fondo.tipo === "SOLIDO" ? tr("lienzo.fondoLiso") : tr("lienzo.desenfoqueResumen")
               }`}
             >
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Formato</span>
+                  <span className="text-[11px] text-white/35">{tr("lienzo.formato")}</span>
                   {FORMATOS.map((f) => (
                     <Chip
                       key={f.id}
@@ -1208,7 +1206,7 @@ export default function MontajePage() {
 
                 <div className="mt-3 space-y-2 rounded-xl border border-white/10 bg-black/20 p-3">
                   <Deslizador
-                    etiqueta="Tamaño"
+                    etiqueta={tr("lienzo.tamano")}
                     valor={montaje.video.escala}
                     min={0.2}
                     max={2}
@@ -1219,7 +1217,7 @@ export default function MontajePage() {
                     }
                   />
                   <Deslizador
-                    etiqueta="Posición"
+                    etiqueta={tr("lienzo.posicion")}
                     valor={montaje.video.centroY}
                     min={0}
                     max={1}
@@ -1235,19 +1233,19 @@ export default function MontajePage() {
                     }
                     className="w-full rounded-lg border border-white/10 py-2 text-xs text-white/50 transition hover:bg-white/5"
                   >
-                    Centrar
+                    {tr("lienzo.centrar")}
                   </button>
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="text-[11px] text-white/35">Fondo</span>
+                  <span className="text-[11px] text-white/35">{tr("lienzo.fondo")}</span>
                   <Chip
                     activo={montaje.fondo.tipo === "SOLIDO"}
                     onClick={() =>
                       cambiar({ fondo: { ...montaje.fondo, tipo: "SOLIDO" } })
                     }
                   >
-                    Color
+                    {tr("lienzo.color")}
                   </Chip>
                   <Chip
                     activo={montaje.fondo.tipo === "DESENFOQUE"}
@@ -1255,7 +1253,7 @@ export default function MontajePage() {
                       cambiar({ fondo: { ...montaje.fondo, tipo: "DESENFOQUE" } })
                     }
                   >
-                    Desenfoque
+                    {tr("lienzo.desenfoque")}
                   </Chip>
                   {montaje.fondo.tipo === "SOLIDO" && (
                     <input
@@ -1278,7 +1276,7 @@ export default function MontajePage() {
             }`}
           >
             <h2 className="hidden text-xs font-medium uppercase tracking-wider text-white/35 lg:block">
-              Cómo va a quedar
+              {tr("comoQueda")}
             </h2>
             {/* Mismo tope de alto que el editor: con el ancho fijo en 300, un
                 lienzo 9:16 daba 533px y el preview terminaba siendo lo mas alto
@@ -1316,20 +1314,20 @@ export default function MontajePage() {
                 onClick={alternarReproduccion}
                 className="flex-1 rounded-lg border border-white/10 py-2 text-xs text-white/60 transition hover:bg-white/5"
               >
-                {reproduciendo ? "⏸ Pausar" : "▶ Reproducir"}
+                {reproduciendo ? tr("reproductor.pausar") : tr("reproductor.reproducir")}
               </button>
               <button
                 onClick={desdeElInicio}
-                title="Volver al inicio del tramo"
-                aria-label="Volver al inicio del tramo"
+                title={tr("reproductor.alInicio")}
+                aria-label={tr("reproductor.alInicio")}
                 className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/60 transition hover:bg-white/5"
               >
                 ⏮
               </button>
               <button
                 onClick={() => setSonido((s) => !s)}
-                title={sonido ? "Silenciar" : "Activar el sonido"}
-                aria-label={sonido ? "Silenciar" : "Activar el sonido"}
+                title={sonido ? tr("reproductor.silenciar") : tr("reproductor.activarSonido")}
+                aria-label={sonido ? tr("reproductor.silenciar") : tr("reproductor.activarSonido")}
                 className={`rounded-lg border px-3 py-2 text-xs transition ${
                   sonido
                     ? "border-ng-azul/40 bg-ng-teal/10 text-ng-teal"
@@ -1348,7 +1346,7 @@ export default function MontajePage() {
             disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
             className="rounded-lg bg-marca px-6 py-3 text-sm font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
           >
-            {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar video"}
+            {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? tr("enLaFila") : tr("generarVideo")}
           </button>
 
           {/* Guardar el estilo es una linea gris y no un boton grande: se usa
@@ -1368,14 +1366,14 @@ export default function MontajePage() {
                   setEstiloGuardado(true);
                   setTimeout(() => setEstiloGuardado(false), 2500);
                 } catch {
-                  setError("No se pudo guardar el estilo");
+                  setError(tr("errores.estilo"));
                 }
               }}
               className="text-left text-xs text-white/45 underline underline-offset-2 transition hover:text-white/70"
             >
               {estiloGuardado
-                ? "Listo: los próximos videos arrancan así"
-                : "Guardar esto como el estilo de la página"}
+                ? tr("estilo.guardado")
+                : tr("estilo.guardar")}
             </button>
           )}
 
@@ -1386,7 +1384,7 @@ export default function MontajePage() {
             onClick={() => setVerLicencia(true)}
             className="w-full text-center text-[11px] text-white/30 underline transition hover:text-white/60"
           >
-            {licenciaId ? "Licencia elegida · cambiar" : "Sin licencia · elegir"}
+            {licenciaId ? tr("licencia.elegidaCambiar") : tr("licencia.sinElegir")}
           </button>
         </div>
       </div>
@@ -1406,10 +1404,10 @@ export default function MontajePage() {
         >
           <div className="min-w-0 flex-1 text-[11px] leading-tight">
             <p className={excedeLimite ? "text-amber-300" : "text-white/50"}>
-              {duracionConMomentos.toFixed(1)}s finales
+              {tr("finales", { seg: duracionConMomentos.toFixed(1) })}
             </p>
             <p className="truncate text-white/30">
-              {licenciaId ? "Con licencia elegida" : "Licencia sin verificar"}
+              {licenciaId ? tr("licencia.conElegida") : tr("licencia.sinVerificar")}
             </p>
           </div>
           <button
@@ -1417,7 +1415,7 @@ export default function MontajePage() {
             disabled={!fuente || ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null)}
             className="shrink-0 rounded-lg bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta transition disabled:opacity-40"
           >
-            {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? "En la fila" : "Generar"}
+            {ultimoEnviado === JSON.stringify(datosBorrador?.config ?? null) ? tr("enLaFila") : tr("generar")}
           </button>
         </div>
       )}
@@ -1432,25 +1430,25 @@ export default function MontajePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Licencia</h3>
+              <h3 className="text-sm font-semibold">{tr("licencia.titulo")}</h3>
               <button
                 onClick={() => setVerLicencia(false)}
                 className="text-white/40 transition hover:text-white"
-                aria-label="Cerrar"
+                aria-label={tr("cerrar")}
               >
                 ✕
               </button>
             </div>
           <div className="min-w-0 flex-1">
             <label className="mb-1.5 block text-xs font-medium text-white/60">
-              Licencia
+              {tr("licencia.titulo")}
             </label>
             <select
               value={licenciaId}
               onChange={(e) => setLicenciaId(e.target.value)}
               className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-ng-azul/50"
             >
-              <option value="">Sin verificar (no pedí permiso)</option>
+              <option value="">{tr("licencia.opcionSinVerificar")}</option>
               {licencias.map((l) => (
                 <option key={l._id} value={l._id} className="bg-[#111]">
                   {l.scope}
@@ -1459,17 +1457,16 @@ export default function MontajePage() {
             </select>
             <p className="mt-1.5 text-[11px] text-white/30">
               {licenciaId ? (
-                "El material queda con la licencia que elegiste."
+                tr("licencia.conLicencia")
               ) : (
-                <>
-                  Se registra una licencia marcada{" "}
-                  <span className="text-amber-400/70">sin verificar</span> con el
-                  link de origen guardado. Podés regularizarla después desde{" "}
-                  <Link href="/creators" className="text-ng-teal hover:underline">
-                    Creators
-                  </Link>
-                  .
-                </>
+                tr.rich("licencia.explicacionSinVerificar", {
+                  marca: (c) => <span className="text-amber-400/70">{c}</span>,
+                  link: (c) => (
+                    <Link href="/creators" className="text-ng-teal hover:underline">
+                      {c}
+                    </Link>
+                  ),
+                })
               )}
             </p>
           </div>
@@ -1477,7 +1474,7 @@ export default function MontajePage() {
               onClick={() => setVerLicencia(false)}
               className="mt-3 w-full rounded-lg bg-white/10 py-2.5 text-xs font-medium text-white/80 transition hover:bg-white/15"
             >
-              Listo
+              {tr("listo")}
             </button>
           </div>
         </div>
@@ -1495,13 +1492,13 @@ export default function MontajePage() {
  * Si todavía no hay ninguno queda el id del video de TikTok, que al menos
  * distingue un borrador de otro — mucho mejor que veinte filas iguales.
  */
-function nombreDeBorrador(m: Montaje, f: Fuente): string {
+function nombreDeBorrador(m: Montaje, f: Fuente, sinNombre: string): string {
   const titular =
     m.textoSuperior.contenido.trim() || m.textoInferior.contenido.trim();
   if (titular) return titular.replace(/\s+/g, " ").slice(0, 80);
 
   const id = f.origenUrl.match(/\/video\/(\d+)/)?.[1];
-  return id ? `TikTok ${id}` : "Montaje sin nombre";
+  return id ? `TikTok ${id}` : sinNombre;
 }
 
 /**
@@ -1513,17 +1510,19 @@ function nombreDeBorrador(m: Montaje, f: Fuente): string {
  * el trabajo está en riesgo y hay que enterarse.
  */
 function EstadoBorrador({ estado }: { estado: EstadoGuardado }) {
+  const tr = useTranslations("montaje");
   if (estado === "limpio") return null;
   if (estado === "error") {
     return (
       <span className="text-xs text-red-400">
-        No se pudo guardar · se reintenta al siguiente cambio
+        {tr("borrador.error")}
       </span>
     );
   }
   return (
     <span className="text-xs text-white/35">
-      {estado === "guardando" ? "Guardando…" : "Guardado"}
+      {estado === "guardando" ? tr("borrador.guardando") : tr("borrador.guardado")}
+
     </span>
   );
 }

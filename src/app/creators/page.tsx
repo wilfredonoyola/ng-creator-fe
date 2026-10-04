@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   CREATORS,
   LICENSES,
@@ -12,7 +13,7 @@ import {
   ELIMINAR_EVIDENCIA,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { uploadLicenseScreenshot, readFileAsDataUrl } from "@/lib/upload";
+import { ErrorDeSubida, uploadLicenseScreenshot, readFileAsDataUrl } from "@/lib/upload";
 import {
   MESSAGE_TEMPLATES,
   aplicarTemplate,
@@ -45,6 +46,9 @@ interface LicenseEvidence {
 }
 
 export default function CreatorsPage() {
+  const t = useTranslations("creators");
+  const tSubida = useTranslations("erroresSubida");
+  const locale = useLocale();
   const [showCreatorModal, setShowCreatorModal] = useState(false);
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<string>("");
@@ -167,7 +171,7 @@ export default function CreatorsPage() {
     if (showMessageModal) {
       const creator = showMessageModal.creator;
       setMessageText(
-        aplicarTemplate(template.texto, {
+        aplicarTemplate(t.raw(`plantillas.${template.clave}.texto`) as string, {
           nombre: creator.nombre,
           handle: creator.handle,
         })
@@ -220,14 +224,14 @@ export default function CreatorsPage() {
         },
       });
     } catch (err: any) {
-      alert(err.message || "Error al subir screenshot");
+      alert(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err.message || t("errorScreenshot"));
     } finally {
       setUploadingScreenshot(false);
     }
   };
 
   const handleDeleteEvidence = async (evidenceId: string, licenseId: string) => {
-    if (!confirm("¿Eliminar esta evidencia?")) return;
+    if (!confirm(t("confirmarEliminar"))) return;
     try {
       await eliminarEvidencia({ variables: { id: evidenceId } });
       setEvidenceCache((prev) => ({
@@ -235,7 +239,7 @@ export default function CreatorsPage() {
         [licenseId]: (prev[licenseId] || []).filter((e) => e._id !== evidenceId),
       }));
     } catch {
-      alert("Error al eliminar");
+      alert(t("errorEliminar"));
     }
   };
 
@@ -246,9 +250,9 @@ export default function CreatorsPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Creators</h1>
+          <h1 className="text-2xl font-bold">{t("titulo")}</h1>
           <p className="mt-1 text-white/50">
-            Gestiona los creators y sus licencias
+            {t("subtitulo")}
           </p>
         </div>
         <div className="flex gap-3">
@@ -256,13 +260,13 @@ export default function CreatorsPage() {
             onClick={() => setShowLicenseModal(true)}
             className="rounded-xl border border-white/10 px-4 py-2 text-sm font-medium transition hover:bg-white/5"
           >
-            + Licencia
+            {t("nuevaLicencia")}
           </button>
           <button
             onClick={() => setShowCreatorModal(true)}
             className="rounded-xl bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110"
           >
-            + Creator
+            {t("nuevoCreator")}
           </button>
         </div>
       </div>
@@ -271,19 +275,19 @@ export default function CreatorsPage() {
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
           <p className="text-3xl font-bold text-ng-teal">{creators.length}</p>
-          <p className="mt-1 text-sm text-white/50">Creators totales</p>
+          <p className="mt-1 text-sm text-white/50">{t("stats.totales")}</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
           <p className="text-3xl font-bold text-blue-400">
             {creators.filter((c) => c.esPropio).length}
           </p>
-          <p className="mt-1 text-sm text-white/50">Propios</p>
+          <p className="mt-1 text-sm text-white/50">{t("stats.propios")}</p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5">
           <p className="text-3xl font-bold text-yellow-400">
             {licenses.filter((l) => l.status === "ACTIVA").length}
           </p>
-          <p className="mt-1 text-sm text-white/50">Licencias activas</p>
+          <p className="mt-1 text-sm text-white/50">{t("stats.licenciasActivas")}</p>
         </div>
       </div>
 
@@ -320,14 +324,14 @@ export default function CreatorsPage() {
                         : "bg-purple-500/20 text-purple-400"
                     }`}
                   >
-                    {creator.esPropio ? "Propio" : "Externo"}
+                    {creator.esPropio ? t("propio") : t("externo")}
                   </span>
                 </div>
 
                 {/* Licenses */}
                 <div className="space-y-2">
                   <p className="text-xs text-white/40">
-                    {creatorLicenses.length} licencia{creatorLicenses.length !== 1 ? "s" : ""}
+                    {t("licencias", { n: creatorLicenses.length })}
                   </p>
                   {creatorLicenses.map((lic) => {
                     const isExpanded = expandedLicense === lic._id;
@@ -365,7 +369,7 @@ export default function CreatorsPage() {
                           <div className="border-t border-white/5 p-3">
                             {loadingEvidences ? (
                               <div className="py-4 text-center text-sm text-white/40">
-                                Cargando evidencias...
+                                {t("cargandoEvidencias")}
                               </div>
                             ) : (
                               <>
@@ -383,14 +387,14 @@ export default function CreatorsPage() {
                                               {ev.tipo === "MENSAJE" ? "📝" : "🖼️"}
                                             </span>
                                             <span className="text-xs text-white/40">
-                                              {new Date(ev.createdAt).toLocaleDateString()}
+                                              {new Date(ev.createdAt).toLocaleDateString(locale)}
                                             </span>
                                           </div>
                                           <button
                                             onClick={() => handleDeleteEvidence(ev._id, lic._id)}
                                             className="text-xs text-red-400 opacity-0 transition group-hover:opacity-100"
                                           >
-                                            Eliminar
+                                            {t("eliminar")}
                                           </button>
                                         </div>
                                         {ev.tipo === "MENSAJE" && ev.contenido && (
@@ -402,7 +406,7 @@ export default function CreatorsPage() {
                                           <div className="mt-2">
                                             <img
                                               src={ev.storageUrl}
-                                              alt="Screenshot"
+                                              alt={t("altScreenshot")}
                                               className="max-h-32 cursor-pointer rounded-lg object-cover"
                                               onClick={() => setShowImageViewer(ev.storageUrl!)}
                                             />
@@ -418,7 +422,7 @@ export default function CreatorsPage() {
                                   </div>
                                 ) : (
                                   <p className="mb-3 text-center text-sm text-white/40">
-                                    Sin evidencias
+                                    {t("sinEvidencias")}
                                   </p>
                                 )}
 
@@ -430,13 +434,13 @@ export default function CreatorsPage() {
                                     }
                                     className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-xs font-medium transition hover:bg-white/20"
                                   >
-                                    + Mensaje
+                                    {t("agregarMensaje")}
                                   </button>
                                   <button
                                     onClick={() => setShowScreenshotModal(lic._id)}
                                     className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-xs font-medium transition hover:bg-white/20"
                                   >
-                                    + Captura
+                                    {t("agregarCaptura")}
                                   </button>
                                 </div>
                               </>
@@ -454,15 +458,15 @@ export default function CreatorsPage() {
       ) : (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
           <div className="mb-4 text-5xl opacity-30">👤</div>
-          <p className="text-lg font-medium text-white/60">No hay creators</p>
+          <p className="text-lg font-medium text-white/60">{t("vacio.titulo")}</p>
           <p className="mt-1 text-sm text-white/40">
-            Crea tu primer creator para empezar
+            {t("vacio.detalle")}
           </p>
           <button
             onClick={() => setShowCreatorModal(true)}
             className="mt-4 rounded-xl bg-marca px-6 py-3 font-medium text-ng-tinta transition hover:brightness-110"
           >
-            Crear Creator
+            {t("vacio.crear")}
           </button>
         </div>
       )}
@@ -471,26 +475,26 @@ export default function CreatorsPage() {
       {showCreatorModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-ng-fondo p-6">
-            <h2 className="mb-6 text-xl font-bold">Nuevo Creator</h2>
+            <h2 className="mb-6 text-xl font-bold">{t("modalCreator.titulo")}</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium">Nombre *</label>
+                <label className="mb-2 block text-sm font-medium">{t("modalCreator.nombre")}</label>
                 <input
                   type="text"
                   value={creatorName}
                   onChange={(e) => setCreatorName(e.target.value)}
-                  placeholder="Nombre del creator"
+                  placeholder={t("modalCreator.placeholderNombre")}
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium">Handle</label>
+                <label className="mb-2 block text-sm font-medium">{t("modalCreator.handle")}</label>
                 <input
                   type="text"
                   value={creatorHandle}
                   onChange={(e) => setCreatorHandle(e.target.value)}
-                  placeholder="@usuario (opcional)"
+                  placeholder={t("modalCreator.placeholderHandle")}
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
                 />
               </div>
@@ -501,14 +505,14 @@ export default function CreatorsPage() {
                 onClick={() => setShowCreatorModal(false)}
                 className="flex-1 rounded-xl border border-white/10 py-3 font-medium text-white/60 transition hover:bg-white/5"
               >
-                Cancelar
+                {t("cancelar")}
               </button>
               <button
                 onClick={handleCreateCreator}
                 disabled={creandoCreator || !creatorName.trim()}
                 className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
-                {creandoCreator ? "Creando..." : "Crear"}
+                {creandoCreator ? t("creando") : t("crear")}
               </button>
             </div>
           </div>
@@ -519,17 +523,17 @@ export default function CreatorsPage() {
       {showLicenseModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-ng-fondo p-6">
-            <h2 className="mb-6 text-xl font-bold">Nueva Licencia</h2>
+            <h2 className="mb-6 text-xl font-bold">{t("modalLicencia.titulo")}</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium">Creator *</label>
+                <label className="mb-2 block text-sm font-medium">{t("modalLicencia.creator")}</label>
                 <select
                   value={selectedCreator}
                   onChange={(e) => setSelectedCreator(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-ng-azul/50"
                 >
-                  <option value="">Seleccionar creator</option>
+                  <option value="">{t("modalLicencia.seleccionarCreator")}</option>
                   {creators.map((c) => (
                     <option key={c._id} value={c._id}>
                       {c.nombre}
@@ -538,16 +542,16 @@ export default function CreatorsPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium">Tipo de licencia *</label>
+                <label className="mb-2 block text-sm font-medium">{t("modalLicencia.tipo")}</label>
                 <select
                   value={licenseScope}
                   onChange={(e) => setLicenseScope(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-ng-azul/50"
                 >
-                  <option value="">Seleccionar tipo</option>
-                  <option value="PROPIO">Propio - Material nuestro</option>
-                  <option value="META_EXCLUSIVO">Meta Exclusivo - Solo Facebook/Instagram</option>
-                  <option value="SOLO_PUBLICACION">Solo Publicación - Uso único</option>
+                  <option value="">{t("modalLicencia.seleccionarTipo")}</option>
+                  <option value="PROPIO">{t("modalLicencia.PROPIO")}</option>
+                  <option value="META_EXCLUSIVO">{t("modalLicencia.META_EXCLUSIVO")}</option>
+                  <option value="SOLO_PUBLICACION">{t("modalLicencia.SOLO_PUBLICACION")}</option>
                 </select>
               </div>
             </div>
@@ -557,14 +561,14 @@ export default function CreatorsPage() {
                 onClick={() => setShowLicenseModal(false)}
                 className="flex-1 rounded-xl border border-white/10 py-3 font-medium text-white/60 transition hover:bg-white/5"
               >
-                Cancelar
+                {t("cancelar")}
               </button>
               <button
                 onClick={handleCreateLicense}
                 disabled={creandoLicense || !selectedCreator || !licenseScope.trim()}
                 className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
-                {creandoLicense ? "Creando..." : "Crear"}
+                {creandoLicense ? t("creando") : t("crear")}
               </button>
             </div>
           </div>
@@ -575,27 +579,27 @@ export default function CreatorsPage() {
       {showMessageModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-ng-fondo p-6">
-            <h2 className="mb-4 text-xl font-bold">Agregar Mensaje</h2>
+            <h2 className="mb-4 text-xl font-bold">{t("modalMensaje.titulo")}</h2>
             <p className="mb-4 text-sm text-white/50">
-              Para: {showMessageModal.creator.nombre}
+              {t("modalMensaje.para", { nombre: showMessageModal.creator.nombre })}
               {showMessageModal.creator.handle && ` (@${showMessageModal.creator.handle})`}
             </p>
 
             {/* Template selector */}
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-medium">Template</label>
+              <label className="mb-2 block text-sm font-medium">{t("modalMensaje.template")}</label>
               <div className="flex flex-wrap gap-2">
-                {MESSAGE_TEMPLATES.map((t) => (
+                {MESSAGE_TEMPLATES.map((pl) => (
                   <button
-                    key={t.id}
-                    onClick={() => handleTemplateSelect(t)}
+                    key={pl.id}
+                    onClick={() => handleTemplateSelect(pl)}
                     className={`rounded-lg px-3 py-1.5 text-xs transition ${
-                      selectedTemplate?.id === t.id
+                      selectedTemplate?.id === pl.id
                         ? "bg-marca text-ng-tinta"
                         : "bg-white/10 text-white/70 hover:bg-white/20"
                     }`}
                   >
-                    {t.nombre}
+                    {t(`plantillas.${pl.clave}.nombre`)}
                   </button>
                 ))}
               </div>
@@ -603,12 +607,12 @@ export default function CreatorsPage() {
 
             {/* Message textarea */}
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-medium">Mensaje</label>
+              <label className="mb-2 block text-sm font-medium">{t("modalMensaje.mensaje")}</label>
               <textarea
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 rows={8}
-                placeholder="Escribe o selecciona un template..."
+                placeholder={t("modalMensaje.placeholder")}
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
               />
             </div>
@@ -622,21 +626,21 @@ export default function CreatorsPage() {
                 }}
                 className="flex-1 rounded-xl border border-white/10 py-3 font-medium text-white/60 transition hover:bg-white/5"
               >
-                Cancelar
+                {t("cancelar")}
               </button>
               <button
                 onClick={handleCopyMessage}
                 disabled={!messageText.trim()}
                 className="rounded-xl border border-ng-azul/50 px-4 py-3 font-medium text-ng-teal transition hover:bg-ng-teal/10 disabled:opacity-50"
               >
-                Copiar
+                {t("modalMensaje.copiar")}
               </button>
               <button
                 onClick={handleSaveMessage}
                 disabled={agregandoEvidencia || !messageText.trim()}
                 className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
-                {agregandoEvidencia ? "Guardando..." : "Guardar"}
+                {agregandoEvidencia ? t("guardando") : t("guardar")}
               </button>
             </div>
           </div>
@@ -647,7 +651,7 @@ export default function CreatorsPage() {
       {showScreenshotModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-ng-fondo p-6">
-            <h2 className="mb-6 text-xl font-bold">Subir Captura</h2>
+            <h2 className="mb-6 text-xl font-bold">{t("modalCaptura.titulo")}</h2>
 
             {/* File input */}
             <input
@@ -662,7 +666,7 @@ export default function CreatorsPage() {
               <div className="mb-4">
                 <img
                   src={screenshotPreview}
-                  alt="Preview"
+                  alt={t("modalCaptura.altPreview")}
                   className="max-h-64 w-full rounded-xl object-contain"
                 />
                 <button
@@ -672,7 +676,7 @@ export default function CreatorsPage() {
                   }}
                   className="mt-2 text-sm text-red-400"
                 >
-                  Quitar imagen
+                  {t("modalCaptura.quitar")}
                 </button>
               </div>
             ) : (
@@ -682,19 +686,19 @@ export default function CreatorsPage() {
               >
                 <div className="mb-2 text-4xl opacity-50">📷</div>
                 <p className="text-sm text-white/50">
-                  Click para seleccionar imagen
+                  {t("modalCaptura.elegir")}
                 </p>
               </div>
             )}
 
             {/* Note input */}
             <div className="mb-4">
-              <label className="mb-2 block text-sm font-medium">Nota (opcional)</label>
+              <label className="mb-2 block text-sm font-medium">{t("modalCaptura.nota")}</label>
               <input
                 type="text"
                 value={screenshotNota}
                 onChange={(e) => setScreenshotNota(e.target.value)}
-                placeholder="Ej: Confirmación por DM"
+                placeholder={t("modalCaptura.placeholderNota")}
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-white/30 focus:border-ng-azul/50"
               />
             </div>
@@ -709,14 +713,14 @@ export default function CreatorsPage() {
                 }}
                 className="flex-1 rounded-xl border border-white/10 py-3 font-medium text-white/60 transition hover:bg-white/5"
               >
-                Cancelar
+                {t("cancelar")}
               </button>
               <button
                 onClick={handleUploadScreenshot}
                 disabled={uploadingScreenshot || agregandoEvidencia || !screenshotFile}
                 className="flex-1 rounded-xl bg-marca py-3 font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
               >
-                {uploadingScreenshot || agregandoEvidencia ? "Subiendo..." : "Subir"}
+                {uploadingScreenshot || agregandoEvidencia ? t("subiendo") : t("subir")}
               </button>
             </div>
           </div>
@@ -731,7 +735,7 @@ export default function CreatorsPage() {
         >
           <img
             src={showImageViewer}
-            alt="Evidence"
+            alt={t("altEvidencia")}
             className="max-h-[90vh] max-w-[90vw] rounded-xl object-contain"
           />
         </div>

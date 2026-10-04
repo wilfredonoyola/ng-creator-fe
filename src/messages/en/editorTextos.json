@@ -1,0 +1,49 @@
+{
+  "disenos": {
+    "impacto": "Impact",
+    "caja": "Black box",
+    "marca": "Brand box",
+    "amarillo": "Yellow",
+    "sombra": "Shadow",
+    "limpio": "Clean"
+  },
+  "efectos": {
+    "CONTORNO": "Outline",
+    "SOMBRA": "Shadow",
+    "CAJA": "Box",
+    "NINGUNO": "None"
+  },
+  "posiciones": {
+    "arriba": "Top",
+    "centro": "Center",
+    "abajo": "Bottom"
+  },
+  "filas": {
+    "letra": "Font",
+    "alrededor": "Around",
+    "colores": "Colors",
+    "lugar": "Position",
+    "cuando": "When"
+  },
+  "colores": {
+    "texto": "Text",
+    "destacado": "Highlight",
+    "caja": "Box",
+    "sombra": "Shadow",
+    "contorno": "Outline"
+  },
+  "textoNuevo": "Type your text",
+  "vacio": "(empty)",
+  "sinTextos": "No text in this clip yet.",
+  "agregar": "Add text ({n}/{max}) · pick a design",
+  "tocaDestacadas": "Tap the words to highlight",
+  "tamano": "Size {n}",
+  "anchoMaximo": "Max width {n}%",
+  "oArrastralo": "or drag it in the preview",
+  "todoElClip": "Whole clip",
+  "primeros3": "First 3 s",
+  "de": "from",
+  "a": "to",
+  "quitar": "Remove this text",
+  "muestra": "Hello <d>you</d>"
+}

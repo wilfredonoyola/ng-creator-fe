@@ -1,0 +1,78 @@
+{
+  "periodos": {
+    "7": "7 days",
+    "28": "28 days",
+    "90": "90 days",
+    "0": "All history"
+  },
+  "tipos": {
+    "IMAGEN": "Image",
+    "VIDEO": "Video",
+    "ENLACE": "Link",
+    "TEXTO": "Text",
+    "OTRO": "Other"
+  },
+  "dias": {
+    "1": "Sunday",
+    "2": "Monday",
+    "3": "Tuesday",
+    "4": "Wednesday",
+    "5": "Thursday",
+    "6": "Friday",
+    "7": "Saturday"
+  },
+  "diasCortos": {
+    "1": "Sun",
+    "2": "Mon",
+    "3": "Tue",
+    "4": "Wed",
+    "5": "Thu",
+    "6": "Fri",
+    "7": "Sat"
+  },
+  "sinPagina": {
+    "titulo": "No page is active",
+    "detalle": "Analytics come from a page's history. Pick one in the switcher on the left."
+  },
+  "titulo": "Analytics",
+  "subtitulo": "What and when to publish on",
+  "sinHistorial": {
+    "titulo": "This page has no synced history",
+    "detalle": "Analytics are built from the posts we've already pulled from Facebook. Sync a year from Revival and come back."
+  },
+  "cifras": {
+    "publicaciones": "Posts · {dias}d",
+    "scorePromedio": "Average score",
+    "reacciones": "Reactions",
+    "comentarios": "Comments",
+    "vsAnterior": "{flecha} {porcentaje}% vs previous period"
+  },
+  "conclusion": {
+    "titulo": "What your history says",
+    "hora": "Your best hour is around <b>{hora}</b>, across {n, plural, one {# post} other {# posts}}.",
+    "dia": "Your best day is <b>{dia}</b>, across {n, plural, one {# post} other {# posts}}.",
+    "formato": "The best-performing format is <b>{tipo}</b>, across {n, plural, one {# post} other {# posts}}.",
+    "nota": "Only time slots with enough data are counted. Hours with few posts are left out even if their average is higher."
+  },
+  "porHora": {
+    "titulo": "By hour of day",
+    "descripcion": "Average score per hour, in your time zone ({zona})."
+  },
+  "porDia": {
+    "titulo": "By day of week",
+    "descripcion": "Average score by the day the post went out."
+  },
+  "porTipo": {
+    "titulo": "By content type",
+    "descripcion": "Sorted by average score."
+  },
+  "columnas": {
+    "tipo": "Type",
+    "tramo": "Slot",
+    "posts": "Posts",
+    "score": "Avg. score"
+  },
+  "verTabla": "See the numbers as a table",
+  "tablaHora": "By hour",
+  "tablaDia": "By day"
+}

@@ -82,25 +82,25 @@ export interface Momento {
   origenStoragePath?: string;
 }
 
-/** Volumen de la voz propia. Alto pasa de 1 para levantar una toma floja. */
-export const VOLUMENES_VOZ: { valor: number; etiqueta: string }[] = [
-  { valor: 0.5, etiqueta: "Bajo" },
-  { valor: 1, etiqueta: "Normal" },
-  { valor: 1.6, etiqueta: "Alto" },
+/** Volumen de la voz propia. Alto pasa de 1 para levantar una toma floja. La `clave` se traduce al dibujar. */
+export const VOLUMENES_VOZ: { valor: number; clave: "bajo" | "normal" | "alto" }[] = [
+  { valor: 0.5, clave: "bajo" },
+  { valor: 1, clave: "normal" },
+  { valor: 1.6, clave: "alto" },
 ];
 
 /** Volumen del video de origen. Tres niveles alcanzan para decidirlo. */
-export const VOLUMENES: { valor: number; etiqueta: string }[] = [
-  { valor: 1, etiqueta: "Normal" },
-  { valor: 0.25, etiqueta: "Bajo" },
-  { valor: 0, etiqueta: "Mudo" },
+export const VOLUMENES: { valor: number; clave: "normal" | "bajo" | "mudo" }[] = [
+  { valor: 1, clave: "normal" },
+  { valor: 0.25, clave: "bajo" },
+  { valor: 0, clave: "mudo" },
 ];
 
 /** Niveles de suavizado. Tres opciones, no un slider: nadie afina esto al 3%. */
-export const SUAVIZADOS: { valor: number; etiqueta: string }[] = [
-  { valor: 0, etiqueta: "Natural" },
-  { valor: 0.4, etiqueta: "Suave" },
-  { valor: 0.8, etiqueta: "Marcado" },
+export const SUAVIZADOS: { valor: number; clave: "natural" | "suave" | "marcado" }[] = [
+  { valor: 0, clave: "natural" },
+  { valor: 0.4, clave: "suave" },
+  { valor: 0.8, clave: "marcado" },
 ];
 
 export interface Camara {
@@ -141,7 +141,8 @@ export const FORMATOS = [
 
 /** Proporciones a las que se puede atar el rectángulo de recorte. */
 export const PROPORCIONES = [
-  { id: "libre", etiqueta: "Libre", valor: null },
+  // "libre" no lleva etiqueta: el componente la traduce (las demás son números).
+  { id: "libre", etiqueta: null, valor: null },
   { id: "1:1", etiqueta: "1:1", valor: 1 },
   { id: "4:5", etiqueta: "4:5", valor: 4 / 5 },
   { id: "9:16", etiqueta: "9:16", valor: 9 / 16 },
@@ -232,18 +233,14 @@ export function encajarVideoSobreBanda(
  * el video necesita saber cuánto dura.
  */
 export const FORMATOS_LISTOS: {
-  id: string;
-  nombre: string;
-  detalle: string;
+  /** También es la clave del nombre y el detalle en los mensajes (`montaje.formatosListos`). */
+  id: "reaccion" | "comentario" | "simple";
   /** Qué cambia del montaje. Lo que no está acá se deja como estaba. */
   ajustes: (m: Montaje, aspectoFuente: number) => Partial<Montaje>;
   momentos: (duracion: number) => Omit<Momento, "id">[];
 }[] = [
   {
     id: "reaccion",
-    nombre: "Reacción",
-    detalle:
-      "El video arriba y vos abajo, los dos todo el tiempo. Es el formato de comentar una jugada mientras pasa.",
     ajustes: (m, aspecto) => {
       const camara: Camara = {
         ...(m.camara ?? { atenuacionDb: -12, suavizado: 0, volumen: 1 }),
@@ -272,9 +269,6 @@ export const FORMATOS_LISTOS: {
   },
   {
     id: "comentario",
-    nombre: "Comentario",
-    detalle:
-      "El video llena la pantalla y vos aparecés en un círculo. Para acotar algo sin taparlo.",
     ajustes: (m) => ({
       video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
       camara: {
@@ -289,8 +283,6 @@ export const FORMATOS_LISTOS: {
   },
   {
     id: "simple",
-    nombre: "Solo el video",
-    detalle: "Sin cámara. Solo reencuadrar y publicar.",
     ajustes: (m) => ({
       video: { ...m.video, escala: 1, centroX: 0.5, centroY: 0.5 },
       camara: null,
@@ -424,30 +416,23 @@ function limitar(n: number, min: number, max: number): number {
 
 /** Plantillas: un punto de partida, no una jaula. Todo queda editable. */
 export const PLANTILLAS: {
-  id: string;
-  nombre: string;
-  detalle: string;
+  /** También es la clave del nombre y el detalle en los mensajes (`montajeMomentos.plantillas`). */
+  id: "inicio" | "pausa20" | "presente" | "dos";
   minimoSeg: number;
   momentos: (base: number) => Omit<Momento, "id">[];
 }[] = [
   {
     id: "inicio",
-    nombre: "Reacción al inicio",
-    detalle: "Aparecés los primeros 5 segundos",
     minimoSeg: 6,
     momentos: () => [{ tipo: "APARICION", desdeSeg: 0, duracionSeg: 5 }],
   },
   {
     id: "pausa20",
-    nombre: "Pausa para comentar",
-    detalle: "El video se congela a los 20s y hablás 6",
     minimoSeg: 21,
     momentos: () => [{ tipo: "PAUSA", desdeSeg: 20, duracionSeg: 6 }],
   },
   {
     id: "presente",
-    nombre: "Presente todo el video",
-    detalle: "Tu círculo desde el principio hasta el final",
     minimoSeg: 3,
     momentos: (base) => [
       { tipo: "APARICION", desdeSeg: 0, duracionSeg: base },
@@ -455,8 +440,6 @@ export const PLANTILLAS: {
   },
   {
     id: "dos",
-    nombre: "Entrada y comentario",
-    detalle: "Aparecés 3s al inicio y pausás a los 20",
     minimoSeg: 21,
     momentos: () => [
       { tipo: "APARICION", desdeSeg: 0, duracionSeg: 3 },

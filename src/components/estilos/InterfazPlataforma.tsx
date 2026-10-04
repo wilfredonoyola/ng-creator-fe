@@ -14,6 +14,7 @@ import {
   ThumbsUp,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   LISTA_PLATAFORMAS,
   PLATAFORMAS,
@@ -51,6 +52,7 @@ export function InterfazPlataforma({
   ancho: number;
   nombreMarca?: string;
 }) {
+  const t = useTranslations("estilosInterfaz");
   const ui = PLATAFORMAS[plataforma];
   const k = ancho / 1080;
   const px = (v: number) => v * k;
@@ -77,12 +79,12 @@ export function InterfazPlataforma({
           className="absolute inset-x-0 flex justify-center font-semibold"
           style={{ top: px(70), gap: px(40), fontSize: px(36), filter: SOMBRA }}
         >
-          {ui.titulo.map((t, i) => (
+          {ui.titulo.map((clave, i) => (
             <span
-              key={t}
+              key={clave}
               style={i === ui.titulo.length - 1 ? { borderBottom: `${px(4)}px solid white`, paddingBottom: px(6) } : { opacity: 0.65 }}
             >
-              {t}
+              {t(`textos.${clave}`)}
             </span>
           ))}
         </div>
@@ -93,8 +95,9 @@ export function InterfazPlataforma({
         className="absolute flex flex-col items-center"
         style={{ top: px(ui.botonesDesde), right: px(24), width: px(ui.derecha - 30), gap: px(34), filter: SOMBRA }}
       >
-        {ui.botones.map(({ icono: nombre, texto }, i) => {
+        {ui.botones.map(({ icono: nombre, texto: literal, clave }, i) => {
           const Icono = ICONOS[nombre];
+          const texto = clave ? t(`textos.${clave}`) : literal;
           return (
             <div key={i} className="flex flex-col items-center" style={{ gap: px(6) }}>
               <Icono size={icono} strokeWidth={2} fill={nombre === "corazon" ? "white" : "none"} />
@@ -115,7 +118,7 @@ export function InterfazPlataforma({
       >
         <div className="flex items-center" style={{ gap: px(16) }}>
           <span className="shrink-0 rounded-full bg-white/80" style={{ width: px(64), height: px(64) }} />
-          <span className="truncate font-bold">@{usuarioDeMuestra(nombreMarca)}</span>
+          <span className="truncate font-bold">@{usuarioDeMuestra(nombreMarca, t("usuarioPorDefecto"))}</span>
           {ui.seguir && (
             <span
               className="shrink-0 rounded-full font-semibold"
@@ -125,17 +128,17 @@ export function InterfazPlataforma({
                 ...(plataforma === "SHORTS" ? { background: "white", color: "black" } : { border: `${px(2)}px solid white` }),
               }}
             >
-              {ui.seguir}
+              {t(`textos.${ui.seguir}`)}
             </span>
           )}
         </div>
         <p className="line-clamp-2" style={{ marginTop: px(14) }}>
-          Lo que nadie te cuenta del episodio de esta semana 🎙️ #podcast #clips
+          {t("descripcion")}
         </p>
         {ui.audio && (
           <p className="flex items-center opacity-90" style={{ marginTop: px(12), gap: px(10), fontSize: px(26) }}>
             <Music2 size={px(28)} />
-            <span className="truncate">Sonido original · {nombreMarca ?? "Tu marca"}</span>
+            <span className="truncate">{t("sonidoOriginal", { marca: nombreMarca ?? t("tuMarca") })}</span>
           </p>
         )}
       </div>
@@ -151,12 +154,13 @@ export function SelectorPlataforma({
   valor: Plataforma | null;
   onCambio: (p: Plataforma | null) => void;
 }) {
+  const t = useTranslations("estilosInterfaz");
   const opciones: { valor: Plataforma | null; etiqueta: string }[] = [
-    { valor: null, etiqueta: "Limpio" },
+    { valor: null, etiqueta: t("limpio") },
     ...LISTA_PLATAFORMAS.map((p) => ({ valor: p, etiqueta: PLATAFORMAS[p].nombre })),
   ];
   return (
-    <div className="flex flex-wrap gap-1" role="group" aria-label="Ver cómo sale en cada red">
+    <div className="flex flex-wrap gap-1" role="group" aria-label={t("verEnCadaRed")}>
       {opciones.map((o) => (
         <button
           key={o.etiqueta}

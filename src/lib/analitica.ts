@@ -55,18 +55,10 @@ export function mejorTramo(tramos: Tramo[], umbral: number): Tramo | null {
   );
 }
 
-export const DIAS = [
-  "",
-  "Domingo",
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-];
-
-export const DIAS_CORTOS = ["", "Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+/**
+ * Los días van como claves 1 (domingo) a 7 (sábado), como los manda el
+ * backend; el nombre lo pone la pantalla con `dias.<n>` / `diasCortos.<n>`.
+ */
 
 export function etiquetaHora(h: number): string {
   return `${String(h).padStart(2, "0")}:00`;

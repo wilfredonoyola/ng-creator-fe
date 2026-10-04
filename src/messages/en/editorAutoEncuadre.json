@@ -1,0 +1,22 @@
+{
+  "etapas": {
+    "BAJANDO": "Downloading the segment",
+    "CARAS": "Finding faces",
+    "VOCES": "Listening for who's talking",
+    "ARMANDO": "Building the framing"
+  },
+  "faltanSeg": "~{s} s left",
+  "faltanMin": "~{min} min left",
+  "enFila": "In the queue, starting soon…",
+  "mirando": "Watching who's talking",
+  "seguiEditando": "You can keep editing text and captions: the framing will arrive on its own.",
+  "errorTitulo": "Couldn't auto-frame",
+  "probarDeNuevo": "Try again",
+  "cerrar": "Close",
+  "listo": "✓ Done: {personas, plural, one {# person} other {# people}} · {cambios, plural, one {# framing change} other {# framing changes}}",
+  "hablaUna": "I found {n} people, but only one speaks in this segment: the clip stays on that person.",
+  "noHabla": "doesn't speak",
+  "verPrimerCambio": "▶ See the first change",
+  "volverComoEstaba": "↩ Undo",
+  "volverAntes": "↩ Go back to how it was before auto-framing"
+}

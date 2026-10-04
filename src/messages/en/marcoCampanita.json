@@ -1,0 +1,13 @@
+{
+  "notificaciones": "Notifications",
+  "etiquetaSinLeer": "Notifications, {n} unread",
+  "marcarTodas": "Mark all as read",
+  "cargando": "Loading…",
+  "error": "We couldn't load notifications. Try again in a bit.",
+  "vacioTitulo": "You have no notifications",
+  "vacioDetalle": "We'll let you know here when clips are ready to edit or when someone on the team takes, schedules or publishes one.",
+  "verMas": "See more",
+  "elegir": "Choose which notifications to get and where",
+  "sinLeer": "Unread",
+  "verEn": "View on {red}"
+}

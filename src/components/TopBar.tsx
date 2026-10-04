@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cerrarSesion } from "@/lib/auth";
 import { LogoNG } from "./LogoNG";
 
 export function TopBar() {
+  const t = useTranslations("marcoTopBar");
   const router = useRouter();
 
   function salir() {
@@ -19,7 +21,7 @@ export function TopBar() {
         onClick={salir}
         className="text-xs text-white/50 hover:text-white/80"
       >
-        Cerrar sesión
+        {t("cerrarSesion")}
       </button>
     </header>
   );

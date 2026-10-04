@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { uploadClip, uploadVoiceNote } from "@/lib/upload";
+import { useTranslations } from "next-intl";
+import { ErrorDeSubida, uploadClip, uploadVoiceNote } from "@/lib/upload";
 
 interface SubirClipProps {
   onSuccess?: () => void;
 }
 
 export function SubirClip({ onSuccess }: SubirClipProps) {
+  const t = useTranslations("panelSubirClip");
+  const tSubida = useTranslations("erroresSubida");
   const [isOpen, setIsOpen] = useState(false);
   const [clipFile, setClipFile] = useState<File | null>(null);
   const [clipPreview, setClipPreview] = useState<string | null>(null);
@@ -44,7 +47,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
 
   const handleUpload = async () => {
     if (!clipFile) {
-      setError("Selecciona un clip de video");
+      setError(t("seleccionaClip"));
       return;
     }
 
@@ -52,18 +55,18 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
     setError(null);
 
     try {
-      setProgress("Subiendo clip...");
+      setProgress(t("subiendoClip"));
       const clipResult = await uploadClip(clipFile);
       console.log("Clip subido:", clipResult);
 
       let voiceResult = null;
       if (voiceFile) {
-        setProgress("Subiendo nota de voz...");
+        setProgress(t("subiendoNota"));
         voiceResult = await uploadVoiceNote(voiceFile);
         console.log("Nota de voz subida:", voiceResult);
       }
 
-      setProgress("Listo!");
+      setProgress(t("listo"));
 
       // TODO: Llamar mutation ingestar con los paths
       console.log("Clip path:", clipResult.storagePath);
@@ -80,7 +83,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
 
       onSuccess?.();
     } catch (err: any) {
-      setError(err.message || "Error al subir");
+      setError(err instanceof ErrorDeSubida ? tSubida(err.clave, err.datos) : err.message || t("errorSubir"));
       setProgress("");
     } finally {
       setUploading(false);
@@ -102,19 +105,19 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
         onClick={() => setIsOpen(true)}
         className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110"
       >
-        + Subir clip
+        {t("abrir")}
       </button>
     );
   }
 
   return (
     <div className="rounded-2xl border border-white/10 bg-black/50 p-6">
-      <h2 className="mb-4 text-lg font-medium">Subir nuevo clip</h2>
+      <h2 className="mb-4 text-lg font-medium">{t("titulo")}</h2>
 
       {/* Clip de video */}
       <div className="mb-4">
         <label className="mb-2 block text-sm text-white/70">
-          Clip de video *
+          {t("clipVideo")}
         </label>
         <input
           ref={clipInputRef}
@@ -135,6 +138,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
                 setClipFile(null);
                 setClipPreview(null);
               }}
+              aria-label={t("quitar")}
               className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
             >
               ✕
@@ -145,7 +149,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
             onClick={() => clipInputRef.current?.click()}
             className="w-full rounded-lg border-2 border-dashed border-white/20 py-8 text-sm text-white/50 transition hover:border-white/40"
           >
-            Haz clic para seleccionar video
+            {t("elegirVideo")}
           </button>
         )}
         {clipFile && (
@@ -158,7 +162,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
       {/* Nota de voz (opcional) */}
       <div className="mb-4">
         <label className="mb-2 block text-sm text-white/70">
-          Nota de voz (opcional)
+          {t("notaVoz")}
         </label>
         <input
           ref={voiceInputRef}
@@ -172,6 +176,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
             <span className="text-sm">{voiceFile.name}</span>
             <button
               onClick={() => setVoiceFile(null)}
+              aria-label={t("quitar")}
               className="ml-auto text-white/50 hover:text-white"
             >
               ✕
@@ -182,7 +187,7 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
             onClick={() => voiceInputRef.current?.click()}
             className="w-full rounded-lg border border-white/10 bg-white/5 py-3 text-sm text-white/50 transition hover:bg-white/10"
           >
-            + Agregar nota de voz
+            {t("agregarNota")}
           </button>
         )}
       </div>
@@ -204,14 +209,14 @@ export function SubirClip({ onSuccess }: SubirClipProps) {
           disabled={uploading}
           className="flex-1 rounded-lg border border-white/10 py-2 text-sm transition hover:bg-white/5 disabled:opacity-50"
         >
-          Cancelar
+          {t("cancelar")}
         </button>
         <button
           onClick={handleUpload}
           disabled={uploading || !clipFile}
           className="flex-1 rounded-lg bg-marca py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-50"
         >
-          {uploading ? "Subiendo..." : "Subir"}
+          {uploading ? t("subiendo") : t("subir")}
         </button>
       </div>
     </div>

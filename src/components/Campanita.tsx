@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQuery } from "@apollo/client";
 import { Bell, BellOff, CheckCheck } from "lucide-react";
 import { MARCAR_NOTIFICACIONES_LEIDAS, MIS_NOTIFICACIONES } from "@/graphql/operations";
@@ -47,6 +48,7 @@ export function Campanita({
   colapsado?: boolean;
   className?: string;
 }) {
+  const t = useTranslations("marcoCampanita");
   const boton = useRef<HTMLButtonElement>(null);
   const [abierto, setAbierto] = useState(false);
   const [pos, setPos] = useState<React.CSSProperties | null>(null);
@@ -97,7 +99,7 @@ export function Campanita({
     return () => window.removeEventListener("keydown", alTeclear);
   }, [abierto]);
 
-  const etiqueta = sinLeer > 0 ? `Notificaciones, ${sinLeer} sin leer` : "Notificaciones";
+  const etiqueta = sinLeer > 0 ? t("etiquetaSinLeer", { n: sinLeer }) : t("notificaciones");
   const conteo = sinLeer > 99 ? "99+" : String(sinLeer);
 
   return (
@@ -116,7 +118,7 @@ export function Campanita({
           } ${abierto ? "bg-white/5 text-white" : "text-ng-secundario hover:bg-white/5 hover:text-white active:bg-white/10"} ${className}`}
         >
           <Bell size={18} strokeWidth={1.8} aria-hidden />
-          <span className={`font-medium ${colapsado ? "md:hidden" : ""}`}>Notificaciones</span>
+          <span className={`font-medium ${colapsado ? "md:hidden" : ""}`}>{t("notificaciones")}</span>
           {sinLeer > 0 && (
             <span
               className={`ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-marca px-1.5 text-xs font-semibold leading-none text-ng-tinta ${
@@ -178,6 +180,7 @@ function PanelNotificaciones({
   onCambio: () => void;
   onCerrar: () => void;
 }) {
+  const t = useTranslations("marcoCampanita");
   const router = useRouter();
   const { activa } = useMarcaActiva();
   const ahora = useAhora();
@@ -244,13 +247,13 @@ function PanelNotificaciones({
   return (
     <div
       role="dialog"
-      aria-label="Notificaciones"
+      aria-label={t("notificaciones")}
       style={style}
       className="fixed z-[61] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-ng-elevada shadow-2xl shadow-black/50"
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold">Notificaciones</h2>
+          <h2 className="text-sm font-semibold">{t("notificaciones")}</h2>
           {activa && <p className="truncate text-xs text-white/40">{activa.nombre}</p>}
         </div>
         <button
@@ -259,22 +262,20 @@ function PanelNotificaciones({
           className="flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-ng-celeste transition hover:bg-white/5 disabled:cursor-default disabled:text-white/30 disabled:hover:bg-transparent"
         >
           <CheckCheck size={14} aria-hidden />
-          Marcar todas como leídas
+          {t("marcarTodas")}
         </button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         {loading && !lista.length ? (
-          <p className="px-4 py-8 text-center text-sm text-white/50">Cargando…</p>
+          <p className="px-4 py-8 text-center text-sm text-white/50">{t("cargando")}</p>
         ) : error && !lista.length ? (
-          <p className="px-4 py-8 text-center text-sm text-red-400">No pudimos traer las notificaciones. Probá de nuevo en un rato.</p>
+          <p className="px-4 py-8 text-center text-sm text-red-400">{t("error")}</p>
         ) : !lista.length ? (
           <div className="flex flex-col items-center px-6 py-10 text-center">
             <BellOff size={28} strokeWidth={1.6} className="text-white/25" aria-hidden />
-            <p className="mt-3 text-sm font-medium">No tenés notificaciones</p>
-            <p className="mt-1 text-xs text-white/45">
-              Te avisamos acá cuando haya clips listos para editar o cuando alguien del equipo tome, programe o publique uno.
-            </p>
+            <p className="mt-3 text-sm font-medium">{t("vacioTitulo")}</p>
+            <p className="mt-1 text-xs text-white/45">{t("vacioDetalle")}</p>
           </div>
         ) : (
           <ul className="divide-y divide-white/5">
@@ -291,7 +292,7 @@ function PanelNotificaciones({
               disabled={trayendoMas}
               className="w-full rounded-lg py-2 text-xs text-white/60 transition hover:bg-white/5 hover:text-white disabled:opacity-50"
             >
-              {trayendoMas ? "Cargando…" : "Ver más"}
+              {trayendoMas ? t("cargando") : t("verMas")}
             </button>
           </div>
         )}
@@ -305,7 +306,7 @@ function PanelNotificaciones({
           }}
           className="text-xs text-white/50 transition hover:text-white"
         >
-          Elegí qué avisos recibir y por dónde
+          {t("elegir")}
         </button>
       </div>
     </div>
@@ -313,6 +314,8 @@ function PanelNotificaciones({
 }
 
 function ItemNotificacion({ n, ahora, onAbrir }: { n: Notificacion; ahora: number; onAbrir: () => void }) {
+  const t = useTranslations("marcoCampanita");
+  const locale = useLocale();
   const estilo = ESTILO_NOTIFICACION[n.tipo];
   const Icono = estilo?.icono ?? Bell;
   // Solo las que la red ya devolvió con enlace: sin url no hay adónde ir.
@@ -327,11 +330,11 @@ function ItemNotificacion({ n, ahora, onAbrir }: { n: Notificacion; ahora: numbe
         <span className="min-w-0 flex-1">
           <span className={`block text-sm ${n.leida ? "text-white/70" : "font-medium text-white"}`}>{n.titulo}</span>
           <span className="mt-0.5 block text-xs text-white/55">{n.cuerpo}</span>
-          <span className="mt-1 block text-xs text-white/35" title={fechaCompleta(n.createdAt)}>
-            {tiempoRelativo(n.createdAt, ahora)}
+          <span className="mt-1 block text-xs text-white/35" title={fechaCompleta(n.createdAt, locale)}>
+            {tiempoRelativo(n.createdAt, ahora, locale)}
           </span>
         </span>
-        {!n.leida && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-marca" aria-label="Sin leer" />}
+        {!n.leida && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-marca" aria-label={t("sinLeer")} />}
       </button>
       {/* Fuera del botón: un enlace adentro de otro elemento tocable no es válido. */}
       {publicadas.length > 0 && (
@@ -344,7 +347,7 @@ function ItemNotificacion({ n, ahora, onAbrir }: { n: Notificacion; ahora: numbe
               rel="noopener noreferrer"
               className="text-xs text-ng-celeste hover:underline"
             >
-              Ver en {REDES[p.red]?.nombre ?? p.red}
+              {t("verEn", { red: REDES[p.red]?.nombre ?? p.red })}
             </a>
           ))}
         </div>

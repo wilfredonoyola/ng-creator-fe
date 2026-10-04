@@ -1,0 +1,7 @@
+{
+  "titulo": "En la fila · {n}",
+  "armandose": "Armándose · {progreso}%",
+  "siguiente": "Siguiente",
+  "esperando": "Esperando · {n} delante",
+  "explicacion": "Se hacen de uno en uno: el servidor tiene un solo núcleo y dos a la vez tardarían más que en fila. Podés cerrar la pestaña."
+}

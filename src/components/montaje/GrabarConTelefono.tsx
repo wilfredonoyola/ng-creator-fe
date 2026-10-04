@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/client";
 import QRCode from "qrcode";
+import { useTranslations } from "next-intl";
 import {
   CREAR_SESION_GRABACION,
   SESION_GRABACION,
@@ -37,6 +38,7 @@ export function GrabarConTelefono({
     publicUrl: string | null,
   ) => void;
 }) {
+  const tr = useTranslations("montajeTelefono");
   const [qr, setQr] = useState<string | null>(null);
   const [sesionId, setSesionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export function GrabarConTelefono({
     try {
       const { data } = await crear({ variables: { marcaId } });
       const id = data?.crearSesionGrabacion?._id;
-      if (!id) throw new Error("El servidor no devolvió la sesión");
+      if (!id) throw new Error(tr("errores.sinSesion"));
       setSesionId(id);
       avisado.current = false;
       setQr(
@@ -83,7 +85,7 @@ export function GrabarConTelefono({
         }),
       );
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo generar el código");
+      setError(e?.message ?? tr("errores.generar"));
     } finally {
       setCreando(false);
     }
@@ -141,12 +143,12 @@ export function GrabarConTelefono({
         // fallaban todos, y "Esperando la grabación…" giraba para siempre
         // mientras el telefono ya habia mandado todo.
         if (++fallos.current >= FALLOS_PARA_AVISAR) {
-          setAviso(e?.message ?? "No podemos consultar la sesión");
+          setAviso(e?.message ?? tr("errores.consultar"));
         }
       }
     }, 3000);
     return () => clearInterval(t);
-  }, [sesionId, cliente]);
+  }, [sesionId, cliente, tr]);
 
   if (!qr) {
     return (
@@ -156,12 +158,11 @@ export function GrabarConTelefono({
           disabled={creando}
           className="w-full rounded-lg border border-white/15 py-2.5 text-xs text-white/70 transition hover:bg-white/5 disabled:opacity-40"
         >
-          {creando ? "Generando código…" : "📱 Grabar con el teléfono"}
+          {creando ? tr("generando") : tr("grabar")}
         </button>
         {cansado && (
           <p className="mt-1 text-[11px] text-white/40">
-            Dejamos de esperar: no llegó ningún video. Si seguís grabando, pedí
-            un código nuevo.
+            {tr("cansado")}
           </p>
         )}
         {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
@@ -174,24 +175,23 @@ export function GrabarConTelefono({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={qr}
-        alt="Código para abrir en el teléfono"
+        alt={tr("altQr")}
         className="mx-auto w-40 rounded-lg"
       />
       <p className="mt-2 text-xs text-white/70">
-        Escaneá con la cámara del teléfono
+        {tr("escanea")}
       </p>
       <p className="mt-1 text-[11px] text-white/35">
-        Grabás ahí y el video aparece acá solo. No cierres esta pestaña.
+        {tr("noCierres")}
       </p>
       {aviso ? (
         <p className="mt-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-2 text-[11px] text-amber-300">
-          No podemos consultar la sesión: {aviso}. Si acabás de mandar el video
-          desde el teléfono, recargá esta página.
+          {tr("avisoConsulta", { aviso })}
         </p>
       ) : (
         <p className="mt-2 flex items-center justify-center gap-2 text-[11px] text-white/40">
           <span className="h-3 w-3 animate-spin rounded-full border-2 border-ng-azul border-t-transparent" />
-          Esperando la grabación…
+          {tr("esperando")}
         </p>
       )}
       <button
@@ -201,7 +201,8 @@ export function GrabarConTelefono({
         }}
         className="mt-2 text-[11px] text-white/30 underline"
       >
-        Cancelar
+        {tr("cancelar")}
+
       </button>
     </div>
   );

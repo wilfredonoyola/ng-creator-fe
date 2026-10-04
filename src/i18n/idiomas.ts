@@ -11,6 +11,9 @@ export const COOKIE_IDIOMA = "idioma";
 /** Para todo lo que no es español. */
 export const IDIOMA_POR_DEFECTO: Idioma = "en";
 
+/** Cuando el pedido no dice ningún idioma. */
+export const SIN_IDIOMA_PEDIDO: Idioma = "es";
+
 export function esIdioma(v: unknown): v is Idioma {
   return typeof v === "string" && (IDIOMAS as readonly string[]).includes(v);
 }
@@ -20,6 +23,9 @@ export function esIdioma(v: unknown): v is Idioma {
  * sea español o inglés (es-CO, en-US, …). "fr, en;q=0.8" da inglés.
  */
 export function idiomaDelNavegador(acceptLanguage: string | null | undefined): Idioma {
+  // Sin Accept-Language no es una persona sino un crawler (Google, la vista
+  // previa de WhatsApp): va en español, que es como estaba indexado todo.
+  if (!acceptLanguage?.trim()) return SIN_IDIOMA_PEDIDO;
   const pedidos = (acceptLanguage ?? "")
     .split(",")
     .map((parte) => {

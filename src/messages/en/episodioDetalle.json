@@ -1,0 +1,44 @@
+{
+  "confirmarBuscar": "Find moments again? The suggested list will be replaced.",
+  "errorAnalisis": "Couldn't request the analysis",
+  "noEncontrado": "We couldn't find that episode",
+  "otraMarca": "It may belong to another brand: check which one you have selected.",
+  "volverAEpisodios": "← Back to Episodes",
+  "volver": "← Episodes",
+  "palabras": "{n, plural, one { · {cantidad} word} other { · {cantidad} words}}",
+  "costo": " · cost US${usd}",
+  "reintentar": "Retry",
+  "buscarOtraVez": "Find moments again",
+  "videoNoListo": "The video isn't ready in Bunny yet",
+  "clips": "Clips",
+  "crearClipAyuda": "Find the moment, mark the start and end, and off to the editor",
+  "crearClip": "+ Create clip",
+  "analisis": {
+    "transcribiendo": "Transcribing the episode ({p}%). Then the AI looks for moments.",
+    "falloTranscripcion": "The transcription failed: {error}. Retry it from Episodes.",
+    "sinDetalle": "no details",
+    "sinTranscripcion": "Clips come from the transcription, which isn't ready yet.",
+    "analizando": "The AI is reading the episode and picking moments. It takes a couple of minutes.",
+    "falloMomentos": "The moment search failed: {error}",
+    "sinMomentos": "The AI didn't find any moments that work on their own in this episode."
+  },
+  "tarjeta": {
+    "hechoAMano": "Made by hand",
+    "mp4Listo": "MP4 ready",
+    "renderizando": "Rendering",
+    "tramo": "{desde} – {hasta} · {seg} s",
+    "puntuacion": " · score {n}",
+    "gancho": "Hook: <g>“{gancho}”</g>",
+    "ocultarTexto": "Hide what's said",
+    "verTexto": "Show what's said",
+    "editar": "Edit",
+    "verFinal": "View final video",
+    "programar": "Schedule",
+    "reproducirTramo": "Play this segment",
+    "escuchar": "▶ Listen"
+  },
+  "modal": {
+    "etiqueta": "Final video: {titulo}",
+    "cerrar": "Close"
+  }
+}

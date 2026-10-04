@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "titulo": "Terms of service",
+    "descripcion": "NG Creator's terms of use: accounts, plans and pricing, monthly billing, cancellation, content, connected networks and responsibilities."
+  },
+  "titulo": "Terms of service",
+  "s1": {
+    "titulo": "1. What the service is",
+    "p1": "NG Creator (hereinafter, “the service”) is a platform by {responsable} for uploading video podcast episodes, transcribing them, finding moments for clips with AI, editing them as a team and posting them to social media. It is used on the web and through the iPhone and Android apps.",
+    "p2": "By creating an account or using the service you accept these terms. If you do not agree, do not use it."
+  },
+  "s2": {
+    "titulo": "2. Accounts",
+    "p1": "To use the service you must be over 18 and provide truthful information. Each account is personal: you are responsible for keeping your password safe and for whatever is done from your account.",
+    "p2": "Whoever creates a brand is its owner and is responsible for it: they invite people, assign them a role and pay the subscription. Invited people use the service within what their plan and role allow."
+  },
+  "s3": {
+    "titulo": "3. Plans and pricing",
+    "p1": "The service is offered as a monthly subscription, in United States dollars:",
+    "creador": "<b>Creator — US$19.99 per month:</b> 1 person, 1 brand and up to 12 episodes per billing period.",
+    "equipo": "<b>Team — US$49.99 per month:</b> up to 5 people, 1 brand and up to 16 episodes per billing period.",
+    "p2": "On both plans, each episode can be up to 3 hours long, and clips and exports are unlimited within reasonable use. Episodes not used in a period do not carry over to the next. Any applicable taxes are shown at the time of payment.",
+    "p3": "We may change prices or what each plan includes. If a change affects you, we will notify you by email at least 30 days in advance and it takes effect from the first charge after that period; if you do not agree, you can cancel before then."
+  },
+  "s4": {
+    "titulo": "4. Payment and renewal",
+    "p1": "Payment is made by card through Wompi, which processes the charge under its own terms. By subscribing you authorize an automatic charge every month, on the same day you subscribed, until you cancel. The subscription renews automatically as each charge is confirmed.",
+    "p2": "If you change plans, the new price and its limits apply from the next charge, unless otherwise stated when changing."
+  },
+  "s5": {
+    "titulo": "5. Cancellation and refunds",
+    "p1": "You can cancel at any time, without penalty, from the web or by writing to <correo></correo>. When you cancel, no further charges are made and the plan stays active until the end of the period already paid.",
+    "p2": "Payments are non-refundable, whether for partial periods or unused episodes, unless applicable law provides otherwise. If you were charged by mistake or twice for the same period, write to us and we will refund that amount."
+  },
+  "s6": {
+    "titulo": "6. If a payment fails",
+    "p1": "If a monthly charge cannot be made, we will notify you by email and you have 3 days to update your payment. After that period the account becomes read-only: you can sign in, view and download what you have already made, but not upload episodes, process them or render clips. It reactivates automatically as soon as the payment goes through.",
+    "p2": "If the account remains unpaid for 90 days, we may delete its content, with prior notice by email (see the <privacidad>privacy policy</privacidad>)."
+  },
+  "s7": {
+    "titulo": "7. Acceptable use",
+    "p1": "By using the service you agree not to:",
+    "li1": "upload or post content you do not have sufficient rights to;",
+    "li2": "post people who appear or speak in an episode without their authorization, when the law requires it;",
+    "li3": "post content that is unlawful, misleading, defamatory, discriminatory or that incites violence;",
+    "li4": "post to accounts or pages you are not authorized to manage;",
+    "li5": "share one account among several people, resell the service or circumvent your plan's limits;",
+    "li6": "attempt to breach the service's security or overload it;",
+    "li7": "violate the policies of the destination networks or of the service's providers."
+  },
+  "s8": {
+    "titulo": "8. Your content",
+    "p1": "Your content remains yours. You give us permission to store, process and post it only to the extent necessary to provide the service to you and only where you indicate. That permission ends when the content is deleted.",
+    "p2": "Transcripts, suggested moments and text are generated with AI models and may contain errors: review each clip before posting it. Nothing is posted until a person approves it, and responsibility for what is posted lies with whoever approves and posts it."
+  },
+  "s9": {
+    "titulo": "9. Connected networks",
+    "p1": "Posting uses each network's APIs and requires an administrator to connect an account with permissions over it. Posts only go to accounts and pages that have been explicitly enabled. Use of each integration is also subject to that network's terms, and the network may modify, limit or revoke access to its API at any time, which may interrupt posting for reasons beyond our control.",
+    "p2": "By posting to YouTube through the service you agree to the <ytTerminos>YouTube Terms of Service</ytTerminos>, and your data is also processed according to the <googlePrivacidad>Google Privacy Policy</googlePrivacidad>.",
+    "p3": "By posting to TikTok you agree to the <ttTerminos>TikTok Terms of Service</ttTerminos> and its <ttMusica>Music Usage Confirmation</ttMusica>; if you declare the video as branded content, also its <ttMarca>Branded Content Policy</ttMarca>. Accurately declaring whether a video is commercial content is the responsibility of whoever posts it.",
+    "p4": "Networks may limit how much is posted per day and per account, and while an integration has not been approved by the network, it may only post privately. Those limits belong to each network and are beyond our control."
+  },
+  "s10": {
+    "titulo": "10. Mobile apps",
+    "p1": "The iPhone and Android apps are downloaded from the App Store and Google Play and are used with the same account as the web. Subscriptions are purchased and managed on the web; the apps do not sell plans. Apple and Google are not parties to these terms and are not responsible for the service."
+  },
+  "s11": {
+    "titulo": "11. Availability",
+    "p1": "The service is provided “as is”. We work to keep it running continuously, but we do not guarantee that it will be free of interruptions or errors: these may occur due to maintenance, failures or changes by external providers, or usage spikes that delay processing."
+  },
+  "s12": {
+    "titulo": "12. Limitation of liability",
+    "p1": "To the extent permitted by law, {responsable} is not liable for indirect damages, lost profits, data loss or the consequences of content posted through the service. In any case, our total liability does not exceed what you paid for the service in the three months prior to the event giving rise to it."
+  },
+  "s13": {
+    "titulo": "13. Suspension and termination",
+    "p1": "We may suspend or terminate an account that breaches these terms, compromises the service's security or puts access to the destination networks at risk. Except in serious or urgent cases, we will notify you first and give you the opportunity to fix it.",
+    "p2": "You can close your account by writing to <correo></correo>. What happens to your data afterwards is explained in the <privacidad>privacy policy</privacidad>."
+  },
+  "s14": {
+    "titulo": "14. Changes to the terms",
+    "p1": "We may update these terms. Changes are published on this page with their date, and if they are significant we will notify you by email at least 15 days before they take effect. Continuing to use the service afterwards means you accept them."
+  },
+  "s15": {
+    "titulo": "15. Governing law and contact",
+    "p1": "These terms are governed by the laws of the Republic of El Salvador. For any questions, write to <correo></correo>."
+  }
+}

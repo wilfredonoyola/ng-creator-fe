@@ -1,0 +1,34 @@
+{
+  "guardado": {
+    "error": "No se pudo guardar",
+    "errorAyuda": "Revisá el aviso de abajo",
+    "guardando": "Guardando…",
+    "guardandoAyuda": "Se guarda solo",
+    "sinGuardar": "Sin guardar",
+    "sinGuardarAyuda": "Se guarda solo en un momento",
+    "guardado": "Guardado",
+    "guardadoAyuda": "Todos los cambios están guardados"
+  },
+  "errorCdn": "El CDN respondió {status}",
+  "errorDescargar": "No se pudo descargar",
+  "mp4": {
+    "enEspera": "En espera",
+    "procesandoEtiqueta": "Procesando · {progreso}%",
+    "enEsperaEtiqueta": "En espera para procesar",
+    "procesandoTexto": "Procesando el video · {progreso}%",
+    "enEsperaTexto": "En espera para procesar…",
+    "procesandoDetalle": "Tarda uno o dos minutos. Podés seguir en otra pantalla: se procesa igual.",
+    "fallo": "Falló",
+    "noSePudo": "No se pudo procesar",
+    "errorDesconocido": "Error desconocido",
+    "conCambios": "Con cambios",
+    "conCambiosSinProcesar": "Con cambios sin procesar",
+    "conCambiosDetalle": "Hiciste cambios después de procesar: el MP4 no los tiene.",
+    "listo": "Listo",
+    "mp4Listo": "MP4 listo",
+    "listoDetalle": "Tiene todos los cambios.",
+    "sinProcesar": "Sin procesar",
+    "videoSinProcesar": "Video sin procesar",
+    "sinProcesarDetalle": "Procesalo para descargarlo o programarlo."
+  }
+}

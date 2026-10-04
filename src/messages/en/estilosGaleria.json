@@ -1,0 +1,12 @@
+{
+  "muestra": {
+    "gancho": "What nobody tells you about selling",
+    "destacada": "nobody",
+    "subtitulos": "this is how captions look"
+  },
+  "errorCargar": "Couldn't load the styles: {error}",
+  "virales": "Viral",
+  "profesionales": "Professional",
+  "comoLaMarca": "Brand default ({nombre})",
+  "comoLaMarcaRico": "Brand default <g>({nombre})</g>"
+}

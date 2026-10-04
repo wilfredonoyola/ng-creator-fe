@@ -1,0 +1,7 @@
+{
+  "errorMicrofono": "No se pudo acceder al micrófono. Verifica los permisos.",
+  "grabando": "Grabando... {tiempo}",
+  "clickDetener": "(click para detener)",
+  "grabar": "Grabar nota de voz",
+  "describe": "(describe el video)"
+}

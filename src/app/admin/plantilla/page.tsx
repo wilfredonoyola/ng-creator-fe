@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import { uploadMarcaLogo } from "@/lib/upload";
+import { ErrorDeSubida, uploadMarcaLogo } from "@/lib/upload";
 import { FUENTES, LIENZOS, medidasEfecto } from "@/lib/clip-encuadre";
 import { GUARDAR_PLANTILLA_CLIP, GUARDAR_TEMA_MARCA, PLANTILLA_CLIP_MARCA } from "@/graphql/operations";
 import {
@@ -46,6 +47,9 @@ const ANCHO_VISTA = 216;
  * el tema, solo el propietario.
  */
 export default function PlantillaClipsPage() {
+  const t = useTranslations("brandKit");
+  const tSubida = useTranslations("erroresSubida");
+  const locale = useLocale();
   const { activa } = useMarcaActiva();
   const { puedeOperar, esPropietario } = useSesion();
   const marcaId = activa?._id;
@@ -97,7 +101,7 @@ export default function PlantillaClipsPage() {
       setLogoUrl(await uploadMarcaLogo(f, marcaId));
       cambiar({ logoActivo: true });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo subir el logo");
+      setError(e instanceof ErrorDeSubida ? tSubida(e.clave, e.datos) : e instanceof Error ? e.message : t("errores.subirLogo"));
     } finally {
       setSubiendo(false);
     }
@@ -112,7 +116,7 @@ export default function PlantillaClipsPage() {
     if (!marcaId || !p || !tema) return;
     setError(null);
     if (propietario && temaCambiado && !temaCompleto(tema)) {
-      setError("Cada color del tema va como #RRGGBB.");
+      setError(t("errores.tema"));
       return;
     }
     try {
@@ -120,14 +124,14 @@ export default function PlantillaClipsPage() {
       await guardar({ variables: { marcaId, plantilla: { ...p, ctaTexto: p.ctaTexto.trim() } } });
       setGuardadoEn(new Date());
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo guardar");
+      setError(e instanceof Error ? e.message : t("errores.guardar"));
     }
   }
 
   if (!activa) {
     return (
       <DashboardLayout>
-        <p className="text-sm text-white/50">Elegí una marca arriba para armar su Brand Kit.</p>
+        <p className="text-sm text-white/50">{t("sinMarca")}</p>
       </DashboardLayout>
     );
   }
@@ -137,16 +141,14 @@ export default function PlantillaClipsPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Brand Kit</h1>
         <p className="mt-1 flex flex-wrap items-center gap-2 text-white/50">
-          <span>Lo que lleva cada clip de</span>
+          <span>{t("loQueLleva")}</span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-sm text-white/80">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: colorDeMarca(activa) }} />
             {activa.nombre}
           </span>
         </p>
         <p className="mt-2 max-w-2xl text-sm text-white/35">
-          Los colores de la marca, el estilo de los textos, tu logo en una esquina y, si querés, una llamada a la acción
-          al final. Se aplica sola a todos los clips de la marca; en el editor de cada clip se puede cambiar el estilo y
-          apagar el logo y la llamada. Los clips ya procesados la toman al volver a procesarlos.
+          {t("intro")}
         </p>
       </div>
 
@@ -157,15 +159,15 @@ export default function PlantillaClipsPage() {
       )}
 
       {!p || !tema || !marcaId ? (
-        <p className="text-sm text-white/50">Cargando…</p>
+        <p className="text-sm text-white/50">{t("cargando")}</p>
       ) : (
         <div className="grid gap-8 lg:grid-cols-[1fr_auto]">
           <div className="min-w-0 space-y-6">
             <TemaDeMarca
               marcaId={marcaId}
               tema={tema}
-              onCambiar={(t) => {
-                setTema(t);
+              onCambiar={(nuevo) => {
+                setTema(nuevo);
                 setGuardadoEn(null);
               }}
               editable={propietario}
@@ -173,10 +175,9 @@ export default function PlantillaClipsPage() {
             />
 
             <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <h2 className="font-semibold">Estilo de los textos</h2>
+              <h2 className="font-semibold">{t("estilo.titulo")}</h2>
               <p className="mb-4 mt-0.5 text-xs text-white/45">
-                Cómo salen el gancho y los subtítulos de los clips de la marca, con sus colores. Cada clip lo puede
-                cambiar en el editor. Se guarda con el Brand Kit.
+                {t("estilo.ayuda")}
               </p>
               <GaleriaEstilos
                 tema={temaValido(tema)}
@@ -188,7 +189,7 @@ export default function PlantillaClipsPage() {
             </section>
             <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="font-semibold">Logo</h2>
+                <h2 className="font-semibold">{t("logo.titulo")}</h2>
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -196,16 +197,16 @@ export default function PlantillaClipsPage() {
                     onChange={(e) => cambiar({ logoActivo: e.target.checked })}
                     disabled={!opera}
                   />
-                  En los clips
+                  {t("enLosClips")}
                 </label>
               </div>
               <div className="mt-4 flex items-center gap-4">
                 <div className="flex h-16 w-28 items-center justify-center rounded-lg border border-white/10 bg-[repeating-conic-gradient(#ffffff10_0_25%,transparent_0_50%)] bg-[length:16px_16px] p-2">
                   {logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca
-                    <img src={logoUrl} alt="Logo de la marca" className="max-h-full max-w-full" />
+                    <img src={logoUrl} alt={t("logo.alt")} className="max-h-full max-w-full" />
                   ) : (
-                    <span className="text-xs text-white/40">Sin logo</span>
+                    <span className="text-xs text-white/40">{t("logo.sinLogo")}</span>
                   )}
                 </div>
                 {opera && (
@@ -215,9 +216,9 @@ export default function PlantillaClipsPage() {
                       disabled={subiendo}
                       className="rounded-lg border border-white/15 px-3 py-1.5 text-sm hover:bg-white/5 disabled:opacity-60"
                     >
-                      {subiendo ? "Subiendo…" : logoUrl ? "Cambiar logo" : "Subir logo"}
+                      {subiendo ? t("logo.subiendo") : logoUrl ? t("logo.cambiar") : t("logo.subir")}
                     </button>
-                    <p className="mt-1 text-xs text-white/40">PNG con fondo transparente, si tenés. Le sacamos el fondo igual.</p>
+                    <p className="mt-1 text-xs text-white/40">{t("logo.ayuda")}</p>
                     <input
                       ref={archivo}
                       type="file"
@@ -233,34 +234,34 @@ export default function PlantillaClipsPage() {
                 )}
               </div>
 
-              <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">Dónde va</p>
+              <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">{t("logo.dondeVa")}</p>
               <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {POSICIONES_LOGO.map((x) => (
                   <button
-                    key={x.valor}
-                    onClick={() => cambiar({ logoPosicion: x.valor })}
+                    key={x}
+                    onClick={() => cambiar({ logoPosicion: x })}
                     disabled={!opera}
                     className={`rounded-lg border px-2 py-1.5 text-xs ${
-                      p.logoPosicion === x.valor ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/15 text-white/70 hover:bg-white/5"
+                      p.logoPosicion === x ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/15 text-white/70 hover:bg-white/5"
                     }`}
                   >
-                    {x.etiqueta}
+                    {t(`posicionesLogo.${x}`)}
                   </button>
                 ))}
               </div>
 
               <Deslizador
-                etiqueta="Tamaño"
+                etiqueta={t("logo.tamano")}
                 valor={p.logoTamano}
                 min={0.08}
                 max={0.4}
                 paso={0.01}
-                mostrar={(v) => `${Math.round(v * 100)} % del ancho`}
+                mostrar={(v) => t("logo.delAncho", { n: Math.round(v * 100) })}
                 onCambio={(v) => cambiar({ logoTamano: v })}
                 deshabilitado={!opera}
               />
               <Deslizador
-                etiqueta="Opacidad"
+                etiqueta={t("logo.opacidad")}
                 valor={p.logoOpacidad}
                 min={0.2}
                 max={1}
@@ -273,7 +274,7 @@ export default function PlantillaClipsPage() {
 
             <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="font-semibold">Llamada a la acción al final</h2>
+                <h2 className="font-semibold">{t("cta.titulo")}</h2>
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -281,31 +282,31 @@ export default function PlantillaClipsPage() {
                     onChange={(e) => cambiar({ ctaActivo: e.target.checked })}
                     disabled={!opera}
                   />
-                  En los clips
+                  {t("enLosClips")}
                 </label>
               </div>
               <input
                 value={p.ctaTexto}
                 onChange={(e) => cambiar({ ctaTexto: e.target.value.slice(0, 80) })}
-                placeholder="Mirá el episodio completo en YouTube"
+                placeholder={t("cta.ejemplo")}
                 disabled={!opera}
                 className="mt-4 w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm outline-none focus:border-ng-azul"
               />
               <p className="mt-1 text-right text-xs text-white/35">{p.ctaTexto.length}/80</p>
               <Deslizador
-                etiqueta="Dura"
+                etiqueta={t("cta.dura")}
                 valor={p.ctaSeg}
                 min={2}
                 max={8}
                 paso={0.5}
-                mostrar={(v) => `los últimos ${v.toLocaleString("es")} s`}
+                mostrar={(v) => t("cta.ultimos", { n: v.toLocaleString(locale) })}
                 onCambio={(v) => cambiar({ ctaSeg: v })}
                 deshabilitado={!opera}
               />
               <p className="mt-2 text-xs text-white/40">
                 {p.estiloTexto && p.estiloTexto !== "KARAOKE"
-                  ? "Va en el centro, en una caja de tu color primario, con la letra del estilo."
-                  : "Va en el centro, en caja, con los colores del gancho de la marca."}
+                  ? t("cta.conEstilo")
+                  : t("cta.sinEstilo")}
               </p>
             </section>
 
@@ -316,9 +317,9 @@ export default function PlantillaClipsPage() {
                   disabled={guardando || guardandoTema}
                   className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-ng-tinta hover:brightness-110 disabled:opacity-60"
                 >
-                  {guardando || guardandoTema ? "Guardando…" : "Guardar Brand Kit"}
+                  {guardando || guardandoTema ? t("guardando") : t("guardar")}
                 </button>
-                {guardadoEn && <span className="text-sm text-ng-teal">Guardado. Los clips nuevos ya salen así.</span>}
+                {guardadoEn && <span className="text-sm text-ng-teal">{t("guardado")}</span>}
               </div>
             )}
           </div>
@@ -400,6 +401,7 @@ function VistaPrevia({
   estiloTexto: EstiloTexto;
   nombreMarca: string;
 }) {
+  const tr = useTranslations("brandKit");
   const { porEstilo } = useEstilosTexto();
   const t = useRelojMuestra();
   const def = porEstilo.get(estiloTexto);
@@ -463,7 +465,7 @@ function VistaPrevia({
 
   return (
     <div className="lg:sticky lg:top-6">
-      <p className="mb-2 text-sm font-medium">Así sale (9:16)</p>
+      <p className="mb-2 text-sm font-medium">{tr("vista.titulo")}</p>
       <div className="mb-2 max-w-[216px]">
         <SelectorPlataforma valor={plataforma} onCambio={setPlataforma} />
       </div>
@@ -480,9 +482,8 @@ function VistaPrevia({
         />
       )}
       <p className="mt-2 max-w-[216px] text-xs text-white/40">
-        El gancho dura los primeros segundos y la llamada a la acción aparece solo al final; acá se ven siempre para que
-        los ajustes.
-        {plataforma && " Lo que queda fuera de la línea punteada lo tapa la red."}
+        {tr("vista.ayuda")}
+        {plataforma && ` ${tr("vista.zonaSegura")}`}
       </p>
     </div>
   );

@@ -1,0 +1,37 @@
+{
+  "formatos": {
+    "vertical": "Reels, TikTok, Shorts",
+    "cuadrado": "Feed",
+    "horizontal": "YouTube"
+  },
+  "pasos": {
+    "momento": "El momento",
+    "inicioFin": "Inicio y fin",
+    "crear": "Crear"
+  },
+  "errorCrear": "No se pudo crear el clip",
+  "titulo": "Crear un clip",
+  "cerrar": "Cerrar",
+  "buscarPregunta": "¿Qué se dice en el momento que querés? Escribí unas palabras.",
+  "buscarEjemplo": "Ej.: no lleves mujeres a tu casa",
+  "buscando": "Buscando…",
+  "sinCoincidencias": "No encontré esa frase. Probá con otras palabras o elegí el momento en el video.",
+  "o": "o",
+  "empezarDonde": "▶ Empezar donde está el video ({tiempo})",
+  "escuchar": "▶ Escuchar el clip",
+  "masContextoAyuda": "Arranca 5 s antes: más contexto",
+  "masContexto": "← Más contexto",
+  "tocaInicio": "Tocá la palabra donde empieza",
+  "tocaFin": "Tocá la palabra donde termina",
+  "cargandoTranscripcion": "Cargando la transcripción…",
+  "maximo": "Un clip puede durar hasta 3 minutos.",
+  "siguiente": "Siguiente",
+  "tituloCampo": "Título",
+  "formato": "Formato",
+  "autoEncuadre": "✨ Auto-encuadre",
+  "autoEncuadreAyuda": "Sigue al que habla. Tarda un minuto; mientras, podés editar textos y subtítulos.",
+  "creando": "Creando…",
+  "crearIgual": "Crear igual",
+  "revisando": "Revisando…",
+  "crearYAbrir": "Crear y abrir el editor"
+}

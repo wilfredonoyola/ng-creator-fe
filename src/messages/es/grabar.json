@@ -1,0 +1,43 @@
+{
+  "sesion": {
+    "vencida": "Este código ya no sirve: los códigos duran 6 horas. Generá uno nuevo en la computadora y volvé a escanear.",
+    "usada": "Este código ya se usó. Cada código sirve para un solo video: generá uno nuevo en la computadora.",
+    "errorVerificar": "No pudimos verificar el código"
+  },
+  "errores": {
+    "sinPermiso": "No diste permiso de cámara o micrófono. Habilitalos para este sitio en la configuración del navegador y volvé a entrar.",
+    "sinCamara": "No encontramos cámara en este dispositivo.",
+    "camara": "No se pudo usar la cámara: {mensaje}",
+    "desconocido": "error desconocido",
+    "sinVideo": "No hay ningún video para enviar. Grabá o elegí uno.",
+    "muyPesado": "El video pesa {peso} y el máximo son {maximo}. Grabá una toma más corta.",
+    "enviar": "No se pudo enviar el video"
+  },
+  "login": {
+    "titulo": "Necesitás iniciar sesión",
+    "detalle": "Es una sola vez en este teléfono. Después volvé a escanear el código.",
+    "boton": "Iniciar sesión"
+  },
+  "listo": {
+    "titulo": "Video enviado",
+    "detalle": "Seguí en la computadora: ya te aparece cargado.",
+    "otraToma": "¿Querés mandar otra toma? Generá un código nuevo en la computadora."
+  },
+  "verificando": "Verificando el código…",
+  "reintentar": "Reintentar",
+  "titulo": "Grabar para el montaje",
+  "subtitulo": "Se envía a la computadora donde lo estás armando",
+  "guiaCirculo": "Acá vas a verte. Así, en círculo, es como sale en el video.",
+  "reproducirToma": "Reproducir la toma",
+  "deSobra": "Con esto ya tenés de sobra. Grabar más hace la subida lenta.",
+  "grabarAca": "● Grabar acá",
+  "elegirVideo": "Elegir un video",
+  "explicacionCaminos": "Grabar acá te muestra el recorte real. Elegir un video abre la cámara del teléfono, que graba mejor.",
+  "detener": "■ Detener",
+  "tocaCirculo": "Tocá el círculo para ver la toma · {peso}",
+  "usarEsta": "Usar esta",
+  "repetir": "Repetir",
+  "avisando": "Avisando a la computadora…",
+  "enviando": "Enviando…",
+  "noCierres": "No cierres esta pantalla hasta que termine"
+}

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import {
   YOUTUBE_CANALES,
   YOUTUBE_CONFIGURADO,
@@ -30,6 +31,7 @@ export interface CanalYoutube {
  * propietario, no de un ADMIN.
  */
 export function CanalesYoutube() {
+  const t = useTranslations("redesYoutube");
   const { activa: marca } = useMarcaActiva();
   const { esPropietario } = useSesion();
   const marcaId = marca?._id;
@@ -60,10 +62,10 @@ export function CanalesYoutube() {
       const { data: r, error: e } = await pedirUrl({ variables: { marcaId } });
       if (e) throw e;
       const url = r?.youtubeUrlDeConexion;
-      if (!url) throw new Error("El backend no devolvió la URL de autorización");
+      if (!url) throw new Error(t("sinUrl"));
       window.location.href = url;
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo iniciar la conexión");
+      setError(e?.message ?? t("errorConectar"));
     }
   }
 
@@ -72,7 +74,7 @@ export function CanalesYoutube() {
     try {
       await fn();
     } catch (e: any) {
-      setError(e?.message ?? "La operación falló");
+      setError(e?.message ?? t("errorOperacion"));
     }
   }
 
@@ -83,24 +85,22 @@ export function CanalesYoutube() {
           YouTube
         </span>
         <h2 className="font-semibold">
-          Canales de {marca?.nombre ?? "la marca activa"}
+          {marca?.nombre ? t("titulo", { marca: marca.nombre }) : t("tituloSinMarca")}
         </h2>
         {loading && (
           <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-transparent" />
         )}
       </div>
       <p className="mb-4 text-sm text-white/50">
-        Los Shorts de esta marca se suben a estos canales. Para otra marca,
-        cambiala en la barra lateral.
+        {t("descripcion")}
       </p>
 
       {!configurado ? (
         <p className="rounded-lg border border-dashed border-white/15 p-3 text-xs text-white/40">
-          El backend todavía no tiene las credenciales de Google
-          (YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REDIRECT_URI).
+          {t("sinCredenciales")}
         </p>
       ) : !marca ? (
-        <p className="text-xs text-white/40">Elegí una marca en la barra lateral.</p>
+        <p className="text-xs text-white/40">{t("eligeMarca")}</p>
       ) : (
         <>
           {canales.length > 0 && (
@@ -124,11 +124,11 @@ export function CanalesYoutube() {
                     <p className="truncate text-sm font-medium">{c.nombre}</p>
                     {c.requiereReconexion ? (
                       <p className="text-xs text-amber-400">
-                        Google revocó el acceso: hay que reconectarlo.
+                        {t("revocado")}
                       </p>
                     ) : (
                       <p className="text-xs text-white/40">
-                        {c.activa ? "Habilitado como destino" : "Deshabilitado"}
+                        {c.activa ? t("habilitado") : t("deshabilitado")}
                       </p>
                     )}
                   </div>
@@ -139,7 +139,7 @@ export function CanalesYoutube() {
                           onClick={conectar}
                           className="text-amber-400 hover:underline"
                         >
-                          Reconectar
+                          {t("reconectar")}
                         </button>
                       ) : (
                         <button
@@ -156,14 +156,14 @@ export function CanalesYoutube() {
                           }
                           className="text-white/60 hover:text-white hover:underline"
                         >
-                          {c.activa ? "Deshabilitar" : "Habilitar"}
+                          {c.activa ? t("deshabilitar") : t("habilitar")}
                         </button>
                       )}
                       <button
                         onClick={() => {
                           if (
                             confirm(
-                              `¿Desconectar "${c.nombre}"? Lo programado para este canal va a fallar a su hora.`,
+                              t("confirmarDesconectar", { nombre: c.nombre }),
                             )
                           ) {
                             void accion(() =>
@@ -175,7 +175,7 @@ export function CanalesYoutube() {
                         }}
                         className="text-red-400/70 hover:text-red-400 hover:underline"
                       >
-                        Desconectar
+                        {t("desconectar")}
                       </button>
                     </div>
                   )}
@@ -191,20 +191,19 @@ export function CanalesYoutube() {
               className="rounded-lg bg-[#FF0000] px-4 py-2 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
             >
               {pidiendoUrl
-                ? "Abriendo Google…"
+                ? t("abriendo")
                 : canales.length
-                  ? "Conectar otro canal"
-                  : "Conectar un canal de YouTube"}
+                  ? t("conectarOtro")
+                  : t("conectarPrimero")}
             </button>
           ) : (
             <p className="text-xs text-white/40">
-              Conectar canales es del propietario de la marca.
+              {t("soloPropietario")}
             </p>
           )}
 
           <p className="mt-3 text-[11px] text-white/30">
-            Mientras Google no apruebe la app, solo pueden conectar las cuentas
-            agregadas como testers y los videos suben como privados.
+            {t("aprobacion")}
           </p>
         </>
       )}

@@ -1,9 +1,10 @@
 "use client";
 
-import { MOTIVOS, reloj } from "@/lib/momentos";
+import { esMotivo, reloj } from "@/lib/momentos";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ANALIZAR_MOMENTOS_EPISODIO,
   CLIPS_DE_EPISODIO,
@@ -61,6 +62,8 @@ export default function DetalleEpisodioPage({
   // Objeto plano, no promesa: ver publicados/[id].
   params: { id: string };
 }) {
+  const t = useTranslations("episodioDetalle");
+  const locale = useLocale();
   const { id } = params;
   const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
@@ -103,7 +106,7 @@ export default function DetalleEpisodioPage({
     if (!marcaId) return;
     if (
       estado === "LISTO" &&
-      !window.confirm("¿Buscar momentos otra vez? La lista de sugeridos se reemplaza.")
+      !window.confirm(t("confirmarBuscar"))
     ) {
       return;
     }
@@ -112,7 +115,7 @@ export default function DetalleEpisodioPage({
       await analizar({ variables: { id, marcaId } });
       void episodioQ.refetch();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo pedir el análisis");
+      setError(e instanceof Error ? e.message : t("errorAnalisis"));
     }
   }
 
@@ -133,12 +136,12 @@ export default function DetalleEpisodioPage({
     return (
       <DashboardLayout>
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-12 text-center">
-          <p className="font-medium text-white/70">No encontramos ese episodio</p>
+          <p className="font-medium text-white/70">{t("noEncontrado")}</p>
           <p className="mt-1 text-sm text-white/40">
-            Puede ser de otra marca: revisá cuál tenés elegida.
+            {t("otraMarca")}
           </p>
           <Link href="/episodios" className="mt-4 inline-block text-sm text-ng-teal">
-            ← Volver a Episodios
+            {t("volverAEpisodios")}
           </Link>
         </div>
       </DashboardLayout>
@@ -150,7 +153,7 @@ export default function DetalleEpisodioPage({
   return (
     <DashboardLayout>
       <Link href="/episodios" className="text-sm text-white/50 hover:text-white/80">
-        ← Episodios
+        {t("volver")}
       </Link>
       <div className="mb-6 mt-2 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
@@ -158,9 +161,9 @@ export default function DetalleEpisodioPage({
           <p className="mt-1 text-sm text-white/50">
             {ep.duracionSeg ? reloj(ep.duracionSeg) : ""}
             {ep.palabrasTranscritas
-              ? ` · ${ep.palabrasTranscritas.toLocaleString("es")} palabras`
+              ? t("palabras", { n: ep.palabrasTranscritas, cantidad: ep.palabrasTranscritas.toLocaleString(locale) })
               : ""}
-            {costo > 0 ? ` · costó US$${costo.toFixed(2)}` : ""}
+            {costo > 0 ? t("costo", { usd: costo.toFixed(2) }) : ""}
           </p>
         </div>
         {opera && ep.estadoTranscripcion === "LISTA" && !trabajando && (
@@ -169,7 +172,7 @@ export default function DetalleEpisodioPage({
             disabled={pidiendo}
             className="rounded-lg border border-white/15 px-3 py-1.5 text-sm text-white/80 hover:bg-white/5 disabled:opacity-50"
           >
-            {estado === "FALLIDO" ? "Reintentar" : "Buscar momentos otra vez"}
+            {estado === "FALLIDO" ? t("reintentar") : t("buscarOtraVez")}
           </button>
         )}
       </div>
@@ -186,21 +189,21 @@ export default function DetalleEpisodioPage({
             />
           ) : (
             <div className="flex aspect-video items-center justify-center rounded-xl bg-white/5 text-sm text-white/40">
-              El video todavía no está listo en Bunny
+              {t("videoNoListo")}
             </div>
           )}
         </div>
 
         <div>
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">Clips</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">{t("clips")}</h2>
             {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && (
               <button
                 onClick={() => setCreandoClip(true)}
-                title="Buscá el momento, marcá inicio y fin, y al editor"
+                title={t("crearClipAyuda")}
                 className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
               >
-                + Crear clip
+                {t("crearClip")}
               </button>
             )}
           </div>
@@ -251,6 +254,7 @@ function EstadoDelAnalisis({
     clipsSugeridos?: number | null;
   };
 }) {
+  const t = useTranslations("episodioDetalle");
   const aviso = (texto: string, clase = "text-white/50") => (
     <p className={`mb-3 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm ${clase}`}>
       {texto}
@@ -259,27 +263,27 @@ function EstadoDelAnalisis({
   if (ep.estadoTranscripcion !== "LISTA") {
     if (ep.estadoTranscripcion === "TRANSCRIBIENDO") {
       return aviso(
-        `Transcribiendo el episodio (${ep.progresoTranscripcion ?? 0}%). Después la IA busca los momentos.`,
+        t("analisis.transcribiendo", { p: ep.progresoTranscripcion ?? 0 }),
       );
     }
     if (ep.estadoTranscripcion === "FALLIDA") {
       return aviso(
-        `La transcripción falló: ${ep.errorTranscripcion ?? "sin detalle"}. Reintentala desde Episodios.`,
+        t("analisis.falloTranscripcion", { error: ep.errorTranscripcion ?? t("analisis.sinDetalle") }),
         "text-red-400",
       );
     }
-    return aviso("Los clips salen de la transcripción, que todavía no está.");
+    return aviso(t("analisis.sinTranscripcion"));
   }
   switch (ep.estadoMomentos) {
     case "EN_COLA":
     case "ANALIZANDO":
-      return aviso("La IA está leyendo el episodio y eligiendo momentos. Tarda un par de minutos.");
+      return aviso(t("analisis.analizando"));
     case "FALLIDO":
-      return aviso(`La búsqueda de momentos falló: ${ep.errorMomentos ?? "sin detalle"}`, "text-red-400");
+      return aviso(t("analisis.falloMomentos", { error: ep.errorMomentos ?? t("analisis.sinDetalle") }), "text-red-400");
     case "LISTO":
       return ep.clipsSugeridos
         ? null
-        : aviso("La IA no encontró momentos que funcionen solos en este episodio.");
+        : aviso(t("analisis.sinMomentos"));
     default:
       return null;
   }
@@ -304,6 +308,8 @@ function TarjetaClip({
   puedeReproducir: boolean;
   onReproducir: () => void;
 }) {
+  const t = useTranslations("episodioDetalle");
+  const tMotivo = useTranslations("episodiosMotivos");
   const [verTexto, setVerTexto] = useState(false);
   const [viendoFinal, setViendoFinal] = useState(false);
   const tieneVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
@@ -321,20 +327,23 @@ function TarjetaClip({
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-medium">{clip.titulo}</p>
             <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">
-              {clip.origen === "MANUAL" ? "Hecho a mano" : (MOTIVOS[clip.motivo] ?? clip.motivo)}
+              {clip.origen === "MANUAL" ? t("tarjeta.hechoAMano") : esMotivo(clip.motivo) ? tMotivo(clip.motivo) : clip.motivo}
             </span>
             {clip.estadoRender === "LISTO" && (
-              <span className="rounded-full bg-ng-teal/15 px-2 py-0.5 text-[11px] text-ng-teal">MP4 listo</span>
+              <span className="rounded-full bg-ng-teal/15 px-2 py-0.5 text-[11px] text-ng-teal">{t("tarjeta.mp4Listo")}</span>
             )}
             {(clip.estadoRender === "EN_COLA" || clip.estadoRender === "RENDERIZANDO") && (
-              <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">Renderizando</span>
+              <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">{t("tarjeta.renderizando")}</span>
             )}
             <EstadoPublicacionClip publicacion={clip.publicacion} />
           </div>
           <p className="mt-0.5 text-xs tabular-nums text-white/45">
-            {reloj(clip.desdeSeg)} – {reloj(clip.hastaSeg)} ·{" "}
-            {Math.round(clip.hastaSeg - clip.desdeSeg)} s
-            {clip.origen !== "MANUAL" && ` · puntuación ${clip.puntuacion}`}
+            {t("tarjeta.tramo", {
+              desde: reloj(clip.desdeSeg),
+              hasta: reloj(clip.hastaSeg),
+              seg: Math.round(clip.hastaSeg - clip.desdeSeg),
+            })}
+            {clip.origen !== "MANUAL" && t("tarjeta.puntuacion", { n: clip.puntuacion })}
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <TomarClip clipId={clip._id} marcaId={marcaId} tomadoPor={clip.tomadoPor} puedeOperar={opera} />
@@ -349,14 +358,17 @@ function TarjetaClip({
           <p className="mt-2 text-sm text-white/70">{clip.explicacion}</p>
           {clip.gancho && (
             <p className="mt-1 text-sm text-white/50">
-              Gancho: <span className="text-white/80">“{clip.gancho}”</span>
+              {t.rich("tarjeta.gancho", {
+                gancho: clip.gancho,
+                g: (c) => <span className="text-white/80">{c}</span>,
+              })}
             </p>
           )}
           <button
             onClick={() => setVerTexto((v) => !v)}
             className="mt-2 text-xs text-white/40 hover:text-white/70"
           >
-            {verTexto ? "Ocultar lo que se dice" : "Ver lo que se dice"}
+            {verTexto ? t("tarjeta.ocultarTexto") : t("tarjeta.verTexto")}
           </button>
           {verTexto && <p className="mt-1 text-sm leading-relaxed text-white/60">{clip.texto}</p>}
         </div>
@@ -365,14 +377,14 @@ function TarjetaClip({
           href={editar}
           className="rounded-lg border border-white/15 px-3 py-1.5 text-center text-xs text-white/80 hover:bg-white/5"
         >
-          Editar
+          {t("tarjeta.editar")}
         </Link>
         {tieneVideo && (
           <button
             onClick={() => setViendoFinal(true)}
             className="rounded-lg border border-white/15 px-3 py-1.5 text-center text-xs text-white/80 hover:bg-white/5"
           >
-            Ver video final
+            {t("tarjeta.verFinal")}
           </button>
         )}
         {opera && tieneVideo && (
@@ -380,16 +392,16 @@ function TarjetaClip({
             href={`${editar}/publicar`}
             className="rounded-lg border border-indigo-400/40 px-3 py-1.5 text-center text-xs text-indigo-200 hover:bg-indigo-400/10"
           >
-            Programar
+            {t("tarjeta.programar")}
           </Link>
         )}
         {puedeReproducir && (
           <button
             onClick={onReproducir}
-            title="Reproducir este tramo"
+            title={t("tarjeta.reproducirTramo")}
             className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta"
           >
-            ▶ Escuchar
+            {t("tarjeta.escuchar")}
           </button>
         )}
         </div>
@@ -403,6 +415,7 @@ function TarjetaClip({
 
 /** El MP4 procesado, encima de la lista: se mira sin salir del episodio. */
 function VideoFinalModal({ url, titulo, onCerrar }: { url: string; titulo: string; onCerrar: () => void }) {
+  const t = useTranslations("episodioDetalle");
   useEffect(() => {
     const alTeclear = (e: KeyboardEvent) => e.key === "Escape" && onCerrar();
     window.addEventListener("keydown", alTeclear);
@@ -412,7 +425,7 @@ function VideoFinalModal({ url, titulo, onCerrar }: { url: string; titulo: strin
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={`Video final: ${titulo}`}
+      aria-label={t("modal.etiqueta", { titulo })}
       onClick={onCerrar}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
     >
@@ -420,7 +433,7 @@ function VideoFinalModal({ url, titulo, onCerrar }: { url: string; titulo: strin
         <div className="flex w-full items-center justify-between gap-4">
           <p className="truncate text-sm font-medium">{titulo}</p>
           <button onClick={onCerrar} className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/80 hover:bg-white/5">
-            Cerrar
+            {t("modal.cerrar")}
           </button>
         </div>
         <video src={url} controls autoPlay playsInline className="max-h-[80vh] max-w-full rounded-xl bg-black" />

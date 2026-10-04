@@ -1,0 +1,85 @@
+{
+  "titulo": "Episodios",
+  "descripcion": "Episodios largos de podcast en video. Se suben directo a Bunny, por partes: si se corta la conexión, siguen desde donde quedaron.",
+  "episodiosDe": "Episodios de",
+  "sinMarca": "Sin marca activa: no hay dónde subir.",
+  "subirEpisodio": "Subir un episodio",
+  "formatos": "mp4, mov, webm o mkv · hasta 50 GB",
+  "subido": "“{nombre}” subido. Bunny lo está procesando; en unos minutos aparece con su duración.",
+  "vacio": "Todavía no hay episodios en {marca}.",
+  "vacioSinNombre": "Todavía no hay episodios en esta marca.",
+  "confirmarDescartar": "¿Descartar \"{titulo}\"? Se pierde lo que ya se subió.",
+  "confirmarBorrar": "¿Borrar \"{titulo}\"? Se borra también de Bunny.",
+  "errores": {
+    "preparar": "No se pudo preparar la subida",
+    "iniciar": "No se pudo iniciar la subida",
+    "reintentar": "No se pudo reintentar",
+    "transcripcion": "No se pudo pedir la transcripción",
+    "borrar": "No se pudo borrar"
+  },
+  "estados": {
+    "aMedioSubir": "A medio subir",
+    "procesandoEnBunny": "Procesando en Bunny",
+    "listoParaTranscribir": "Listo para transcribir",
+    "fallo": "Falló",
+    "falloImportacion": "Falló la importación",
+    "bajando": "Bajando de Restream · {p}%",
+    "comprimiendo": "Comprimiendo · {p}%",
+    "subiendoABunny": "Subiendo a Bunny · {p}%",
+    "enFilaTraer": "En fila para traer",
+    "enColaTranscribir": "En cola para transcribir",
+    "transcribiendo": "Transcribiendo · {p}%",
+    "buscandoMomentos": "Buscando momentos",
+    "clipsSugeridos": "{n, plural, other {# clips sugeridos}}",
+    "falloBusqueda": "Falló la búsqueda de clips",
+    "transcrito": "Transcrito",
+    "falloTranscripcion": "Falló la transcripción"
+  },
+  "panel": {
+    "retomando": "Retomando <n>{nombre}</n>",
+    "subiendo": "Subiendo <n>{nombre}</n>",
+    "progreso": "{subidos} de {total} · {pct}%",
+    "velocidad": "{mbs} MB/s · quedan {resta}",
+    "enPausa": "En pausa",
+    "conectando": "Conectando con Bunny…",
+    "reanudar": "Reanudar",
+    "pausar": "Pausar",
+    "siCerras": "Si cerrás la pestaña, volvé acá y elegí el mismo archivo: sigue desde donde quedó."
+  },
+  "subida": {
+    "reintento": "Reintento {n}…",
+    "sinConexion": "Sin conexión. La subida sigue sola cuando vuelva.",
+    "firma": "Bunny rechazó la firma de la subida. Probá reanudar; si sigue, avisá.",
+    "tamano": "Bunny rechazó el archivo por tamaño.",
+    "frenada": "La subida se frenó: {detalle}",
+    "frenadaStatus": "La subida se frenó ({status}): {detalle}"
+  },
+  "fila": {
+    "reintentar": "Reintentar",
+    "transcribir": "Transcribir",
+    "aMedias": "Quedó a medias. Elegí “{archivo}” otra vez para retomarlo.",
+    "palabras": "{n, plural, other {{cantidad} palabras}}",
+    "costo": " · costó US${usd}",
+    "subido": "Subido",
+    "descartar": "Descartar",
+    "borrar": "Borrar"
+  },
+  "importando": {
+    "noSePudo": "No se pudo traer: {error}",
+    "desconocido": "error desconocido",
+    "reintentar": "Reintentar (sigue desde lo que ya bajó)",
+    "pasoSubiendo": "③ Subiendo a Bunny",
+    "pasoComprimiendo": "② Comprimiendo a 1440p y 30 fps (pesa ~la mitad)",
+    "pasoBajando": "① Bajando de Restream",
+    "pasoEnFila": "En fila: arranca en unos segundos",
+    "avance": "{paso} · {p}%. Después Bunny lo procesa y se transcribe solo; no hace falta dejar la página abierta.",
+    "avanceConFalta": "{paso} · {p}% · faltan ~{min} min. Después Bunny lo procesa y se transcribe solo; no hace falta dejar la página abierta."
+  },
+  "procesando": {
+    "bunny": "Bunny lo está procesando · {p}%.",
+    "transcribiendo": "Mientras, ya se está transcribiendo · {p}%.",
+    "enFila": "Mientras, ya está en fila para transcribir.",
+    "lista": "La transcripción ya está; los clips aparecen cuando Bunny termine.",
+    "despues": "Después se transcribe solo."
+  }
+}

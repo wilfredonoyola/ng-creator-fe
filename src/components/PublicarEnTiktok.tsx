@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useTranslations } from "next-intl";
 import {
   PROGRAMAR_PUBLICACION,
   PUBLICACIONES_DE_EXPEDIENTE,
@@ -13,12 +14,10 @@ import { EN_CURSO, type Publicacion, aInputLocal } from "@/lib/publicaciones";
 import type { CuentaTiktok } from "@/components/CuentasTiktok";
 import { FilaPublicacion, Opcion } from "@/components/PublicarEnFacebook";
 
-const PRIVACIDADES: Record<string, string> = {
-  PUBLIC_TO_EVERYONE: "Todos",
-  MUTUAL_FOLLOW_FRIENDS: "Amigos",
-  FOLLOWER_OF_CREATOR: "Seguidores",
-  SELF_ONLY: "Solo yo",
-};
+/** Las opciones de privacidad que conocemos; se dicen con `publicarTiktok.privacidades`. */
+const PRIVACIDADES = ["PUBLIC_TO_EVERYONE", "MUTUAL_FOLLOW_FRIENDS", "FOLLOWER_OF_CREATOR", "SELF_ONLY"] as const;
+type Privacidad = (typeof PRIVACIDADES)[number];
+const esPrivacidad = (o: string): o is Privacidad => (PRIVACIDADES as readonly string[]).includes(o);
 
 const TEXTO_MAX = 2200;
 const MINUTOS_MINIMOS = 1;
@@ -60,6 +59,7 @@ export function PublicarEnTiktok({
   marcaIdDelVideo: string;
   videoUrl?: string | null;
 }) {
+  const t = useTranslations("publicarTiktok");
   const { activa: marca } = useMarcaActiva();
   const marcaId = marca?._id;
 
@@ -181,7 +181,7 @@ export function PublicarEnTiktok({
       setFecha("");
       setCuando("ahora");
     } catch (e: any) {
-      setError(e?.message ?? "No se pudo publicar");
+      setError(e?.message ?? t("errorPublicar"));
     }
   }
 
@@ -197,8 +197,7 @@ export function PublicarEnTiktok({
     return (
       <div className="space-y-2 rounded-xl border border-dashed border-white/15 p-3 text-xs text-white/40">
         <p>
-          Sin cuenta de TikTok habilitada para esta marca. El propietario la
-          conecta en Redes conectadas.
+          {t("sinCuenta")}
         </p>
         {historial}
       </div>
@@ -225,10 +224,10 @@ export function PublicarEnTiktok({
           </select>
         ) : (
           <p className="text-xs text-white/50">
-            Publicar en{" "}
-            <span className="font-medium text-white/80">
-              {info?.apodo ?? cuenta.nombre}
-            </span>
+            {t.rich("publicarEn", {
+              nombre: info?.apodo ?? cuenta.nombre,
+              n: (c) => <span className="font-medium text-white/80">{c}</span>,
+            })}
             {(info?.usuario ?? cuenta.usuario) && (
               <span className="ml-1 text-white/35">@{info?.usuario ?? cuenta.usuario}</span>
             )}
@@ -236,12 +235,12 @@ export function PublicarEnTiktok({
         )}
         {publicadas.length > 0 && (
           <span className="rounded bg-ng-teal/15 px-2 py-0.5 text-[10px] font-medium text-ng-teal">
-            {publicadas.length} publicada{publicadas.length !== 1 ? "s" : ""}
+            {t("publicadas", { n: publicadas.length })}
           </span>
         )}
       </div>
 
-      {cargandoInfo && <p className="text-[11px] text-white/40">Consultando la cuenta en TikTok…</p>}
+      {cargandoInfo && <p className="text-[11px] text-white/40">{t("consultando")}</p>}
       {errorInfo && (
         <p className="break-words rounded-lg bg-red-500/10 p-2 text-[11px] text-red-400">
           {errorInfo.message}
@@ -260,8 +259,7 @@ export function PublicarEnTiktok({
       )}
       {muyLargo && (
         <p className="text-[11px] text-red-400">
-          El video dura {Math.round(duracion!)}s y esta cuenta admite hasta{" "}
-          {info!.duracionMaxSeg}s en TikTok.
+          {t("muyLargo", { dura: Math.round(duracion!), max: info!.duracionMaxSeg! })}
         </p>
       )}
 
@@ -269,19 +267,19 @@ export function PublicarEnTiktok({
         <textarea
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
-          placeholder="Texto del video, con #hashtags y @menciones (opcional)"
+          placeholder={t("textoPlaceholder")}
           rows={3}
           className={input}
         />
         {texto.length > TEXTO_MAX && (
           <p className="mt-1 text-[10px] text-red-400">
-            {texto.length}/{TEXTO_MAX}: TikTok no admite más.
+            {t("textoLargo", { largo: texto.length, max: TEXTO_MAX })}
           </p>
         )}
       </div>
 
       <label className="block text-[11px] text-white/60">
-        Quién puede verlo
+        {t("quienPuedeVerlo")}
         <select
           value={privacidad}
           onChange={(e) => setPrivacidad(e.target.value)}
@@ -289,14 +287,14 @@ export function PublicarEnTiktok({
           className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-2 py-2 text-xs outline-none disabled:opacity-50"
         >
           <option value="" disabled>
-            Elegí una opción
+            {t("elegiOpcion")}
           </option>
           {(info?.opcionesDePrivacidad ?? []).map((o) => {
             const noPermitida = o === "SELF_ONLY" && comercial && deTerceros;
             return (
               <option key={o} value={o} disabled={noPermitida}>
-                {PRIVACIDADES[o] ?? o}
-                {noPermitida ? " (no disponible para contenido de marca)" : ""}
+                {esPrivacidad(o) ? t(`privacidades.${o}`) : o}
+                {noPermitida ? t("noDisponibleMarca") : ""}
               </option>
             );
           })}
@@ -304,21 +302,21 @@ export function PublicarEnTiktok({
       </label>
 
       <div className="space-y-1.5">
-        <p className="text-[11px] text-white/60">Permitir a los usuarios</p>
+        <p className="text-[11px] text-white/60">{t("permitir")}</p>
         <Casilla
-          etiqueta="Comentar"
+          etiqueta={t("comentar")}
           valor={comentarios}
           onCambio={setComentarios}
           deshabilitada={!info || info.comentariosDeshabilitados}
         />
         <Casilla
-          etiqueta="Dúo"
+          etiqueta={t("duo")}
           valor={duo}
           onCambio={setDuo}
           deshabilitada={!info || info.duoDeshabilitado}
         />
         <Casilla
-          etiqueta="Stitch"
+          etiqueta={t("stitch")}
           valor={stitch}
           onCambio={setStitch}
           deshabilitada={!info || info.stitchDeshabilitado}
@@ -327,8 +325,8 @@ export function PublicarEnTiktok({
 
       <div className="space-y-1.5 rounded-lg border border-white/10 p-2.5">
         <Casilla
-          etiqueta="Divulgar contenido comercial"
-          detalle="Si el video promociona una marca, un producto o un servicio"
+          etiqueta={t("comercial.etiqueta")}
+          detalle={t("comercial.detalle")}
           valor={comercial}
           onCambio={(v) => {
             setComercial(v);
@@ -341,20 +339,20 @@ export function PublicarEnTiktok({
         {comercial && (
           <div className="space-y-1.5 pl-5">
             <Casilla
-              etiqueta="Tu marca"
-              detalle='Promocionás tu propio negocio. Se etiqueta como "Contenido promocional".'
+              etiqueta={t("comercial.tuMarca")}
+              detalle={t("comercial.tuMarcaDetalle")}
               valor={marcaPropia}
               onCambio={setMarcaPropia}
             />
             <Casilla
-              etiqueta="Contenido de marca"
-              detalle='Promocionás a un tercero. Se etiqueta como "Colaboración pagada".'
+              etiqueta={t("comercial.deMarca")}
+              detalle={t("comercial.deMarcaDetalle")}
               valor={deTerceros}
               onCambio={setDeTerceros}
             />
             {faltaComercial && (
               <p className="text-[10px] text-amber-400/80">
-                Elegí al menos una opción para declarar el contenido comercial.
+                {t("comercial.falta")}
               </p>
             )}
           </div>
@@ -362,25 +360,25 @@ export function PublicarEnTiktok({
       </div>
 
       <Casilla
-        etiqueta="Contenido generado con IA"
-        detalle="TikTok le agrega la etiqueta correspondiente"
+        etiqueta={t("ia.etiqueta")}
+        detalle={t("ia.detalle")}
         valor={esIA}
         onCambio={setEsIA}
       />
 
       {publicadas.length > 0 && (
         <p className="text-[11px] text-yellow-400/80">
-          Ya se publicó en TikTok. Publicar otra vez crea un video nuevo.
+          {t("yaPublicado")}
         </p>
       )}
 
       <div className="space-y-2">
         <div className="flex gap-1.5">
           <Opcion activa={cuando === "ahora"} onClick={() => setCuando("ahora")}>
-            Ahora
+            {t("ahora")}
           </Opcion>
           <Opcion activa={cuando === "despues"} onClick={() => setCuando("despues")}>
-            Programar
+            {t("programar")}
           </Opcion>
         </div>
         {cuando === "despues" && (
@@ -393,28 +391,18 @@ export function PublicarEnTiktok({
               className="w-full rounded-lg border border-white/10 bg-black/40 px-2.5 py-2 text-xs outline-none focus:border-ng-azul/50"
             />
             <p className="text-[10px] text-white/30">
-              TikTok no programa: queda en nuestra cola y sale a esa hora. Si el
-              servidor está caído a esa hora, sale cuando vuelva.
+              {t("noPrograma")}
             </p>
           </>
         )}
       </div>
 
       <p className="text-[10px] leading-relaxed text-white/40">
-        {comercial && deTerceros ? (
-          <>
-            Al publicar, aceptás la{" "}
-            <Enlace href={CONTENIDO_DE_MARCA}>Política de contenido de marca</Enlace> y la{" "}
-            <Enlace href={MUSICA}>Confirmación de uso de música</Enlace> de TikTok.
-          </>
-        ) : (
-          <>
-            Al publicar, aceptás la{" "}
-            <Enlace href={MUSICA}>Confirmación de uso de música</Enlace> de TikTok.
-          </>
-        )}{" "}
-        Después de publicar, el video puede tardar unos minutos en aparecer en
-        la cuenta.
+        {t.rich(comercial && deTerceros ? "consentimientoMarca" : "consentimiento", {
+          politica: (c) => <Enlace href={CONTENIDO_DE_MARCA}>{c}</Enlace>,
+          musica: (c) => <Enlace href={MUSICA}>{c}</Enlace>,
+        })}{" "}
+        {t("tardaEnAparecer")}
       </p>
 
       <button
@@ -422,20 +410,20 @@ export function PublicarEnTiktok({
         disabled={bloqueado}
         title={
           !privacidad
-            ? "Elegí quién puede verlo"
+            ? t("ayudaPrivacidad")
             : faltaComercial
-              ? "Completá la declaración de contenido comercial"
+              ? t("ayudaComercial")
               : undefined
         }
         className="w-full rounded-lg bg-[#FE2C55] py-2.5 text-sm font-medium text-white transition hover:bg-[#FE2C55]/90 disabled:opacity-50"
       >
         {loading
           ? cuando === "despues"
-            ? "Agendando…"
-            : "Encolando…"
+            ? t("agendando")
+            : t("encolando")
           : cuando === "despues"
-            ? "Programar en TikTok"
-            : "Publicar en TikTok"}
+            ? t("programarEnTiktok")
+            : t("publicarEnTiktok")}
       </button>
 
       {error && (
@@ -462,12 +450,13 @@ function Casilla({
   onCambio: (v: boolean) => void;
   deshabilitada?: boolean;
 }) {
+  const t = useTranslations("publicarTiktok");
   return (
     <label
       className={`flex items-start gap-2 text-[11px] ${
         deshabilitada ? "cursor-not-allowed text-white/25" : "text-white/70"
       }`}
-      title={deshabilitada ? "La cuenta lo tiene deshabilitado en TikTok" : undefined}
+      title={deshabilitada ? t("deshabilitadaEnTiktok") : undefined}
     >
       <input
         type="checkbox"

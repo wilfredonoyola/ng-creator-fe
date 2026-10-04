@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { normalizarPalabra, palabrasDe, type Texto } from "@/lib/montaje";
 
 /**
@@ -22,6 +23,7 @@ export function ControlesTexto({
   texto: Texto;
   onCambio: (t: Texto) => void;
 }) {
+  const t = useTranslations("montajeTexto");
   const palabras = palabrasDe(texto.contenido);
   const marcadas = new Set(texto.destacadas.map(normalizarPalabra));
 
@@ -46,14 +48,14 @@ export function ControlesTexto({
         value={texto.contenido}
         onChange={(e) => onCambio({ ...texto, contenido: e.target.value })}
         rows={2}
-        placeholder="Escribí el titular…"
+        placeholder={t("placeholder")}
         className="w-full resize-none rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none transition focus:border-ng-azul/50"
       />
 
       {palabras.length > 0 && (
         <div className="mt-2">
           <p className="mb-1.5 text-[11px] text-white/35">
-            Tocá una palabra para destacarla
+            {t("tocaPalabra")}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {palabras.map((palabra) => {
@@ -79,7 +81,7 @@ export function ControlesTexto({
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-1.5 text-[11px] text-white/40">
-          Tamaño
+          {t("tamano")}
           <input
             type="range"
             min={28}
@@ -95,7 +97,7 @@ export function ControlesTexto({
         </label>
 
         <label className="flex items-center gap-1.5 text-[11px] text-white/40">
-          Alto
+          {t("alto")}
           <input
             type="range"
             min={0.03}
@@ -110,8 +112,9 @@ export function ControlesTexto({
         </label>
 
         <label className="flex items-center gap-1.5 text-[11px] text-white/40">
-          Destacado
+          {t("destacado")}
           <input
+
             type="color"
             value={texto.colorDestacado}
             onChange={(e) =>

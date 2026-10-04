@@ -1,0 +1,247 @@
+{
+  "meta": {
+    "titulo": "NG Creator — From your podcast to clips posted on TikTok, Reels, Shorts and Facebook",
+    "descripcion": "For podcasts, TikTok lives and streams. The whole workflow in one place: upload the episode, it transcribes itself, AI finds the best moments, your team edits them with captions and approves them, and you post them to all your socials. Web and app for iPhone and Android."
+  },
+  "datos": {
+    "descripcion": "Turn podcast episodes, TikTok lives and streams into vertical clips with captions for TikTok, Reels and Shorts. AI finds the best moments and your team edits and posts them."
+  },
+  "pasos": {
+    "subir": {
+      "titulo": "You upload the episode",
+      "texto": "The full video, one or three hours long, straight from the browser. If your internet drops, it picks up where it left off."
+    },
+    "transcribir": {
+      "titulo": "It transcribes itself",
+      "texto": "Every word with its exact second. It's the basis for the cuts and the captions."
+    },
+    "momentos": {
+      "titulo": "AI finds the moments",
+      "texto": "It suggests the clips that stand on their own, with their viral potential and why."
+    },
+    "editar": {
+      "titulo": "You edit in minutes",
+      "texto": "Auto-framing follows whoever is speaking; you add captions with the word highlighted and styled text. What you see is what you get."
+    },
+    "equipo": {
+      "titulo": "Your team reviews and approves",
+      "texto": "Everyone works on their own clip, and nothing goes out until a person approves it."
+    },
+    "publicar": {
+      "titulo": "You post to all your socials",
+      "texto": "Right from here, at the time you choose. No downloading the video or logging into each network."
+    }
+  },
+  "autoEncuadre": {
+    "etiqueta": "Auto-framing",
+    "titulo": "The camera follows whoever is speaking. On its own.",
+    "texto": "Your podcast is recorded with one wide camera on the whole table. For vertical, you have to pick who to show every second, and doing that by hand is what takes the longest. With one button, NG Creator watches the clip and builds the shot changes the way an editor would.",
+    "puntos": {
+      "quienHabla": {
+        "titulo": "It knows who's speaking",
+        "texto": "It recognizes each voice and matches it to the face whose lips are moving. Someone gesturing, nodding or covering their face doesn't steal the shot from the speaker."
+      },
+      "divide": {
+        "titulo": "It splits the screen when they argue",
+        "texto": "If three people talk at once, instead of jumping from face to face every second, it shows the table split: two on top and two below."
+      },
+      "reacciones": {
+        "titulo": "It adds reactions",
+        "texto": "In a long take, it cuts for a couple of seconds to whoever laughs or reacts, then comes back. The clip looks edited, not recorded in one go."
+      },
+      "ultimaPalabra": {
+        "titulo": "You have the final say",
+        "texto": "Every shot stays in the editor so you can move or change it. You see how much each person got on screen and, if you don't like it, you go back to how it was."
+      },
+      "webYApp": {
+        "titulo": "On the web and in the app",
+        "texto": "Start it from your computer or your phone, and it keeps working even if you close the screen."
+      }
+    }
+  },
+  "lives": {
+    "etiqueta": "For TikTok streamers",
+    "proximamente": "Coming soon",
+    "titulo": "Your live ends. The clips are already ready.",
+    "texto": "A two-hour live has ten good clips inside, and hardly anyone has time to find them. If you stream from your computer, with TikTok LIVE Studio, OBS or Streamlabs, NG Creator turns your live into vertical clips with captions, ready to post.",
+    "pie": "Also for YouTube, Facebook and Twitch. In the meantime, you can already upload your live's recording like any episode.",
+    "pasos": {
+      "transmitis": {
+        "titulo": "You stream as usual",
+        "texto": "With TikTok LIVE Studio, OBS or Streamlabs. Your live doesn't change."
+      },
+      "llega": {
+        "titulo": "Your live reaches NG Creator",
+        "texto": "With OBS or Streamlabs, you add NG Creator as one more destination and we record it while it's on air. With TikTok LIVE Studio, you turn on Record and upload the file: it comes out in better quality than TikTok's replay."
+      },
+      "terminas": {
+        "titulo": "You finish and the clips are there",
+        "texto": "Transcription, the best moments with AI, auto-framing and captions. You review them and post them."
+      }
+    }
+  },
+  "paraQuien": {
+    "etiqueta": "Who it's for",
+    "titulo": "Built for podcasts. Works for any long video.",
+    "loNuestro": "Our thing",
+    "traeTuVideo": "Bring your video however works best for you",
+    "casos": {
+      "podcasts": {
+        "titulo": "Podcasts",
+        "texto": "Two- or three-hour episodes with the whole table: it follows whoever is speaking, splits the screen when they argue and captions in Spanish."
+      },
+      "lives": {
+        "titulo": "TikTok lives",
+        "texto": "With TikTok LIVE Studio, OBS or Streamlabs: from a two-hour live to the ten moments worth it."
+      },
+      "streams": {
+        "titulo": "Streams",
+        "texto": "Your YouTube, Facebook or Twitch lives, brought in from Restream without downloading anything."
+      },
+      "entrevistas": {
+        "titulo": "Interviews, classes and webinars",
+        "texto": "Any long video where someone talks: AI finds what stands on its own."
+      }
+    },
+    "entradas": {
+      "archivo": { "titulo": "Upload the file", "texto": "mp4, mov, webm or mkv, up to 50 GB" },
+      "restream": { "titulo": "Connect Restream", "texto": "your lives, without downloading them" },
+      "liveStudio": { "titulo": "TikTok LIVE Studio recording", "texto": "in better quality than the replay" },
+      "obs": { "titulo": "OBS and Streamlabs", "texto": "we record the live while it's on air" }
+    }
+  },
+  "antes": {
+    "etiqueta": "Today, without NG Creator",
+    "titulo": "Six tools and an afternoon per episode",
+    "items": {
+      "drive": "Send the two-hour file through Drive or WeTransfer",
+      "verEntero": "Watch the whole episode looking for the moments",
+      "cortar": "Cut in Premiere or CapCut and reframe the speaker by hand",
+      "subtitulos": "Another app for the captions",
+      "whatsapp": "Send the clips to a WhatsApp group to get them approved",
+      "descargar": "Download and upload to each network one by one"
+    }
+  },
+  "ahora": {
+    "etiqueta": "With NG Creator",
+    "titulo": "One tab, start to finish"
+  },
+  "funciones": {
+    "titulo": "Everything a clip needs",
+    "items": {
+      "transcripcion": { "titulo": "Timed transcription", "texto": "Every word at its exact second, in hours-long episodes." },
+      "momentos": { "titulo": "AI moments", "texto": "Up to 15 clips per episode, ranked by viral potential." },
+      "autoEncuadre": { "titulo": "Auto-framing", "texto": "Follows whoever is speaking, splits the screen when they argue and adds reactions from the others." },
+      "recorte": { "titulo": "Draggable crop", "texto": "Move and resize the frame over the full shot, and change it mid-clip." },
+      "dividido": { "titulo": "Split layout", "texto": "Two stacked boxes so all four people at the table fit." },
+      "subtitulos": { "titulo": "Captions people can read", "texto": "Big, with the spoken word highlighted. Fix a word without touching the timing." },
+      "textos": { "titulo": "Styled text", "texto": "Up to four per clip, with outline, shadow or box, and highlighted words." },
+      "mp4": { "titulo": "MP4 ready for socials", "texto": "1080×1920 in H.264, processed in the cloud. Download it or post it." },
+      "app": { "titulo": "App for iPhone and Android", "texto": "Review the clips AI found from your phone." },
+      "lives": { "titulo": "Clips from your lives", "texto": "For TikTok streamers, with LIVE Studio, OBS or Streamlabs: you end the live and you have the clips." },
+      "revision": { "titulo": "Team review", "texto": "Assign, edit, send for review and approve." },
+      "publicar": { "titulo": "Post and schedule", "texto": "Facebook today; Instagram, TikTok and YouTube on the way, all from the same place." }
+    }
+  },
+  "equipo": {
+    "titulo": "Built for teamwork",
+    "texto": "The producer uploads, the editors build the clips, someone approves them and they go out. Everyone signs in with their own account and role, and each brand has its own space: nobody sees what isn't theirs.",
+    "puntos": {
+      "roles": "Roles per brand: owner, editor, viewer",
+      "variasMarcas": "Several brands in one account",
+      "mismaCuenta": "Web and app with the same account"
+    },
+    "ejemplo": {
+      "ana": "Owner · uploads the episode",
+      "luis": "Editing clip #4",
+      "carla": "Approved 3 clips"
+    }
+  },
+  "app": {
+    "etiqueta": "iPhone and Android",
+    "titulo": "Your clips, in your pocket too",
+    "texto": "The same account on the web and on your phone. See how each episode is going, review the clips AI suggested with their score and what's said in each one, and decide which ones go out from wherever you are.",
+    "verLaApp": "See the app"
+  },
+  "precios": {
+    "titulo": "Simple pricing",
+    "subtitulo": "In US dollars, per month. Cancel anytime.",
+    "paraEquipos": "For teams",
+    "porMes": "/mo",
+    "empezarCon": "Start with {plan}",
+    "planes": {
+      "creador": { "nombre": "Creator", "para": "For people who run their podcast solo." },
+      "equipo": { "nombre": "Team", "para": "For podcasts with a producer, editors and a social team." }
+    },
+    "incluye": {
+      "unaPersona": "1 person",
+      "cincoPersonas": "Up to 5 people, with roles",
+      "unaMarca": "1 brand",
+      "doceEpisodios": "Up to 12 episodes a month (~3 a week)",
+      "dieciseisEpisodios": "Up to 16 episodes a month (~4 a week)",
+      "tresHoras": "Episodes up to 3 hours long",
+      "ilimitados": "Unlimited clips and exports",
+      "editorYApp": "Full editor and app for iPhone and Android",
+      "revision": "Team review and approval (coming soon)"
+    }
+  },
+  "preguntas": {
+    "titulo": "FAQ",
+    "items": {
+      "convertir": {
+        "p": "How do I turn my podcast into clips for TikTok, Reels and Shorts?",
+        "r": "Upload the episode's video. NG Creator transcribes it, AI marks the moments that stand on their own, and each one opens in the editor already vertical 9:16, with captions. You adjust the framing and the text, and download the MP4."
+      },
+      "tiempo": {
+        "p": "How long does it take to get clips from an episode?",
+        "r": "The transcription and moments for a two-hour episode are ready in a few minutes. After that, each clip takes a minute or two to adjust: the framing, captions and hook come already built."
+      },
+      "descargar": {
+        "p": "Do I have to download the episode to edit?",
+        "r": "No. The original stays in the cloud; editing and rendering happen on our servers. You only download the finished MP4, if you want."
+      },
+      "sigue": {
+        "p": "Does the clip follow the person speaking?",
+        "r": "Yes, with auto-framing. It recognizes voices and watches who's moving their lips, so it doesn't get confused by someone gesturing or covering their face. When several people argue, it splits the screen; in a long take, it cuts for a couple of seconds to someone else's reaction. Every shot can be corrected, and if you don't like it, you go back to how it was."
+      },
+      "lives": {
+        "p": "Does it work for my TikTok lives?",
+        "r": "Today, yes: you upload the live's recording like any episode and get the clips. If you stream with TikTok LIVE Studio, turn on Record: the file comes out in better quality than the replay TikTok saves. Soon it'll be automatic with OBS or Streamlabs: you add NG Creator as one more destination, we record the live while it's on air, and when it ends the clips are ready. Also for YouTube, Facebook and Twitch."
+      },
+      "subtitulos": {
+        "p": "Does it add captions automatically?",
+        "r": "Yes. They come from the word-by-word transcription, big and with the word being spoken highlighted. If a word came out wrong, you fix it without touching the timing."
+      },
+      "app": {
+        "p": "Is there a mobile app?",
+        "r": "Yes, for iPhone and Android, with the same account as the web. Today it lets you see your episodes and review the clips AI found; editing from your phone is on the way."
+      },
+      "idioma": {
+        "p": "What language does it work in?",
+        "r": "It's built for Spanish-language podcasts: the transcription, the moments and the captions."
+      },
+      "flojo": {
+        "p": "What if the AI picks a weak moment?",
+        "r": "Nothing goes out until a person approves it. AI suggests with a score and the reason; you decide, and you can also build clips by hand from the transcript."
+      },
+      "episodio": {
+        "p": "What counts as an episode?",
+        "r": "Every long video you upload. You can get as many clips as you want from one episode, no limit."
+      }
+    }
+  },
+  "portada": {
+    "etiqueta": "From podcast or live to your socials, in one place",
+    "titulo": "Upload the episode. <marca>Post the clips.</marca> All in one place.",
+    "texto": "NG Creator handles the whole journey: it transcribes your podcast, AI finds the best moments, your team edits them vertically with captions and approves them, and you post them to your socials from here. No downloading anything and no jumping between five programs.",
+    "verComoFunciona": "See how it works"
+  },
+  "flujo": {
+    "etiqueta": "The whole workflow",
+    "titulo": "From a two-hour file to posted clips, without leaving this place"
+  },
+  "pronto": "· soon",
+  "prontoEtiqueta": "Soon",
+  "empezar": "Get started",
+  "cierre": "Upload an episode. Walk away with ten clips."
+}

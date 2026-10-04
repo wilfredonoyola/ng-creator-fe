@@ -1,0 +1,12 @@
+{
+  "transmitiendo": "OBS o Streamlabs · transmitiendo a",
+  "enVivo": "En vivo",
+  "grabando": "Grabando · {tiempo}",
+  "termino": "Terminó el live · en NG Creator",
+  "sugeridos": "{n} clips sugeridos por la IA",
+  "clips": {
+    "dinero": "“Nunca le mandaría dinero”",
+    "pregunta": "La pregunta del chat",
+    "rieron": "El momento que se rieron todos"
+  }
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   CANCELAR_PUBLICACION,
   CLIPS_LISTOS_SIN_PROGRAMAR,
@@ -55,6 +56,8 @@ const REFETCH = ["PublicacionesDeMarca", "ClipsListosSinProgramar", "ClipsDeEpis
  * arrastrarla; y solo se mueven las programadas: lo publicado ya salió.
  */
 export default function CalendarioPage() {
+  const t = useTranslations("calendario");
+  const locale = useLocale();
   const { activa } = useMarcaActiva();
   const { puedeOperar } = useSesion();
   const marcaId = activa?._id ?? "";
@@ -68,8 +71,8 @@ export default function CalendarioPage() {
 
   useEffect(() => {
     setInicio(lunesDe(new Date()));
-    setZona(zonaHoraria());
-  }, []);
+    setZona(zonaHoraria(locale));
+  }, [locale]);
 
   const hasta = inicio ? sumarDias(inicio, 7) : null;
   const pubsQ = useQuery(PUBLICACIONES_DE_MARCA, {
@@ -97,8 +100,8 @@ export default function CalendarioPage() {
       const fin = sumarDias(dia, 1).getTime();
       const pubs = visibles
         .filter((p) => {
-          const t = new Date(p.publicarEn).getTime();
-          return t >= desde && t < fin;
+          const ms = new Date(p.publicarEn).getTime();
+          return ms >= desde && ms < fin;
         })
         .sort((a, b) => new Date(a.publicarEn).getTime() - new Date(b.publicarEn).getTime());
       return { dia, pubs };
@@ -114,12 +117,12 @@ export default function CalendarioPage() {
     <DashboardLayout>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Calendario</h1>
+          <h1 className="text-2xl font-bold">{t("titulo")}</h1>
           <p className="mt-1 text-sm text-white/50">
-            Qué está programado y qué ya salió{activa ? ` en ${activa.nombre}` : ""}.
+            {activa ? t("subtituloEn", { marca: activa.nombre }) : t("subtitulo")}
           </p>
         </div>
-        {zona && <p className="text-xs text-white/40">Horas de {zona}</p>}
+        {zona && <p className="text-xs text-white/40">{t("horasDe", { zona })}</p>}
       </div>
 
       <ListosParaProgramar listos={listos} opera={opera} cargando={listosQ.loading && !listosQ.data} />
@@ -129,7 +132,7 @@ export default function CalendarioPage() {
         <div className="flex items-center gap-1">
           <button
             onClick={() => inicio && setInicio(sumarDias(inicio, -7))}
-            aria-label="Semana anterior"
+            aria-label={t("semanaAnterior")}
             className="rounded-lg border border-white/15 p-1.5 text-white/70 hover:bg-white/5"
           >
             <ChevronLeft size={18} aria-hidden />
@@ -139,27 +142,27 @@ export default function CalendarioPage() {
             disabled={esEstaSemana}
             className="rounded-lg border border-white/15 px-3 py-1.5 text-sm text-white/80 hover:bg-white/5 disabled:opacity-40"
           >
-            Hoy
+            {t("hoy")}
           </button>
           <button
             onClick={() => inicio && setInicio(sumarDias(inicio, 7))}
-            aria-label="Semana siguiente"
+            aria-label={t("semanaSiguiente")}
             className="rounded-lg border border-white/15 p-1.5 text-white/70 hover:bg-white/5"
           >
             <ChevronRight size={18} aria-hidden />
           </button>
         </div>
-        <p className="font-medium">{inicio ? rangoDeSemana(inicio) : ""}</p>
+        <p className="font-medium">{inicio ? rangoDeSemana(inicio, locale) : ""}</p>
         <p className="text-xs text-white/40">
-          {programadas} programada{programadas === 1 ? "" : "s"} · {publicadas} publicada{publicadas === 1 ? "" : "s"}
-          {fallidas ? ` · ${fallidas} fallida${fallidas === 1 ? "" : "s"}` : ""}
+          {t("programadas", { n: programadas })} · {t("publicadas", { n: publicadas })}
+          {fallidas ? ` · ${t("fallidas", { n: fallidas })}` : ""}
         </p>
       </div>
 
       {/* Filtro por red */}
       <div className="mb-4 flex flex-wrap gap-1.5">
         <Chip activo={!filtro} onClick={() => setFiltro(null)}>
-          Todas
+          {t("todas")}
         </Chip>
         {FILTROS.map((r) => (
           <Chip key={r} activo={filtro === r} onClick={() => setFiltro(filtro === r ? null : r)}>
@@ -170,7 +173,7 @@ export default function CalendarioPage() {
       </div>
 
       {pubsQ.error && !pubsQ.data && (
-        <p className="mb-4 text-sm text-red-400">No se pudo cargar el calendario: {pubsQ.error.message}</p>
+        <p className="mb-4 text-sm text-red-400">{t("errorCargar", { mensaje: pubsQ.error.message })}</p>
       )}
 
       {/* En el teléfono, una lista por día; en pantallas anchas, las siete columnas. */}
@@ -186,13 +189,13 @@ export default function CalendarioPage() {
             >
               <h2 className="mb-2 flex items-baseline gap-2 px-1 text-sm">
                 <span className={`font-semibold capitalize ${hoy ? "text-ng-celeste" : ""}`}>
-                  {dia.toLocaleDateString("es", { weekday: "long" })}
+                  {dia.toLocaleDateString(locale, { weekday: "long" })}
                 </span>
-                <span className="text-white/40">{dia.toLocaleDateString("es", { day: "numeric", month: "short" })}</span>
-                {hoy && <span className="ml-auto rounded-full bg-ng-azul/20 px-1.5 text-[10px] text-ng-celeste">Hoy</span>}
+                <span className="text-white/40">{dia.toLocaleDateString(locale, { day: "numeric", month: "short" })}</span>
+                {hoy && <span className="ml-auto rounded-full bg-ng-azul/20 px-1.5 text-[10px] text-ng-celeste">{t("hoy")}</span>}
               </h2>
               {pubs.length === 0 ? (
-                <p className="px-1 pb-1 text-xs text-white/25">{pubsQ.loading && !pubsQ.data ? "…" : "Nada"}</p>
+                <p className="px-1 pb-1 text-xs text-white/25">{pubsQ.loading && !pubsQ.data ? "…" : t("nada")}</p>
               ) : (
                 <ul className="space-y-2">
                   {pubs.map((p) => (
@@ -212,16 +215,18 @@ export default function CalendarioPage() {
 
 /** Los clips que alguien marcó listos y nadie programó: lo que le queda a quien programa. */
 function ListosParaProgramar({ listos, opera, cargando }: { listos: ClipListo[]; opera: boolean; cargando: boolean }) {
+  const t = useTranslations("calendario.listos");
+  const locale = useLocale();
   if (cargando) return null;
   return (
     <section className="mb-6 rounded-xl border border-ng-teal/25 bg-ng-teal/[0.03] p-3">
       <h2 className="mb-2 text-sm font-semibold">
-        Listos para programar
+        {t("titulo")}
         {listos.length > 0 && <span className="ml-2 rounded-full bg-ng-teal/15 px-2 text-xs text-ng-teal">{listos.length}</span>}
       </h2>
       {listos.length === 0 ? (
         <p className="text-xs text-white/40">
-          No hay clips esperando. Cuando alguien marque uno como Listo en el editor, aparece acá.
+          {t("vacio")}
         </p>
       ) : (
         <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -236,8 +241,8 @@ function ListosParaProgramar({ listos, opera, cargando }: { listos: ClipListo[];
                   {c.titulo}
                 </Link>
                 {c.listoPor && (
-                  <p className="text-xs text-white/45" title={fechaCompleta(c.listoPor.en)}>
-                    Listo por {c.listoPor.nombre} · {tiempoRelativo(c.listoPor.en)}
+                  <p className="text-xs text-white/45" title={fechaCompleta(c.listoPor.en, locale)}>
+                    {t("listoPor", { nombre: c.listoPor.nombre, tiempo: tiempoRelativo(c.listoPor.en, undefined, locale) })}
                   </p>
                 )}
               </div>
@@ -246,7 +251,7 @@ function ListosParaProgramar({ listos, opera, cargando }: { listos: ClipListo[];
                   href={`/episodios/${c.episodioId}/clips/${c._id}/publicar`}
                   className="shrink-0 rounded-lg bg-indigo-500 px-3 py-1.5 text-xs font-medium text-white hover:brightness-110"
                 >
-                  Programar
+                  {t("programar")}
                 </Link>
               )}
             </li>
@@ -266,11 +271,15 @@ function TarjetaPublicacion({
   opera: boolean;
   onMover: () => void;
 }) {
+  const t = useTranslations("calendario");
+  const locale = useLocale();
   const [cancelar, { loading: cancelando }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries: REFETCH });
   const [error, setError] = useState<string | null>(null);
-  const estado = ESTADOS_PUBLICACION[p.estado] ?? { texto: p.estado, clase: "bg-white/10 text-white/60" };
+  const conocido = p.estado in ESTADOS_PUBLICACION;
+  const claseEstado = conocido ? ESTADOS_PUBLICACION[p.estado].clase : "bg-white/10 text-white/60";
+  const textoEstado = conocido ? t(`estados.${p.estado}`) : p.estado;
   const hora = new Date(p.publicadaEn ?? p.publicarEn);
-  const titulo = p.clip?.titulo ?? (p.descripcion?.split("\n")[0].trim() || "Sin descripción");
+  const titulo = p.clip?.titulo ?? (p.descripcion?.split("\n")[0].trim() || t("tarjeta.sinDescripcion"));
   const enlace = p.clip
     ? `/episodios/${p.clip.episodioId}/clips/${p.clip._id}/publicar`
     : p.expedienteId
@@ -279,12 +288,12 @@ function TarjetaPublicacion({
   const programada = p.estado === "PROGRAMADA";
 
   async function cancelarla() {
-    if (!window.confirm(`¿Cancelar «${titulo}» en ${REDES[p.red]?.nombre ?? p.red}? No sale.`)) return;
+    if (!window.confirm(t("tarjeta.confirmarCancelar", { titulo, red: REDES[p.red]?.nombre ?? p.red }))) return;
     setError(null);
     try {
       await cancelar({ variables: { marcaId: p.marcaId, id: p._id } });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo cancelar");
+      setError(e instanceof Error ? e.message : t("tarjeta.errorCancelar"));
     }
   }
 
@@ -296,8 +305,8 @@ function TarjetaPublicacion({
         <Poster url={p.clip?.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5 text-xs">
-            <span className="font-semibold tabular-nums" title={fechaCompleta(hora.toISOString())}>
-              {horaCorta(hora)}
+            <span className="font-semibold tabular-nums" title={fechaCompleta(hora.toISOString(), locale)}>
+              {horaCorta(hora, locale)}
             </span>
             <IconoRed red={p.red} chico />
           </p>
@@ -315,23 +324,23 @@ function TarjetaPublicacion({
         </div>
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
-        <span className={`rounded-full px-2 py-0.5 ${estado.clase}`}>{estado.texto}</span>
+        <span className={`rounded-full px-2 py-0.5 ${claseEstado}`}>{textoEstado}</span>
         {p.estado === "PUBLICADA" && p.permalink && (
           <a href={p.permalink} target="_blank" rel="noreferrer" className="text-ng-celeste hover:underline">
-            Ver ↗
+            {t("tarjeta.ver")}
           </a>
         )}
         {opera && programada && (
           <>
             <button onClick={onMover} className="text-white/55 hover:text-white hover:underline">
-              Cambiar hora
+              {t("tarjeta.cambiarHora")}
             </button>
             <button
               onClick={() => void cancelarla()}
               disabled={cancelando}
               className="text-red-400/75 hover:text-red-400 hover:underline disabled:opacity-50"
             >
-              {cancelando ? "Cancelando…" : "Cancelar"}
+              {cancelando ? t("tarjeta.cancelando") : t("tarjeta.cancelar")}
             </button>
           </>
         )}
@@ -340,12 +349,12 @@ function TarjetaPublicacion({
           En una programada, es un intento que falló y espera su reintento. */}
       {p.error && (p.estado === "FALLIDA" || programada) && (
         <p className={`mt-1 break-words text-[11px] ${programada ? "text-amber-400/80" : "text-red-400"}`}>
-          {programada ? "Reintentando: " : ""}
+          {programada ? t("tarjeta.reintentando") : ""}
           {p.error}
         </p>
       )}
       {p.estado === "CANCELADA" && p.canceladoPor?.nombre && (
-        <p className="mt-1 text-[11px] text-white/40">Cancelada por {p.canceladoPor.nombre}</p>
+        <p className="mt-1 text-[11px] text-white/40">{t("tarjeta.canceladaPor", { nombre: p.canceladoPor.nombre })}</p>
       )}
       {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
     </li>
@@ -354,6 +363,8 @@ function TarjetaPublicacion({
 
 /** Elegir la hora nueva de una programada. Sin arrastrar: un selector y listo. */
 function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () => void }) {
+  const t = useTranslations("calendario.cambiarHora");
+  const locale = useLocale();
   const [fecha, setFecha] = useState(() => aInputLocal(new Date(p.publicarEn)));
   const [reprogramar, { loading }] = useMutation(REPROGRAMAR_PUBLICACION, { refetchQueries: REFETCH });
   const [error, setError] = useState<string | null>(null);
@@ -373,7 +384,7 @@ function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () =
       await reprogramar({ variables: { marcaId: p.marcaId, id: p._id, publicarEn: cuando.toISOString() } });
       onCerrar();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo cambiar la hora");
+      setError(e instanceof Error ? e.message : t("errorCambiar"));
     }
   }
 
@@ -382,15 +393,15 @@ function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () =
       <div
         role="dialog"
         aria-modal
-        aria-label="Cambiar hora"
+        aria-label={t("titulo")}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-sm rounded-2xl border border-white/10 bg-ng-elevada p-4"
       >
-        <p className="font-semibold">Cambiar hora</p>
+        <p className="font-semibold">{t("titulo")}</p>
         <p className="mt-0.5 truncate text-sm text-white/50">
-          {p.clip?.titulo ?? p.descripcion ?? "Publicación"} · {REDES[p.red]?.nombre ?? p.red}
+          {p.clip?.titulo ?? p.descripcion ?? t("publicacion")} · {REDES[p.red]?.nombre ?? p.red}
         </p>
-        <p className="mt-2 text-xs text-white/40">Ahora sale el {diaYHora(new Date(p.publicarEn))}.</p>
+        <p className="mt-2 text-xs text-white/40">{t("ahoraSale", { cuando: diaYHora(new Date(p.publicarEn), locale) })}</p>
         <input
           type="datetime-local"
           value={fecha}
@@ -400,20 +411,21 @@ function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () =
           className="mt-3 w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-ng-azul"
         />
         <p className={`mt-1.5 text-xs ${yaPaso ? "text-red-400" : "text-white/40"}`}>
-          {yaPaso ? "Esa hora ya pasó: elegí una de acá en adelante." : `Va a salir el ${diaYHora(cuando!)}.`} Hora de{" "}
-          {zonaHoraria()}.
+          {yaPaso
+            ? t("yaPaso", { zona: zonaHoraria(locale) })
+            : t("vaASalir", { cuando: diaYHora(cuando!, locale), zona: zonaHoraria(locale) })}
         </p>
         {error && <p className="mt-2 text-xs text-red-400">{error}</p>}
         <div className="mt-4 flex justify-end gap-2">
           <button onClick={onCerrar} className="rounded-lg border border-white/15 px-3 py-1.5 text-sm text-white/70 hover:bg-white/5">
-            Volver
+            {t("volver")}
           </button>
           <button
             onClick={() => void guardar()}
             disabled={loading || yaPaso}
             className="rounded-lg bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
           >
-            {loading ? "Guardando…" : "Guardar"}
+            {loading ? t("guardando") : t("guardar")}
           </button>
         </div>
       </div>
@@ -450,8 +462,8 @@ function sumarDias(fecha: Date, dias: number): Date {
 }
 
 /** "29 sep – 5 oct 2026". */
-function rangoDeSemana(lunes: Date): string {
+function rangoDeSemana(lunes: Date, locale: string): string {
   const domingo = sumarDias(lunes, 6);
-  const corto = (d: Date) => d.toLocaleDateString("es", { day: "numeric", month: "short" }).replace(".", "");
+  const corto = (d: Date) => d.toLocaleDateString(locale, { day: "numeric", month: "short" }).replace(".", "");
   return `${corto(lunes)} – ${corto(domingo)} ${domingo.getFullYear()}`;
 }

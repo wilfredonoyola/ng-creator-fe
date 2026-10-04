@@ -1,0 +1,22 @@
+{
+  "libre": "Free",
+  "loEditasVos": "You're editing it",
+  "loEdita": "{nombre} is editing it",
+  "confirmarTomar": "{nombre} is editing it. Take it anyway?",
+  "errorTomar": "Couldn't take the clip",
+  "errorSoltar": "Couldn't release the clip",
+  "desde": "Since {fecha}",
+  "liberarAyuda": "Frees it so someone else on the team can take it",
+  "tomarAyuda": "Moves it to your name: the team sees you're working on it",
+  "liberar": "Release",
+  "tomar": "Take it",
+  "cruces": {
+    "titulo": "This segment is already in another clip",
+    "cruce": "Overlaps with “{titulo}” ({desde}–{hasta}), {quien} — {segundos} s in common.",
+    "libre": "which is free",
+    "vos": "which you have",
+    "otro": "which {nombre} has",
+    "masLargo": "Yours is longer: more context, that's fine.",
+    "cancelar": "Cancel"
+  }
+}

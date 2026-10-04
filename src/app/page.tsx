@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import {
   AudioLines,
   CalendarClock,
@@ -30,46 +32,24 @@ import { MaquetaAutoEncuadre } from "@/components/landing/MaquetaAutoEncuadre";
 import { MaquetaLives } from "@/components/landing/MaquetaLives";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 
-export const metadata: Metadata = {
-  title: { absolute: "NG Creator — De tu podcast a clips publicados en TikTok, Reels, Shorts y Facebook" },
-  description:
-    "Para podcasts, lives de TikTok y streams. El flujo completo en un solo lugar: subí el episodio, se transcribe solo, la IA encuentra los mejores momentos, tu equipo los edita con subtítulos y los aprueba, y los publicás en todas tus redes. Web y app para iPhone y Android.",
-  alternates: { canonical: "/" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("landing");
+  return {
+    title: { absolute: t("meta.titulo") },
+    description: t("meta.descripcion"),
+    alternates: { canonical: "/" },
+  };
+}
 
 /** El camino completo, del archivo a las redes: es lo que se vende. */
-const PASOS: { icono: LucideIcon; titulo: string; texto: string }[] = [
-  {
-    icono: Upload,
-    titulo: "Subís el episodio",
-    texto: "El video completo, de una o tres horas, directo desde el navegador. Si se corta internet, sigue donde quedó.",
-  },
-  {
-    icono: AudioLines,
-    titulo: "Se transcribe solo",
-    texto: "Cada palabra con su segundo exacto. Es la base de los cortes y de los subtítulos.",
-  },
-  {
-    icono: Sparkles,
-    titulo: "La IA encuentra los momentos",
-    texto: "Propone los clips que se entienden solos, con su potencial viral y el porqué.",
-  },
-  {
-    icono: Crop,
-    titulo: "Editás en minutos",
-    texto: "El auto-encuadre sigue a quien habla; vos sumás subtítulos con la palabra resaltada y textos con diseño. Lo que ves es lo que sale.",
-  },
-  {
-    icono: Users,
-    titulo: "Tu equipo revisa y aprueba",
-    texto: "Cada uno trabaja su clip y nada sale sin que una persona lo apruebe.",
-  },
-  {
-    icono: Send,
-    titulo: "Publicás en todas tus redes",
-    texto: "Desde aquí mismo, a la hora que elijas. Sin descargar el video ni entrar red por red.",
-  },
-];
+const PASOS = [
+  { clave: "subir", icono: Upload },
+  { clave: "transcribir", icono: AudioLines },
+  { clave: "momentos", icono: Sparkles },
+  { clave: "editar", icono: Crop },
+  { clave: "equipo", icono: Users },
+  { clave: "publicar", icono: Send },
+] as const satisfies readonly { clave: string; icono: LucideIcon }[];
 
 /** Dónde se publica. `hoy` es lo que ya funciona; el resto está en camino (#64). */
 const REDES: { nombre: string; hoy: boolean }[] = [
@@ -80,28 +60,7 @@ const REDES: { nombre: string; hoy: boolean }[] = [
 ];
 
 /** Lo que hace el auto-encuadre (#105), dicho para quien edita a mano. */
-const AUTO_ENCUADRE: { titulo: string; texto: string }[] = [
-  {
-    titulo: "Sabe quién habla",
-    texto: "Reconoce cada voz y la une con la cara que mueve los labios. Quien gesticula, asiente o se tapa la cara no le roba el plano a quien habla.",
-  },
-  {
-    titulo: "Divide la pantalla cuando discuten",
-    texto: "Si hablan tres a la vez, en vez de saltar de cara en cara cada segundo, muestra la mesa partida: dos arriba y dos abajo.",
-  },
-  {
-    titulo: "Suma reacciones",
-    texto: "En una toma larga, corta un par de segundos a quien se ríe o reacciona, y vuelve. El clip se ve editado, no grabado de corrido.",
-  },
-  {
-    titulo: "Vos tenés la última palabra",
-    texto: "Cada plano queda en el editor para moverlo o cambiarlo. Ves cuánto salió cada persona y, si no te convence, volvés a como estaba.",
-  },
-  {
-    titulo: "En la web y en la app",
-    texto: "Lo pedís desde la computadora o el celular y sigue trabajando aunque cierres la pantalla.",
-  },
-];
+const AUTO_ENCUADRE = ["quienHabla", "divide", "reacciones", "ultimaPalabra", "webYApp"] as const;
 
 /**
  * Lo que viene para quien transmite desde la computadora: con OBS o
@@ -111,168 +70,117 @@ const AUTO_ENCUADRE: { titulo: string; texto: string }[] = [
  * (MP4, MOV o MKV) de mejor calidad que la repeticion de TikTok: ese archivo
  * ya se puede subir hoy.
  */
-const LIVES: { titulo: string; texto: string }[] = [
-  {
-    titulo: "Transmitís como siempre",
-    texto: "Con TikTok LIVE Studio, OBS o Streamlabs. Tu live no cambia.",
-  },
-  {
-    titulo: "Tu live llega a NG Creator",
-    texto: "Con OBS o Streamlabs, sumás NG Creator como un destino más y lo grabamos mientras sale al aire. Con TikTok LIVE Studio, activás Grabar y subís el archivo: sale en mejor calidad que la repetición de TikTok.",
-  },
-  {
-    titulo: "Terminás y los clips ya están",
-    texto: "Transcripción, los mejores momentos con IA, auto-encuadre y subtítulos. Los revisás y los publicás.",
-  },
-];
+const LIVES = ["transmitis", "llega", "terminas"] as const;
 
 /**
  * Para quien es. Lo nuestro son los podcasts de mesa (#121); el resto es lo
  * mismo con otra entrada: cualquier video largo donde la gente habla.
  */
-const PARA_QUIEN: { icono: LucideIcon; titulo: string; texto: string; principal?: boolean }[] = [
-  {
-    icono: Mic,
-    titulo: "Podcasts",
-    texto: "Episodios de dos o tres horas con toda la mesa: sigue a quien habla, divide la pantalla cuando discuten y subtitula en español.",
-    principal: true,
-  },
-  { icono: Radio, titulo: "Lives de TikTok", texto: "Con TikTok LIVE Studio, OBS o Streamlabs: del live de dos horas a los diez momentos que valen." },
-  { icono: Video, titulo: "Streams", texto: "Tus lives de YouTube, Facebook o Twitch, traídos desde Restream sin descargar nada." },
-  { icono: Clapperboard, titulo: "Entrevistas, clases y webinars", texto: "Cualquier video largo donde alguien habla: la IA encuentra lo que se entiende solo." },
-];
+const PARA_QUIEN = [
+  { clave: "podcasts", icono: Mic, principal: true },
+  { clave: "lives", icono: Radio, principal: false },
+  { clave: "streams", icono: Video, principal: false },
+  { clave: "entrevistas", icono: Clapperboard, principal: false },
+] as const satisfies readonly { clave: string; icono: LucideIcon; principal: boolean }[];
 
 /** De donde llega el video. `pronto` es lo que todavia no existe. */
-const ENTRADAS: { titulo: string; texto: string; pronto?: boolean }[] = [
-  { titulo: "Subí el archivo", texto: "mp4, mov, webm o mkv, hasta 50 GB" },
-  { titulo: "Conectá Restream", texto: "tus lives, sin descargarlos" },
-  { titulo: "Grabación de TikTok LIVE Studio", texto: "en mejor calidad que la repetición" },
-  { titulo: "OBS y Streamlabs", texto: "grabamos el live mientras sale al aire", pronto: true },
-];
+const ENTRADAS = [
+  { clave: "archivo", pronto: false },
+  { clave: "restream", pronto: false },
+  { clave: "liveStudio", pronto: false },
+  { clave: "obs", pronto: true },
+] as const;
 
 /** Lo que hoy hace falta para lo mismo, sin NG Creator. */
-const ANTES = [
-  "Pasar el archivo de dos horas por Drive o WeTransfer",
-  "Ver el episodio entero buscando los momentos",
-  "Cortar en Premiere o CapCut y reencuadrar a mano quién habla",
-  "Otra app para los subtítulos",
-  "Mandar los clips a un grupo de WhatsApp para que los aprueben",
-  "Descargar y subir red por red",
-];
+const ANTES = ["drive", "verEntero", "cortar", "subtitulos", "whatsapp", "descargar"] as const;
 
-const FUNCIONES: { icono: LucideIcon; titulo: string; texto: string; pronto?: boolean }[] = [
-  { icono: AudioLines, titulo: "Transcripción con tiempos", texto: "Cada palabra en su segundo exacto, en episodios de horas." },
-  { icono: Sparkles, titulo: "Momentos con IA", texto: "Hasta 15 clips por episodio, ordenados por potencial viral." },
-  { icono: Mic, titulo: "Auto-encuadre", texto: "Sigue a quien habla, divide la pantalla cuando discuten y suma reacciones de los demás." },
-  { icono: Crop, titulo: "Recorte arrastrable", texto: "Mové y agrandá el encuadre sobre el cuadro entero, y cambialo a mitad del clip." },
-  { icono: LayoutPanelTop, titulo: "Diseño dividido", texto: "Dos recuadros apilados para que entren los cuatro de la mesa." },
-  { icono: Captions, titulo: "Subtítulos que se leen", texto: "Grandes, con la palabra que se dice resaltada. Corregí una palabra sin tocar tiempos." },
-  { icono: Type, titulo: "Textos con diseño", texto: "Hasta cuatro por clip, con contorno, sombra o caja, y palabras destacadas." },
-  { icono: Download, titulo: "MP4 listo para redes", texto: "1080×1920 en H.264, procesado en la nube. Descargalo o publicalo." },
-  { icono: Smartphone, titulo: "App para iPhone y Android", texto: "Revisá los clips que encontró la IA desde el celular." },
-  { icono: Radio, titulo: "Clips de tus lives", texto: "Para streamers de TikTok, con LIVE Studio, OBS o Streamlabs: terminás el live y tenés los clips.", pronto: true },
-  { icono: ListChecks, titulo: "Revisión en equipo", texto: "Asignar, editar, enviar a revisión y aprobar.", pronto: true },
-  { icono: CalendarClock, titulo: "Publicar y programar", texto: "Facebook hoy; Instagram, TikTok y YouTube en camino, todo desde el mismo lugar." },
-];
+const FUNCIONES = [
+  { clave: "transcripcion", icono: AudioLines, pronto: false },
+  { clave: "momentos", icono: Sparkles, pronto: false },
+  { clave: "autoEncuadre", icono: Mic, pronto: false },
+  { clave: "recorte", icono: Crop, pronto: false },
+  { clave: "dividido", icono: LayoutPanelTop, pronto: false },
+  { clave: "subtitulos", icono: Captions, pronto: false },
+  { clave: "textos", icono: Type, pronto: false },
+  { clave: "mp4", icono: Download, pronto: false },
+  { clave: "app", icono: Smartphone, pronto: false },
+  { clave: "lives", icono: Radio, pronto: true },
+  { clave: "revision", icono: ListChecks, pronto: true },
+  { clave: "publicar", icono: CalendarClock, pronto: false },
+] as const satisfies readonly { clave: string; icono: LucideIcon; pronto: boolean }[];
 
 const PLANES = [
   {
-    nombre: "Creador",
+    clave: "creador",
     precio: "19.99",
-    para: "Para quien hace su podcast solo.",
-    incluye: [
-      "1 persona",
-      "1 marca",
-      "Hasta 12 episodios al mes (~3 por semana)",
-      "Episodios de hasta 3 horas",
-      "Clips y exportaciones ilimitados",
-      "Editor completo y app para iPhone y Android",
-    ],
+    incluye: ["unaPersona", "unaMarca", "doceEpisodios", "tresHoras", "ilimitados", "editorYApp"],
     destacado: false,
   },
   {
-    nombre: "Equipo",
+    clave: "equipo",
     precio: "49.99",
-    para: "Para el podcast con productor, editores y redes.",
-    incluye: [
-      "Hasta 5 personas, con roles",
-      "1 marca",
-      "Hasta 16 episodios al mes (~4 por semana)",
-      "Episodios de hasta 3 horas",
-      "Clips y exportaciones ilimitados",
-      "Revisión y aprobación en equipo (pronto)",
-    ],
+    incluye: ["cincoPersonas", "unaMarca", "dieciseisEpisodios", "tresHoras", "ilimitados", "revision"],
     destacado: true,
   },
-];
+] as const;
+
+const EQUIPO_PUNTOS = ["roles", "variasMarcas", "mismaCuenta"] as const;
+
+const EQUIPO_EJEMPLO = [
+  { ini: "A", nombre: "Ana", clave: "ana", tono: "text-ng-celeste" },
+  { ini: "L", nombre: "Luis", clave: "luis", tono: "text-ng-teal" },
+  { ini: "C", nombre: "Carla", clave: "carla", tono: "text-ng-lila" },
+] as const;
 
 const PREGUNTAS = [
-  {
-    p: "¿Cómo convierto mi podcast en clips para TikTok, Reels y Shorts?",
-    r: "Subís el video del episodio. NG Creator lo transcribe, la IA marca los momentos que se entienden solos y cada uno se abre en el editor ya en vertical 9:16, con subtítulos. Ajustás el encuadre y el texto, y bajás el MP4.",
-  },
-  {
-    p: "¿Cuánto tardo en sacar clips de un episodio?",
-    r: "La transcripción y los momentos de un episodio de dos horas están en unos minutos. Después, cada clip se ajusta en uno o dos minutos: el encuadre, los subtítulos y el gancho ya vienen armados.",
-  },
-  {
-    p: "¿Tengo que descargar el episodio para editar?",
-    r: "No. El original queda en la nube; la edición y el render pasan en nuestros servidores. Solo bajás el MP4 terminado, si querés.",
-  },
-  {
-    p: "¿El clip sigue a la persona que habla?",
-    r: "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula o se tapa la cara. Cuando discuten varios, divide la pantalla; en una toma larga, corta un par de segundos a la reacción de otro. Cada plano se puede corregir, y si no te convence, volvés a como estaba.",
-  },
-  {
-    p: "¿Sirve para mis lives de TikTok?",
-    r: "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Si transmitís con TikTok LIVE Studio, activá Grabar: el archivo sale en mejor calidad que la repetición que guarda TikTok. Pronto va a ser automático con OBS o Streamlabs: sumás NG Creator como un destino más, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch.",
-  },
-  {
-    p: "¿Pone subtítulos automáticos?",
-    r: "Sí. Salen de la transcripción palabra por palabra, grandes y con la palabra que se está diciendo resaltada. Si alguna palabra quedó mal, la corregís sin tocar los tiempos.",
-  },
-  {
-    p: "¿Hay app para el celular?",
-    r: "Sí, para iPhone y Android, con la misma cuenta de la web. Hoy sirve para ver los episodios y revisar los clips que encontró la IA; la edición desde el teléfono viene en camino.",
-  },
-  {
-    p: "¿En qué idioma funciona?",
-    r: "Está pensado para podcasts en español: la transcripción, los momentos y los subtítulos.",
-  },
-  {
-    p: "¿Qué pasa si la IA elige un momento flojo?",
-    r: "Nada sale sin que una persona lo apruebe. La IA propone con un puntaje y el porqué; ustedes deciden, y también pueden armar clips a mano desde la transcripción.",
-  },
-  {
-    p: "¿Qué cuenta como episodio?",
-    r: "Cada video largo que subís. De un episodio salen todos los clips que quieras, sin límite.",
-  },
-];
-
-/** Para Google: qué es, en qué corre y cuánto cuesta, y las preguntas como FAQ. */
-const DATOS_ESTRUCTURADOS = [
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "NG Creator",
-    applicationCategory: "MultimediaApplication",
-    operatingSystem: "Web, iOS, Android",
-    inLanguage: "es",
-    description: "Convertí episodios de podcast, lives de TikTok y streams en clips verticales con subtítulos para TikTok, Reels y Shorts. La IA encuentra los mejores momentos y tu equipo los edita y publica.",
-    offers: PLANES.map((p) => ({ "@type": "Offer", name: p.nombre, price: p.precio, priceCurrency: "USD" })),
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: PREGUNTAS.map((q) => ({ "@type": "Question", name: q.p, acceptedAnswer: { "@type": "Answer", text: q.r } })),
-  },
-];
+  "convertir",
+  "tiempo",
+  "descargar",
+  "sigue",
+  "lives",
+  "subtitulos",
+  "app",
+  "idioma",
+  "flojo",
+  "episodio",
+] as const;
 
 export default function Producto() {
+  const t = useTranslations("landing");
+  const locale = useLocale();
+
+  /** Para Google: qué es, en qué corre y cuánto cuesta, y las preguntas como FAQ. */
+  const datosEstructurados = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "NG Creator",
+      applicationCategory: "MultimediaApplication",
+      operatingSystem: "Web, iOS, Android",
+      inLanguage: locale,
+      description: t("datos.descripcion"),
+      offers: PLANES.map((p) => ({
+        "@type": "Offer",
+        name: t(`precios.planes.${p.clave}.nombre`),
+        price: p.precio,
+        priceCurrency: "USD",
+      })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: PREGUNTAS.map((q) => ({
+        "@type": "Question",
+        name: t(`preguntas.items.${q}.p`),
+        acceptedAnswer: { "@type": "Answer", text: t(`preguntas.items.${q}.r`) },
+      })),
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-ng-hondo text-ng-texto">
       <RedirigirSiHaySesion />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(DATOS_ESTRUCTURADOS) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }} />
 
       <Cabecera />
 
@@ -286,21 +194,18 @@ export default function Producto() {
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
           <div>
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ng-secundario">
-              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> Del podcast o el live a tus redes, en un solo lugar
+              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> {t("portada.etiqueta")}
             </p>
             <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
-              Subí el episodio. <span className="texto-marca">Publicá los clips.</span> Todo en un solo lugar.
+              {t.rich("portada.titulo", { marca: (c) => <span className="texto-marca">{c}</span> })}
             </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ng-secundario">
-              NG Creator hace el camino completo: transcribe tu podcast, la IA encuentra los mejores momentos, tu equipo
-              los edita en vertical con subtítulos y los aprueba, y los publicás en tus redes desde aquí. Sin descargar nada y sin saltar entre cinco programas.
-            </p>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ng-secundario">{t("portada.texto")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 text-base font-semibold text-ng-tinta brillo-marca hover:brightness-110">
-                Empezar
+                {t("empezar")}
               </Link>
               <a href="#como" className="rounded-ng-md border border-white/15 bg-white/5 px-6 py-3 text-base font-semibold hover:bg-white/10">
-                Ver cómo funciona
+                {t("portada.verComoFunciona")}
               </a>
             </div>
             <p className="mt-6 text-xs uppercase tracking-[0.22em] text-ng-tenue">Create · Share · Grow</p>
@@ -312,24 +217,22 @@ export default function Producto() {
       {/* ---- El flujo completo ---- */}
       <section id="como" className="border-t border-white/5 bg-ng-fondo">
         <div className="mx-auto max-w-6xl px-5 py-20">
-          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">El flujo completo</p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">
-            Del archivo de dos horas a los clips publicados, sin salir de aquí
-          </h2>
+          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("flujo.etiqueta")}</p>
+          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">{t("flujo.titulo")}</h2>
           <ol className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {PASOS.map((p, i) => {
               const ultimo = i === PASOS.length - 1;
               return (
                 <li
-                  key={p.titulo}
+                  key={p.clave}
                   className={`relative rounded-ng-xl border p-5 ${ultimo ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-tarjeta"}`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-marca text-sm font-bold text-ng-tinta">{i + 1}</span>
                     <p.icono size={18} className="text-ng-celeste" aria-hidden />
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">{p.titulo}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ng-secundario">{p.texto}</p>
+                  <h3 className="mt-4 text-lg font-semibold">{t(`pasos.${p.clave}.titulo`)}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ng-secundario">{t(`pasos.${p.clave}.texto`)}</p>
                   {ultimo && (
                     <ul className="mt-4 flex flex-wrap gap-2">
                       {REDES.map((r) => (
@@ -338,7 +241,7 @@ export default function Producto() {
                           className={`rounded-full border px-2.5 py-1 text-xs ${r.hoy ? "border-ng-teal/40 bg-ng-teal/10 text-ng-teal" : "border-white/10 text-ng-secundario"}`}
                         >
                           {r.nombre}
-                          {!r.hoy && <span className="ml-1 text-ng-lila">· pronto</span>}
+                          {!r.hoy && <span className="ml-1 text-ng-lila">{t("pronto")}</span>}
                         </li>
                       ))}
                     </ul>
@@ -353,32 +256,35 @@ export default function Producto() {
       {/* ---- Para quien ---- */}
       <section id="para-quien" className="border-t border-white/5">
         <div className="mx-auto max-w-6xl px-5 py-20">
-          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">Para quién es</p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">Hecho para podcasts. Sirve para cualquier video largo.</h2>
+          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("paraQuien.etiqueta")}</p>
+          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">{t("paraQuien.titulo")}</h2>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {PARA_QUIEN.map((c) => (
               <div
-                key={c.titulo}
+                key={c.clave}
                 className={`rounded-ng-lg border p-5 ${c.principal ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-superficie/50"}`}
               >
                 <div className="flex items-center justify-between">
                   <c.icono size={20} className="text-ng-celeste" aria-hidden />
-                  {c.principal && <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-semibold text-ng-tinta">Lo nuestro</span>}
+                  {c.principal && (
+                    <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-semibold text-ng-tinta">{t("paraQuien.loNuestro")}</span>
+                  )}
                 </div>
-                <h3 className="mt-3 font-semibold">{c.titulo}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{c.texto}</p>
+                <h3 className="mt-3 font-semibold">{t(`paraQuien.casos.${c.clave}.titulo`)}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{t(`paraQuien.casos.${c.clave}.texto`)}</p>
               </div>
             ))}
           </div>
-          <p className="mt-10 text-sm font-semibold">Traé tu video como te quede más cómodo</p>
+          <p className="mt-10 text-sm font-semibold">{t("paraQuien.traeTuVideo")}</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {ENTRADAS.map((e) => (
               <li
-                key={e.titulo}
+                key={e.clave}
                 className={`rounded-full border px-3 py-1.5 text-xs ${e.pronto ? "border-white/10 text-ng-secundario" : "border-ng-teal/40 bg-ng-teal/10 text-ng-texto"}`}
               >
-                <span className="font-semibold">{e.titulo}</span> <span className="text-ng-secundario">· {e.texto}</span>
-                {e.pronto && <span className="ml-1 text-ng-lila">· pronto</span>}
+                <span className="font-semibold">{t(`paraQuien.entradas.${e.clave}.titulo`)}</span>{" "}
+                <span className="text-ng-secundario">· {t(`paraQuien.entradas.${e.clave}.texto`)}</span>
+                {e.pronto && <span className="ml-1 text-ng-lila">{t("pronto")}</span>}
               </li>
             ))}
           </ul>
@@ -389,19 +295,16 @@ export default function Producto() {
       <section id="auto-encuadre" className="border-t border-white/5 bg-ng-fondo">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">Auto-encuadre</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">La cámara sigue a quien habla. Sola.</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
-              Tu podcast se graba con una cámara abierta sobre toda la mesa. Para vertical hay que elegir a quién mostrar en cada
-              segundo, y a mano eso es lo que más tiempo lleva. Con un botón, NG Creator mira el clip y arma los cambios de plano como
-              lo haría un editor.
-            </p>
+            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("autoEncuadre.etiqueta")}</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t("autoEncuadre.titulo")}</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">{t("autoEncuadre.texto")}</p>
             <ul className="mt-6 space-y-3 text-sm">
-              {AUTO_ENCUADRE.map((t) => (
-                <li key={t.titulo} className="flex items-start gap-2.5">
+              {AUTO_ENCUADRE.map((clave) => (
+                <li key={clave} className="flex items-start gap-2.5">
                   <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden />
                   <span>
-                    <span className="font-semibold">{t.titulo}.</span> <span className="text-ng-secundario">{t.texto}</span>
+                    <span className="font-semibold">{t(`autoEncuadre.puntos.${clave}.titulo`)}.</span>{" "}
+                    <span className="text-ng-secundario">{t(`autoEncuadre.puntos.${clave}.texto`)}</span>
                   </span>
                 </li>
               ))}
@@ -416,28 +319,25 @@ export default function Producto() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
           <div className="lg:order-2">
             <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-ng-celeste">
-              Para streamers de TikTok
-              <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium normal-case tracking-normal text-ng-lila">Próximamente</span>
+              {t("lives.etiqueta")}
+              <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium normal-case tracking-normal text-ng-lila">
+                {t("lives.proximamente")}
+              </span>
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Terminás el live. Los clips ya están listos.</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
-              Un live de dos horas tiene diez clips buenos adentro, y casi nadie tiene tiempo de buscarlos. Si transmitís desde la
-              computadora, con TikTok LIVE Studio, OBS o Streamlabs, NG Creator convierte tu live en clips verticales con
-              subtítulos, listos para publicar.
-            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t("lives.titulo")}</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">{t("lives.texto")}</p>
             <ol className="mt-6 space-y-4">
-              {LIVES.map((p, i) => (
-                <li key={p.titulo} className="flex items-start gap-3">
+              {LIVES.map((clave, i) => (
+                <li key={clave} className="flex items-start gap-3">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-ng-tinta">{i + 1}</span>
                   <span className="text-sm">
-                    <span className="font-semibold">{p.titulo}.</span> <span className="text-ng-secundario">{p.texto}</span>
+                    <span className="font-semibold">{t(`lives.pasos.${clave}.titulo`)}.</span>{" "}
+                    <span className="text-ng-secundario">{t(`lives.pasos.${clave}.texto`)}</span>
                   </span>
                 </li>
               ))}
             </ol>
-            <p className="mt-6 text-sm text-ng-tenue">
-              También para YouTube, Facebook y Twitch. Mientras tanto, ya podés subir la grabación de tu live como cualquier episodio.
-            </p>
+            <p className="mt-6 text-sm text-ng-tenue">{t("lives.pie")}</p>
           </div>
           <div className="lg:order-1">
             <MaquetaLives />
@@ -449,23 +349,23 @@ export default function Producto() {
       <section className="border-t border-white/5">
         <div className="mx-auto grid max-w-6xl gap-6 px-5 py-20 lg:grid-cols-2">
           <div className="rounded-ng-xl border border-white/10 bg-ng-superficie/40 p-7">
-            <p className="text-sm font-semibold text-ng-tenue">Hoy, sin NG Creator</p>
-            <p className="mt-1 text-2xl font-bold">Seis herramientas y una tarde por episodio</p>
+            <p className="text-sm font-semibold text-ng-tenue">{t("antes.etiqueta")}</p>
+            <p className="mt-1 text-2xl font-bold">{t("antes.titulo")}</p>
             <ul className="mt-6 space-y-3 text-sm text-ng-secundario">
-              {ANTES.map((t) => (
-                <li key={t} className="flex items-start gap-2.5">
-                  <X size={16} className="mt-0.5 shrink-0 text-red-400/80" aria-hidden /> {t}
+              {ANTES.map((clave) => (
+                <li key={clave} className="flex items-start gap-2.5">
+                  <X size={16} className="mt-0.5 shrink-0 text-red-400/80" aria-hidden /> {t(`antes.items.${clave}`)}
                 </li>
               ))}
             </ul>
           </div>
           <div className="rounded-ng-xl border border-ng-azul/50 bg-ng-tarjeta p-7 brillo-marca">
-            <p className="text-sm font-semibold text-ng-celeste">Con NG Creator</p>
-            <p className="mt-1 text-2xl font-bold">Una pestaña, de principio a fin</p>
+            <p className="text-sm font-semibold text-ng-celeste">{t("ahora.etiqueta")}</p>
+            <p className="mt-1 text-2xl font-bold">{t("ahora.titulo")}</p>
             <ul className="mt-6 space-y-3 text-sm">
               {PASOS.map((p) => (
-                <li key={p.titulo} className="flex items-start gap-2.5">
-                  <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {p.titulo}
+                <li key={p.clave} className="flex items-start gap-2.5">
+                  <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {t(`pasos.${p.clave}.titulo`)}
                 </li>
               ))}
             </ul>
@@ -476,18 +376,18 @@ export default function Producto() {
       {/* ---- Qué hace ---- */}
       <section className="border-t border-white/5">
         <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Todo lo que necesita un clip</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t("funciones.titulo")}</h2>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FUNCIONES.map((f) => (
-              <div key={f.titulo} className="rounded-ng-lg border border-white/10 bg-ng-superficie/50 p-5">
+              <div key={f.clave} className="rounded-ng-lg border border-white/10 bg-ng-superficie/50 p-5">
                 <div className="flex items-center justify-between">
                   <f.icono size={20} className="text-ng-celeste" aria-hidden />
                   {f.pronto && (
-                    <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium text-ng-lila">Pronto</span>
+                    <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium text-ng-lila">{t("prontoEtiqueta")}</span>
                   )}
                 </div>
-                <h3 className="mt-3 font-semibold">{f.titulo}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{f.texto}</p>
+                <h3 className="mt-3 font-semibold">{t(`funciones.items.${f.clave}.titulo`)}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{t(`funciones.items.${f.clave}.texto`)}</p>
               </div>
             ))}
           </div>
@@ -498,31 +398,24 @@ export default function Producto() {
       <section className="border-t border-white/5 bg-ng-fondo">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 lg:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Hecho para trabajar en equipo</h2>
-            <p className="mt-4 leading-relaxed text-ng-secundario">
-              El productor sube, los editores arman los clips, alguien los aprueba y salen. Cada persona entra con su
-              cuenta y su rol, y cada marca tiene su espacio: nadie ve lo que no le toca.
-            </p>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t("equipo.titulo")}</h2>
+            <p className="mt-4 leading-relaxed text-ng-secundario">{t("equipo.texto")}</p>
             <ul className="mt-6 space-y-2 text-sm">
-              {["Roles por marca: dueño, editor, lector", "Varias marcas en una misma cuenta", "Web y app con la misma cuenta"].map((t) => (
-                <li key={t} className="flex items-center gap-2">
-                  <Check size={16} className="text-ng-teal" aria-hidden /> {t}
+              {EQUIPO_PUNTOS.map((clave) => (
+                <li key={clave} className="flex items-center gap-2">
+                  <Check size={16} className="text-ng-teal" aria-hidden /> {t(`equipo.puntos.${clave}`)}
                 </li>
               ))}
             </ul>
           </div>
           <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-5">
-            {[
-              ["A", "Ana", "Dueña · sube el episodio", "text-ng-celeste"],
-              ["L", "Luis", "Editando el clip #4", "text-ng-teal"],
-              ["C", "Carla", "Aprobó 3 clips", "text-ng-lila"],
-            ].map(([ini, nombre, estado, tono]) => (
+            {EQUIPO_EJEMPLO.map(({ ini, nombre, clave, tono }) => (
               <div key={nombre} className="flex items-center gap-3 border-b border-white/5 py-3 last:border-0">
                 <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-ng-elevada text-sm font-semibold">
                   {ini}
                 </span>
                 <span className="flex-1 text-sm font-medium">{nombre}</span>
-                <span className={`text-xs ${tono}`}>{estado}</span>
+                <span className={`text-xs ${tono}`}>{t(`equipo.ejemplo.${clave}`)}</span>
               </div>
             ))}
           </div>
@@ -533,14 +426,11 @@ export default function Producto() {
       <section className="border-t border-white/5">
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_auto]">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">iPhone y Android</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Tus clips, también en el bolsillo</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">
-              La misma cuenta en la web y en el celular. Mirá cómo va cada episodio, revisá los clips que propuso la IA con
-              su puntaje y lo que se dice en cada uno, y decidí cuáles salen desde donde estés.
-            </p>
+            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("app.etiqueta")}</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t("app.titulo")}</h2>
+            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">{t("app.texto")}</p>
             <Link href="/app" className="mt-6 inline-block rounded-ng-md border border-white/15 bg-white/5 px-5 py-2.5 font-semibold hover:bg-white/10">
-              Ver la app
+              {t("app.verLaApp")}
             </Link>
           </div>
           <MaquetaTelefono />
@@ -550,44 +440,47 @@ export default function Producto() {
       {/* ---- Precios ---- */}
       <section id="precios" className="border-t border-white/5">
         <div className="mx-auto max-w-5xl px-5 py-20">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">Precios simples</h2>
-          <p className="mt-3 text-center text-ng-secundario">En dólares, por mes. Cancelás cuando quieras.</p>
+          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">{t("precios.titulo")}</h2>
+          <p className="mt-3 text-center text-ng-secundario">{t("precios.subtitulo")}</p>
           <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {PLANES.map((plan) => (
-              <div
-                key={plan.nombre}
-                className={`relative rounded-ng-xl border p-7 ${
-                  plan.destacado ? "border-ng-azul/60 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-superficie/60"
-                }`}
-              >
-                {plan.destacado && (
-                  <span className="absolute -top-3 left-7 rounded-full bg-marca px-3 py-1 text-xs font-semibold text-ng-tinta">
-                    Para equipos
-                  </span>
-                )}
-                <h3 className="text-lg font-semibold">{plan.nombre}</h3>
-                <p className="mt-1 text-sm text-ng-secundario">{plan.para}</p>
-                <p className="mt-6 flex items-baseline gap-1">
-                  <span className="text-5xl font-bold tracking-tight">${plan.precio}</span>
-                  <span className="text-ng-tenue">/mes</span>
-                </p>
-                <ul className="mt-6 space-y-2.5 text-sm">
-                  {plan.incluye.map((i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {i}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={ENLACE_EMPEZAR}
-                  className={`mt-8 block rounded-ng-md py-3 text-center font-semibold ${
-                    plan.destacado ? "bg-marca text-ng-tinta hover:brightness-110" : "border border-white/15 bg-white/5 hover:bg-white/10"
+            {PLANES.map((plan) => {
+              const nombre = t(`precios.planes.${plan.clave}.nombre`);
+              return (
+                <div
+                  key={plan.clave}
+                  className={`relative rounded-ng-xl border p-7 ${
+                    plan.destacado ? "border-ng-azul/60 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-superficie/60"
                   }`}
                 >
-                  Empezar con {plan.nombre}
-                </Link>
-              </div>
-            ))}
+                  {plan.destacado && (
+                    <span className="absolute -top-3 left-7 rounded-full bg-marca px-3 py-1 text-xs font-semibold text-ng-tinta">
+                      {t("precios.paraEquipos")}
+                    </span>
+                  )}
+                  <h3 className="text-lg font-semibold">{nombre}</h3>
+                  <p className="mt-1 text-sm text-ng-secundario">{t(`precios.planes.${plan.clave}.para`)}</p>
+                  <p className="mt-6 flex items-baseline gap-1">
+                    <span className="text-5xl font-bold tracking-tight">${plan.precio}</span>
+                    <span className="text-ng-tenue">{t("precios.porMes")}</span>
+                  </p>
+                  <ul className="mt-6 space-y-2.5 text-sm">
+                    {plan.incluye.map((i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {t(`precios.incluye.${i}`)}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href={ENLACE_EMPEZAR}
+                    className={`mt-8 block rounded-ng-md py-3 text-center font-semibold ${
+                      plan.destacado ? "bg-marca text-ng-tinta hover:brightness-110" : "border border-white/15 bg-white/5 hover:bg-white/10"
+                    }`}
+                  >
+                    {t("precios.empezarCon", { plan: nombre })}
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -595,17 +488,17 @@ export default function Producto() {
       {/* ---- Preguntas ---- */}
       <section className="border-t border-white/5 bg-ng-fondo">
         <div className="mx-auto max-w-3xl px-5 py-20">
-          <h2 className="text-3xl font-bold tracking-tight">Preguntas</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t("preguntas.titulo")}</h2>
           <div className="mt-8 divide-y divide-white/10 rounded-ng-xl border border-white/10 bg-ng-tarjeta">
             {PREGUNTAS.map((q) => (
-              <details key={q.p} className="group p-5">
+              <details key={q} className="group p-5">
                 <summary className="cursor-pointer list-none font-medium marker:hidden">
                   <span className="flex items-center justify-between gap-4">
-                    {q.p}
+                    {t(`preguntas.items.${q}.p`)}
                     <span className="text-ng-tenue transition group-open:rotate-45">+</span>
                   </span>
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-ng-secundario">{q.r}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ng-secundario">{t(`preguntas.items.${q}.r`)}</p>
               </details>
             ))}
           </div>
@@ -621,9 +514,9 @@ export default function Producto() {
         />
         <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
           <LogoNG tamano={56} soloIcono />
-          <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-5xl">Subí un episodio. Salí con diez clips.</h2>
+          <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-5xl">{t("cierre")}</h2>
           <Link href={ENLACE_EMPEZAR} className="mt-8 inline-block rounded-ng-md bg-marca px-8 py-3.5 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
-            Empezar
+            {t("empezar")}
           </Link>
         </div>
       </section>

@@ -1,0 +1,63 @@
+{
+  "errorPublicar": "Couldn't publish",
+  "sinPagina": "No Facebook page enabled. An admin needs to connect one.",
+  "agendando": "Scheduling…",
+  "encolando": "Queuing…",
+  "publicando": "Publishing…",
+  "programarEnFacebook": "Schedule on Facebook",
+  "publicarEnFacebook": "Post to Facebook",
+  "publicarEn": "Post to <n>{nombre}</n>",
+  "publicadas": "{n, plural, one {# published} other {# published}}",
+  "sinPoster": "This project has no poster; it's generated when assembling",
+  "formatos": {
+    "REEL": {
+      "etiqueta": "Reel",
+      "detalle": "To the feed, vertical. 3 to 90s"
+    },
+    "HISTORIA_VIDEO": {
+      "etiqueta": "Story",
+      "detalle": "Video, expires in 24h"
+    },
+    "IMAGEN": {
+      "etiqueta": "Image",
+      "detalle": "Photo to the feed"
+    },
+    "HISTORIA_IMAGEN": {
+      "etiqueta": "Image story",
+      "detalle": "Photo, expires in 24h"
+    }
+  },
+  "descripcionPlaceholder": "Description (optional)",
+  "yaEnEsteFormato": "Already posted in this format. Posting again creates a new post.",
+  "ahora": "Now",
+  "programar": "Schedule",
+  "ayudaCola": "It waits in our queue and goes out at that time. Until then you can cancel it or change the time. If the server is down then, it goes out when it's back.",
+  "ayudaMeta": "It's scheduled on Facebook and goes out at that time even if our server is off. At least {min} minutes ahead.",
+  "historiasNo": "Stories can't be scheduled: they expire after 24 hours.",
+  "fila": {
+    "noSePudo": "Couldn't do it",
+    "formatos": {
+      "REEL": "reel",
+      "HISTORIA_VIDEO": "video story",
+      "IMAGEN": "image",
+      "HISTORIA_IMAGEN": "image story",
+      "VIDEO": "video",
+      "SHORT": "short"
+    },
+    "sale": "goes out {cuando}",
+    "agendadaEnFacebook": " (scheduled on Facebook)",
+    "subiendo": "uploading…",
+    "publicando": "publishing…",
+    "cancelada": "canceled",
+    "canceladaPor": "canceled by {nombre}",
+    "por": "by <n>{nombre}</n>",
+    "portadaDeMeta": "Went out with the cover Meta picked, not ours",
+    "cambiarHora": "Change time",
+    "cancelando": "Canceling…",
+    "cancelar": "Cancel",
+    "guardando": "Saving…",
+    "guardar": "Save",
+    "volver": "Back",
+    "ver": "view"
+  }
+}

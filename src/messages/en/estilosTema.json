@@ -1,0 +1,19 @@
+{
+  "colores": {
+    "colorPrimario": { "nombre": "Primary", "minuscula": "primary", "ayuda": "The word being spoken, pills, bars" },
+    "colorSecundario": { "nombre": "Secondary", "minuscula": "secondary", "ayuda": "The second block and accents" },
+    "colorTexto": { "nombre": "Text", "minuscula": "text", "ayuda": "The caption and hook lettering" },
+    "colorFondo": { "nombre": "Background", "minuscula": "background", "ayuda": "Dark boxes and bars" }
+  },
+  "sinLogo": "The brand has no logo. Upload it below, in Logo, and try again.",
+  "logoSinColores": "The logo has no usable colors (it's black and white, or nearly transparent). Pick them by hand.",
+  "titulo": "Brand theme",
+  "subtitulo": "The colors used to paint your clips' text styles.",
+  "mirandoLogo": "Looking at the logo…",
+  "usarLogo": "Use logo colors",
+  "delLogo": "From the logo. Tap one to use it as <b>{color}</b>:",
+  "elegirColor": "Choose the {color} color",
+  "colorHex": "{color} color in hex",
+  "formatoHex": "Each color goes as #RRGGBB.",
+  "soloPropietario": "Only the owner can change the brand colors."
+}

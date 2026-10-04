@@ -1,0 +1,27 @@
+{
+  "ordenes": {
+    "ANTIGUOS": "Más antiguos",
+    "RECIENTES": "Más recientes"
+  },
+  "titulo": "Cola de Revisión",
+  "pendientes": "{n, plural, one {# video pendiente} other {# videos pendientes}} de revisión",
+  "ultimaConsulta": "Última consulta: {fecha}",
+  "actualizado": "Actualizado {tiempo} · se refresca cada 15s",
+  "cargando": "Cargando…",
+  "consultarAhora": "Volver a consultar ahora",
+  "actualizando": "Actualizando…",
+  "actualizar": "↻ Actualizar",
+  "verFallidos": "Ver fallidos ({n})",
+  "ocultarFallidos": "Ocultar fallidos ({n})",
+  "colaDe": "Cola de",
+  "sinPagina": "Sin página activa: no hay cola que mostrar",
+  "orden": "Orden",
+  "fallidosTitulo": "Expedientes Fallidos",
+  "fallido": "FALLIDO",
+  "pagina": "Página:",
+  "tipo": "Tipo:",
+  "id": "ID:",
+  "vacio": "No hay videos en revisión",
+  "nadaEn": "Nada pendiente en {marca}",
+  "todoProcesado": "Todos los videos han sido procesados"
+}

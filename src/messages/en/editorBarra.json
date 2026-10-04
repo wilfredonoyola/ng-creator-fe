@@ -1,0 +1,69 @@
+{
+  "confirmarTomar": "{nombre} is editing it. Take it anyway?",
+  "errores": {
+    "tomar": "Couldn't take the clip",
+    "liberar": "Couldn't release the clip",
+    "estado": "Couldn't change the status"
+  },
+  "redes": {
+    "fallo": "Failed on networks",
+    "falloAyuda": "A network rejected the post. Go to Schedule to see why and retry.",
+    "programado": "Scheduled",
+    "enCamino": "{n} posts on the way.",
+    "saleSola": "It goes out on its own at that time.",
+    "publicado": "Published on {n, plural, one {# network} other {# networks}}",
+    "publicadoAyuda": "You can schedule it on another network or at another time."
+  },
+  "procesar": {
+    "reintentar": "Try again",
+    "volver": "Process again",
+    "procesar": "Process video",
+    "conCambios": "With the changes the MP4 doesn't have yet.",
+    "alDia": "It's up to date: only if you want to redo it."
+  },
+  "descargar": {
+    "bajando": "Downloading…",
+    "anterior": "Download the previous one",
+    "mp4": "Download MP4",
+    "sinCambios": "Without the latest changes."
+  },
+  "listo": {
+    "volverAEditar": "Back to editing",
+    "saleDeListos": "Leaves “Ready to schedule”.",
+    "marcar": "Mark ready",
+    "marcarAyuda": "The team sees it on the calendar, to schedule it.",
+    "primeroProcesa": "Process the video first.",
+    "por": "Ready · {nombre}",
+    "desde": "Since {fecha}. It's in “Ready to schedule”.",
+    "pista": "The whole team sees it on the calendar, to schedule it.",
+    "pistaSinVideo": "Process the video to mark it ready.",
+    "listo": "Ready"
+  },
+  "volverA": "Back to {episodio}",
+  "tomado": {
+    "pistaNadie": "Take it so the team knows you're working on it.",
+    "pistaMio": "The team sees it's yours. Release it if someone else will finish it.",
+    "pistaOtro": "If you take it, it moves to your name and the whole team sees that.",
+    "nadie": "Nobody took it",
+    "mio": "You're editing it",
+    "otro": "{nombre} is editing it",
+    "liberar": "Release",
+    "tomarIgual": "Take it anyway",
+    "tomar": "Take it"
+  },
+  "tituloDelClip": "Clip title",
+  "abrirEnPestana": "<link>Open it in another tab</link> and save it from there.",
+  "cerrar": "Close",
+  "exportar": "Export",
+  "procesandoCorto": "Processing {corto}",
+  "masAcciones": "More actions",
+  "programar": {
+    "alTerminar": "You can schedule it once processing finishes",
+    "procesaPrimero": "Process the video to schedule it",
+    "elegi": "Choose networks and time.",
+    "reintentar": "Retry",
+    "programar": "Schedule",
+    "pistaProcesando": "The video is processing: when it's done, you can schedule it.",
+    "pistaSinVideo": "Process the video first, in Export. Without an MP4 there's nothing to schedule."
+  }
+}

@@ -40,12 +40,15 @@ export interface PreferenciaNotificacion {
 /** El orden en que se muestran, que es el del trabajo: del episodio a la red. */
 export const TIPOS_NOTIFICACION: TipoNotificacion[] = ["CLIPS_LISTOS", "CLIP_TOMADO", "CLIP_PROGRAMADO", "CLIP_PUBLICADO"];
 
-/** Cómo se llama cada tipo en Perfil, y con qué ícono y color sale en la lista. */
-export const ESTILO_NOTIFICACION: Record<TipoNotificacion, { etiqueta: string; icono: LucideIcon; clase: string }> = {
-  CLIPS_LISTOS: { etiqueta: "Clips listos para editar", icono: Sparkles, clase: "bg-ng-azul/15 text-ng-celeste" },
-  CLIP_TOMADO: { etiqueta: "Alguien tomó un clip", icono: Hand, clase: "bg-amber-400/15 text-amber-300" },
-  CLIP_PROGRAMADO: { etiqueta: "Alguien programó un clip", icono: CalendarClock, clase: "bg-indigo-400/15 text-indigo-300" },
-  CLIP_PUBLICADO: { etiqueta: "Un clip se publicó", icono: Send, clase: "bg-ng-teal/15 text-ng-teal" },
+/**
+ * Con qué ícono y color sale cada tipo en la lista. Cómo se llama cada uno (en
+ * Perfil) está en los mensajes: `t(tipo)` con el namespace `marcoNotificaciones`.
+ */
+export const ESTILO_NOTIFICACION: Record<TipoNotificacion, { icono: LucideIcon; clase: string }> = {
+  CLIPS_LISTOS: { icono: Sparkles, clase: "bg-ng-azul/15 text-ng-celeste" },
+  CLIP_TOMADO: { icono: Hand, clase: "bg-amber-400/15 text-amber-300" },
+  CLIP_PROGRAMADO: { icono: CalendarClock, clase: "bg-indigo-400/15 text-indigo-300" },
+  CLIP_PUBLICADO: { icono: Send, clase: "bg-ng-teal/15 text-ng-teal" },
 };
 
 /** Adónde lleva un aviso: al editor del clip si hay uno, si no al episodio. */

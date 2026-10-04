@@ -1,0 +1,62 @@
+{
+  "editorDelClip": "Editor del clip",
+  "noEncontrado": "No encontramos este clip",
+  "otraMarca": "Puede ser de otra marca: revisá cuál tenés elegida.",
+  "volverAlEpisodio": "← Volver al episodio",
+  "primeroProcesa": "Primero procesá el MP4",
+  "primeroProcesaDetalle": "Se programa el video final: procesalo en el editor y volvé.",
+  "titulo": "Programar",
+  "noSePudo": "no se pudo",
+  "fallaTodas": "No se pudo programar. {detalle}",
+  "fallaAlgunas": "Algunas no se programaron. {detalle}",
+  "programado": "Programado: sale el {cuando}. Lo ves en el Calendario.",
+  "duracionListo": "{seg} s · MP4 listo",
+  "cambiosSinProcesar": "Tiene cambios sin procesar: sale el último MP4 procesado. Si querés los cambios, procesalo de nuevo antes.",
+  "elegiDiaHora": "Elegí el día y la hora",
+  "elegiDiaHoraPunto": "Elegí el día y la hora.",
+  "yaPaso": "Esa hora ya pasó",
+  "yaPasoLargo": "Esa hora ya pasó: elegí una de acá en adelante.",
+  "sale": "Sale el {cuando}",
+  "salePunto": "Sale el {cuando}.",
+  "horaDe": "Hora de {zona}.",
+  "marcaUnaRed": "Marcá al menos una red en Dónde.",
+  "programando": "Programando…",
+  "programarEnN": "Programar en {n} redes",
+  "programar": "Programar",
+  "secciones": {
+    "donde": "Dónde",
+    "descripcion": "Descripción",
+    "cuando": "Cuándo",
+    "publicaciones": "Publicaciones de este clip"
+  },
+  "sinRedes": "Esta marca no tiene redes conectadas. Conectalas en <link>Redes conectadas</link>.",
+  "motivos": {
+    "reconectar": "Hay que volver a conectarlo en Redes conectadas",
+    "desactivado": "Desactivado en Redes conectadas"
+  },
+  "faltaInstagram": "¿Falta Instagram? Tiene que ser una cuenta profesional ligada a la página de Facebook, y hay que volver a conectar Facebook aceptando los permisos de Instagram.",
+  "pronto": "Pronto",
+  "descripcionPlaceholder": "Lo que va abajo del video, con hashtags",
+  "tituloYoutube": "Título en YouTube",
+  "irAlCalendario": "Ir al calendario",
+  "soloMira": "Tu rol en esta marca solo mira: programar lo hace un editor o el propietario.",
+  "estados": {
+    "PROGRAMADA": "Programada",
+    "AGENDADA_EN_RED": "Agendada",
+    "SUBIENDO": "Subiendo",
+    "PROCESANDO": "Publicando",
+    "PUBLICADA": "Publicada",
+    "FALLIDA": "Falló",
+    "CANCELADA": "Cancelada"
+  },
+  "confirmarCancelar": "¿Cancelar la de {red}? No sale.",
+  "errorCancelar": "No se pudo cancelar",
+  "fila": {
+    "salio": "Salió el {cuando}",
+    "sale": "Sale el {cuando}",
+    "por": " · por {nombre}",
+    "verPublicacion": "Ver publicación ↗",
+    "cancelando": "Cancelando…",
+    "cancelar": "Cancelar"
+  }
+}
