@@ -1,6 +1,6 @@
 {
   "meta": {
-    "titulo": "NG Creator — De tu podcast a clips publicados en TikTok, Reels, Shorts y Facebook",
+    "titulo": "Clipfine — De tu podcast a clips publicados en TikTok, Reels, Shorts y Facebook",
     "descripcion": "Para podcasts, lives de TikTok y streams. El flujo completo en un solo lugar: subí el episodio, se transcribe solo, la IA encuentra los mejores momentos, tu equipo los edita con subtítulos y los aprueba, y los publicás en todas tus redes. Web y app para iPhone y Android."
   },
   "datos": {
@@ -35,7 +35,7 @@
   "autoEncuadre": {
     "etiqueta": "Auto-encuadre",
     "titulo": "La cámara sigue a quien habla. Sola.",
-    "texto": "Tu podcast se graba con una cámara abierta sobre toda la mesa. Para vertical hay que elegir a quién mostrar en cada segundo, y a mano eso es lo que más tiempo lleva. Con un botón, NG Creator mira el clip y arma los cambios de plano como lo haría un editor.",
+    "texto": "Tu podcast se graba con una cámara abierta sobre toda la mesa. Para vertical hay que elegir a quién mostrar en cada segundo, y a mano eso es lo que más tiempo lleva. Con un botón, Clipfine mira el clip y arma los cambios de plano como lo haría un editor.",
     "puntos": {
       "quienHabla": {
         "titulo": "Sabe quién habla",
@@ -63,7 +63,7 @@
     "etiqueta": "Para streamers de TikTok",
     "proximamente": "Próximamente",
     "titulo": "Terminás el live. Los clips ya están listos.",
-    "texto": "Un live de dos horas tiene diez clips buenos adentro, y casi nadie tiene tiempo de buscarlos. Si transmitís desde la computadora, con TikTok LIVE Studio, OBS o Streamlabs, NG Creator convierte tu live en clips verticales con subtítulos, listos para publicar.",
+    "texto": "Un live de dos horas tiene diez clips buenos adentro, y casi nadie tiene tiempo de buscarlos. Si transmitís desde la computadora, con TikTok LIVE Studio, OBS o Streamlabs, Clipfine convierte tu live en clips verticales con subtítulos, listos para publicar.",
     "pie": "También para YouTube, Facebook y Twitch. Mientras tanto, ya podés subir la grabación de tu live como cualquier episodio.",
     "pasos": {
       "transmitis": {
@@ -71,8 +71,8 @@
         "texto": "Con TikTok LIVE Studio, OBS o Streamlabs. Tu live no cambia."
       },
       "llega": {
-        "titulo": "Tu live llega a NG Creator",
-        "texto": "Con OBS o Streamlabs, sumás NG Creator como un destino más y lo grabamos mientras sale al aire. Con TikTok LIVE Studio, activás Grabar y subís el archivo: sale en mejor calidad que la repetición de TikTok."
+        "titulo": "Tu live llega a Clipfine",
+        "texto": "Con OBS o Streamlabs, sumás Clipfine como un destino más y lo grabamos mientras sale al aire. Con TikTok LIVE Studio, activás Grabar y subís el archivo: sale en mejor calidad que la repetición de TikTok."
       },
       "terminas": {
         "titulo": "Terminás y los clips ya están",
@@ -111,7 +111,7 @@
     }
   },
   "antes": {
-    "etiqueta": "Hoy, sin NG Creator",
+    "etiqueta": "Hoy, sin Clipfine",
     "titulo": "Seis herramientas y una tarde por episodio",
     "items": {
       "drive": "Pasar el archivo de dos horas por Drive o WeTransfer",
@@ -123,7 +123,7 @@
     }
   },
   "ahora": {
-    "etiqueta": "Con NG Creator",
+    "etiqueta": "Con Clipfine",
     "titulo": "Una pestaña, de principio a fin"
   },
   "funciones": {
@@ -190,7 +190,7 @@
     "items": {
       "convertir": {
         "p": "¿Cómo convierto mi podcast en clips para TikTok, Reels y Shorts?",
-        "r": "Subís el video del episodio. NG Creator lo transcribe, la IA marca los momentos que se entienden solos y cada uno se abre en el editor ya en vertical 9:16, con subtítulos. Ajustás el encuadre y el texto, y bajás el MP4."
+        "r": "Subís el video del episodio. Clipfine lo transcribe, la IA marca los momentos que se entienden solos y cada uno se abre en el editor ya en vertical 9:16, con subtítulos. Ajustás el encuadre y el texto, y bajás el MP4."
       },
       "tiempo": {
         "p": "¿Cuánto tardo en sacar clips de un episodio?",
@@ -206,7 +206,7 @@
       },
       "lives": {
         "p": "¿Sirve para mis lives de TikTok?",
-        "r": "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Si transmitís con TikTok LIVE Studio, activá Grabar: el archivo sale en mejor calidad que la repetición que guarda TikTok. Pronto va a ser automático con OBS o Streamlabs: sumás NG Creator como un destino más, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch."
+        "r": "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Si transmitís con TikTok LIVE Studio, activá Grabar: el archivo sale en mejor calidad que la repetición que guarda TikTok. Pronto va a ser automático con OBS o Streamlabs: sumás Clipfine como un destino más, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch."
       },
       "subtitulos": {
         "p": "¿Pone subtítulos automáticos?",
@@ -233,7 +233,7 @@
   "portada": {
     "etiqueta": "Del podcast o el live a tus redes, en un solo lugar",
     "titulo": "Subí el episodio. <marca>Publicá los clips.</marca> Todo en un solo lugar.",
-    "texto": "NG Creator hace el camino completo: transcribe tu podcast, la IA encuentra los mejores momentos, tu equipo los edita en vertical con subtítulos y los aprueba, y los publicás en tus redes desde aquí. Sin descargar nada y sin saltar entre cinco programas.",
+    "texto": "Clipfine hace el camino completo: transcribe tu podcast, la IA encuentra los mejores momentos, tu equipo los edita en vertical con subtítulos y los aprueba, y los publicás en tus redes desde aquí. Sin descargar nada y sin saltar entre cinco programas.",
     "verComoFunciona": "Ver cómo funciona"
   },
   "flujo": {
