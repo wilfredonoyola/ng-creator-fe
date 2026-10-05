@@ -1,0 +1,40 @@
+{
+  "inicio": "Ir al inicio",
+  "progreso": "Paso {n} de {total}",
+  "saltar": "Saltar",
+  "marca": {
+    "titulo": "Tu marca",
+    "subtitulo": "Es tu espacio de trabajo: tus episodios, tus clips y tu equipo cuelgan de ella.",
+    "nombre": "Nombre de la marca",
+    "ejemplo": "Mi podcast",
+    "crear": "Crear marca",
+    "creando": "Creando…",
+    "error": "No se pudo crear la marca"
+  },
+  "kit": {
+    "titulo": "Brand Kit",
+    "subtitulo": "El logo, los colores y el estilo de texto que llevan los clips de {marca}. Lo podés cambiar cuando quieras.",
+    "cargando": "Cargando…",
+    "logo": "Logo",
+    "logoAlt": "Logo de la marca",
+    "sinLogo": "Sin logo",
+    "subirLogo": "Subir logo",
+    "cambiarLogo": "Cambiar logo",
+    "subiendo": "Subiendo…",
+    "ayudaLogo": "PNG o JPG. Le sacamos el fondo.",
+    "estilo": "Estilo de texto",
+    "ayudaEstilo": "Cómo se ven el gancho y los subtítulos de tus clips.",
+    "guardar": "Guardar y seguir",
+    "guardando": "Guardando…",
+    "errorLogo": "No se pudo subir el logo",
+    "errorTema": "Revisá los colores: tienen que ser #RRGGBB.",
+    "errorGuardar": "No se pudo guardar el Brand Kit"
+  },
+  "app": {
+    "titulo": "Llevá Clipfine en el bolsillo",
+    "subtitulo": "Revisá y publicá tus clips desde el teléfono. Escaneá el código con la cámara.",
+    "qrAlt": "Código QR para bajar la app",
+    "desdeElTelefono": "¿Estás en el teléfono? <link>Bajala acá</link>.",
+    "irAlPanel": "Ir al panel"
+  }
+}

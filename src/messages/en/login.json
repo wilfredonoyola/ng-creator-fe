@@ -1,11 +1,4 @@
 {
-  "requisitos": {
-    "largo": "8 characters or more",
-    "mayuscula": "an uppercase letter",
-    "minuscula": "a lowercase letter",
-    "numero": "a number",
-    "simbolo": "a symbol"
-  },
   "cuentaEliminada": "Your account was deleted.",
   "errorEntrar": "Couldn't sign in",
   "noCoincidenLargo": "The two passwords don't match",
@@ -45,5 +38,8 @@
   "volver": "← Back to sign in",
   "otroCodigo": "Send another code",
   "privacidad": "Privacy",
-  "terminos": "Terms"
+  "terminos": "Terms",
+  "sinCuenta": "Don't have an account? <link>Create one</link>",
+  "volverAlInicio": "← Back",
+  "inicio": "Go to home"
 }

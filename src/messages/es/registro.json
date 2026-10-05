@@ -1,0 +1,31 @@
+{
+  "titulos": {
+    "datos": "Creá tu cuenta",
+    "codigo": "Revisá tu correo"
+  },
+  "subtitulos": {
+    "datos": "Probá Clipfine gratis con 2 episodios. Sin tarjeta.",
+    "codigo": "Escribí el código de 6 dígitos que te mandamos."
+  },
+  "correo": "Correo",
+  "correoEjemplo": "tu@correo.com",
+  "password": "Contraseña",
+  "repetila": "Repetila",
+  "noCoinciden": "No coinciden",
+  "noCoincidenLargo": "Las dos contraseñas no coinciden",
+  "codigo": "Código",
+  "codigoEnviado": "Te mandamos un código a {correo}. Si no lo ves, mirá en spam.",
+  "codigoReenviado": "Listo, te mandamos otro código a {correo}.",
+  "errorCrear": "No se pudo crear la cuenta",
+  "errorConfirmar": "No se pudo confirmar el código",
+  "errorReenviar": "No se pudo mandar otro código",
+  "botones": {
+    "crear": "Crear cuenta",
+    "creando": "Creando…",
+    "confirmar": "Confirmar y entrar",
+    "confirmando": "Confirmando…"
+  },
+  "cambiarCorreo": "← Cambiar el correo",
+  "otroCodigo": "Mandar otro código",
+  "conCuenta": "¿Ya tenés cuenta? <link>Entrá</link>"
+}

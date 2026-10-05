@@ -15,6 +15,7 @@ import {
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
+import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
@@ -135,6 +136,8 @@ function estiloDe(t: T, ep: Episodio): { etiqueta: string; clase: string } {
 export default function EpisodiosPage() {
   const t = useTranslations("episodios");
   const { activa } = useMarcaActiva();
+  // En prueba, al llegar al tope no se sube ni se importa más.
+  const { agotada } = usePrueba();
   const { puedeOperar } = useSesion();
   // Los episodios son de la marca, no de una cuenta: uno largo se recorta
   // después para cualquier red (ng-creator-be#58).
@@ -355,6 +358,7 @@ export default function EpisodiosPage() {
         <>
           {opera && (
             <section className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+              <AvisoPrueba className="mb-4" />
               <input
                 ref={input}
                 type="file"
@@ -378,7 +382,8 @@ export default function EpisodiosPage() {
               ) : (
                 <button
                   onClick={() => input.current?.click()}
-                  className="w-full rounded-xl border-2 border-dashed border-white/20 py-10 text-sm text-white/60 transition hover:border-ng-azul/60 hover:text-white"
+                  disabled={agotada}
+                  className="w-full rounded-xl border-2 border-dashed border-white/20 py-10 text-sm text-white/60 transition hover:border-ng-azul/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-white/20 disabled:hover:text-white/60"
                 >
                   <span className="block text-3xl">🎙️</span>
                   <span className="mt-2 block font-medium">{t("subirEpisodio")}</span>
@@ -394,7 +399,7 @@ export default function EpisodiosPage() {
                 </p>
               )}
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-              <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />
+              {!agotada && <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />}
             </section>
           )}
 

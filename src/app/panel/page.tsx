@@ -9,6 +9,7 @@ import { CLIPS_DE_EPISODIO, COLA_DE_REVISION, EPISODIOS } from "@/graphql/operat
 import { ReproductorEpisodio, type ControlReproductor } from "@/components/ReproductorEpisodio";
 import { MOTIVOS, reloj } from "@/lib/momentos";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 
@@ -83,6 +84,7 @@ interface ClipResumen {
 export default function InicioPage() {
   const t = useTranslations("panel");
   const { activa } = useMarcaActiva();
+  const { agotada } = usePrueba();
   const { usuario, esAdmin } = useSesion();
   const marcaId = activa?._id ?? "";
   const { data, loading } = useQuery(EPISODIOS, {
@@ -136,13 +138,24 @@ export default function InicioPage() {
             {activa ? t("hoyEn", { marca: activa.nombre }) : t("elegiMarca")}
           </p>
         </div>
-        <Link
-          href="/episodios"
-          className="inline-flex items-center gap-2 rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta brillo-marca hover:brightness-110"
-        >
-          <Upload size={16} aria-hidden /> {t("subirEpisodio")}
-        </Link>
+        {agotada ? (
+          <button
+            disabled
+            className="inline-flex cursor-not-allowed items-center gap-2 rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta opacity-40"
+          >
+            <Upload size={16} aria-hidden /> {t("subirEpisodio")}
+          </button>
+        ) : (
+          <Link
+            href="/episodios"
+            className="inline-flex items-center gap-2 rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta brillo-marca hover:brightness-110"
+          >
+            <Upload size={16} aria-hidden /> {t("subirEpisodio")}
+          </Link>
+        )}
       </div>
+
+      <AvisoPrueba className="mb-6" />
 
       {episodios.length > 0 && (
         <div className="mb-6 flex flex-wrap gap-2 text-xs">

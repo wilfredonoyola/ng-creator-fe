@@ -1,0 +1,40 @@
+{
+  "inicio": "Go to home",
+  "progreso": "Step {n} of {total}",
+  "saltar": "Skip",
+  "marca": {
+    "titulo": "Your brand",
+    "subtitulo": "It's your workspace: your episodes, clips and team all live under it.",
+    "nombre": "Brand name",
+    "ejemplo": "My podcast",
+    "crear": "Create brand",
+    "creando": "Creating…",
+    "error": "Couldn't create the brand"
+  },
+  "kit": {
+    "titulo": "Brand Kit",
+    "subtitulo": "The logo, colors and text style for {marca}'s clips. You can change them anytime.",
+    "cargando": "Loading…",
+    "logo": "Logo",
+    "logoAlt": "Brand logo",
+    "sinLogo": "No logo",
+    "subirLogo": "Upload logo",
+    "cambiarLogo": "Change logo",
+    "subiendo": "Uploading…",
+    "ayudaLogo": "PNG or JPG. We remove the background.",
+    "estilo": "Text style",
+    "ayudaEstilo": "How your clips' hook and captions look.",
+    "guardar": "Save and continue",
+    "guardando": "Saving…",
+    "errorLogo": "Couldn't upload the logo",
+    "errorTema": "Check the colors: they need to be #RRGGBB.",
+    "errorGuardar": "Couldn't save the Brand Kit"
+  },
+  "app": {
+    "titulo": "Take Clipfine with you",
+    "subtitulo": "Review and publish your clips from your phone. Scan the code with your camera.",
+    "qrAlt": "QR code to get the app",
+    "desdeElTelefono": "On your phone? <link>Get it here</link>.",
+    "irAlPanel": "Go to dashboard"
+  }
+}

@@ -4,10 +4,10 @@ import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 
 /**
- * A dónde lleva "Empezar". Hoy al ingreso (las cuentas se crean por
- * invitación); cuando exista el registro (#88), a `/registro`. Un solo lugar para cambiarlo.
+ * A dónde lleva "Empezar": al registro, que da una prueba gratis. "Entrar"
+ * sigue yendo a /login. Un solo lugar para cambiarlo.
  */
-export const ENLACE_EMPEZAR = "/login";
+export const ENLACE_EMPEZAR = "/registro";
 
 /** Cabecera y pie de las páginas públicas (la landing y /app). */
 export function Cabecera() {

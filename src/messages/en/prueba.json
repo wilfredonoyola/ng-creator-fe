@@ -1,0 +1,5 @@
+{
+  "uso": "Free trial: {usados} of {tope, plural, one {# episode} other {# episodes}}",
+  "tope": "You've reached the trial limit",
+  "verPlanes": "See plans"
+}
