@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LogoNG } from "@/components/LogoNG";
+import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 
 /**
  * A dónde lleva "Empezar". Hoy al ingreso (las cuentas se crean por
@@ -21,6 +22,7 @@ export function Cabecera() {
           <Link href="/#como" className="hidden text-ng-secundario hover:text-white sm:inline">{t("comoFunciona")}</Link>
           <Link href="/app" className="hidden text-ng-secundario hover:text-white sm:inline">{t("app")}</Link>
           <Link href="/#precios" className="hidden text-ng-secundario hover:text-white sm:inline">{t("precios")}</Link>
+          <SelectorIdiomaCompacto />
           <Link href="/login" className="text-ng-secundario hover:text-white">{t("entrar")}</Link>
           <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
             {t("empezar")}
