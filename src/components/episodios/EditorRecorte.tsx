@@ -7,6 +7,8 @@ import { dibujarSubtitulos, dibujarTexto, ganchoDeLlamada, type Dibujo, type Est
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { Pista } from "@/components/Pista";
 import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
+import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
+import { calidadDePosiciones } from "@/lib/calidad";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
 import { Info } from "lucide-react";
@@ -171,13 +173,17 @@ export function EditorRecorte({
   const cuadro = useRef<HTMLDivElement>(null);
   const lienzoRef = useRef<HTMLCanvasElement>(null);
   const [fuente, setFuente] = useState({ ancho: 1280, alto: 720 });
+  // Para la calidad estimada: la resolución real de la fuente. Hasta que el
+  // video la dice, no se estima. Con hls.js, la mayor que ofrece el HLS (el
+  // video puede estar bajando una menor).
+  const [resolucion, setResolucion] = useState<{ ancho: number; alto: number } | null>(null);
   const [t, setT] = useState(desde);
   const [sonando, setSonando] = useState(false);
   const [anchoVista, setAnchoVista] = useState(0);
   // La red encima de la vista previa (lib/plataformas): solo para mirar, no va al render.
   const [plataforma, setPlataforma] = useState<Plataforma | null>(null);
   const vista = useRef<HTMLDivElement>(null);
-  useHls(video, url);
+  useHls(video, url, (r) => setResolucion((v) => (v && v.ancho * v.alto >= r.ancho * r.alto ? v : r)));
 
   const duracion = hasta - desde;
   const plantilla = plantillaDelClip(estilo, plantillaActiva, duracion);
@@ -188,6 +194,8 @@ export function EditorRecorte({
   );
   const tc = Math.min(Math.max(0, t - desde), duracion);
   const lienzo = LIENZOS[formato];
+  // La calidad estimada: cambia al mover el zoom, el encuadre o el diseño.
+  const calidad = resolucion ? calidadDePosiciones(posiciones, formato, resolucion) : null;
   const activa = posicionEn(posiciones, tc);
   const indiceActiva = posiciones.indexOf(activa);
   // Cada tramo tiene su diseño (be#105, etapa 2): los recuadros son los del
@@ -491,6 +499,7 @@ export function EditorRecorte({
             <Pestanas opciones={fondos} valor={fondo} onCambio={onCambiarFondo} deshabilitado={!puedeEditar} />
           )}
           <span className="ml-auto flex items-center gap-1.5 whitespace-nowrap text-xs tabular-nums text-white/45">
+            {calidad && <IndicadorCalidad calidad={calidad} lado="abajo-derecha" />}
             {posiciones.length > 1 && (
               <>
                 {tr("tramo", {
@@ -526,7 +535,11 @@ export function EditorRecorte({
             onPause={() => setSonando(false)}
             onLoadedMetadata={(e) => {
               const v = e.currentTarget;
-              if (v.videoWidth && v.videoHeight) setFuente({ ancho: v.videoWidth, alto: v.videoHeight });
+              if (v.videoWidth && v.videoHeight) {
+                setFuente({ ancho: v.videoWidth, alto: v.videoHeight });
+                const r = { ancho: v.videoWidth, alto: v.videoHeight };
+                setResolucion((x) => (x && x.ancho * x.alto >= r.ancho * r.alto ? x : r));
+              }
               v.currentTime = desde;
             }}
             className="absolute inset-0 h-full w-full"

@@ -751,6 +751,7 @@ export default function EditorClipPage({
               urlVideo: clip.urlVideo,
               desactualizado,
               pidiendo: pidiendoRender,
+              calidad: clip.calidad,
             }}
             onProcesar={() => void pedirRender()}
           />

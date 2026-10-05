@@ -5,6 +5,8 @@ import { useMutation } from "@apollo/client";
 import { useTranslations } from "next-intl";
 import { Info } from "lucide-react";
 import { GUARDAR_VERSION_FACEBOOK, QUITAR_VERSION_FACEBOOK } from "@/graphql/operations";
+import type { CalidadClip } from "@/lib/calidad";
+import { IndicadorCalidad } from "./IndicadorCalidad";
 
 /** Lo más largo que acepta un Reel de Facebook; el backend valida lo mismo. */
 export const REEL_FACEBOOK_MAX_SEG = 90;
@@ -22,6 +24,8 @@ export interface VersionCortaClip {
   progresoRender?: number | null;
   errorRender?: string | null;
   urlVideo?: string | null;
+  /** Medida del MP4 de la versión corta. */
+  calidad?: CalidadClip | null;
 }
 
 export const versionEnCurso = (v?: VersionCortaClip | null) =>
@@ -120,9 +124,12 @@ export function SeccionVersionFacebook({
 
       {version && !enCurso && version.estadoRender === "LISTO" && !cambiado && version.urlVideo ? (
         <div className="space-y-1.5">
-          <p className="text-xs text-ng-teal">
-            {t("lista", { desde: reloj(version.desdeSeg), hasta: reloj(version.hastaSeg) })}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-xs text-ng-teal">
+              {t("lista", { desde: reloj(version.desdeSeg), hasta: reloj(version.hastaSeg) })}
+            </p>
+            {version.calidad ? <IndicadorCalidad calidad={version.calidad} medida /> : null}
+          </div>
           <video
             src={version.urlVideo}
             controls

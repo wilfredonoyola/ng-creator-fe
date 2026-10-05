@@ -1,0 +1,15 @@
+{
+  "pastilla": "Quality: {nivel}",
+  "niveles": {
+    "EXCELENTE": "Excellent",
+    "BUENA": "Good",
+    "BAJA": "Low"
+  },
+  "estimada": "Estimated with the current framing",
+  "medida": "Measured from the MP4",
+  "detalle": "{resolucion}p source · upscaled {ampliacion}×",
+  "mbps": "{n} Mbps",
+  "kbps": "{n} kbps",
+  "consejo": "Lower the zoom or use a higher-resolution source.",
+  "versionFacebook": "Facebook"
+}

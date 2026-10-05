@@ -1,0 +1,15 @@
+{
+  "pastilla": "Calidad: {nivel}",
+  "niveles": {
+    "EXCELENTE": "Excelente",
+    "BUENA": "Buena",
+    "BAJA": "Baja"
+  },
+  "estimada": "Estimada con el encuadre actual",
+  "medida": "Medida del MP4",
+  "detalle": "Fuente {resolucion}p · se amplía {ampliacion}×",
+  "mbps": "{n} Mbps",
+  "kbps": "{n} kbps",
+  "consejo": "Bajá el zoom o usá una fuente de mayor resolución.",
+  "versionFacebook": "Facebook"
+}
