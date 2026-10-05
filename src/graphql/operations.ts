@@ -1477,6 +1477,24 @@ export const EPISODIO = gql`
 `;
 
 /**
+ * El episodio para el editor de un clip: con la resolución del original, que
+ * es de donde sale la calidad estimada. Aparte de EPISODIO porque a un
+ * episodio viejo el backend se la pide a Bunny la primera vez.
+ */
+export const EPISODIO_EDITOR = gql`
+  ${CAMPOS_EPISODIO}
+  query EpisodioEditor($id: ID!, $marcaId: String!) {
+    episodio(id: $id, marcaId: $marcaId) {
+      ...CamposEpisodio
+      resolucionOriginal {
+        ancho
+        alto
+      }
+    }
+  }
+`;
+
+/**
  * Si el clip ya se programó o ya salió (#70): lo que dice la tarjeta del clip
  * ("Programado · vie 3, 18:00"). Las canceladas no cuentan.
  */

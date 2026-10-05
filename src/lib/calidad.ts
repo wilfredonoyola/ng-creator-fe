@@ -7,8 +7,10 @@
  * salida dividido los píxeles de la fuente que recorta (con el zoom incluido),
  * el mayor entre ancho y alto. El fondo desenfocado no cuenta.
  *
- * Antes de procesar se estima con la resolución del video del editor; después
- * de procesar llega medida del MP4 (`calidad` del clip).
+ * Antes de procesar se estima con la resolución del original (la que sabe
+ * Bunny, `resolucionOriginal` del episodio) o, si falta, con la del último
+ * render; nunca con el HLS de la vista previa. Después de procesar llega
+ * medida del MP4 (`calidad` del clip).
  */
 import {
   panelesDe,
