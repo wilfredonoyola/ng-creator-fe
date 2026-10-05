@@ -141,11 +141,13 @@ export default function EpisodiosPage() {
   const { activa } = useMarcaActiva();
   // En prueba, al llegar al tope no se sube ni se importa más.
   const { agotada } = usePrueba();
-  const { puedeOperar } = useSesion();
+  const { puedeOperar, esPropietario } = useSesion();
   // Los episodios son de la marca, no de una cuenta: uno largo se recorta
   // después para cualquier red (ng-creator-be#58).
   const marcaId = activa?._id ?? null;
   const opera = puedeOperar(marcaId);
+  // Traer lives de Restream (y reintentar uno) es solo del propietario.
+  const propietario = esPropietario(marcaId);
 
   const [subida, setSubida] = useState<SubidaActiva | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -402,7 +404,7 @@ export default function EpisodiosPage() {
                 </p>
               )}
               {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-              {!agotada && <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />}
+              {!agotada && propietario && <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />}
             </section>
           )}
 
@@ -424,7 +426,7 @@ export default function EpisodiosPage() {
                   puedeBorrar={opera}
                   onBorrar={() => void descartar(ep)}
                   onTranscribir={opera ? () => void transcribir(ep) : undefined}
-                  onReintentarImportacion={opera && marcaId ? () => void reintentarImportacion(ep) : undefined}
+                  onReintentarImportacion={propietario && marcaId ? () => void reintentarImportacion(ep) : undefined}
                 />
               ))}
             </ul>

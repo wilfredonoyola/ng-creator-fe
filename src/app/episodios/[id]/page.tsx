@@ -68,7 +68,7 @@ export default function DetalleEpisodioPage({
   const locale = useLocale();
   const { id } = params;
   const { activa } = useMarcaActiva();
-  const { puedeOperar } = useSesion();
+  const { puedeOperar, esPropietario } = useSesion();
   const marcaId = activa?._id ?? null;
   const opera = puedeOperar(marcaId);
   const reproductor = useRef<ControlReproductor>(null);
@@ -205,7 +205,8 @@ export default function DetalleEpisodioPage({
               marcaId={marcaId}
               puedeReimportar={Boolean(ep.puedeReimportar)}
               reimportacion={ep.reimportacion}
-              opera={opera}
+              // Volver a importar de Restream es solo del propietario.
+              opera={esPropietario(marcaId)}
               anclaClips="#clips"
               onLanzada={() => void episodioQ.refetch()}
             />
