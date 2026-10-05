@@ -3,14 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { COOKIE_IDIOMA, IDIOMAS, type Idioma } from "@/i18n/idiomas";
-
-/** Lo elegido, o null = automático (el del navegador). Solo se lee en el navegador. */
-function elegido(): Idioma | null {
-  if (typeof document === "undefined") return null;
-  const v = document.cookie.split("; ").find((c) => c.startsWith(`${COOKIE_IDIOMA}=`))?.split("=")[1];
-  return (IDIOMAS as readonly string[]).includes(v ?? "") ? (v as Idioma) : null;
-}
+import { IDIOMAS, type Idioma } from "@/i18n/idiomas";
+import { guardarIdiomaElegido, idiomaElegido } from "@/i18n/cliente";
 
 /**
  * Elegir el idioma de la interfaz, o dejarlo en automático. Queda en una cookie
@@ -22,12 +16,10 @@ export function SelectorIdioma() {
   const router = useRouter();
   const [valor, setValor] = useState<Idioma | null>(null);
   // La cookie se lee después de montar: en el servidor no está, y leerla antes rompe la hidratación.
-  useEffect(() => setValor(elegido()), []);
+  useEffect(() => setValor(idiomaElegido()), []);
 
   function elegir(nuevo: Idioma | null) {
-    document.cookie = nuevo
-      ? `${COOKIE_IDIOMA}=${nuevo}; path=/; max-age=31536000; samesite=lax`
-      : `${COOKIE_IDIOMA}=; path=/; max-age=0; samesite=lax`;
+    guardarIdiomaElegido(nuevo);
     setValor(nuevo);
     router.refresh();
   }

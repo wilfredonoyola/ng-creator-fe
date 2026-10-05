@@ -4,6 +4,8 @@
  * Utilidades para subir archivos al backend.
  */
 
+import { CABECERA_IDIOMA, cabeceraIdioma, idiomaActual } from "@/i18n/cliente";
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_GRAPHQL_URL?.replace(/\/graphql\/?$/, "") ??
   "http://localhost:4000";
@@ -90,6 +92,7 @@ export async function uploadClip(file: File): Promise<UploadResult> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      ...cabeceraIdioma(),
     },
     body: formData,
   });
@@ -149,6 +152,7 @@ export async function uploadVoiceNote(file: File): Promise<UploadResult> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      ...cabeceraIdioma(),
     },
     body: formData,
   });
@@ -213,6 +217,7 @@ export async function getTikTokPreview(url: string): Promise<TikTokPreview> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      ...cabeceraIdioma(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ url }),
@@ -250,6 +255,7 @@ export async function downloadFromTikTok(url: string): Promise<UploadResult> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      ...cabeceraIdioma(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ url }),
@@ -310,6 +316,7 @@ export async function uploadLicenseScreenshot(file: File): Promise<UploadResult>
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      ...cabeceraIdioma(),
     },
     body: formData,
   });
@@ -381,7 +388,7 @@ async function subirImagen(
 
   const response = await fetch(`${API_BASE_URL}/uploads/${endpoint}`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
     body: formData,
   });
 
@@ -418,7 +425,7 @@ export async function uploadPortada(
 
   const response = await fetch(`${API_BASE_URL}/uploads/portada`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
     body: formData,
   });
 
@@ -457,6 +464,7 @@ export function uploadCamara(
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${API_BASE_URL}/uploads/camara`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader(CABECERA_IDIOMA, idiomaActual());
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
@@ -504,7 +512,7 @@ export async function uploadMarcaLogo(file: File, marcaId: string): Promise<stri
   formData.append("marcaId", marcaId);
   const response = await fetch(`${API_BASE_URL}/uploads/marca-logo`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
     body: formData,
   });
   if (!response.ok) {

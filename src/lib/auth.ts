@@ -1,6 +1,7 @@
 "use client";
 
 import { apolloClient } from "./apollo";
+import { cabeceraIdioma } from "@/i18n/cliente";
 
 /**
  * Autenticacion via backend GraphQL.
@@ -156,7 +157,7 @@ async function pedir<T>(
 ): Promise<T> {
   const response = await fetch(GRAPHQL_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...cabeceraIdioma() },
     body: JSON.stringify({ query, variables }),
   });
 
@@ -206,7 +207,7 @@ export async function refrescarTokens(): Promise<boolean> {
   try {
     const response = await fetch(GRAPHQL_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...cabeceraIdioma() },
       body: JSON.stringify({
         query: `
           mutation RefreshToken($refreshToken: String!) {
@@ -309,7 +310,7 @@ export async function cerrarSesion(): Promise<void> {
     try {
       await fetch(GRAPHQL_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...cabeceraIdioma() },
         body: JSON.stringify({
           query: `
             mutation Logout($accessToken: String!) {

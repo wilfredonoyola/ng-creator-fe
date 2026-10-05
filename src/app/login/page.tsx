@@ -1,6 +1,7 @@
 "use client";
 
 import { LogoNG } from "@/components/LogoNG";
+import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -335,13 +336,14 @@ export default function LoginPage() {
         )}
 
         {/* Enlaces públicos: Meta espera encontrarlos accesibles sin sesión. */}
-        <div className="mt-6 flex justify-center gap-4 border-t border-white/10 pt-4 text-xs">
+        <div className="mt-6 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs">
           <a href="/privacidad" className="text-white/40 hover:text-ng-celeste">
             {t("privacidad")}
           </a>
           <a href="/terminos" className="text-white/40 hover:text-ng-celeste">
             {t("terminos")}
           </a>
+          <SelectorIdiomaCompacto />
         </div>
       </form>
     </main>

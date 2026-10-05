@@ -6,6 +6,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { CABECERA_IDIOMA, idiomaActual } from "@/i18n/cliente";
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "http://localhost:4000/graphql",
@@ -13,7 +14,8 @@ const httpLink = createHttpLink({
 
 /**
  * Inyecta el idToken en cada peticion. El token se guarda en
- * localStorage tras el login via backend (ver lib/auth.ts).
+ * localStorage tras el login via backend (ver lib/auth.ts). Tambien el idioma
+ * de la interfaz (`x-idioma`), con el que el backend traduce sus errores.
  */
 const authLink = setContext((_, { headers }) => {
   const token =
@@ -22,6 +24,7 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
+      [CABECERA_IDIOMA]: idiomaActual(),
     },
   };
 });
