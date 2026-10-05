@@ -594,6 +594,12 @@ export const PUBLICACIONES_DE_MARCA = gql`
         episodioId
         titulo
         urlPoster
+        editadoPor {
+          nombre
+        }
+        tomadoPor {
+          nombre
+        }
       }
     }
   }

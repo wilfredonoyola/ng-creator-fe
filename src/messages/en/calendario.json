@@ -28,6 +28,7 @@
     "programar": "Schedule"
   },
   "tarjeta": {
+    "editadoPor": "Edited by {nombre}",
     "sinDescripcion": "No description",
     "confirmarCancelar": "Cancel “{titulo}” on {red}? It won't go out.",
     "errorCancelar": "Couldn't cancel",

@@ -29,7 +29,14 @@ import type { Autoria } from "@/components/episodios/TomarClip";
 
 interface PublicacionCalendario extends Publicacion {
   /** El clip de la publicación; null en las de expedientes o si se borró. */
-  clip?: { _id: string; episodioId: string; titulo: string; urlPoster?: string | null } | null;
+  clip?: {
+    _id: string;
+    episodioId: string;
+    titulo: string;
+    urlPoster?: string | null;
+    editadoPor?: { nombre: string } | null;
+    tomadoPor?: { nombre: string } | null;
+  } | null;
 }
 
 interface ClipListo {
@@ -280,6 +287,8 @@ function TarjetaPublicacion({
   const textoEstado = conocido ? t(`estados.${p.estado}`) : p.estado;
   const hora = new Date(p.publicadaEn ?? p.publicarEn);
   const titulo = p.clip?.titulo ?? (p.descripcion?.split("\n")[0].trim() || t("tarjeta.sinDescripcion"));
+  // Quién editó el clip: el último que lo guardó, o quien lo tomó si nadie lo editó todavía.
+  const editor = p.clip?.editadoPor?.nombre ?? p.clip?.tomadoPor?.nombre;
   const enlace = p.clip
     ? `/episodios/${p.clip.episodioId}/clips/${p.clip._id}/publicar`
     : p.expedienteId
@@ -321,6 +330,7 @@ function TarjetaPublicacion({
             {REDES[p.red]?.nombre ?? p.red}
             {p.cuentaNombre ? ` · ${p.cuentaNombre}` : ""}
           </p>
+          {editor && <p className="truncate text-[11px] text-white/55">{t("tarjeta.editadoPor", { nombre: editor })}</p>}
         </div>
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
