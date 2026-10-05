@@ -7,6 +7,7 @@ import { haySesion } from "@/lib/auth";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useMenuColapsado } from "@/lib/menu-colapsado";
 import { useNotificacionesSinLeer } from "@/lib/notificaciones";
+import { useSesion } from "@/lib/sesion";
 import { Campanita } from "./Campanita";
 import { Sidebar } from "./Sidebar";
 import { NavInferior } from "./NavInferior";
@@ -39,13 +40,31 @@ export function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
-  const { activa } = useMarcaActiva();
+  const { activa, marcas, cargando: cargandoMarcas } = useMarcaActiva();
+  const sesion = useSesion();
   const menu = useMenuColapsado(menuColapsable ?? null);
   const avisos = useNotificacionesSinLeer();
 
   useEffect(() => {
     if (!haySesion()) router.push("/login");
   }, [router]);
+
+  // Quien se registró solo y todavía no creó su marca no tiene nada que ver
+  // acá: va al onboarding. Recién con las dos consultas respondidas y el
+  // usuario cargado (si fallaron, no se adivina), y nunca a quien tiene algún
+  // acceso o es admin: un proveedor o una marca deshabilitada también dejan
+  // la lista vacía, y ahí el onboarding le crearía una marca que no pidió.
+  // /onboarding no usa este layout, así que no hay vuelta.
+  const sinNada =
+    !cargandoMarcas &&
+    !sesion.cargando &&
+    Boolean(sesion.usuario) &&
+    marcas.length === 0 &&
+    sesion.accesos.length === 0 &&
+    !sesion.esAdmin;
+  useEffect(() => {
+    if (sinNada) router.replace("/onboarding");
+  }, [sinNada, router]);
 
   // Navegar cierra el cajón. Sin esto queda tapando la pantalla a la que
   // acabás de entrar.

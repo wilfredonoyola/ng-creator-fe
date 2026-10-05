@@ -1,0 +1,31 @@
+{
+  "titulos": {
+    "datos": "Create your account",
+    "codigo": "Check your email"
+  },
+  "subtitulos": {
+    "datos": "Try Clipfine free with 2 episodes. No card needed.",
+    "codigo": "Enter the 6-digit code we sent you."
+  },
+  "correo": "Email",
+  "correoEjemplo": "you@email.com",
+  "password": "Password",
+  "repetila": "Repeat it",
+  "noCoinciden": "Don't match",
+  "noCoincidenLargo": "The two passwords don't match",
+  "codigo": "Code",
+  "codigoEnviado": "We sent a code to {correo}. If you don't see it, check spam.",
+  "codigoReenviado": "Done, we sent another code to {correo}.",
+  "errorCrear": "Couldn't create the account",
+  "errorConfirmar": "Couldn't confirm the code",
+  "errorReenviar": "Couldn't send another code",
+  "botones": {
+    "crear": "Create account",
+    "creando": "Creating…",
+    "confirmar": "Confirm and sign in",
+    "confirmando": "Confirming…"
+  },
+  "cambiarCorreo": "← Change email",
+  "otroCodigo": "Send another code",
+  "conCuenta": "Already have an account? <link>Sign in</link>"
+}

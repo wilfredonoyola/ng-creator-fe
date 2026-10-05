@@ -1,7 +1,6 @@
 "use client";
 
-import { LogoNG } from "@/components/LogoNG";
-import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -12,23 +11,8 @@ import {
   iniciarSesion,
   pedirCodigoPassword,
 } from "@/lib/auth";
-
-/**
- * Lo que exige el User Pool `ng-creator-prod`.
- *
- * Está acá repetido a propósito, para poder mostrarlo mientras se escribe:
- * Cognito solo dice qué falta *después* de rechazar el intento, y adivinar
- * cuál de las cinco reglas falló es lo que hace abandonar el alta. Si algún
- * día cambia la política del pool, manda igual el mensaje de Cognito, que es
- * la fuente real; esta lista solo puede quedar de más o de menos exigente.
- */
-const REQUISITOS = [
-  { clave: "largo", cumple: (v: string) => v.length >= 8 },
-  { clave: "mayuscula", cumple: (v: string) => /[A-Z]/.test(v) },
-  { clave: "minuscula", cumple: (v: string) => /[a-z]/.test(v) },
-  { clave: "numero", cumple: (v: string) => /\d/.test(v) },
-  { clave: "simbolo", cumple: (v: string) => /[^A-Za-z0-9]/.test(v) },
-] as const;
+import { passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
+import { conVolverA, destinoSeguro, MarcoAcceso } from "@/components/acceso/MarcoAcceso";
 
 /**
  * Ingreso, en uno o dos pasos.
@@ -38,20 +22,6 @@ const REQUISITOS = [
  * ese segundo paso aparece acá mismo, sin mandarlo a otra pantalla ni pedirle
  * que vuelva a escribir el correo.
  */
-/**
- * A donde volver despues de entrar.
- *
- * Se valida que sea una ruta interna: si se aceptara cualquier valor, un enlace
- * preparado podria mandar a alguien a otro sitio despues de escribir su
- * contraseña, que es el momento en que menos mira la barra de direcciones.
- */
-function destinoSeguro(): string {
-  if (typeof window === "undefined") return "/panel";
-  const v = new URLSearchParams(window.location.search).get("volverA");
-  if (!v || !v.startsWith("/") || v.startsWith("//")) return "/panel";
-  return v;
-}
-
 export default function LoginPage() {
   const t = useTranslations("login");
   const router = useRouter();
@@ -80,8 +50,7 @@ export default function LoginPage() {
 
   const modo = sesionDesafio ? "desafio" : (recuperando ?? "entrar");
 
-  const faltantes = REQUISITOS.filter((r) => !r.cumple(nueva));
-  const puedeGuardar = faltantes.length === 0 && nueva === repetida;
+  const puedeGuardar = passwordValida(nueva) && nueva === repetida;
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
@@ -179,22 +148,7 @@ export default function LoginPage() {
         className={`mb-3 ${campo}`}
         required
       />
-      {/* Se tildan mientras escribe. Vale más que un párrafo de reglas:
-          muestra cuál falta, no la lista entera. */}
-      <ul className="mb-4 space-y-1">
-        {REQUISITOS.map((r) => {
-          const ok = r.cumple(nueva);
-          return (
-            <li
-              key={r.clave}
-              className={`flex items-center gap-2 text-[11px] transition-colors ${ok ? "text-ng-teal" : "text-white/35"}`}
-            >
-              <span className="w-3 shrink-0 text-center">{ok ? "✓" : "·"}</span>
-              {t(`requisitos.${r.clave}`)}
-            </li>
-          );
-        })}
-      </ul>
+      <RequisitosPassword valor={nueva} />
       <label className="mb-1 block text-xs text-white/50">{t("repetila")}</label>
       <input
         type="password"
@@ -223,129 +177,113 @@ export default function LoginPage() {
   }[modo];
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ng-hondo px-4">
-      {/* La luz azul/violeta detrás de la tarjeta: sutil, como pide la marca. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60 blur-3xl"
-        style={{ background: "transparent" }}
-      />
-      <form
-        onSubmit={alEnviar}
-        className="relative w-full max-w-sm rounded-ng-xl border border-white/10 bg-ng-tarjeta/80 p-8 backdrop-blur"
-      >
-        <div className="mb-6 flex flex-col items-center text-center">
-          <LogoNG tamano={56} soloIcono />
-          <h1 className="mt-4 text-2xl font-bold tracking-tight">{t(`titulos.${modo}`)}</h1>
-          <p className="mt-1 text-sm text-ng-secundario">{t(`subtitulos.${modo}`)}</p>
-        </div>
+    <MarcoAcceso titulo={t(`titulos.${modo}`)} subtitulo={t(`subtitulos.${modo}`)} onSubmit={alEnviar}>
+      {modo === "desafio" && camposNueva}
 
-        {modo === "desafio" && camposNueva}
+      {(modo === "entrar" || modo === "pedir") && (
+        <>
+          {modo === "entrar" && aviso && (
+            <p className="mb-4 rounded-ng-md bg-ng-teal/10 px-3 py-2 text-xs text-ng-teal">{aviso}</p>
+          )}
+          <label className="mb-1 block text-xs text-white/50">{t("correo")}</label>
+          <input
+            type="email"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            className={`mb-4 ${campo}`}
+            placeholder={t("correoEjemplo")}
+            autoComplete="email"
+            autoFocus={modo === "pedir"}
+            required
+          />
+        </>
+      )}
 
-        {(modo === "entrar" || modo === "pedir") && (
-          <>
-            {modo === "entrar" && aviso && (
-              <p className="mb-4 rounded-ng-md bg-ng-teal/10 px-3 py-2 text-xs text-ng-teal">{aviso}</p>
-            )}
-            <label className="mb-1 block text-xs text-white/50">{t("correo")}</label>
-            <input
-              type="email"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              className={`mb-4 ${campo}`}
-              placeholder={t("correoEjemplo")}
-              autoComplete="email"
-              autoFocus={modo === "pedir"}
-              required
-            />
-          </>
-        )}
-
-        {modo === "entrar" && (
-          <>
-            <div className="mb-1 flex items-baseline justify-between">
-              <label className="text-xs text-white/50">{t("password")}</label>
-              <button
-                type="button"
-                onClick={() => {
-                  setRecuperando("pedir");
-                  setError(null);
-                }}
-                className="text-xs text-ng-celeste hover:underline"
-              >
-                {t("olvidaste")}
-              </button>
-            </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={`mb-6 ${campo}`}
-              autoComplete="current-password"
-              required
-            />
-          </>
-        )}
-
-        {modo === "confirmar" && (
-          <>
-            {aviso && <p className="mb-4 rounded-ng-md bg-ng-teal/10 px-3 py-2 text-xs text-ng-teal">{aviso}</p>}
-            <label className="mb-1 block text-xs text-white/50">{t("codigo")}</label>
-            <input
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value.replace(/\s/g, ""))}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              placeholder="123456"
-              autoFocus
-              className={`mb-4 tracking-[0.3em] ${campo}`}
-              required
-            />
-            {camposNueva}
-          </>
-        )}
-
-        {/* El mensaje de contraseña débil viene tal cual lo escribe Cognito,
-            que es quien conoce la política del User Pool. */}
-        {error && <p className="mb-4 text-xs text-red-400">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={deshabilitado}
-          className="w-full rounded-ng-md bg-marca py-2.5 text-sm font-semibold text-ng-tinta brillo-marca transition hover:brightness-110 disabled:opacity-50"
-        >
-          {textoBoton}
-        </button>
-
-        {(modo === "pedir" || modo === "confirmar") && (
-          <div className="mt-4 flex justify-between text-xs">
-            <button type="button" onClick={volverAEntrar} className="text-white/50 hover:text-white">
-              {t("volver")}
+      {modo === "entrar" && (
+        <>
+          <div className="mb-1 flex items-baseline justify-between">
+            <label className="text-xs text-white/50">{t("password")}</label>
+            <button
+              type="button"
+              onClick={() => {
+                setRecuperando("pedir");
+                setError(null);
+              }}
+              className="text-xs text-ng-celeste hover:underline"
+            >
+              {t("olvidaste")}
             </button>
-            {modo === "confirmar" && (
-              <button
-                type="button"
-                onClick={(e) => void pedirCodigo(e as unknown as React.FormEvent)}
-                disabled={cargando}
-                className="text-ng-celeste hover:underline disabled:opacity-50"
-              >
-                {t("otroCodigo")}
-              </button>
-            )}
           </div>
-        )}
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={`mb-6 ${campo}`}
+            autoComplete="current-password"
+            required
+          />
+        </>
+      )}
 
-        {/* Enlaces públicos: Meta espera encontrarlos accesibles sin sesión. */}
-        <div className="mt-6 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs">
-          <a href="/privacidad" className="text-white/40 hover:text-ng-celeste">
-            {t("privacidad")}
-          </a>
-          <a href="/terminos" className="text-white/40 hover:text-ng-celeste">
-            {t("terminos")}
-          </a>
-          <SelectorIdiomaCompacto />
+      {modo === "confirmar" && (
+        <>
+          {aviso && <p className="mb-4 rounded-ng-md bg-ng-teal/10 px-3 py-2 text-xs text-ng-teal">{aviso}</p>}
+          <label className="mb-1 block text-xs text-white/50">{t("codigo")}</label>
+          <input
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value.replace(/\s/g, ""))}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="123456"
+            autoFocus
+            className={`mb-4 tracking-[0.3em] ${campo}`}
+            required
+          />
+          {camposNueva}
+        </>
+      )}
+
+      {/* El mensaje de contraseña débil viene tal cual lo escribe Cognito,
+          que es quien conoce la política del User Pool. */}
+      {error && <p className="mb-4 text-xs text-red-400">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={deshabilitado}
+        className="w-full rounded-ng-md bg-marca py-2.5 text-sm font-semibold text-ng-tinta brillo-marca transition hover:brightness-110 disabled:opacity-50"
+      >
+        {textoBoton}
+      </button>
+
+      {(modo === "pedir" || modo === "confirmar") && (
+        <div className="mt-4 flex justify-between text-xs">
+          <button type="button" onClick={volverAEntrar} className="text-white/50 hover:text-white">
+            {t("volver")}
+          </button>
+          {modo === "confirmar" && (
+            <button
+              type="button"
+              onClick={(e) => void pedirCodigo(e as unknown as React.FormEvent)}
+              disabled={cargando}
+              className="text-ng-celeste hover:underline disabled:opacity-50"
+            >
+              {t("otroCodigo")}
+            </button>
+          )}
         </div>
-      </form>
-    </main>
+      )}
+
+      {modo === "entrar" && (
+        <p className="mt-4 text-center text-xs text-white/50">
+          {t.rich("sinCuenta", {
+            link: (c) => (
+              <Link href={conVolverA("/registro")} className="font-medium text-ng-celeste hover:underline">
+                {c}
+              </Link>
+            ),
+          })}
+        </p>
+      )}
+    </MarcoAcceso>
   );
 }

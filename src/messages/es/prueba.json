@@ -1,0 +1,5 @@
+{
+  "uso": "Prueba gratis: {usados} de {tope, plural, one {# episodio} other {# episodios}}",
+  "tope": "Llegaste al tope de la prueba",
+  "verPlanes": "Ver planes"
+}

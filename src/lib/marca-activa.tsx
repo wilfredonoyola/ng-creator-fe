@@ -20,6 +20,16 @@ export interface PaginaFacebook {
 }
 
 /**
+ * La prueba gratis de una marca creada en el registro abierto: cuántos
+ * episodios puede subir y cuántos usó. Las marcas con plan no la tienen.
+ */
+export interface PruebaMarca {
+  topeEpisodios: number;
+  episodiosUsados: number;
+  desde: string;
+}
+
+/**
  * Una marca: el espacio de trabajo. Su cola, su numeración, su equipo y sus
  * borradores cuelgan de ella (`_id`). Lo que es propio de Facebook —historial,
  * análisis, publicar— trabaja sobre su `paginaFacebook`.
@@ -29,6 +39,8 @@ export interface Marca {
   nombre: string;
   logoUrl?: string | null;
   paginaFacebook?: PaginaFacebook | null;
+  /** null = sin tope (una marca con plan). */
+  prueba?: PruebaMarca | null;
 }
 
 /**
@@ -56,6 +68,8 @@ interface ContextoMarca {
   activa: Marca | null;
   seleccionar: (marcaId: string) => void;
   cargando: boolean;
+  /** Vuelve a pedir la lista: después de crear una marca o de subir un episodio en prueba. */
+  refrescar: () => Promise<unknown>;
 }
 
 const CLAVE = "marcaActivaId";
@@ -67,6 +81,7 @@ const MarcaContext = createContext<ContextoMarca>({
   activa: null,
   seleccionar: () => {},
   cargando: true,
+  refrescar: async () => {},
 });
 
 /** localStorage puede no estar (modo privado, bloqueado): la elección es una comodidad. */
@@ -98,7 +113,7 @@ function guardar(clave: string, valor: string): void {
  * descarta en vez de dejar un contexto que ya no existe.
  */
 export function MarcaActivaProvider({ children }: { children: React.ReactNode }) {
-  const { data, loading } = useQuery(MARCAS_ACTIVAS, {
+  const { data, loading, refetch } = useQuery(MARCAS_ACTIVAS, {
     errorPolicy: "all",
   });
   const [elegidaId, setElegidaId] = useState<string | null>(null);
@@ -144,7 +159,7 @@ export function MarcaActivaProvider({ children }: { children: React.ReactNode })
 
   return (
     <MarcaContext.Provider
-      value={{ marcas, activa, seleccionar, cargando: loading }}
+      value={{ marcas, activa, seleccionar, cargando: loading, refrescar: refetch }}
     >
       {children}
     </MarcaContext.Provider>

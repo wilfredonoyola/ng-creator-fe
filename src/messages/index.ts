@@ -58,9 +58,11 @@ import montajeTelefono_es from "./es/montajeTelefono.json";
 import montajeTexto_es from "./es/montajeTexto.json";
 import montajeVoz_es from "./es/montajeVoz.json";
 import montajeWizard_es from "./es/montajeWizard.json";
+import onboarding_es from "./es/onboarding.json";
 import panel_es from "./es/panel.json";
 import panelSubirClip_es from "./es/panelSubirClip.json";
 import perfil_es from "./es/perfil.json";
+import prueba_es from "./es/prueba.json";
 import publicados_es from "./es/publicados.json";
 import publicadosDetalle_es from "./es/publicadosDetalle.json";
 import publicadosPestanas_es from "./es/publicadosPestanas.json";
@@ -73,6 +75,8 @@ import redesEstadoFacebook_es from "./es/redesEstadoFacebook.json";
 import redesFacebook_es from "./es/redesFacebook.json";
 import redesTiktok_es from "./es/redesTiktok.json";
 import redesYoutube_es from "./es/redesYoutube.json";
+import registro_es from "./es/registro.json";
+import requisitosPassword_es from "./es/requisitosPassword.json";
 import revision_es from "./es/revision.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
@@ -138,9 +142,11 @@ import montajeTelefono_en from "./en/montajeTelefono.json";
 import montajeTexto_en from "./en/montajeTexto.json";
 import montajeVoz_en from "./en/montajeVoz.json";
 import montajeWizard_en from "./en/montajeWizard.json";
+import onboarding_en from "./en/onboarding.json";
 import panel_en from "./en/panel.json";
 import panelSubirClip_en from "./en/panelSubirClip.json";
 import perfil_en from "./en/perfil.json";
+import prueba_en from "./en/prueba.json";
 import publicados_en from "./en/publicados.json";
 import publicadosDetalle_en from "./en/publicadosDetalle.json";
 import publicadosPestanas_en from "./en/publicadosPestanas.json";
@@ -153,6 +159,8 @@ import redesEstadoFacebook_en from "./en/redesEstadoFacebook.json";
 import redesFacebook_en from "./en/redesFacebook.json";
 import redesTiktok_en from "./en/redesTiktok.json";
 import redesYoutube_en from "./en/redesYoutube.json";
+import registro_en from "./en/registro.json";
+import requisitosPassword_en from "./en/requisitosPassword.json";
 import revision_en from "./en/revision.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
 import revisionVideoCard_en from "./en/revisionVideoCard.json";
@@ -221,9 +229,11 @@ export const mensajes = {
     "montajeTexto": montajeTexto_es,
     "montajeVoz": montajeVoz_es,
     "montajeWizard": montajeWizard_es,
+    "onboarding": onboarding_es,
     "panel": panel_es,
     "panelSubirClip": panelSubirClip_es,
     "perfil": perfil_es,
+    "prueba": prueba_es,
     "publicados": publicados_es,
     "publicadosDetalle": publicadosDetalle_es,
     "publicadosPestanas": publicadosPestanas_es,
@@ -236,6 +246,8 @@ export const mensajes = {
     "redesFacebook": redesFacebook_es,
     "redesTiktok": redesTiktok_es,
     "redesYoutube": redesYoutube_es,
+    "registro": registro_es,
+    "requisitosPassword": requisitosPassword_es,
     "revision": revision_es,
     "revisionTarjeta": revisionTarjeta_es,
     "revisionVideoCard": revisionVideoCard_es,
@@ -303,9 +315,11 @@ export const mensajes = {
     "montajeTexto": montajeTexto_en,
     "montajeVoz": montajeVoz_en,
     "montajeWizard": montajeWizard_en,
+    "onboarding": onboarding_en,
     "panel": panel_en,
     "panelSubirClip": panelSubirClip_en,
     "perfil": perfil_en,
+    "prueba": prueba_en,
     "publicados": publicados_en,
     "publicadosDetalle": publicadosDetalle_en,
     "publicadosPestanas": publicadosPestanas_en,
@@ -318,6 +332,8 @@ export const mensajes = {
     "redesFacebook": redesFacebook_en,
     "redesTiktok": redesTiktok_en,
     "redesYoutube": redesYoutube_en,
+    "registro": registro_en,
+    "requisitosPassword": requisitosPassword_en,
     "revision": revision_en,
     "revisionTarjeta": revisionTarjeta_en,
     "revisionVideoCard": revisionVideoCard_en,

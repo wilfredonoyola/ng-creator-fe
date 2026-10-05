@@ -1,11 +1,4 @@
 {
-  "requisitos": {
-    "largo": "8 caracteres o más",
-    "mayuscula": "una mayúscula",
-    "minuscula": "una minúscula",
-    "numero": "un número",
-    "simbolo": "un símbolo"
-  },
   "cuentaEliminada": "Tu cuenta se eliminó.",
   "errorEntrar": "No se pudo iniciar sesión",
   "noCoincidenLargo": "Las dos contraseñas no coinciden",
@@ -45,5 +38,8 @@
   "volver": "← Volver a entrar",
   "otroCodigo": "Mandar otro código",
   "privacidad": "Privacidad",
-  "terminos": "Términos"
+  "terminos": "Términos",
+  "sinCuenta": "¿No tenés cuenta? <link>Creá una</link>",
+  "volverAlInicio": "← Volver",
+  "inicio": "Ir al inicio"
 }

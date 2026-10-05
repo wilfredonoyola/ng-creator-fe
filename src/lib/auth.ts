@@ -138,6 +138,36 @@ export async function confirmarPasswordNueva(
 }
 
 /**
+ * Registro abierto, paso 1: crea la cuenta (sin confirmar) y Cognito manda un
+ * código de 6 dígitos al correo. No da sesión todavía.
+ */
+export async function registrarse(email: string, password: string): Promise<void> {
+  await pedir<boolean>(
+    `mutation Registrarse($email: String!, $password: String!) { registrarse(email: $email, password: $password) }`,
+    { email, password },
+    "registrarse"
+  );
+}
+
+/** Paso 2: el código del correo confirma la cuenta. Después se entra con `iniciarSesion`. */
+export async function confirmarRegistro(email: string, codigo: string): Promise<void> {
+  await pedir<boolean>(
+    `mutation ConfirmarRegistro($email: String!, $codigo: String!) { confirmarRegistro(email: $email, codigo: $codigo) }`,
+    { email, codigo },
+    "confirmarRegistro"
+  );
+}
+
+/** "Mandar otro código" del registro. */
+export async function reenviarCodigoRegistro(email: string): Promise<void> {
+  await pedir<boolean>(
+    `mutation ReenviarCodigoRegistro($email: String!) { reenviarCodigoRegistro(email: $email) }`,
+    { email },
+    "reenviarCodigoRegistro"
+  );
+}
+
+/**
  * Error que viene del backend (Cognito), con un mensaje para mostrar tal cual.
  * Cualquier otro error de este archivo (red, respuesta incompleta) lleva un
  * mensaje solo para logs: la pantalla muestra su propio texto traducido.

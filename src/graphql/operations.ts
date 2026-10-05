@@ -393,6 +393,24 @@ export const MARCAS_ACTIVAS = gql`
         instagramUsuario
         instagramFotoUrl
       }
+      prueba {
+        topeEpisodios
+        episodiosUsados
+        desde
+      }
+    }
+  }
+`;
+
+/**
+ * Crea una marca para quien se registró solo (onboarding). El backend deja
+ * una sola de prueba por persona y la crea con su tope de episodios.
+ */
+export const CREAR_MARCA = gql`
+  mutation CrearMarca($nombre: String!) {
+    crearMarca(nombre: $nombre) {
+      _id
+      nombre
     }
   }
 `;
