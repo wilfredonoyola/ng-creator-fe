@@ -1,0 +1,11 @@
+{
+  "EXCELENTE": "{resolucion} source · vertical clips come out in Excellent quality.",
+  "BUENA": "{resolucion} source · vertical clips come out in Good quality. For Excellent, record in 1440p or 4K.",
+  "BAJA": "{resolucion} source · vertical clips come out in Low quality and will look soft. Record in at least 1080p, and in 1440p or 4K for Excellent.",
+  "corto": {
+    "EXCELENTE": "{resolucion} · vertical Excellent",
+    "BUENA": "{resolucion} · vertical Good",
+    "BAJA": "{resolucion} · vertical Low"
+  },
+  "explicacion": "Cropping to 9:16 enlarges the source {ampliacion}×. The higher its resolution, the sharper the clips."
+}

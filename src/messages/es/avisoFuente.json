@@ -1,0 +1,11 @@
+{
+  "EXCELENTE": "Fuente {resolucion} · los clips verticales salen con calidad Excelente.",
+  "BUENA": "Fuente {resolucion} · los clips verticales salen con calidad Buena. Para Excelente, grabá en 1440p o 4K.",
+  "BAJA": "Fuente {resolucion} · los clips verticales salen con calidad Baja: se van a ver blandos. Grabá en 1080p como mínimo y, para Excelente, en 1440p o 4K.",
+  "corto": {
+    "EXCELENTE": "{resolucion} · verticales Excelente",
+    "BUENA": "{resolucion} · verticales Buena",
+    "BAJA": "{resolucion} · verticales Baja"
+  },
+  "explicacion": "Al recortar a 9:16, la fuente se agranda {ampliacion}×. Cuanto más resolución tenga, más nítidos salen los clips."
+}

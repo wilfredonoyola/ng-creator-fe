@@ -14,6 +14,7 @@ import {
   IMPORTAR_DE_RESTREAM,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
 import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
@@ -56,6 +57,8 @@ interface Episodio {
   clipsSugeridos?: number | null;
   createdAt: string;
   subidoPor?: Autoria | null;
+  /** Del original, según Bunny; null mientras se procesa. */
+  resolucionOriginal?: { ancho: number; alto: number } | null;
 }
 
 /** La subida en curso en ESTA pestaña. Las de otras pestañas solo se ven en la lista. */
@@ -561,6 +564,7 @@ function FilaEpisodio({
         <p className="mt-0.5 text-xs text-white/45">
           {ep.duracionSeg ? `${duracion(ep.duracionSeg)} · ` : ""}
           {gb(ep.tamanoBytes)}
+          {ep.estado === "LISTO" && <AvisoFuente resolucion={ep.resolucionOriginal} corto className="ml-2 align-middle" />}
         </p>
         {ep.importadoDe && ((ep.estadoImportacion && ep.estadoImportacion !== "LISTA") || ep.estado === "FALLIDO") && (
           <BarraImportando ep={ep} onReintentar={onReintentarImportacion} />

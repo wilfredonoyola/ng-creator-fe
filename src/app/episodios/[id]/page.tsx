@@ -16,6 +16,7 @@ import {
   type ControlReproductor,
 } from "@/components/ReproductorEpisodio";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
 import { TomarClip, type Autoria } from "@/components/episodios/TomarClip";
 import {
@@ -192,6 +193,7 @@ export default function DetalleEpisodioPage({
               {t("videoNoListo")}
             </div>
           )}
+          <AvisoFuente resolucion={ep.resolucionOriginal} className="mt-3" />
         </div>
 
         <div>

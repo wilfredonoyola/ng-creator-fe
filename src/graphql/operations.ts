@@ -1406,6 +1406,11 @@ export const EPISODIOS = gql`
   query Episodios($marcaId: String!, $limite: Int) {
     episodios(marcaId: $marcaId, limite: $limite) {
       ...CamposEpisodio
+      # Para el aviso de la calidad de la fuente (AvisoFuente).
+      resolucionOriginal {
+        ancho
+        alto
+      }
     }
   }
 `;
@@ -1472,6 +1477,11 @@ export const EPISODIO = gql`
   query Episodio($id: ID!, $marcaId: String!) {
     episodio(id: $id, marcaId: $marcaId) {
       ...CamposEpisodio
+      # Para el aviso de la calidad de la fuente (AvisoFuente).
+      resolucionOriginal {
+        ancho
+        alto
+      }
     }
   }
 `;

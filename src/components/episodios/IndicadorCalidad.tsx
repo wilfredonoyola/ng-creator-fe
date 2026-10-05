@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Pista } from "@/components/Pista";
 import type { CalidadClip, NivelCalidad } from "@/lib/calidad";
 
-const TONOS: Record<NivelCalidad, string> = {
+export const TONOS_CALIDAD: Record<NivelCalidad, string> = {
   EXCELENTE: "border-ng-teal/30 bg-ng-teal/10 text-ng-teal",
   BUENA: "border-ng-azul/30 bg-ng-azul/10 text-ng-azul",
   BAJA: "border-red-400/30 bg-red-400/10 text-red-300",
@@ -56,7 +56,7 @@ export function IndicadorCalidad({
       <span
         tabIndex={0}
         aria-label={`${etiqueta ? `${etiqueta} · ` : ""}${t("pastilla", { nivel })}`}
-        className={`inline-flex h-6 items-center whitespace-nowrap rounded-full border px-2 text-xs font-medium outline-none ${TONOS[calidad.nivel]}`}
+        className={`inline-flex h-6 items-center whitespace-nowrap rounded-full border px-2 text-xs font-medium outline-none ${TONOS_CALIDAD[calidad.nivel]}`}
       >
         {etiqueta ? <span className="mr-1 text-white/55">{etiqueta}</span> : null}
         {t("pastilla", { nivel })}

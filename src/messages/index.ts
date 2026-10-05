@@ -1,6 +1,7 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
+import avisoFuente_es from "./es/avisoFuente.json";
 import brandKit_es from "./es/brandKit.json";
 import calendario_es from "./es/calendario.json";
 import calidadClip_es from "./es/calidadClip.json";
@@ -87,6 +88,7 @@ import revivalTarjeta_es from "./es/revivalTarjeta.json";
 import versionFacebook_es from "./es/versionFacebook.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
+import avisoFuente_en from "./en/avisoFuente.json";
 import brandKit_en from "./en/brandKit.json";
 import calendario_en from "./en/calendario.json";
 import calidadClip_en from "./en/calidadClip.json";
@@ -176,6 +178,7 @@ export const mensajes = {
   es: {
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
+    "avisoFuente": avisoFuente_es,
     "brandKit": brandKit_es,
     "calendario": calendario_es,
     "calidadClip": calidadClip_es,
@@ -264,6 +267,7 @@ export const mensajes = {
   en: {
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
+    "avisoFuente": avisoFuente_en,
     "brandKit": brandKit_en,
     "calendario": calendario_en,
     "calidadClip": calidadClip_en,
