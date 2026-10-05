@@ -21,7 +21,10 @@
     "detalle": "They'll get an email with a temporary password. Their access to this page is ready as soon as they sign in.",
     "placeholder": "person@example.com",
     "enviando": "Sending…",
-    "boton": "Invite"
+    "boton": "Invite",
+    "nombre": "Name",
+    "placeholderNombre": "Name (optional)",
+    "correo": "Email"
   },
   "vos": "you",
   "desactivado": "deactivated",
@@ -33,5 +36,14 @@
   "leyenda": {
     "titulo": "What each role can do",
     "nota": "Publishing doesn't need a Facebook account: it goes out with the token saved when the page was connected. Reconnecting it in Meta does require being an admin of the fan page on Facebook's side, and that isn't up to this app."
+  },
+  "editarNombre": {
+    "boton": "Edit name",
+    "campo": "Name",
+    "cancelar": "Cancel",
+    "guardar": "Save",
+    "guardando": "Saving…",
+    "ayuda": "The name belongs to the person: it changes in every brand they're in.",
+    "error": "Couldn't save the name"
   }
 }
