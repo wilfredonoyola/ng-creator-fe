@@ -13,6 +13,7 @@ import {
 } from "@/lib/auth";
 import { passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
 import { conVolverA, MarcoAcceso } from "@/components/acceso/MarcoAcceso";
+import { NOMBRE_MAX, NOMBRE_MIN } from "@/lib/nombre";
 
 /**
  * Registro abierto con prueba gratis.
@@ -26,6 +27,7 @@ export default function RegistroPage() {
   const t = useTranslations("registro");
   const router = useRouter();
   const [paso, setPaso] = useState<"datos" | "codigo">("datos");
+  const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [repetida, setRepetida] = useState("");
@@ -35,7 +37,12 @@ export default function RegistroPage() {
   const [cargando, setCargando] = useState(false);
 
   const email = correo.trim();
-  const puedeCrear = passwordValida(password) && password === repetida && email.length > 0;
+  // Con el nombre la ve su equipo en los avisos y en los clips, no con el
+  // correo. Es opcional: si lo deja vacío lo puede poner después en Perfil.
+  const nombreLimpio = nombre.trim();
+  const nombreValido =
+    nombreLimpio.length === 0 || (nombreLimpio.length >= NOMBRE_MIN && nombreLimpio.length <= NOMBRE_MAX);
+  const puedeCrear = passwordValida(password) && password === repetida && email.length > 0 && nombreValido;
 
   async function crear(e: React.FormEvent) {
     e.preventDefault();
@@ -46,7 +53,7 @@ export default function RegistroPage() {
     setError(null);
     setCargando(true);
     try {
-      await registrarse(email, password);
+      await registrarse(email, password, nombreLimpio || null);
       setPaso("codigo");
       setCodigo("");
       setAviso(t("codigoEnviado", { correo: email }));
@@ -104,6 +111,17 @@ export default function RegistroPage() {
     >
       {paso === "datos" ? (
         <>
+          <label className="mb-1 block text-xs text-white/50">{t("nombre")}</label>
+          <input
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            className={`mb-4 ${campo}`}
+            placeholder={t("nombreEjemplo")}
+            autoComplete="name"
+            minLength={NOMBRE_MIN}
+            maxLength={NOMBRE_MAX}
+            autoFocus
+          />
           <label className="mb-1 block text-xs text-white/50">{t("correo")}</label>
           <input
             type="email"
@@ -112,7 +130,6 @@ export default function RegistroPage() {
             className={`mb-4 ${campo}`}
             placeholder={t("correoEjemplo")}
             autoComplete="email"
-            autoFocus
             required
           />
           <label className="mb-1 block text-xs text-white/50">{t("password")}</label>

@@ -9,7 +9,14 @@
     "correo": "Email",
     "rolSistema": "System role",
     "administrador": "Administrator",
-    "tusMarcas": "Your brands"
+    "tusMarcas": "Your brands",
+    "cambiarNombre": "Change",
+    "ponerNombre": "Add your name",
+    "cancelar": "Cancel",
+    "guardar": "Save",
+    "guardando": "Saving…",
+    "ayudaNombre": "It's how your team sees you in notifications and on clips. 2 to 60 characters.",
+    "errorNombre": "Couldn't save your name"
   },
   "cerrarSesion": "Sign out",
   "preferencias": "Preferences",

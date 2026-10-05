@@ -7,7 +7,9 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
+import { NOMBRE_MAX, nombreValido } from "@/lib/nombre";
 import {
+  ACTUALIZAR_NOMBRE_MIEMBRO,
   CAMBIAR_ROL_MIEMBRO,
   CANCELAR_INVITACION,
   INVITACIONES_DE_PAGINA,
@@ -30,6 +32,7 @@ interface Miembro {
 interface Invitacion {
   _id: string;
   email: string;
+  nombre?: string | null;
   rol: RolPagina;
   createdAt: string;
 }
@@ -48,9 +51,12 @@ export default function EquipoPage() {
   const t = useTranslations("equipo");
   const locale = useLocale();
   const { activa, cargando: cargandoPagina } = useMarcaActiva();
-  const { usuario, esPropietario } = useSesion();
+  const { usuario, esPropietario, esAdmin } = useSesion();
   const marcaId = activa?._id;
   const mando = esPropietario(marcaId);
+  // El nombre de los demás lo puede corregir quien administra la marca, o un
+  // admin del sistema. El propio se cambia en Perfil.
+  const editaNombres = mando || esAdmin;
 
   const [error, setError] = useState<string | null>(null);
 
@@ -78,6 +84,10 @@ export default function EquipoPage() {
     refetchQueries: refrescar,
   });
   const [revocar] = useMutation(REVOCAR_ACCESO, { refetchQueries: refrescar });
+  const [renombrar] = useMutation(ACTUALIZAR_NOMBRE_MIEMBRO, {
+    refetchQueries: refrescar,
+    awaitRefetchQueries: true,
+  });
   const [cancelar] = useMutation(CANCELAR_INVITACION, {
     refetchQueries: refrescar,
   });
@@ -135,8 +145,10 @@ export default function EquipoPage() {
       {mando ? (
         <FormularioInvitar
           invitando={invitando}
-          onInvitar={(email, rol) =>
-            accion(() => invitar({ variables: { email, marcaId, rol } }))
+          onInvitar={(email, rol, nombre) =>
+            accion(() =>
+              invitar({ variables: { email, marcaId, rol, nombre: nombre || null } }),
+            )
           }
         />
       ) : (
@@ -161,7 +173,8 @@ export default function EquipoPage() {
                   ✉
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm text-white/80">{inv.email}</p>
+                  <p className="truncate text-sm text-white/80">{inv.nombre || inv.email}</p>
+                  {inv.nombre && <p className="truncate text-xs text-white/40">{inv.email}</p>}
                   <p
                     className="text-xs text-white/35"
                     title={fechaCompleta(inv.createdAt, locale)}
@@ -215,6 +228,17 @@ export default function EquipoPage() {
                 miembro={m}
                 soyYo={m.usuarioId === usuario?._id}
                 editable={mando}
+                editaNombre={editaNombres && m.usuarioId !== usuario?._id}
+                onRenombrar={async (nombre) => {
+                  try {
+                    await renombrar({
+                      variables: { marcaId, usuarioId: m.usuarioId, nombre: nombre.trim() },
+                    });
+                    return null;
+                  } catch (e) {
+                    return e instanceof Error ? e.message : "";
+                  }
+                }}
                 onCambiarRol={(rol) =>
                   accion(() =>
                     cambiarRol({
@@ -244,18 +268,20 @@ function FormularioInvitar({
   onInvitar,
 }: {
   invitando: boolean;
-  onInvitar: (email: string, rol: RolPagina) => Promise<void>;
+  onInvitar: (email: string, rol: RolPagina, nombre: string) => Promise<void>;
 }) {
   const t = useTranslations("equipo.invitar");
   const tRol = useTranslations("marcoRoles");
   const [email, setEmail] = useState("");
+  const [nombre, setNombre] = useState("");
   const [rol, setRol] = useState<RolPagina>("EDITOR");
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
-    await onInvitar(email.trim(), rol);
+    await onInvitar(email.trim(), rol, nombre.trim());
     setEmail("");
+    setNombre("");
   }
 
   return (
@@ -269,11 +295,22 @@ function FormularioInvitar({
       {/* En móvil los tres controles van apilados: el correo necesita el ancho
           completo para verse entero mientras se escribe. */}
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        {/* El nombre es opcional: si no se pone, la persona lo elige al entrar. */}
+        <input
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          placeholder={t("placeholderNombre")}
+          aria-label={t("nombre")}
+          maxLength={60}
+          autoComplete="off"
+          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
+        />
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={t("placeholder")}
+          aria-label={t("correo")}
           autoComplete="off"
           className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm outline-none transition focus:border-ng-azul/50"
         />
@@ -302,16 +339,84 @@ function FormularioInvitar({
   );
 }
 
+/**
+ * Corrige el nombre de alguien del equipo, en el lugar. El nombre es de la
+ * persona: el cambio se ve en todas las marcas donde está.
+ */
+function EditarNombreMiembro({
+  actual,
+  onGuardar,
+  onCerrar,
+}: {
+  actual: string;
+  onGuardar: (nombre: string) => Promise<string | null>;
+  onCerrar: () => void;
+}) {
+  const t = useTranslations("equipo.editarNombre");
+  const [valor, setValor] = useState(actual);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nombreValido(valor)) return;
+    setError(null);
+    setGuardando(true);
+    const err = await onGuardar(valor);
+    setGuardando(false);
+    if (err === null) onCerrar();
+    else setError(err || t("error"));
+  }
+
+  return (
+    <form onSubmit={enviar} className="mb-1">
+      <div className="flex flex-wrap gap-2">
+        <input
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          aria-label={t("campo")}
+          placeholder={t("campo")}
+          maxLength={NOMBRE_MAX}
+          autoFocus
+          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 text-sm outline-none transition focus:border-ng-azul/50"
+        />
+        <button
+          type="button"
+          onClick={onCerrar}
+          disabled={guardando}
+          className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/60 transition hover:bg-white/5 disabled:opacity-50"
+        >
+          {t("cancelar")}
+        </button>
+        <button
+          type="submit"
+          disabled={!nombreValido(valor) || guardando}
+          className="rounded-lg bg-marca px-3 py-1.5 text-xs font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
+        >
+          {guardando ? t("guardando") : t("guardar")}
+        </button>
+      </div>
+      <p className="mt-1 text-[11px] text-white/35">{t("ayuda")}</p>
+      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+    </form>
+  );
+}
+
 function FilaMiembro({
   miembro,
   soyYo,
   editable,
+  editaNombre,
+  onRenombrar,
   onCambiarRol,
   onRevocar,
 }: {
   miembro: Miembro;
   soyYo: boolean;
   editable: boolean;
+  editaNombre: boolean;
+  /** Devuelve null si se guardó, o el error (traducido por el backend). */
+  onRenombrar: (nombre: string) => Promise<string | null>;
   onCambiarRol: (rol: RolPagina) => void;
   onRevocar: () => void;
 }) {
@@ -319,6 +424,7 @@ function FilaMiembro({
   const tRol = useTranslations("marcoRoles");
   const locale = useLocale();
   const [confirmando, setConfirmando] = useState(false);
+  const [renombrando, setRenombrando] = useState(false);
 
   // Quitarse a uno mismo no tiene vuelta desde la interfaz: habría que pedirle
   // a otro propietario que te devuelva el acceso. El backend también lo impide.
@@ -331,20 +437,39 @@ function FilaMiembro({
       </span>
 
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 truncate text-sm font-medium">
-          {miembro.nombre || miembro.email}
-          {soyYo && (
-            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-normal text-white/50">
-              {t("vos")}
-            </span>
-          )}
-          {!miembro.activo && (
-            <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-normal text-red-400">
-              {t("desactivado")}
-            </span>
-          )}
-        </p>
-        <p className="truncate text-xs text-white/40">{miembro.email}</p>
+        {renombrando ? (
+          <EditarNombreMiembro
+            actual={miembro.nombre ?? ""}
+            onGuardar={onRenombrar}
+            onCerrar={() => setRenombrando(false)}
+          />
+        ) : (
+          <p className="flex items-center gap-2 truncate text-sm font-medium">
+            {miembro.nombre || miembro.email}
+            {editaNombre && (
+              <button
+                type="button"
+                onClick={() => setRenombrando(true)}
+                aria-label={t("editarNombre.boton")}
+                title={t("editarNombre.boton")}
+                className="rounded px-1 text-xs font-normal text-white/40 transition hover:bg-white/10 hover:text-white"
+              >
+                ✎
+              </button>
+            )}
+            {soyYo && (
+              <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-normal text-white/50">
+                {t("vos")}
+              </span>
+            )}
+            {!miembro.activo && (
+              <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-normal text-red-400">
+                {t("desactivado")}
+              </span>
+            )}
+          </p>
+        )}
+        {miembro.nombre && <p className="truncate text-xs text-white/40">{miembro.email}</p>}
         <p className="truncate text-[11px] text-white/25">
           {miembro.ultimoAccesoEn ? (
             <span title={fechaCompleta(miembro.ultimoAccesoEn, locale)}>

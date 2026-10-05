@@ -290,6 +290,20 @@ export const YO = gql`
 `;
 
 /**
+ * Cambia el nombre con el que la ven en avisos, autoría y Equipo (2–60
+ * caracteres; los errores llegan traducidos). Devuelve el usuario para que
+ * Apollo actualice `yo` en caché.
+ */
+export const ACTUALIZAR_MI_NOMBRE = gql`
+  mutation ActualizarMiNombre($nombre: String!) {
+    actualizarMiNombre(nombre: $nombre) {
+      _id
+      nombre
+    }
+  }
+`;
+
+/**
  * Lo que pasa si la persona elimina su cuenta (be#95): qué marcas se archivan
  * con ella y cuáles la frenan hasta que haga propietaria a otra persona.
  */
@@ -999,6 +1013,7 @@ export const INVITACIONES_DE_PAGINA = gql`
     invitacionesDePagina(marcaId: $marcaId) {
       _id
       email
+      nombre
       rol
       estado
       createdAt
@@ -1007,12 +1022,32 @@ export const INVITACIONES_DE_PAGINA = gql`
 `;
 
 export const INVITAR_MIEMBRO = gql`
-  mutation InvitarMiembro($email: String!, $marcaId: String!, $rol: RolPagina!) {
-    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol) {
+  mutation InvitarMiembro(
+    $email: String!
+    $marcaId: String!
+    $rol: RolPagina!
+    $nombre: String
+  ) {
+    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol, nombre: $nombre) {
       _id
       email
+      nombre
       rol
       estado
+    }
+  }
+`;
+
+/**
+ * El propietario de la marca (o un admin) le pone o cambia el nombre a alguien
+ * del equipo. El nombre es de la persona: cambia en todas sus marcas.
+ */
+export const ACTUALIZAR_NOMBRE_MIEMBRO = gql`
+  mutation ActualizarNombreMiembro($marcaId: String!, $usuarioId: ID!, $nombre: String!) {
+    actualizarNombreMiembro(marcaId: $marcaId, usuarioId: $usuarioId, nombre: $nombre) {
+      usuarioId
+      marcaId
+      nombre
     }
   }
 `;

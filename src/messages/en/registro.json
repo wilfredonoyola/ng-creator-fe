@@ -7,6 +7,8 @@
     "datos": "Try Clipfine free with 2 episodes. No card needed.",
     "codigo": "Enter the 6-digit code we sent you."
   },
+  "nombre": "Name (optional)",
+  "nombreEjemplo": "Your name",
   "correo": "Email",
   "correoEjemplo": "you@email.com",
   "password": "Password",

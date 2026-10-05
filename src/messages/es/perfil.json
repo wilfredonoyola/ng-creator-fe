@@ -9,7 +9,14 @@
     "correo": "Correo",
     "rolSistema": "Rol en el sistema",
     "administrador": "Administrador",
-    "tusMarcas": "Tus marcas"
+    "tusMarcas": "Tus marcas",
+    "cambiarNombre": "Cambiar",
+    "ponerNombre": "Poné tu nombre",
+    "cancelar": "Cancelar",
+    "guardar": "Guardar",
+    "guardando": "Guardando…",
+    "ayudaNombre": "Así te ve tu equipo en los avisos y en los clips. Entre 2 y 60 caracteres.",
+    "errorNombre": "No se pudo guardar el nombre"
   },
   "cerrarSesion": "Cerrar sesión",
   "preferencias": "Preferencias",

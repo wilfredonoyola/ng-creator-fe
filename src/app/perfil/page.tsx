@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { NOMBRE_MAX, nombreValido, useGuardarMiNombre } from "@/lib/nombre";
 import { SelectorIdioma } from "@/components/SelectorIdioma";
 import { cerrarSesion } from "@/lib/auth";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
@@ -66,7 +67,9 @@ export default function PerfilPage() {
           <dl className="mt-4 space-y-3 text-sm">
             <div>
               <dt className="text-xs text-white/40">{t("datos.nombre")}</dt>
-              <dd>{usuario?.nombre || t("datos.sinNombre")}</dd>
+              <dd>
+                <EditarNombre actual={usuario?.nombre ?? ""} />
+              </dd>
             </div>
             <div>
               <dt className="text-xs text-white/40">{t("datos.correo")}</dt>
@@ -129,6 +132,79 @@ export default function PerfilPage() {
 
       {eliminando && <EliminarCuenta onCerrar={() => setEliminando(false)} />}
     </DashboardLayout>
+  );
+}
+
+/**
+ * El nombre con que la ve su equipo en avisos, autoría y Equipo. Se muestra y,
+ * al tocar «Cambiar», se edita en el lugar.
+ */
+function EditarNombre({ actual }: { actual: string }) {
+  const t = useTranslations("perfil.datos");
+  const { guardar, guardando } = useGuardarMiNombre();
+  const [editando, setEditando] = useState(false);
+  const [valor, setValor] = useState(actual);
+  const [error, setError] = useState<string | null>(null);
+
+  function abrir() {
+    setValor(actual);
+    setError(null);
+    setEditando(true);
+  }
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nombreValido(valor)) return;
+    setError(null);
+    const err = await guardar(valor);
+    if (err === null) setEditando(false);
+    else setError(err || t("errorNombre"));
+  }
+
+  if (!editando) {
+    return (
+      <span className="flex items-center gap-3">
+        <span className={actual ? "" : "text-white/40"}>{actual || t("sinNombre")}</span>
+        <button type="button" onClick={abrir} className="text-xs text-ng-celeste hover:underline">
+          {actual ? t("cambiarNombre") : t("ponerNombre")}
+        </button>
+      </span>
+    );
+  }
+
+  return (
+    <form onSubmit={enviar} className="mt-1">
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <input
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          aria-label={t("nombre")}
+          autoComplete="name"
+          maxLength={NOMBRE_MAX}
+          autoFocus
+          className="min-w-0 flex-1 rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2 text-sm outline-none transition focus:border-ng-azul"
+        />
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setEditando(false)}
+            disabled={guardando}
+            className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white/70 transition hover:bg-white/5 disabled:opacity-50"
+          >
+            {t("cancelar")}
+          </button>
+          <button
+            type="submit"
+            disabled={!nombreValido(valor) || guardando}
+            className="rounded-lg bg-marca px-4 py-2 text-sm font-semibold text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
+          >
+            {guardando ? t("guardando") : t("guardar")}
+          </button>
+        </div>
+      </div>
+      <p className="mt-1 text-[11px] text-white/35">{t("ayudaNombre")}</p>
+      {error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+    </form>
   );
 }
 

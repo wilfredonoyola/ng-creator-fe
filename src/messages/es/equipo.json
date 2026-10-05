@@ -21,7 +21,10 @@
     "detalle": "Le llega un correo con una contraseña temporal. El acceso a esta página queda listo desde el momento en que entra.",
     "placeholder": "persona@ejemplo.com",
     "enviando": "Enviando…",
-    "boton": "Invitar"
+    "boton": "Invitar",
+    "nombre": "Nombre",
+    "placeholderNombre": "Nombre (opcional)",
+    "correo": "Correo"
   },
   "vos": "vos",
   "desactivado": "desactivado",
@@ -33,5 +36,14 @@
   "leyenda": {
     "titulo": "Qué puede cada rol",
     "nota": "Publicar no necesita cuenta de Facebook: sale con el token que quedó guardado al conectar la página. Reconectarla en Meta sí exige ser administrador de la fan page del lado de Facebook, y eso no lo decide esta app."
+  },
+  "editarNombre": {
+    "boton": "Editar nombre",
+    "campo": "Nombre",
+    "cancelar": "Cancelar",
+    "guardar": "Guardar",
+    "guardando": "Guardando…",
+    "ayuda": "El nombre es de la persona: cambia en todas las marcas donde está.",
+    "error": "No se pudo guardar el nombre"
   }
 }
