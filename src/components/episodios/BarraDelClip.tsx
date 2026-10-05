@@ -13,6 +13,8 @@ import { Pista } from "@/components/Pista";
 import { EstadoGuardado, estadoDelMp4, useDescargarMp4, type EstadoRender } from "./ExportarClip";
 import type { Autoria } from "./TomarClip";
 import type { ResumenPublicacionClip } from "./ListoClip";
+import { IndicadorCalidad } from "./IndicadorCalidad";
+import type { CalidadClip } from "@/lib/calidad";
 
 /** Todos los botones de la barra, iguales: mismo alto, radio y espaciado. */
 const BOTON = "inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50";
@@ -74,6 +76,8 @@ export function BarraDelClip({
     urlVideo?: string | null;
     /** Hay cambios que el MP4 no tiene. */
     desactualizado: boolean;
+    /** La medida del MP4 (null si todavía no se midió). */
+    calidad?: CalidadClip | null;
     pidiendo: boolean;
   };
   onProcesar: () => void;
@@ -168,6 +172,11 @@ export function BarraDelClip({
     <>
       <p className={`font-medium ${TONOS[mp4.tono]}`}>{mp4.texto}</p>
       <p className="mt-0.5 break-words text-white/45">{mp4.detalle}</p>
+      {mp4.listo && render.calidad ? (
+        <div className="mt-1.5">
+          <IndicadorCalidad calidad={render.calidad} medida />
+        </div>
+      ) : null}
     </>
   );
 

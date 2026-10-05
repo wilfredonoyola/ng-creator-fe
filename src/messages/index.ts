@@ -3,6 +3,7 @@ import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
 import brandKit_es from "./es/brandKit.json";
 import calendario_es from "./es/calendario.json";
+import calidadClip_es from "./es/calidadClip.json";
 import creators_es from "./es/creators.json";
 import editorAutoEncuadre_es from "./es/editorAutoEncuadre.json";
 import editorBarra_es from "./es/editorBarra.json";
@@ -88,6 +89,7 @@ import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import brandKit_en from "./en/brandKit.json";
 import calendario_en from "./en/calendario.json";
+import calidadClip_en from "./en/calidadClip.json";
 import creators_en from "./en/creators.json";
 import editorAutoEncuadre_en from "./en/editorAutoEncuadre.json";
 import editorBarra_en from "./en/editorBarra.json";
@@ -176,6 +178,7 @@ export const mensajes = {
     "analisisBarras": analisisBarras_es,
     "brandKit": brandKit_es,
     "calendario": calendario_es,
+    "calidadClip": calidadClip_es,
     "creators": creators_es,
     "editorAutoEncuadre": editorAutoEncuadre_es,
     "editorBarra": editorBarra_es,
@@ -263,6 +266,7 @@ export const mensajes = {
     "analisisBarras": analisisBarras_en,
     "brandKit": brandKit_en,
     "calendario": calendario_en,
+    "calidadClip": calidadClip_en,
     "creators": creators_en,
     "editorAutoEncuadre": editorAutoEncuadre_en,
     "editorBarra": editorBarra_en,

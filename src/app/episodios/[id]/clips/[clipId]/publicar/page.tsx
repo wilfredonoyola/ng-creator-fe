@@ -23,6 +23,8 @@ import {
   type Publicacion,
 } from "@/lib/publicaciones";
 import type { CanalYoutube } from "@/components/CanalesYoutube";
+import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
+import type { CalidadClip } from "@/lib/calidad";
 import { IconoRed, Poster } from "@/components/IconoRed";
 import {
   REEL_FACEBOOK_MAX_SEG,
@@ -206,6 +208,7 @@ function Formulario({
     renderizadoEn?: string | null;
     urlVideo: string;
     versionFacebook?: VersionCortaClip | null;
+    calidad?: CalidadClip | null;
   };
   marcaId: string;
   opera: boolean;
@@ -217,6 +220,7 @@ function Formulario({
 }) {
   const t = useTranslations("publicarClip");
   const tv = useTranslations("versionFacebook");
+  const tc = useTranslations("calidadClip");
   const locale = useLocale();
   const [elegidos, setElegidos] = useState<Set<string>>(
     () =>
@@ -323,6 +327,14 @@ function Formulario({
         <div className="min-w-0 flex-1">
           <p className="text-lg font-semibold">{clip.titulo}</p>
           <p className="text-sm text-white/45">{t("duracionListo", { seg: Math.round(clip.hastaSeg - clip.desdeSeg) })}</p>
+          {clip.calidad || clip.versionFacebook?.calidad ? (
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {clip.calidad ? <IndicadorCalidad calidad={clip.calidad} medida /> : null}
+              {clip.versionFacebook?.calidad && clip.versionFacebook.estadoRender === "LISTO" ? (
+                <IndicadorCalidad calidad={clip.versionFacebook.calidad} medida etiqueta={tc("versionFacebook")} />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </div>
       {editadoSinProcesar ? (

@@ -1557,6 +1557,14 @@ const CAMPOS_VERSION_CORTA_CLIP = gql`
     progresoRender
     errorRender
     urlVideo
+    calidad {
+      nivel
+      ampliacion
+      fuenteAncho
+      fuenteAlto
+      bitrateKbps
+      medidoEn
+    }
   }
 `;
 
@@ -1644,6 +1652,14 @@ const CAMPOS_CLIP_EDITOR = gql`
     urlPoster
     renderizadoEn
     editadoEn
+    calidad {
+      nivel
+      ampliacion
+      fuenteAncho
+      fuenteAlto
+      bitrateKbps
+      medidoEn
+    }
     versionFacebook {
       ...CamposVersionCortaClip
     }
