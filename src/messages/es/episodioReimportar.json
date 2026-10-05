@@ -1,0 +1,27 @@
+{
+  "titulo": "Calidad del original",
+  "explicacion": "Trae de nuevo la grabación original de Restream, sin recomprimir. Los clips se conservan; después volvé a procesarlos para que salgan con la calidad del original. Restream guarda las grabaciones por un tiempo limitado.",
+  "boton": "Volver a importar desde Restream",
+  "reintentar": "Reintentar la importación",
+  "avance": "{paso} ({p}%)",
+  "estados": {
+    "EN_COLA": "En cola para traer el original",
+    "BAJANDO": "Bajando el original de Restream",
+    "SUBIENDO": "Subiendo el original",
+    "PROCESANDO": "Procesando el video",
+    "LISTA": "Listo",
+    "FALLIDA": "Falló"
+  },
+  "lista": "Listo: el episodio usa el original. Volvé a procesar los clips para aprovecharlo.",
+  "verClips": "Ir a los clips",
+  "fallida": "No se pudo traer el original: {error}",
+  "sinDetalle": "sin detalle",
+  "errorLanzar": "No se pudo pedir la importación",
+  "confirmar": {
+    "titulo": "¿Volver a importar desde Restream?",
+    "detalle": "El video del episodio se reemplaza por la grabación original de Restream. Los clips se conservan con los mismos tiempos; después vas a tener que volver a procesarlos.",
+    "cancelar": "Cancelar",
+    "si": "Volver a importar",
+    "lanzando": "Pidiendo…"
+  }
+}

@@ -17,6 +17,7 @@ import {
 } from "@/components/ReproductorEpisodio";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
+import { ReimportarDeRestream, reimportando } from "@/components/episodios/ReimportarDeRestream";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
 import { TomarClip, type Autoria } from "@/components/episodios/TomarClip";
 import {
@@ -89,15 +90,19 @@ export default function DetalleEpisodioPage({
     ep?.estadoTranscripcion === "EN_COLA" ||
     ep?.estadoTranscripcion === "TRANSCRIBIENDO";
 
+  // Volver a traer el original de Restream: se mira cada 5 s mientras dura.
+  const trayendoOriginal = reimportando(ep?.reimportacion);
+
   // Mientras la IA trabaja se consulta seguido; al terminar, se traen los clips.
   const { startPolling, stopPolling } = episodioQ;
   const refetchClips = clipsQ.refetch;
   const antes = useRef<EstadoMomentos | null>(null);
   useEffect(() => {
-    if (trabajando) startPolling(10_000);
+    if (trayendoOriginal) startPolling(5_000);
+    else if (trabajando) startPolling(10_000);
     else stopPolling();
     return () => stopPolling();
-  }, [trabajando, startPolling, stopPolling]);
+  }, [trabajando, trayendoOriginal, startPolling, stopPolling]);
   useEffect(() => {
     if (antes.current && antes.current !== "LISTO" && estado === "LISTO") void refetchClips();
     antes.current = estado;
@@ -194,11 +199,22 @@ export default function DetalleEpisodioPage({
             </div>
           )}
           <AvisoFuente resolucion={ep.resolucionOriginal} className="mt-3" />
+          {marcaId && (
+            <ReimportarDeRestream
+              episodioId={id}
+              marcaId={marcaId}
+              puedeReimportar={Boolean(ep.puedeReimportar)}
+              reimportacion={ep.reimportacion}
+              opera={opera}
+              anclaClips="#clips"
+              onLanzada={() => void episodioQ.refetch()}
+            />
+          )}
         </div>
 
         <div>
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-white/50">{t("clips")}</h2>
+            <h2 id="clips" className="scroll-mt-6 text-sm font-semibold uppercase tracking-wide text-white/50">{t("clips")}</h2>
             {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && (
               <button
                 onClick={() => setCreandoClip(true)}

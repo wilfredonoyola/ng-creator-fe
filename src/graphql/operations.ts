@@ -1472,8 +1472,23 @@ export const TRANSCRIBIR_EPISODIO = gql`
   }
 `;
 
+/** Si se puede volver a traer el original de Restream, y cómo va. */
+const REIMPORTACION_EPISODIO = gql`
+  fragment ReimportacionDelEpisodio on Episodio {
+    puedeReimportar
+    reimportacion {
+      estado
+      progreso
+      error
+      empezoEn
+      terminoEn
+    }
+  }
+`;
+
 export const EPISODIO = gql`
   ${CAMPOS_EPISODIO}
+  ${REIMPORTACION_EPISODIO}
   query Episodio($id: ID!, $marcaId: String!) {
     episodio(id: $id, marcaId: $marcaId) {
       ...CamposEpisodio
@@ -1482,6 +1497,21 @@ export const EPISODIO = gql`
         ancho
         alto
       }
+      ...ReimportacionDelEpisodio
+    }
+  }
+`;
+
+/**
+ * Volver a traer de Restream el original sin recomprimir de un live ya
+ * importado: reemplaza el video del episodio y conserva los clips.
+ */
+export const VOLVER_A_IMPORTAR_EPISODIO = gql`
+  ${REIMPORTACION_EPISODIO}
+  mutation VolverAImportarEpisodio($id: ID!, $marcaId: String!) {
+    volverAImportarEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      ...ReimportacionDelEpisodio
     }
   }
 `;

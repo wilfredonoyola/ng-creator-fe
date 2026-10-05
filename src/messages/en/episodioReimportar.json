@@ -1,0 +1,27 @@
+{
+  "titulo": "Original quality",
+  "explicacion": "Fetches the original Restream recording again, without recompressing. Your clips are kept; afterwards, re-process them so they come out at the original's quality. Restream only keeps recordings for a limited time.",
+  "boton": "Re-import from Restream",
+  "reintentar": "Retry import",
+  "avance": "{paso} ({p}%)",
+  "estados": {
+    "EN_COLA": "Queued to fetch the original",
+    "BAJANDO": "Downloading the original from Restream",
+    "SUBIENDO": "Uploading the original",
+    "PROCESANDO": "Processing the video",
+    "LISTA": "Done",
+    "FALLIDA": "Failed"
+  },
+  "lista": "Done: the episode now uses the original. Re-process the clips to take advantage of it.",
+  "verClips": "Go to clips",
+  "fallida": "Couldn't fetch the original: {error}",
+  "sinDetalle": "no details",
+  "errorLanzar": "Couldn't request the import",
+  "confirmar": {
+    "titulo": "Re-import from Restream?",
+    "detalle": "The episode's video will be replaced with the original Restream recording. Clips are kept with the same timings; you'll need to re-process them afterwards.",
+    "cancelar": "Cancel",
+    "si": "Re-import",
+    "lanzando": "Requesting…"
+  }
+}
