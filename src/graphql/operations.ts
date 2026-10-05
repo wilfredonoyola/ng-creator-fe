@@ -1545,6 +1545,21 @@ export const BORRAR_EPISODIO = gql`
 
 // ---- Editor de clips (ng-creator-be#69) ----
 
+/**
+ * La versión para Facebook de un clip de más de 90 s: un tramo de hasta 90 s
+ * dentro del clip (segundos relativos a su inicio), con su propio render.
+ */
+const CAMPOS_VERSION_CORTA_CLIP = gql`
+  fragment CamposVersionCortaClip on VersionCortaClip {
+    desdeSeg
+    hastaSeg
+    estadoRender
+    progresoRender
+    errorRender
+    urlVideo
+  }
+`;
+
 const CAMPOS_CLIP_EDITOR = gql`
   fragment CamposClipEditor on ClipEpisodio {
     _id
@@ -1629,6 +1644,9 @@ const CAMPOS_CLIP_EDITOR = gql`
     urlPoster
     renderizadoEn
     editadoEn
+    versionFacebook {
+      ...CamposVersionCortaClip
+    }
     tomadoPor {
       usuarioId
       nombre
@@ -1653,6 +1671,7 @@ const CAMPOS_CLIP_EDITOR = gql`
     }
   }
   ${RESUMEN_PUBLICACION_CLIP}
+  ${CAMPOS_VERSION_CORTA_CLIP}
 `;
 
 /** Los colores de la marca para los clips, su logo y su plantilla (be#117). */
@@ -1835,6 +1854,31 @@ export const RENDERIZAR_CLIP_EPISODIO = gql`
   mutation RenderizarClipEpisodio($id: ID!, $marcaId: String!) {
     renderizarClipEpisodio(id: $id, marcaId: $marcaId) {
       ...CamposClipEditor
+    }
+  }
+`;
+
+/** Guarda el tramo de la versión para Facebook (3–90 s) y encola su render. */
+export const GUARDAR_VERSION_FACEBOOK = gql`
+  ${CAMPOS_VERSION_CORTA_CLIP}
+  mutation GuardarVersionFacebook($id: ID!, $marcaId: String!, $desdeSeg: Float!, $hastaSeg: Float!) {
+    guardarVersionFacebook(id: $id, marcaId: $marcaId, desdeSeg: $desdeSeg, hastaSeg: $hastaSeg) {
+      _id
+      versionFacebook {
+        ...CamposVersionCortaClip
+      }
+    }
+  }
+`;
+
+export const QUITAR_VERSION_FACEBOOK = gql`
+  ${CAMPOS_VERSION_CORTA_CLIP}
+  mutation QuitarVersionFacebook($id: ID!, $marcaId: String!) {
+    quitarVersionFacebook(id: $id, marcaId: $marcaId) {
+      _id
+      versionFacebook {
+        ...CamposVersionCortaClip
+      }
     }
   }
 `;

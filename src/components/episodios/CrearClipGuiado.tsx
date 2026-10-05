@@ -8,6 +8,7 @@ import { BUSCAR_EN_EPISODIO, CREAR_CLIP_EPISODIO, TRANSCRIPCION_EPISODIO } from 
 import type { ControlReproductor } from "@/components/ReproductorEpisodio";
 import type { FormatoClip } from "@/lib/clip-encuadre";
 import { useSesion } from "@/lib/sesion";
+import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
 
 /**
@@ -306,6 +307,7 @@ export function CrearClipGuiado({
             })}
           </div>
           {duracion > MAXIMO_SEG && <p className="text-xs text-red-400">{t("maximo")}</p>}
+          {duracion <= MAXIMO_SEG && <AvisoVersionFacebook duracion={duracion} />}
           <button
             disabled={duracion < 1 || duracion > MAXIMO_SEG}
             onClick={() => {

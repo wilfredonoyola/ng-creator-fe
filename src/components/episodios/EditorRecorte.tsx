@@ -6,6 +6,7 @@ import { useHls } from "@/lib/use-hls";
 import { dibujarSubtitulos, dibujarTexto, ganchoDeLlamada, type Dibujo, type EstiloResuelto, type EstiloTexto, type Tema } from "@/lib/estilos-texto";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { Pista } from "@/components/Pista";
+import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
 import { Info } from "lucide-react";
@@ -1123,6 +1124,7 @@ function BarraDelTramo({
           </button>
         </div>
       </div>
+      <AvisoVersionFacebook duracion={hasta - desde} />
     </div>
   );
 }
