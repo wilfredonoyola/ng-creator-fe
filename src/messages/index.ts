@@ -83,6 +83,7 @@ import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import revival_es from "./es/revival.json";
 import revivalPanel_es from "./es/revivalPanel.json";
 import revivalTarjeta_es from "./es/revivalTarjeta.json";
+import versionFacebook_es from "./es/versionFacebook.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import brandKit_en from "./en/brandKit.json";
@@ -167,6 +168,7 @@ import revisionVideoCard_en from "./en/revisionVideoCard.json";
 import revival_en from "./en/revival.json";
 import revivalPanel_en from "./en/revivalPanel.json";
 import revivalTarjeta_en from "./en/revivalTarjeta.json";
+import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
@@ -254,6 +256,7 @@ export const mensajes = {
     "revival": revival_es,
     "revivalPanel": revivalPanel_es,
     "revivalTarjeta": revivalTarjeta_es,
+    "versionFacebook": versionFacebook_es,
   },
   en: {
     "analisis": analisis_en,
@@ -340,6 +343,7 @@ export const mensajes = {
     "revival": revival_en,
     "revivalPanel": revivalPanel_en,
     "revivalTarjeta": revivalTarjeta_en,
+    "versionFacebook": versionFacebook_en,
   },
 };
 

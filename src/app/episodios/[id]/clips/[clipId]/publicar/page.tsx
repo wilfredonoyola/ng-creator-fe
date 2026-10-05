@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -24,6 +24,12 @@ import {
 } from "@/lib/publicaciones";
 import type { CanalYoutube } from "@/components/CanalesYoutube";
 import { IconoRed, Poster } from "@/components/IconoRed";
+import {
+  REEL_FACEBOOK_MAX_SEG,
+  SeccionVersionFacebook,
+  versionEnCurso,
+  type VersionCortaClip,
+} from "@/components/episodios/VersionFacebook";
 
 type Red = "FACEBOOK" | "INSTAGRAM" | "YOUTUBE";
 
@@ -77,6 +83,15 @@ export default function ProgramarClipPage({
   });
 
   const clip = clipQ.data?.clipEpisodio;
+  // Mientras se procesa la versión para Facebook, el clip se refresca solo,
+  // como en el editor con el render del clip.
+  const versionProcesando = versionEnCurso(clip?.versionFacebook);
+  const { startPolling, stopPolling } = clipQ;
+  useEffect(() => {
+    if (versionProcesando) startPolling(4000);
+    else stopPolling();
+    return () => stopPolling();
+  }, [versionProcesando, startPolling, stopPolling]);
   const destinos: Destino[] = [];
   const pagina = activa?.paginaFacebook;
   if (pagina) {
@@ -189,6 +204,8 @@ function Formulario({
     desdeSeg: number;
     editadoEn?: string | null;
     renderizadoEn?: string | null;
+    urlVideo: string;
+    versionFacebook?: VersionCortaClip | null;
   };
   marcaId: string;
   opera: boolean;
@@ -199,6 +216,7 @@ function Formulario({
   refrescar: () => void;
 }) {
   const t = useTranslations("publicarClip");
+  const tv = useTranslations("versionFacebook");
   const locale = useLocale();
   const [elegidos, setElegidos] = useState<Set<string>>(
     () =>
@@ -217,6 +235,14 @@ function Formulario({
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; texto: string } | null>(null);
 
   const elegidosEnOrden = destinos.filter((d) => elegidos.has(d.clave));
+  // Un Reel de Facebook dura hasta 90 s: un clip más largo sale en Facebook con
+  // su versión corta, y hasta que esté lista Facebook espera. Las otras redes no.
+  const duracionClip = clip.hastaSeg - clip.desdeSeg;
+  const necesitaVersion = duracionClip > REEL_FACEBOOK_MAX_SEG;
+  const conFacebook = elegidosEnOrden.some((d) => d.red === "FACEBOOK");
+  const facebookEspera = necesitaVersion && clip.versionFacebook?.estadoRender !== "LISTO";
+  const esperaVersion = (d: Destino) => d.red === "FACEBOOK" && facebookEspera;
+  const aProgramar = elegidosEnOrden.filter((d) => !esperaVersion(d));
   const conYoutube = destinos.some((d) => d.red === "YOUTUBE" && elegidos.has(d.clave));
   const editadoSinProcesar =
     clip.editadoEn &&
@@ -243,7 +269,7 @@ function Formulario({
   }
 
   async function enviar() {
-    const aEnviar = destinos.filter((d) => elegidos.has(d.clave));
+    const aEnviar = aProgramar;
     if (!aEnviar.length) return;
     setAviso(null);
     if (!cuando || yaPaso) {
@@ -319,11 +345,14 @@ function Formulario({
                   {elegidosEnOrden.map((d) => (
                     <span
                       key={d.clave}
-                      className="flex max-w-full items-center gap-1.5 rounded-full border border-ng-azul/60 bg-ng-azul/10 py-0.5 pl-0.5 pr-2 text-xs"
+                      className={`flex max-w-full items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2 text-xs ${
+                        esperaVersion(d) ? "border-amber-300/50 bg-amber-300/10" : "border-ng-azul/60 bg-ng-azul/10"
+                      }`}
                     >
                       <IconoRed url={d.foto} red={d.red} chico />
                       <span className="truncate">
                         {REDES[d.red]?.nombre ?? d.red} · {d.nombre}
+                        {esperaVersion(d) ? ` · ${tv("faltaVersionCorto")}` : ""}
                       </span>
                     </span>
                   ))}
@@ -331,14 +360,23 @@ function Formulario({
               ) : (
                 <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p>
               )}
+              {conFacebook && facebookEspera ? (
+                <p className="text-xs text-amber-300">
+                  {aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}
+                </p>
+              ) : null}
             </div>
             <button
               type="button"
               onClick={() => void enviar()}
-              disabled={enviando || elegidos.size === 0 || yaPaso}
+              disabled={enviando || aProgramar.length === 0 || yaPaso}
               className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
             >
-              {enviando ? t("programando") : elegidos.size > 1 ? t("programarEnN", { n: elegidos.size }) : t("programar")}
+              {enviando
+                ? t("programando")
+                : aProgramar.length > 1
+                  ? t("programarEnN", { n: aProgramar.length })
+                  : t("programar")}
             </button>
           </div>
 
@@ -397,6 +435,16 @@ function Formulario({
               </span>
             </div>
           </Seccion>
+
+          {conFacebook && necesitaVersion ? (
+            <SeccionVersionFacebook
+              clipId={clip._id}
+              marcaId={marcaId}
+              duracionClip={duracionClip}
+              urlVideoClip={clip.urlVideo}
+              version={clip.versionFacebook}
+            />
+          ) : null}
 
           <Seccion titulo={t("secciones.descripcion")}>
             <textarea
