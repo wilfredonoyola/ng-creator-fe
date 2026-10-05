@@ -44,7 +44,7 @@ En un server component de la web: `useTranslations` si no es `async`, o
   que se ponen en un estado, `confirm()`, `Alert.alert`, los títulos de las
   pantallas y los metadatos.
 - **No se traduce**: comentarios, logs, nombres de GraphQL, valores de enums,
-  clases, URLs, nombres propios y de marca (NG Creator, Clipfine, Brand Kit,
+  clases, URLs, nombres propios y de marca (Clipfine, Clipfine, Brand Kit,
   TikTok, Reels, Shorts, YouTube, Facebook, Instagram), lo que escribió el
   usuario y lo que viene del backend (sus errores llegan como llegan, por ahora
   en español).

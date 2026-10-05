@@ -64,7 +64,7 @@ const AUTO_ENCUADRE = ["quienHabla", "divide", "reacciones", "ultimaPalabra", "w
 
 /**
  * Lo que viene para quien transmite desde la computadora: con OBS o
- * Streamlabs, NG Creator como un destino mas, que graba el live mientras sale
+ * Streamlabs, Clipfine como un destino mas, que graba el live mientras sale
  * al aire (todavia no existe: la seccion va como "Proximamente"). TikTok LIVE
  * Studio no manda a un segundo destino, pero graba el lienzo en un archivo
  * (MP4, MOV o MKV) de mejor calidad que la repeticion de TikTok: ese archivo
@@ -91,7 +91,7 @@ const ENTRADAS = [
   { clave: "obs", pronto: true },
 ] as const;
 
-/** Lo que hoy hace falta para lo mismo, sin NG Creator. */
+/** Lo que hoy hace falta para lo mismo, sin Clipfine. */
 const ANTES = ["drive", "verEntero", "cortar", "subtitulos", "whatsapp", "descargar"] as const;
 
 const FUNCIONES = [
@@ -154,7 +154,7 @@ export default function Producto() {
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      name: "NG Creator",
+      name: "Clipfine",
       applicationCategory: "MultimediaApplication",
       operatingSystem: "Web, iOS, Android",
       inLanguage: locale,

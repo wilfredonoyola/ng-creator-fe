@@ -1,4 +1,4 @@
-# NG Video Creator — Frontend
+# Clipfine — Frontend
 
 Interfaz de operación. Next.js (App Router) + React + Tailwind + Apollo Client.
 

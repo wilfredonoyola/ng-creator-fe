@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: t("titulo"), template: t("plantillaTitulo") },
     description: t("descripcion"),
     keywords: t("palabrasClave").split(", "),
-    openGraph: { type: "website", locale: locale === "es" ? "es_419" : "en_US", siteName: "NG Creator", url: "/" },
+    openGraph: { type: "website", locale: locale === "es" ? "es_419" : "en_US", siteName: "Clipfine", url: "/" },
     twitter: { card: "summary_large_image" },
     manifest: "/manifest.webmanifest",
     icons: {
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     appleWebApp: {
       capable: true,
-      title: "NG Creator",
+      title: "Clipfine",
       // La barra de estado transparente deja que el fondo oscuro de la app llegue
       // hasta arriba en iOS, en vez de cortarse con una franja blanca.
       statusBarStyle: "black-translucent",

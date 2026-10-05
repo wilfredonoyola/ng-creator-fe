@@ -2,11 +2,11 @@
   "plantillas": {
     "solicitudUso": {
       "nombre": "Solicitud de uso",
-      "texto": "Hola {nombre}!\n\nSomos el equipo de NG Video Creator y nos encanto tu video. Nos gustaria saber si nos darias permiso para usarlo en nuestras redes sociales.\n\nTe dariamos credito como @{handle} en todas las publicaciones.\n\nGracias!"
+      "texto": "Hola {nombre}!\n\nSomos el equipo de Clipfine y nos encanto tu video. Nos gustaria saber si nos darias permiso para usarlo en nuestras redes sociales.\n\nTe dariamos credito como @{handle} en todas las publicaciones.\n\nGracias!"
     },
     "solicitudExclusiva": {
       "nombre": "Solicitud exclusiva Meta",
-      "texto": "Hola {nombre}!\n\nSomos NG Video Creator. Nos interesa tu contenido para publicar de forma exclusiva en Meta (Facebook/Instagram).\n\nEsto significa que seriamos los unicos que podrian publicar tu video en estas plataformas, y te dariamos credito siempre.\n\nTe parece bien? Podemos hablar de los detalles.\n\nGracias!"
+      "texto": "Hola {nombre}!\n\nSomos Clipfine. Nos interesa tu contenido para publicar de forma exclusiva en Meta (Facebook/Instagram).\n\nEsto significa que seriamos los unicos que podrian publicar tu video en estas plataformas, y te dariamos credito siempre.\n\nTe parece bien? Podemos hablar de los detalles.\n\nGracias!"
     },
     "agradecimiento": {
       "nombre": "Agradecimiento por permiso",

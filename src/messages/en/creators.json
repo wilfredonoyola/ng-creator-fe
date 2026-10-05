@@ -2,11 +2,11 @@
   "plantillas": {
     "solicitudUso": {
       "nombre": "Usage request",
-      "texto": "Hi {nombre}!\n\nWe're the NG Video Creator team and we loved your video. We'd like to know if you'd give us permission to use it on our social media.\n\nWe'd credit you as @{handle} in every post.\n\nThanks!"
+      "texto": "Hi {nombre}!\n\nWe're the Clipfine team and we loved your video. We'd like to know if you'd give us permission to use it on our social media.\n\nWe'd credit you as @{handle} in every post.\n\nThanks!"
     },
     "solicitudExclusiva": {
       "nombre": "Meta exclusive request",
-      "texto": "Hi {nombre}!\n\nWe're NG Video Creator. We're interested in publishing your content exclusively on Meta (Facebook/Instagram).\n\nThat means we'd be the only ones who could publish your video on these platforms, and we'd always give you credit.\n\nDoes that sound good? We can talk through the details.\n\nThanks!"
+      "texto": "Hi {nombre}!\n\nWe're Clipfine. We're interested in publishing your content exclusively on Meta (Facebook/Instagram).\n\nThat means we'd be the only ones who could publish your video on these platforms, and we'd always give you credit.\n\nDoes that sound good? We can talk through the details.\n\nThanks!"
     },
     "agradecimiento": {
       "nombre": "Thanks for permission",

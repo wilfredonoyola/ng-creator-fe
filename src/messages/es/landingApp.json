@@ -1,7 +1,7 @@
 {
   "meta": {
-    "titulo": "App para editar clips de podcast desde el celular — NG Creator",
-    "descripcion": "La app de NG Creator para iPhone y Android: revisá los clips que la IA encontró en tu podcast, con su potencial viral y lo que se dice, y editalos rápido desde el teléfono."
+    "titulo": "App para editar clips de podcast desde el celular — Clipfine",
+    "descripcion": "La app de Clipfine para iPhone y Android: revisá los clips que la IA encontró en tu podcast, con su potencial viral y lo que se dice, y editalos rápido desde el teléfono."
   },
   "hoy": {
     "episodios": {
@@ -79,7 +79,7 @@
   "porQue": {
     "titulo": "Por qué editar rápido importa",
     "p1": "Un episodio de podcast rinde en redes el día que sale, no una semana después. Buscar los momentos a mano en dos horas de video, recortarlos en otro programa, ponerles subtítulos y exportarlos se come una tarde entera por episodio.",
-    "p2": "Con NG Creator esa parte ya está hecha cuando abrís la app: el episodio transcrito, los momentos marcados y cada clip armado en vertical. Lo que queda es lo que necesita a una persona: elegir, ajustar y aprobar."
+    "p2": "Con Clipfine esa parte ya está hecha cuando abrís la app: el episodio transcrito, los momentos marcados y cada clip armado en vertical. Lo que queda es lo que necesita a una persona: elegir, ajustar y aprobar."
   },
   "verPlanes": "Ver planes"
 }

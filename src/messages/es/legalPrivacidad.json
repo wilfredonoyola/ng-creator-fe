@@ -1,12 +1,12 @@
 {
   "meta": {
     "titulo": "Política de privacidad",
-    "descripcion": "Qué datos trata NG Creator, para qué, con qué proveedores se comparten, cuánto se conservan y cómo pedir su eliminación."
+    "descripcion": "Qué datos trata Clipfine, para qué, con qué proveedores se comparten, cuánto se conservan y cómo pedir su eliminación."
   },
   "titulo": "Política de privacidad",
   "s1": {
     "titulo": "1. Quién es responsable",
-    "p1": "NG Creator (en adelante, «el servicio») es una plataforma para convertir episodios de podcast en video en clips para redes sociales, editarlos en equipo y publicarlos. La opera {responsable}, con domicilio en El Salvador, que es la responsable de los datos que se describen aquí. El servicio se usa desde la web (creator.ngstudios.co) y desde las apps para iPhone y Android.",
+    "p1": "Clipfine (en adelante, «el servicio») es una plataforma para convertir episodios de podcast en video en clips para redes sociales, editarlos en equipo y publicarlos. La opera {responsable}, con domicilio en El Salvador, que es la responsable de los datos que se describen aquí. El servicio se usa desde la web (creator.ngstudios.co) y desde las apps para iPhone y Android.",
     "p2": "Para cualquier consulta sobre esta política o sobre tus datos, escribí a <correo></correo>."
   },
   "s2": {
@@ -78,8 +78,8 @@
     "titulo": "9. Cómo revocar el acceso a las redes",
     "p1": "Desde el servicio, en <em>Redes conectadas</em>, la opción «Desconectar» de cada página, canal o cuenta borra sus tokens y la deja de usar como destino; en YouTube y TikTok, además, le pide a la red que revoque el acceso. También podés revocarlo directamente en cada red, y conviene hacer las dos cosas:",
     "facebook": "<b>Facebook:</b> <em>Configuración y privacidad → Configuración → Apps y sitios web</em>, eliminando la app.",
-    "youtube": "<b>YouTube:</b> en la <enlace>página de permisos de tu cuenta de Google</enlace>, quitando el acceso de NG Creator.",
-    "tiktok": "<b>TikTok:</b> en la app, <em>Perfil → Configuración y privacidad → Seguridad y permisos → Apps y servicios</em>, quitando NG Creator."
+    "youtube": "<b>YouTube:</b> en la <enlace>página de permisos de tu cuenta de Google</enlace>, quitando el acceso de Clipfine.",
+    "tiktok": "<b>TikTok:</b> en la app, <em>Perfil → Configuración y privacidad → Seguridad y permisos → Apps y servicios</em>, quitando Clipfine."
   },
   "s10": {
     "titulo": "10. Tus derechos y cómo eliminar tu cuenta",

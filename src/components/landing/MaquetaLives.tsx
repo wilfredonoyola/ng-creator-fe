@@ -3,12 +3,12 @@ import { useTranslations } from "next-intl";
 
 /**
  * Lo que viene para quien transmite desde la computadora: OBS mandando el live
- * a TikTok y, a la vez, a NG Creator, que lo graba; al terminar, los clips.
+ * a TikTok y, a la vez, a Clipfine, que lo graba; al terminar, los clips.
  * Dibujado con HTML, como las otras maquetas de la landing.
  */
 const DESTINOS = [
   { nombre: "TikTok LIVE", grabando: false, tono: "text-red-400", punto: "bg-red-500" },
-  { nombre: "NG Creator", grabando: true, tono: "text-ng-teal", punto: "bg-ng-teal" },
+  { nombre: "Clipfine", grabando: true, tono: "text-ng-teal", punto: "bg-ng-teal" },
 ];
 
 const CLIPS = ["dinero", "pregunta", "rieron"] as const;

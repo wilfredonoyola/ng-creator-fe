@@ -96,7 +96,7 @@ export function DashboardLayout({
             />
           )}
           <span className="truncate text-sm font-medium">
-            {activa?.nombre ?? "Creator Studio"}
+            {activa?.nombre ?? "Clipfine"}
           </span>
           <span className="text-[10px] text-white/30">▾</span>
         </button>
