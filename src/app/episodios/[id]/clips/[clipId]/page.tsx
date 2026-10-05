@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import {
   ACTUALIZAR_CLIP_EPISODIO,
   CLIP_EPISODIO,
-  EPISODIO,
+  EPISODIO_EDITOR,
   RENDERIZAR_CLIP_EPISODIO,
   AUTO_ENCUADRAR_CLIP_EPISODIO,
   DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO,
@@ -99,7 +99,7 @@ export default function EditorClipPage({
     variables: { id: clipId, marcaId: marcaId ?? "" },
     skip: !marcaId,
   });
-  const episodioQ = useQuery(EPISODIO, {
+  const episodioQ = useQuery(EPISODIO_EDITOR, {
     variables: { id: episodioId, marcaId: marcaId ?? "" },
     skip: !marcaId,
   });
@@ -116,6 +116,15 @@ export default function EditorClipPage({
   const clip = clipQ.data?.clipEpisodio;
   const estilo: EstiloClip | undefined = clipQ.data?.estiloClipMarca;
   const ep = episodioQ.data?.episodio;
+  // La resolución de la fuente para la calidad estimada: la del original según
+  // Bunny; si no la sabe, la que midió el último render. Sin ninguna de las
+  // dos no se estima (el HLS de la vista previa no sirve: arranca en la
+  // calidad más baja).
+  const resolucionFuente: { ancho: number; alto: number } | null =
+    ep?.resolucionOriginal ??
+    (clip?.calidad?.fuenteAncho && clip.calidad.fuenteAlto
+      ? { ancho: clip.calidad.fuenteAncho, alto: clip.calidad.fuenteAlto }
+      : null);
 
   const [b, setB] = useState<Borrador | null>(null);
   const [guardando, setGuardando] = useState(false);
@@ -778,6 +787,7 @@ export default function EditorClipPage({
           <div className="editor-contenedor md:min-h-0 md:flex-1">
             <EditorRecorte
               url={ep.urlReproduccion}
+              resolucionFuente={resolucionFuente}
               desde={b.desdeSeg}
               hasta={b.hastaSeg}
               formato={b.formato}

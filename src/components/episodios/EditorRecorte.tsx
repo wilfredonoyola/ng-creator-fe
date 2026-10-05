@@ -105,8 +105,14 @@ export function EditorRecorte({
   autoEncuadre,
   estiloTexto = null,
   nombreMarca,
+  resolucionFuente = null,
 }: {
   url: string;
+  /**
+   * La resolución de la fuente para la calidad estimada: la del original o la
+   * medida en el último render. Null = no se muestra la estimada.
+   */
+  resolucionFuente?: { ancho: number; alto: number } | null;
   /** Segundos del episodio. */
   desde: number;
   hasta: number;
@@ -172,18 +178,17 @@ export function EditorRecorte({
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
   const lienzoRef = useRef<HTMLCanvasElement>(null);
+  // La proporción del video de la vista previa: con ella se ubican los
+  // recortes. NO es la resolución de la fuente (el HLS puede estar bajando una
+  // calidad menor); esa llega en `resolucionFuente`.
   const [fuente, setFuente] = useState({ ancho: 1280, alto: 720 });
-  // Para la calidad estimada: la resolución real de la fuente. Hasta que el
-  // video la dice, no se estima. Con hls.js, la mayor que ofrece el HLS (el
-  // video puede estar bajando una menor).
-  const [resolucion, setResolucion] = useState<{ ancho: number; alto: number } | null>(null);
   const [t, setT] = useState(desde);
   const [sonando, setSonando] = useState(false);
   const [anchoVista, setAnchoVista] = useState(0);
   // La red encima de la vista previa (lib/plataformas): solo para mirar, no va al render.
   const [plataforma, setPlataforma] = useState<Plataforma | null>(null);
   const vista = useRef<HTMLDivElement>(null);
-  useHls(video, url, (r) => setResolucion((v) => (v && v.ancho * v.alto >= r.ancho * r.alto ? v : r)));
+  useHls(video, url);
 
   const duracion = hasta - desde;
   const plantilla = plantillaDelClip(estilo, plantillaActiva, duracion);
@@ -195,7 +200,9 @@ export function EditorRecorte({
   const tc = Math.min(Math.max(0, t - desde), duracion);
   const lienzo = LIENZOS[formato];
   // La calidad estimada: cambia al mover el zoom, el encuadre o el diseño.
-  const calidad = resolucion ? calidadDePosiciones(posiciones, formato, resolucion) : null;
+  // Las regiones son fracciones del cuadro, así que valen igual para el
+  // original, que tiene la misma proporción que la vista previa.
+  const calidad = resolucionFuente ? calidadDePosiciones(posiciones, formato, resolucionFuente) : null;
   const activa = posicionEn(posiciones, tc);
   const indiceActiva = posiciones.indexOf(activa);
   // Cada tramo tiene su diseño (be#105, etapa 2): los recuadros son los del
@@ -537,8 +544,6 @@ export function EditorRecorte({
               const v = e.currentTarget;
               if (v.videoWidth && v.videoHeight) {
                 setFuente({ ancho: v.videoWidth, alto: v.videoHeight });
-                const r = { ancho: v.videoWidth, alto: v.videoHeight };
-                setResolucion((x) => (x && x.ancho * x.alto >= r.ancho * r.alto ? x : r));
               }
               v.currentTime = desde;
             }}
