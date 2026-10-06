@@ -18,6 +18,8 @@ export interface Publicacion {
    * es lo que ya tiene Meta: sale solo y no se toca desde acá.
    */
   estado: EstadoPublicacion;
+  /** 'upload-post' o 'propio': por dónde sale. */
+  proveedor?: string | null;
   publicarEn: string;
   intentos: number;
   error?: string | null;

@@ -26,6 +26,7 @@ import {
 } from "@/lib/publicaciones";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 import type { Autoria } from "@/components/episodios/TomarClip";
+import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 
 interface PublicacionCalendario extends Publicacion {
   /** El clip de la publicación; null en las de expedientes o si se borró. */
@@ -384,6 +385,7 @@ function ChipRed({ p, titulo, opera }: { p: PublicacionCalendario; titulo: strin
       <IconoRed red={p.red} chico />
       <span className={`truncate ${p.estado === "CANCELADA" ? "line-through" : ""}`}>{cuenta}</span>
       <span className={`shrink-0 rounded-full px-1.5 ${claseEstado}`}>{textoEstado}</span>
+      <EtiquetaProveedor proveedor={p.proveedor} />
     </>
   );
 

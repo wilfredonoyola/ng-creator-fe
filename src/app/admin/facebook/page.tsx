@@ -17,6 +17,7 @@ import {
   QUERIES_UPLOAD_POST,
   REDES_UPLOAD_POST,
   type Red,
+  metaPropiaApagada,
   useCuentasUploadPost,
   useProveedores,
   useUploadPost,
@@ -67,6 +68,8 @@ export default function AdminFacebookPage() {
   const redesUploadPost = REDES_UPLOAD_POST.filter((r) => proveedores[r] === "upload-post");
   const metaPorUploadPost =
     proveedores.FACEBOOK === "upload-post" || proveedores.INSTAGRAM === "upload-post";
+  // Pasos 1-3 de Meta fuera mientras todo sale por Upload-Post.
+  const sinMetaPropia = metaPropiaApagada(proveedores);
 
   const { data: estado, loading: cargandoEstado } = useQuery(FACEBOOK_ESTADO, {
     errorPolicy: "all",
@@ -170,6 +173,10 @@ export default function AdminFacebookPage() {
       <AjustesPublicacionMarca />
       {redesUploadPost.length > 0 && <SeccionUploadPost redes={redesUploadPost} />}
 
+      {sinMetaPropia ? (
+        <p className="mb-3 text-xs text-white/40">{tUp("propiaMetaApagada")}</p>
+      ) : (
+        <>
       {metaPorUploadPost && (
         <p className="mb-3 text-xs text-white/40">{tUp("propiaMeta")}</p>
       )}
@@ -361,6 +368,8 @@ FACEBOOK_TOKEN_KEY=`}
             {t("listoDetalle")}
           </p>
         </div>
+      )}
+        </>
       )}
 
       {proveedores.YOUTUBE === "propio" && <CanalesYoutube />}

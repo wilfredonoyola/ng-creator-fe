@@ -20,5 +20,6 @@
   "soloPropietario": "Only the brand owner can connect and disconnect accounts.",
   "sincronizando": "Fetching the connected account…",
   "conectada": "Account connected",
-  "propiaMeta": "For revival and stats; clips are published through Upload-Post."
+  "propiaMeta": "For revival and stats; clips are published through Upload-Post.",
+  "propiaMetaApagada": "The direct Facebook connection is turned off; everything is published through Upload-Post."
 }
