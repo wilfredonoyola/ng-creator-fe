@@ -31,12 +31,12 @@
     "editadoPor": "Editado por {nombre}",
     "sinDescripcion": "Sin descripción",
     "errorCancelar": "No se pudo cancelar",
-    "ver": "Ver ↗",
     "cambiarHora": "Cambiar hora",
     "reintentando": "Reintentando: ",
-    "canceladaPor": "Cancelada por {nombre}",
     "confirmarQuitar": "¿Quitar {red} de este clip?",
-    "quitarRed": "Quitar {red} de «{titulo}»"
+    "quitarRed": "Quitar {red} de este clip",
+    "apagada": "No sale en {red}",
+    "verEn": "Ver en {red}"
   },
   "cambiarHora": {
     "titulo": "Cambiar hora",

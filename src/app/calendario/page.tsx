@@ -22,11 +22,11 @@ import {
   diaYHora,
   horaCorta,
   zonaHoraria,
+  type EstadoPublicacion,
   type Publicacion,
 } from "@/lib/publicaciones";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 import type { Autoria } from "@/components/episodios/TomarClip";
-import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 
 interface PublicacionCalendario extends Publicacion {
   /** El clip de la publicación; null en las de expedientes o si se borró. */
@@ -55,7 +55,7 @@ const MARGEN_MS = 60_000;
 const REFETCH = ["PublicacionesDeMarca", "ClipsListosSinProgramar", "ClipsDeEpisodio", "ClipEpisodio"];
 
 /**
- * Las publicaciones del mismo clip a la misma hora: una tarjeta, con un chip
+ * Las publicaciones del mismo clip a la misma hora: una tarjeta, con un logo
  * por red. Es como se programan (un clip, varias redes, una hora), y así se
  * quita una red sin tocar las otras. Lo que no es de un clip va solo.
  */
@@ -130,6 +130,7 @@ export default function CalendarioPage() {
       const fin = sumarDias(dia, 1).getTime();
       const pubs = visibles
         .filter((p) => {
+          if (p.estado === "CANCELADA") return false;
           const ms = new Date(p.publicarEn).getTime();
           return ms >= desde && ms < fin;
         })
@@ -213,7 +214,7 @@ export default function CalendarioPage() {
           return (
             <section
               key={dia.toISOString()}
-              className={`rounded-xl border p-2 xl:min-h-[12rem] ${
+              className={`min-w-0 rounded-xl border p-2 xl:min-h-[12rem] ${
                 hoy ? "border-ng-azul/50 bg-ng-azul/[0.04]" : "border-white/10 bg-white/[0.02]"
               }`}
             >
@@ -319,10 +320,9 @@ function TarjetaGrupo({
       ? `/publicados/${p.expedienteId}`
       : null;
   const hayProgramadas = pubs.some((x) => x.estado === "PROGRAMADA");
-  const todasCanceladas = pubs.every((x) => x.estado === "CANCELADA");
 
   return (
-    <li className={`rounded-lg border border-white/10 bg-ng-tarjeta p-2 ${todasCanceladas ? "opacity-45" : ""}`}>
+    <li className="min-w-0 rounded-lg border border-white/10 bg-ng-tarjeta p-2">
       <div className="flex gap-2">
         <Poster url={p.clip?.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
         <div className="min-w-0 flex-1">
@@ -332,20 +332,16 @@ function TarjetaGrupo({
             </span>
           </p>
           {enlace ? (
-            <Link href={enlace} className="mt-0.5 line-clamp-2 text-sm leading-snug hover:underline">
+            <Link href={enlace} className="mt-0.5 line-clamp-2 break-words text-sm leading-snug hover:underline">
               {titulo}
             </Link>
           ) : (
-            <p className="mt-0.5 line-clamp-2 text-sm leading-snug">{titulo}</p>
+            <p className="mt-0.5 line-clamp-2 break-words text-sm leading-snug">{titulo}</p>
           )}
           {editor && <p className="truncate text-[11px] text-white/55">{t("tarjeta.editadoPor", { nombre: editor })}</p>}
         </div>
       </div>
-      <div className="mt-1.5 flex flex-wrap gap-1">
-        {pubs.map((x) => (
-          <ChipRed key={x._id} p={x} titulo={titulo} opera={opera} />
-        ))}
-      </div>
+      <LogosDeRedes pubs={pubs} opera={opera} />
       {opera && hayProgramadas && (
         <button onClick={onMover} className="mt-1.5 text-[11px] text-white/55 hover:text-white hover:underline">
           {t("tarjeta.cambiarHora")}
@@ -355,83 +351,115 @@ function TarjetaGrupo({
   );
 }
 
+/** Las cuatro redes, siempre en este orden: encendida la que tiene publicación del clip a esa hora. */
+const ORDEN_REDES = ["TIKTOK", "YOUTUBE", "INSTAGRAM", "FACEBOOK"] as const;
+
 /**
- * Una red de la tarjeta: icono, cuenta y estado. La programada lleva una ✕
- * que la quita solo a ella; lo publicado o fallido se ve, sin ✕.
+ * Una fila de logos en vez de una fila por publicación: se ve de un vistazo en
+ * qué redes sale el clip, y no se desborda de la columna. El estado va en el
+ * logo mismo: ✓ verde publicada, punto rojo fallida, pulso subiendo. Las
+ * canceladas ya vienen afuera. Si hay otras redes (no debería), van al final.
  */
-function ChipRed({ p, titulo, opera }: { p: PublicacionCalendario; titulo: string; opera: boolean }) {
+function LogosDeRedes({ pubs, opera }: { pubs: PublicacionCalendario[]; opera: boolean }) {
+  const otras = Array.from(new Set(pubs.map((x) => x.red))).filter((r) => !(ORDEN_REDES as readonly string[]).includes(r));
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+      {[...ORDEN_REDES, ...otras].map((r) => (
+        <LogoRed key={r} red={r} pubs={pubs.filter((x) => x.red === r)} opera={opera} />
+      ))}
+    </div>
+  );
+}
+
+function LogoRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendario[]; opera: boolean }) {
   const t = useTranslations("calendario");
   const [cancelar, { loading: cancelando }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries: REFETCH });
   const [error, setError] = useState<string | null>(null);
-  const conocido = p.estado in ESTADOS_PUBLICACION;
-  const claseEstado = conocido ? ESTADOS_PUBLICACION[p.estado].clase : "bg-white/10 text-white/60";
-  const textoEstado = conocido ? t(`estados.${p.estado}`) : p.estado;
-  const programada = p.estado === "PROGRAMADA";
-  const red = REDES[p.red]?.nombre ?? p.red;
-  const cuenta = p.cuentaNombre ?? red;
+  const nombre = REDES[red]?.nombre ?? red;
+
+  if (!pubs.length) {
+    return (
+      <span title={t("tarjeta.apagada", { red: nombre })} className="opacity-25 grayscale">
+        <IconoRed red={red} tamano="h-[22px] w-[22px] text-[10px]" />
+      </span>
+    );
+  }
+
+  const fallida = pubs.find((x) => x.estado === "FALLIDA");
+  const publicada = pubs.find((x) => x.estado === "PUBLICADA");
+  const programadas = pubs.filter((x) => x.estado === "PROGRAMADA");
+  const reintento = programadas.find((x) => x.error);
+  const subiendo = pubs.some((x) => x.estado === "SUBIENDO" || x.estado === "PROCESANDO");
+  const quitable = opera && programadas.length > 0;
+  const estado = (e: EstadoPublicacion) => (e in ESTADOS_PUBLICACION ? t(`estados.${e}`) : e);
+  // El detalle de cada publicación de la red, con el motivo si falló: es lo que hay que leer para arreglarlo.
+  const detalle = pubs
+    .map((x) => {
+      const base = `${nombre}${x.cuentaNombre ? ` · ${x.cuentaNombre}` : ""} · ${estado(x.estado)}`;
+      if (!x.error || (x.estado !== "FALLIDA" && x.estado !== "PROGRAMADA")) return base;
+      return `${base}\n${x.estado === "PROGRAMADA" ? t("tarjeta.reintentando") : ""}${x.error}`;
+    })
+    .join("\n");
 
   async function quitar() {
-    if (!window.confirm(t("tarjeta.confirmarQuitar", { red }))) return;
+    if (!window.confirm(t("tarjeta.confirmarQuitar", { red: nombre }))) return;
     setError(null);
     try {
-      await cancelar({ variables: { marcaId: p.marcaId, id: p._id } });
+      // Con duplicados se quitan todas las programadas de la red: es "sacar TikTok del clip".
+      for (const x of programadas) await cancelar({ variables: { marcaId: x.marcaId, id: x._id } });
     } catch (e) {
       setError(e instanceof Error ? e.message : t("tarjeta.errorCancelar"));
     }
   }
 
-  const contenido = (
-    <>
-      <IconoRed red={p.red} chico />
-      <span className={`truncate ${p.estado === "CANCELADA" ? "line-through" : ""}`}>{cuenta}</span>
-      <span className={`shrink-0 rounded-full px-1.5 ${claseEstado}`}>{textoEstado}</span>
-      <EtiquetaProveedor proveedor={p.proveedor} />
-    </>
+  const logo = (
+    <span className={`relative block ${subiendo ? "animate-pulse" : ""}`}>
+      <IconoRed red={red} tamano="h-[22px] w-[22px] text-[10px]" />
+      {fallida ? (
+        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-ng-tarjeta" />
+      ) : publicada ? (
+        <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-bold leading-none text-white ring-2 ring-ng-tarjeta">
+          ✓
+        </span>
+      ) : reintento ? (
+        <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-amber-400 ring-2 ring-ng-tarjeta" />
+      ) : null}
+      {pubs.length > 1 && (
+        <span className="absolute -bottom-1 -right-1.5 rounded-full bg-black/80 px-0.5 text-[8px] font-semibold leading-tight text-white">
+          ×{pubs.length}
+        </span>
+      )}
+    </span>
   );
 
   return (
-    <div className="max-w-full">
-      <span
-        title={`${red} · ${cuenta} · ${textoEstado}${p.canceladoPor?.nombre ? ` · ${t("tarjeta.canceladaPor", { nombre: p.canceladoPor.nombre })}` : ""}`}
-        className={`flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] py-0.5 pl-0.5 text-[11px] ${
-          opera && programada ? "pr-0.5" : "pr-1.5"
-        } ${p.estado === "CANCELADA" ? "opacity-50" : ""}`}
-      >
-        {p.estado === "PUBLICADA" && p.permalink ? (
-          <a
-            href={p.permalink}
-            target="_blank"
-            rel="noreferrer"
-            className="flex min-w-0 items-center gap-1 hover:underline"
-            aria-label={`${red} · ${t("tarjeta.ver")}`}
-          >
-            {contenido}
-          </a>
-        ) : (
-          contenido
-        )}
-        {opera && programada && (
-          <button
-            onClick={() => void quitar()}
-            disabled={cancelando}
-            aria-label={t("tarjeta.quitarRed", { red, titulo })}
-            title={t("tarjeta.quitarRed", { red, titulo })}
-            className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white/50 hover:bg-red-500/20 hover:text-red-400 disabled:opacity-50"
-          >
-            {cancelando ? "…" : "✕"}
-          </button>
-        )}
-      </span>
-      {/* El motivo del fallo a la vista: es lo que hay que leer para arreglarlo.
-          En una programada, es un intento que falló y espera su reintento. */}
-      {p.error && (p.estado === "FALLIDA" || programada) && (
-        <p className={`mt-0.5 break-words text-[11px] ${programada ? "text-amber-400/80" : "text-red-400"}`}>
-          {red}: {programada ? t("tarjeta.reintentando") : ""}
-          {p.error}
-        </p>
+    <span className="group relative" title={detalle}>
+      {publicada?.permalink ? (
+        <a href={publicada.permalink} target="_blank" rel="noreferrer" aria-label={t("tarjeta.verEn", { red: nombre })}>
+          {logo}
+        </a>
+      ) : (
+        <span tabIndex={quitable ? 0 : undefined} aria-label={detalle} className="block rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ng-azul">
+          {logo}
+        </span>
       )}
-      {error && <p className="mt-0.5 text-[11px] text-red-400">{error}</p>}
-    </div>
+      {quitable && (
+        <button
+          onClick={() => void quitar()}
+          disabled={cancelando}
+          aria-label={t("tarjeta.quitarRed", { red: nombre })}
+          title={t("tarjeta.quitarRed", { red: nombre })}
+          className="absolute -right-1.5 -top-1.5 z-10 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-neutral-800 text-[8px] leading-none text-white/80 opacity-0 ring-1 ring-white/30 transition hover:bg-red-500 hover:text-white focus:opacity-100 group-focus-within:opacity-100 group-hover:opacity-100 disabled:opacity-100"
+        >
+          {cancelando ? "…" : "✕"}
+        </button>
+      )}
+      {error && (
+        <span role="alert" title={error} className="absolute left-0 top-full z-10 mt-0.5 whitespace-nowrap text-[10px] text-red-400">
+          {t("tarjeta.errorCancelar")}
+        </span>
+      )}
+    </span>
   );
 }
 
