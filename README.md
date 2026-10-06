@@ -66,10 +66,9 @@ El permiso es **por página**, no global. Los roles son `PROPIETARIO`, `EDITOR`,
 | `/crear` | Wizard de ingesta: clip + nota de voz + licencia |
 | `/revision` | La cola: video, guion, checklist del validador, y aprobar / regenerar / descartar |
 | `/publicados` | Lo que ya salió |
-| `/revival` | Historial de la fan page rankeado, y el flujo de reciclaje |
 | `/creators` | Creadores y licencias |
 | `/admin/equipo` | Quién trabaja en la página activa: invitar, cambiar rol, quitar acceso |
-| `/admin/facebook` | Conectar cuentas, habilitar páginas, logo de marca de agua |
+| `/admin/facebook` | Conectar cuentas, habilitar páginas, logo de la marca |
 | `/admin/facebook/callback` | Vuelta del OAuth de Meta |
 | `/login` | Ingreso, en uno o dos pasos (ver abajo) |
 | `/privacidad`, `/terminos` | Públicas, sin sesión: Meta exige encontrarlas |
@@ -94,7 +93,7 @@ src/
     layout.tsx           raíz, metadata y PWA
     providers.tsx        Apollo + SesionProvider + PaginaActivaProvider
     page.tsx             tablero
-    crear/ revision/ publicados/ revival/ creators/
+    crear/ revision/ publicados/ creators/
     admin/equipo/        equipo de la página activa
     admin/facebook/      integración con Meta (+ callback/)
     login/ privacidad/ terminos/
@@ -104,8 +103,6 @@ src/
     NavInferior.tsx      barra inferior de móvil
     PageSwitcher.tsx     switch de espacio de trabajo
     TarjetaRevision.tsx  video + guion + checklist + acciones
-    TarjetaRevival.tsx   tarjeta de la galería de reciclaje
-    PanelRevival.tsx     flujo de reciclaje de un post
     PublicarEnFacebook.tsx  destino, formato e historial de intentos
     CreateVideoWizard.tsx / SubirClip.tsx / VoiceRecorder.tsx  ingesta
     SelloDeAutoria.tsx   "programado por Camilo, hace 2 días"

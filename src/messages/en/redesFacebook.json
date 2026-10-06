@@ -11,7 +11,7 @@
     "titulo": "Meta app credentials",
     "listo": "The backend has the app credentials loaded.",
     "falta": "The Meta app isn't configured in the backend yet. Create a Business-type app at developers.facebook.com and add to the <code>.env</code>:",
-    "permisos": "Permissions to request: <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>pages_manage_posts</code>. Optional: <code>read_insights</code> (reach and impressions for the history; without it Revival still ranks, but only by reactions, comments and shares).",
+    "permisos": "Permissions to request: <code>pages_show_list</code>, <code>pages_read_engagement</code>, <code>pages_manage_posts</code>. Optional: <code>read_insights</code> (reach and impressions for the history; without it analytics still work, but only with reactions, comments and shares).",
     "redirect": "The redirect URI must be registered <em>exactly the same</em> in the app, or Meta rejects the login."
   },
   "paso2": {

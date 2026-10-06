@@ -32,7 +32,7 @@ const esDia = (d: string): d is DiaSemana => (DIAS_SEMANA as readonly string[]).
 /**
  * Qué y cuándo conviene publicar, según el historial de la página.
  *
- * Trabaja sobre el historial que Revival ya sincronizó, no sobre la API de
+ * Trabaja sobre el historial de Facebook ya sincronizado, no sobre la API de
  * Meta: además de ser inmediato, en junio de 2026 Meta dio de baja buena parte
  * de las métricas de Page Insights, así que apoyarse en ellas sería construir
  * sobre algo que ya se rompió una vez.

@@ -31,12 +31,6 @@
   ],
   "shortcuts": [
     {
-      "name": "Revival",
-      "short_name": "Revival",
-      "description": "El historial rankeado por rendimiento",
-      "url": "/revival"
-    },
-    {
       "name": "Revisión",
       "short_name": "Revisión",
       "description": "La cola de videos por aprobar",

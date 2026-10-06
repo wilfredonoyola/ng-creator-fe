@@ -381,8 +381,7 @@ FACEBOOK_TOKEN_KEY=`}
 /**
  * Publicar por Upload-Post (las redes que el backend tiene en 'upload-post'):
  * cada marca tiene su perfil allá, y en él se conectan sus cuentas, red por
- * red. La conexión propia de Facebook sigue más abajo para el revival y las
- * estadísticas.
+ * red. La conexión propia de Facebook sigue más abajo para las estadísticas.
  */
 function SeccionUploadPost({ redes }: { redes: Red[] }) {
   const t = useTranslations("redesUploadPost");
