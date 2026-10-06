@@ -40,6 +40,7 @@ import {
   versionEnCurso,
   type VersionCortaClip,
 } from "@/components/episodios/VersionFacebook";
+import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 
 /** Con menos margen, la hora ya pasó cuando llega al servidor. */
 const MARGEN_MS = 60_000;
@@ -634,6 +635,7 @@ function FilaPublicacionClip({
           {REDES[p.red]?.nombre ?? p.red}
           {p.cuentaNombre ? ` · ${p.cuentaNombre}` : ""}
         </p>
+        <EtiquetaProveedor proveedor={p.proveedor} />
         <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.clase}`}>{e.texto}</span>
       </div>
       {fecha ? (

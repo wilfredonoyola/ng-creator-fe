@@ -513,6 +513,7 @@ const CAMPOS_PUBLICACION = gql`
     expedienteId
     formato
     estado
+    proveedor
     publicarEn
     intentos
     error

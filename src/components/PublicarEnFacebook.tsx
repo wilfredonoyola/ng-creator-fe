@@ -11,12 +11,14 @@ import {
   REPROGRAMAR_PUBLICACION,
 } from "@/graphql/operations";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { metaPropiaApagada, useProveedores } from "@/lib/upload-post";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import {
   EN_CURSO,
   type Publicacion,
   aInputLocal,
 } from "@/lib/publicaciones";
+import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 
 type Formato = "REEL" | "HISTORIA_VIDEO" | "IMAGEN" | "HISTORIA_IMAGEN";
 
@@ -79,6 +81,8 @@ export function PublicarEnFacebook({
   tienePoster?: boolean;
 }) {
   const t = useTranslations("publicarFacebook");
+  const tUp = useTranslations("redesUploadPost");
+  const sinMetaPropia = metaPropiaApagada(useProveedores());
   const { activa: marca } = useMarcaActiva();
   const activa = marca?.paginaFacebook ?? null;
   const [formato, setFormato] = useState<Formato>("REEL");
@@ -156,6 +160,27 @@ export function PublicarEnFacebook({
     } catch (e: any) {
       setError(e?.message ?? t("errorPublicar"));
     }
+  }
+
+  // Historial: los intentos fallidos también, que es donde se diagnostica.
+  const historial =
+    previas.length > 0 ? (
+      <div className="space-y-1.5 border-t border-white/10 pt-2.5">
+        {previas.map((p) => (
+          <FilaPublicacion key={p._id} p={p} refetchQueries={refetchQueries} />
+        ))}
+      </div>
+    ) : null;
+
+  // Con la conexión propia de Meta apagada no se ofrece publicar por ella (ni
+  // conectar una página); lo que ya salió por ahí se sigue viendo.
+  if (sinMetaPropia) {
+    return (
+      <div className="space-y-2.5">
+        <p className="text-xs text-white/40">{tUp("propiaMetaApagada")}</p>
+        {historial}
+      </div>
+    );
   }
 
   if (!activa || !marca) {
@@ -293,18 +318,7 @@ export function PublicarEnFacebook({
         </p>
       )}
 
-      {/* Historial: los intentos fallidos también, que es donde se diagnostica */}
-      {previas.length > 0 && (
-        <div className="space-y-1.5 border-t border-white/10 pt-2.5">
-          {previas.map((p) => (
-            <FilaPublicacion
-              key={p._id}
-              p={p}
-              refetchQueries={refetchQueries}
-            />
-          ))}
-        </div>
-      )}
+      {historial}
     </div>
   );
 }
@@ -381,6 +395,7 @@ export function FilaPublicacion({
             ? t(`fila.formatos.${p.formato}`)
             : p.formato.replace("_", " ").toLowerCase()}
         </span>
+        <EtiquetaProveedor proveedor={p.proveedor} className="ml-1.5" />
         {esperando && (
           <span
             className="ml-1.5 text-indigo-300/80"

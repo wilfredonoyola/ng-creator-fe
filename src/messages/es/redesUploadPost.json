@@ -20,5 +20,6 @@
   "soloPropietario": "Conectar y desconectar cuentas es del propietario de la marca.",
   "sincronizando": "Trayendo la cuenta conectada…",
   "conectada": "Cuenta conectada",
-  "propiaMeta": "Para el revival y las estadísticas; los clips se publican por Upload-Post."
+  "propiaMeta": "Para el revival y las estadísticas; los clips se publican por Upload-Post.",
+  "propiaMetaApagada": "La conexión propia de Facebook está desactivada; se publica todo por Upload-Post."
 }
