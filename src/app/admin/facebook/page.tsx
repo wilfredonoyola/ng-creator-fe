@@ -541,7 +541,7 @@ function FilaRedUploadPost({
               <p key={c._id} className="truncate text-sm font-medium">
                 {c.nombre}
                 {c.usuario && (
-                  <span className="ml-1.5 text-xs font-normal text-white/40">@{c.usuario}</span>
+                  <span className="ml-1.5 text-xs font-normal text-white/40">@{c.usuario.replace(/^@+/, "")}</span>
                 )}
               </p>
             ))
