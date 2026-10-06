@@ -8,6 +8,8 @@ import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { Pista } from "@/components/Pista";
 import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
+import { BarraDeCortes, reloj as relojCorto } from "@/components/episodios/BarraDeCortes";
+import { aTiempoDelEpisodio, aTiempoDeSalida, duracionEfectiva, estaCortado, siguienteTiempoVisible, type Corte } from "@/lib/cortes";
 import { calidadDePosiciones } from "@/lib/calidad";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
@@ -106,6 +108,9 @@ export function EditorRecorte({
   estiloTexto = null,
   nombreMarca,
   resolucionFuente = null,
+  cortes = SIN_CORTES,
+  onCambiarCortes,
+  onSugerirSilencios,
 }: {
   url: string;
   /**
@@ -173,6 +178,16 @@ export function EditorRecorte({
   estiloTexto?: EstiloResuelto | null;
   /** Para el rótulo (ROTULO): va chico arriba del gancho. */
   nombreMarca?: string;
+  /**
+   * Los cortes en el medio del clip (segundos del episodio, normalizados). La
+   * vista previa los salta; textos, encuadres y subtítulos siguen en el tiempo
+   * original, y la llamada a la acción va en el tiempo del clip ya cortado.
+   */
+  cortes?: Corte[];
+  /** Sin esto, la barra de cortes no se muestra. */
+  onCambiarCortes?: (cortes: Corte[]) => void;
+  /** Los silencios largos que propone el servidor (no guarda). */
+  onSugerirSilencios?: () => Promise<Corte[]>;
 }) {
   const tr = useTranslations("editorRecorte");
   const video = useRef<HTMLVideoElement>(null);
@@ -191,7 +206,11 @@ export function EditorRecorte({
   useHls(video, url);
 
   const duracion = hasta - desde;
-  const plantilla = plantillaDelClip(estilo, plantillaActiva, duracion);
+  // Lo que dura el clip ya cortado, y dónde está parado el video en ese tiempo
+  // (el "de salida"): con él van el contador y la llamada a la acción.
+  const efectiva = duracionEfectiva(desde, hasta, cortes);
+  const ts = Math.min(aTiempoDeSalida(Math.min(Math.max(t, desde), hasta), desde, cortes), efectiva);
+  const plantilla = plantillaDelClip(estilo, plantillaActiva, efectiva);
   const posiciones = posicionesEfectivas(
     { formato, diseno, encuadre, posiciones: posicionesGuardadas },
     fuente,
@@ -215,8 +234,8 @@ export function EditorRecorte({
 
   // Lo último, para leerlo desde el bucle de dibujo sin reiniciarlo.
   const conFondo = posiciones.some((p) => llevaFondo(formato, p.diseno));
-  const estado = useRef({ posiciones, formato, lienzo, desde, hasta, fondo });
-  estado.current = { posiciones, formato, lienzo, desde, hasta, fondo };
+  const estado = useRef({ posiciones, formato, lienzo, desde, hasta, fondo, cortes });
+  estado.current = { posiciones, formato, lienzo, desde, hasta, fondo, cortes };
 
   useLayoutEffect(() => {
     const el = vista.current;
@@ -231,8 +250,9 @@ export function EditorRecorte({
   useEffect(() => {
     const el = video.current;
     if (!el) return;
-    el.currentTime = desde;
-    setT(desde);
+    const inicio = siguienteTiempoVisible(desde, estado.current.cortes);
+    el.currentTime = inicio;
+    setT(inicio);
   }, [desde]);
 
   // Un solo bucle: lee el tiempo, hace el loop del tramo y dibuja la vista.
@@ -243,8 +263,18 @@ export function EditorRecorte({
       const c = lienzoRef.current;
       const e = estado.current;
       if (v) {
-        if (!v.paused && (v.currentTime >= e.hasta || v.currentTime < e.desde - 0.5)) {
-          v.currentTime = e.desde;
+        // Los cortes se saltan: si el video entra en uno (o está por entrar,
+        // un cuadro antes), va al final del corte. Mientras un salto no
+        // termina no se pide otro, para no trabar el HLS.
+        if (!v.paused && !v.seeking) {
+          const ahora = v.currentTime;
+          let destino: number | null = null;
+          if (ahora >= e.hasta || ahora < e.desde - 0.5) destino = siguienteTiempoVisible(e.desde, e.cortes);
+          else if (estaCortado(ahora + 0.03, e.cortes)) {
+            destino = siguienteTiempoVisible(ahora + 0.03, e.cortes);
+            if (destino >= e.hasta) destino = siguienteTiempoVisible(e.desde, e.cortes);
+          }
+          if (destino !== null && Math.abs(destino - ahora) > 0.01) v.currentTime = destino;
         }
         setT(v.currentTime);
       }
@@ -293,16 +323,30 @@ export function EditorRecorte({
     const v = video.current;
     if (!v) return;
     if (v.paused) {
-      if (v.currentTime < desde || v.currentTime >= hasta) v.currentTime = desde;
+      if (v.currentTime < desde || v.currentTime >= hasta) v.currentTime = siguienteTiempoVisible(desde, cortes);
+      else if (estaCortado(v.currentTime, cortes)) v.currentTime = siguienteTiempoVisible(v.currentTime, cortes);
       void v.play().catch(() => setSonando(false));
     } else {
       v.pause();
     }
   }
 
+  /** Lleva el video a un segundo del clip (tiempo original); si cae en un corte, al final del corte. */
   function ir(segDelClip: number) {
+    irAlEpisodio(desde + Math.min(Math.max(0, segDelClip), duracion - 0.05));
+  }
+
+  function irAlEpisodio(tEpisodio: number) {
     const v = video.current;
-    if (v) v.currentTime = desde + Math.min(Math.max(0, segDelClip), duracion - 0.05);
+    if (!v) return;
+    const destino = siguienteTiempoVisible(tEpisodio, cortes);
+    v.currentTime = destino >= hasta ? siguienteTiempoVisible(desde, cortes) : destino;
+  }
+
+  /** Lleva el video a un segundo del clip ya cortado. */
+  function irASalida(seg: number) {
+    const v = video.current;
+    if (v) v.currentTime = aTiempoDelEpisodio(Math.min(Math.max(0, seg), efectiva - 0.05), desde, hasta, cortes);
   }
 
   // Encuadres nuevos del auto-encuadre: la vista previa va un segundo antes del
@@ -601,13 +645,14 @@ export function EditorRecorte({
             {sonando ? "❚❚" : "▶"}
           </button>
           <div className="relative h-8 flex-1">
+            {/* En el tiempo del clip ya cortado: lo cortado no ocupa lugar. */}
             <input
               type="range"
               min={0}
-              max={duracion}
+              max={efectiva}
               step={0.01}
-              value={tc}
-              onChange={(e) => ir(parseFloat(e.target.value))}
+              value={ts}
+              onChange={(e) => irASalida(parseFloat(e.target.value))}
               className="absolute inset-x-0 top-1/2 w-full -translate-y-1/2"
             />
             {posiciones.map((p, i) => (
@@ -615,20 +660,34 @@ export function EditorRecorte({
                 key={`${resaltar}-${i}`}
                 className="pointer-events-none absolute top-0 h-2 w-0.5 bg-amber-300"
                 style={{
-                  left: `${(p.desdeSeg / duracion) * 100}%`,
+                  left: `${(aTiempoDeSalida(desde + p.desdeSeg, desde, cortes) / Math.max(0.001, efectiva)) * 100}%`,
                   animation: resaltar ? `aparecer 0.4s ease-out ${i * 0.08}s both, resaltar 2.4s ease-out ${i * 0.08}s` : undefined,
                 }}
               />
             ))}
           </div>
           <span className="shrink-0 whitespace-nowrap text-right text-xs tabular-nums text-white/50">
-            {tc.toFixed(1)} / {duracion.toFixed(1)} s
+            {ts.toFixed(1)} / {efectiva.toFixed(1)} s
           </span>
         </div>
+
+        {onCambiarCortes && (
+          <BarraDeCortes
+            desde={desde}
+            hasta={hasta}
+            cortes={cortes}
+            t={t}
+            onCambiar={onCambiarCortes}
+            onIr={irAlEpisodio}
+            onSugerirSilencios={onSugerirSilencios}
+            deshabilitado={!puedeEditar}
+          />
+        )}
 
         <BarraDelTramo
           desde={desde}
           hasta={hasta}
+          efectiva={efectiva}
           t={t}
           duracionEpisodio={duracionEpisodio}
           onCambiar={onCambiarTramo}
@@ -757,9 +816,10 @@ export function EditorRecorte({
                 const d = dibujarTexto(tx, estiloTexto.gancho, lienzo, { duracionSeg: duracion, nombreMarca, tc });
                 return d && !visible ? { ...d, opacidad: 0.4 } : d;
               });
+              // La llamada a la acción va en el tiempo del clip ya cortado.
               const deLlamada =
-                llamada && tc >= llamada.desdeSeg && tc < (llamada.hastaSeg ?? duracion)
-                  ? dibujarTexto(llamada, ganchoDeLlamada(estiloTexto.gancho, estiloTexto.tema), lienzo, { duracionSeg: duracion, tc })
+                llamada && ts >= llamada.desdeSeg && ts < (llamada.hastaSeg ?? efectiva)
+                  ? dibujarTexto(llamada, ganchoDeLlamada(estiloTexto.gancho, estiloTexto.tema), lienzo, { duracionSeg: efectiva, tc: ts })
                   : null;
               const sub = linea ? dibujarSubtitulos(linea, tc, lienzo, diseno, estiloTexto.subtitulos, subtitulo) : null;
               const editableSub = puedeEditar && !!onCambiarSubtitulo;
@@ -811,8 +871,10 @@ export function EditorRecorte({
             {!estiloTexto && [...textos, ...(plantilla.llamada ? [plantilla.llamada] : [])].map((tx, i) => {
               // La llamada a la acción es de la plantilla: se ve, pero no se mueve ni se elige acá.
               const deLaPlantilla = i >= textos.length;
-              const hasta = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : duracion;
-              const visible = tc >= tx.desdeSeg && tc < hasta;
+              // Los textos, en el tiempo original del clip; la llamada, en el del clip ya cortado.
+              const [ahora, dur] = deLaPlantilla ? [ts, efectiva] : [tc, duracion];
+              const hasta = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : dur;
+              const visible = ahora >= tx.desdeSeg && ahora < hasta;
               const elegido = !deLaPlantilla && textoElegido === i;
               if (!visible && !elegido) return null;
               const f = FUENTES[tx.fuente] ?? FUENTES.ANTON;
@@ -1024,6 +1086,7 @@ const CLIP_MAXIMO_SEG = 180;
 function BarraDelTramo({
   desde,
   hasta,
+  efectiva,
   t,
   duracionEpisodio,
   onCambiar,
@@ -1031,6 +1094,8 @@ function BarraDelTramo({
 }: {
   desde: number;
   hasta: number;
+  /** Lo que dura ya sin los cortes. */
+  efectiva: number;
   t: number;
   duracionEpisodio: number;
   onCambiar: (desde: number, hasta: number) => void;
@@ -1090,7 +1155,10 @@ function BarraDelTramo({
           </Pista>
         </span>
         <span className="whitespace-nowrap tabular-nums">
-          {reloj(desde)} – {reloj(hasta)} · {(hasta - desde).toFixed(1)} s
+          {reloj(desde)} – {reloj(hasta)} ·{" "}
+          {efectiva < hasta - desde - 0.05
+            ? tr("barra.conCortes", { efectiva: relojCorto(efectiva), total: relojCorto(hasta - desde) })
+            : `${(hasta - desde).toFixed(1)} s`}
         </span>
       </div>
       {/* La barra a todo el ancho y debajo los botones de a 5 s, del inicio a
@@ -1142,7 +1210,8 @@ function BarraDelTramo({
           </button>
         </div>
       </div>
-      <AvisoVersionFacebook duracion={hasta - desde} />
+      {/* Facebook recibe el clip ya cortado. */}
+      <AvisoVersionFacebook duracion={efectiva} />
     </div>
   );
 }
@@ -1157,3 +1226,6 @@ function reloj(seg: number): string {
 }
 
 const redondo3 = (n: number) => Math.round(n * 1000) / 1000;
+
+/** Fijo, para que el valor por defecto no cambie en cada render. */
+const SIN_CORTES: Corte[] = [];

@@ -3,7 +3,8 @@
     "guardar": "Couldn't save",
     "auto": "Couldn't auto-frame",
     "deshacer": "Couldn't go back to how it was",
-    "procesar": "Couldn't process the video"
+    "procesar": "Couldn't process the video",
+    "noQuitarTodo": "At least 1 s of the clip has to stay."
   },
   "confirmarAuto": "Auto-framing replaces your framing changes with its own. Continue?",
   "pestanas": {
@@ -29,11 +30,25 @@
   "modos": {
     "inicio": "Tap = start",
     "fin": "Tap = end",
-    "corregir": "Tap = fix word"
+    "corregir": "Tap = fix word",
+    "quitar": "Tap = remove from clip"
   },
   "empieza": "Starts",
   "termina": "Ends",
   "dura": "Length {seg} s",
+  "duraConCortes": "Length {seg} s after cuts (full range: {total} s)",
+  "quitar": {
+    "ayuda": "Tap the first word and then the last word of what you want to remove.",
+    "seleccion": "{n, plural, one {# word} other {# words}} · {seg} s",
+    "quitar": "Remove from clip",
+    "cancelar": "Cancel",
+    "tachada": "Cut: tap to put it back"
+  },
+  "reponer": {
+    "texto": "\"{palabra}\" is in a {seg} s cut.",
+    "volver": "Put back",
+    "cancelar": "Cancel"
+  },
   "guardarIgual": "Save anyway",
   "personas": "{n, plural, one {# person} other {# people}}",
   "videoNoListo": "The video isn't ready on Bunny yet.",

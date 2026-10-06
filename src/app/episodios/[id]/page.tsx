@@ -33,6 +33,8 @@ interface Clip {
   _id: string;
   desdeSeg: number;
   hastaSeg: number;
+  /** Ya sin los cortes del medio. */
+  duracionEfectivaSeg?: number | null;
   puntuacion: number;
   motivo: string;
   titulo: string;
@@ -360,7 +362,7 @@ function TarjetaClip({
             {t("tarjeta.tramo", {
               desde: reloj(clip.desdeSeg),
               hasta: reloj(clip.hastaSeg),
-              seg: Math.round(clip.hastaSeg - clip.desdeSeg),
+              seg: Math.round(clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg),
             })}
             {clip.origen !== "MANUAL" && t("tarjeta.puntuacion", { n: clip.puntuacion })}
           </p>
