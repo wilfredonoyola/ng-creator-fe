@@ -9,7 +9,7 @@
   "confirmarAuto": "Auto-framing replaces your framing changes with its own. Continue?",
   "pestanas": {
     "estilo": { "etiqueta": "Style", "titulo": "Text style" },
-    "textos": { "etiqueta": "Text", "titulo": "Hook and text" },
+    "textos": { "etiqueta": "Text", "titulo": "Hook, text and images" },
     "subtitulos": { "etiqueta": "Captions" },
     "marca": { "etiqueta": "Brand", "titulo": "Brand Kit" },
     "transcripcion": { "etiqueta": "Transcript", "titulo": "Segment in the transcript" }

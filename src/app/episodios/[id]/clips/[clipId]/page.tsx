@@ -22,9 +22,11 @@ import {
 } from "@/components/episodios/EditorRecorte";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
-import type { DisenoClip, Encuadre, FondoClip, FormatoClip, Region, SubtituloClip, Texto } from "@/lib/clip-encuadre";
-import { LIENZOS, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, subtituloPorDefecto } from "@/lib/clip-encuadre";
+import type { DisenoClip, Encuadre, FondoClip, FormatoClip, ImagenClip, ImagenClipServidor, Region, SubtituloClip, Texto } from "@/lib/clip-encuadre";
+import { LIENZOS, MAXIMO_IMAGENES, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, subtituloPorDefecto, vistaDeImagen } from "@/lib/clip-encuadre";
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
+import { imagenNueva, PanelImagenes } from "@/components/episodios/PanelImagenes";
+import { ErrorDeSubida, uploadImagenClip } from "@/lib/upload";
 import { InspectorClip, usePestanaInspector, type PestanaInspector } from "@/components/episodios/InspectorClip";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
@@ -59,6 +61,8 @@ interface Borrador {
   ganchoActivo: boolean;
   ganchoSeg: number;
   textos: Texto[];
+  /** Hasta tres imágenes encima del video; el recorte lo hace el servidor. */
+  imagenes: ImagenClip[];
   /** Si lleva el logo y la llamada a la acción de la plantilla de la marca (be#117). */
   plantillaActiva: boolean;
   /** El estilo de texto de este clip (be#132). Null = el de la marca. */
@@ -92,6 +96,8 @@ export default function EditorClipPage({
   const { id: episodioId, clipId } = params;
   const tr = useTranslations("editorClip");
   const tn = useTranslations("estilosNombres");
+  const ti = useTranslations("editorImagenes");
+  const te = useTranslations("erroresSubida");
   const { activa } = useMarcaActiva();
   const { puedeOperar, usuario } = useSesion();
   const { porEstilo } = useEstilosTexto();
@@ -140,6 +146,7 @@ export default function EditorClipPage({
   const [seleccion, setSeleccion] = useState<{ a: Palabra; b: Palabra } | null>(null);
   const [reponiendo, setReponiendo] = useState<{ palabra: Palabra; corte: Corte } | null>(null);
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
+  const [imagenElegida, setImagenElegida] = useState<number | null>(null);
   const [pestana, elegirPestana] = usePestanaInspector(PESTANAS, "estilo");
   // El tramo que está guardado, y el aviso de cruces (#70) cuando el nuevo pisa
   // otro clip. Lo que ya se aceptó con "Guardar igual" no se vuelve a preguntar
@@ -212,6 +219,17 @@ export default function EditorClipPage({
       ganchoActivo: clip.ganchoActivo,
       ganchoSeg: clip.ganchoSeg,
       textos,
+      imagenes: (clip.imagenes ?? []).map((im: ImagenClipServidor) => ({
+        id: im.id,
+        url: im.url,
+        sinFondo: im.sinFondo,
+        contorno: im.contorno,
+        centroX: im.centroX,
+        centroY: im.centroY,
+        ancho: im.ancho,
+        desdeSeg: im.desdeSeg,
+        hastaSeg: im.hastaSeg ?? null,
+      })),
       plantillaActiva: clip.plantillaActiva ?? true,
       estiloTexto: clip.estiloTexto ?? null,
       cortes: normalizarCortes(clip.cortes ?? [], clip.desdeSeg, clip.hastaSeg),
@@ -277,6 +295,18 @@ export default function EditorClipPage({
               ganchoActivo: false,
               ganchoSeg: borrador.ganchoSeg,
               textos: borrador.textos.map((t) => ({ ...t, hastaSeg: t.hastaSeg ?? null })),
+              // La lista entera; quitar el fondo lo encola el servidor al guardar.
+              imagenes: borrador.imagenes.map(({ id, url, sinFondo, contorno, centroX, centroY, ancho, desdeSeg, hastaSeg }) => ({
+                id,
+                url,
+                sinFondo,
+                contorno,
+                centroX,
+                centroY,
+                ancho,
+                desdeSeg,
+                hastaSeg: hastaSeg ?? null,
+              })),
               plantillaActiva: borrador.plantillaActiva,
               // null = el de la marca.
               estiloTexto: borrador.estiloTexto,
@@ -398,12 +428,17 @@ export default function EditorClipPage({
     );
   }
 
+  // Las imágenes a las que el servidor les está quitando el fondo: también se
+  // pregunta seguido, hasta que queden LISTO o FALLIDO.
+  const imagenesServidor: ImagenClipServidor[] = clipQ.data?.clipEpisodio?.imagenes ?? [];
+  const recortando = imagenesServidor.some((im) => im.estadoRecorte === "PENDIENTE");
+
   const { startPolling, stopPolling } = clipQ;
   useEffect(() => {
-    if (renderEnCurso || analizando) startPolling(analizando ? 2500 : 4000);
+    if (renderEnCurso || analizando || recortando) startPolling(analizando ? 2500 : recortando && !renderEnCurso ? 3000 : 4000);
     else stopPolling();
     return () => stopPolling();
-  }, [renderEnCurso, analizando, startPolling, stopPolling]);
+  }, [renderEnCurso, analizando, recortando, startPolling, stopPolling]);
 
   const correccionDe = useMemo(() => {
     const m = new Map<number, string>();
@@ -548,7 +583,8 @@ export default function EditorClipPage({
   }
 
   async function pedirRender() {
-    if (!marcaId) return;
+    if (!marcaId || !b) return;
+    if (vistasImagenes.some((v) => v.estado === "PENDIENTE") && !window.confirm(ti("confirmarRender"))) return;
     setError(null);
     try {
       if (!(await guardarAhora())) return;
@@ -559,6 +595,41 @@ export default function EditorClipPage({
   }
 
   const lineas: LineaSubtitulo[] = clip.lineasSubtitulo ?? [];
+
+  // ---- Imágenes ----
+  const vistasImagenes = b.imagenes.map((im) => vistaDeImagen(im, imagenesServidor));
+  // Con el video 16:9 en el medio, la imagen nueva va a la franja de abajo.
+  const conHorizontal = b.formato === "VERTICAL" && (b.diseno === "HORIZONTAL" || b.posiciones.some((p) => p.diseno === "HORIZONTAL"));
+
+  /** Sube una imagen y la suma al clip, ya elegida. Rechaza con el error en el idioma de la pantalla. */
+  async function subirImagen(file: File) {
+    if (!marcaId || !b || b.imagenes.length >= MAXIMO_IMAGENES) return;
+    let url: string;
+    try {
+      url = await uploadImagenClip(file, marcaId);
+    } catch (e) {
+      throw new Error(e instanceof ErrorDeSubida ? te(e.clave, e.datos) : e instanceof Error ? e.message : ti("errorSubir"));
+    }
+    setB((prev) =>
+      prev && prev.imagenes.length < MAXIMO_IMAGENES
+        ? { ...prev, imagenes: [...prev.imagenes, imagenNueva(url, prev.imagenes, conHorizontal)] }
+        : prev,
+    );
+    // Queda elegida la nueva: la última de la lista.
+    setTextoElegido(null);
+    setImagenElegida(b.imagenes.length);
+    elegirPestana("textos");
+  }
+
+  function elegirImagen(i: number | null) {
+    setImagenElegida(i);
+    if (i !== null) setTextoElegido(null);
+  }
+
+  function elegirTexto(i: number | null) {
+    setTextoElegido(i);
+    if (i !== null) setImagenElegida(null);
+  }
 
   // El estilo con que sale (estiloTextoEfectivo): el del clip, el de la marca o
   // KARAOKE. Se calcula acá para que la vista previa cambie apenas se elige.
@@ -618,11 +689,23 @@ export default function EditorClipPage({
             textos={b.textos}
             onCambiar={(textos) => cambiar({ textos })}
             elegido={textoElegido}
-            onElegir={setTextoElegido}
+            onElegir={elegirTexto}
             duracion={duracion}
             colorMarca={estilo.colorResaltado}
             deshabilitado={!opera}
           />
+          <div className="mt-5 border-t border-white/10 pt-4">
+            <PanelImagenes
+              imagenes={b.imagenes}
+              estados={vistasImagenes.map((v) => v.estado)}
+              onCambiar={(imagenes) => cambiar({ imagenes })}
+              elegida={imagenElegida}
+              onElegir={elegirImagen}
+              onSubir={subirImagen}
+              duracion={duracion}
+              deshabilitado={!opera}
+            />
+          </div>
         </>
       ),
     },
@@ -948,9 +1031,22 @@ export default function EditorClipPage({
               textoElegido={textoElegido}
               // Tocar un texto en la vista previa lo abre en su pestaña.
               onElegirTexto={(i) => {
-                setTextoElegido(i);
+                elegirTexto(i);
                 elegirPestana("textos");
               }}
+              imagenes={b.imagenes}
+              vistasImagenes={vistasImagenes}
+              onCambiarImagenes={(imagenes) => cambiar({ imagenes })}
+              imagenElegida={imagenElegida}
+              onElegirImagen={(i) => {
+                elegirImagen(i);
+                elegirPestana("textos");
+              }}
+              onSoltarImagen={
+                b.imagenes.length < MAXIMO_IMAGENES
+                  ? (file) => void subirImagen(file).catch((e) => setError(e instanceof Error ? e.message : ti("errorSubir")))
+                  : undefined
+              }
               estilo={estilo}
               estiloTexto={conEstilo}
               nombreMarca={activa?.nombre}

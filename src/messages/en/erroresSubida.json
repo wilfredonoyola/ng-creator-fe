@@ -35,5 +35,7 @@
   "sesionLogo": "You need to be signed in to upload the logo",
   "logoNoImagen": "The logo must be an image (PNG or JPG)",
   "logoMuyPesado": "The logo must be under 10 MB",
-  "errorLogo": "Couldn't upload the logo ({status})"
+  "errorLogo": "Couldn't upload the logo ({status})",
+  "imagenClipFormato": "The image must be JPG, PNG or WebP",
+  "imagenClipMuyPesada": "The image must be under 15 MB"
 }

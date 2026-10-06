@@ -1,0 +1,28 @@
+{
+  "titulo": "Imágenes ({n}/{max})",
+  "agregar": "Imagen",
+  "subiendo": "Subiendo…",
+  "ayudaAgregar": "Subí una imagen desde el equipo (JPG, PNG o WebP, hasta 15 MB) o soltala acá",
+  "maximo": "Hasta {max} imágenes por clip",
+  "vacio": "Sumá una foto, un logo o a una persona recortada. Podés soltar el archivo acá o en la vista previa.",
+  "sinImagenes": "Este clip no tiene imágenes.",
+  "errorSubir": "No se pudo subir la imagen",
+  "quitarFondo": "Quitar fondo",
+  "contorno": "Contorno blanco",
+  "ayudaPendiente": "Se está preparando la imagen; mientras tanto se ve la original.",
+  "estados": {
+    "PENDIENTE": "Quitando fondo…",
+    "FALLIDO": "No se pudo quitar el fondo",
+    "FALLIDOCorto": "falló"
+  },
+  "preparando": "Preparando…",
+  "tamano": "Tamaño {n}% del ancho",
+  "oArrastrala": "Arrastrala en la vista previa para moverla; la esquina la agranda.",
+  "cuando": "Cuándo",
+  "todoElClip": "Todo el clip",
+  "de": "de",
+  "a": "a",
+  "eliminar": "Eliminar esta imagen",
+  "soltaAca": "Soltá la imagen para agregarla",
+  "confirmarRender": "Hay imágenes a las que todavía se les está quitando el fondo. Si procesás ahora pueden salir sin el recorte. ¿Procesar igual?"
+}

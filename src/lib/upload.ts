@@ -31,7 +31,7 @@ export type ClaveErrorSubida =
   | "soloImagenesEvidencia" | "evidenciaMuyPesada" | "errorScreenshot" | "sinUrlScreenshot"
   | "sesionImagenes" | "noEsImagen" | "imagenMuyPesada" | "errorImagen" | "sesionPortada"
   | "errorPortada" | "sesionVideo" | "errorVideo" | "seCorto" | "seCancelo" | "sesionLogo"
-  | "logoNoImagen" | "logoMuyPesado" | "errorLogo";
+  | "logoNoImagen" | "logoMuyPesado" | "errorLogo" | "imagenClipFormato" | "imagenClipMuyPesada";
 
 export class ErrorDeSubida extends Error {
   constructor(
@@ -512,4 +512,44 @@ export async function uploadMarcaLogo(file: File, marcaId: string): Promise<stri
     throw fallo(backend, "errorLogo", `No se pudo subir el logo (${response.status})`, response.status);
   }
   return (await response.json()).url as string;
+}
+
+/** Los formatos que acepta `/uploads/clip-imagen`. */
+export const FORMATOS_IMAGEN_CLIP = ["image/jpeg", "image/png", "image/webp"];
+
+/**
+ * Sube una imagen para poner sobre un clip (una foto, una persona para
+ * recortar). Solo la guarda y devuelve su URL: va al clip con
+ * `actualizarClipEpisodio`, y quitarle el fondo lo hace el servidor al guardar.
+ */
+export async function uploadImagenClip(file: File, marcaId: string): Promise<string> {
+  const token = getAuthToken();
+  if (!token) throw new ErrorDeSubida("sesionImagenes", "Sesión requerida para subir imágenes");
+  if (!FORMATOS_IMAGEN_CLIP.includes(file.type)) {
+    throw new ErrorDeSubida("imagenClipFormato", "La imagen tiene que ser JPG, PNG o WebP");
+  }
+  if (file.size > 15 * 1024 * 1024) {
+    throw new ErrorDeSubida("imagenClipMuyPesada", "La imagen debe pesar menos de 15 MB");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("marcaId", marcaId);
+  const response = await fetch(`${API_BASE_URL}/uploads/clip-imagen`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    body: formData,
+  });
+  if (!response.ok) {
+    let backend: string | undefined;
+    try {
+      backend = (await response.json()).message;
+    } catch {
+      // el backend no siempre responde JSON
+    }
+    throw fallo(backend, "errorImagen", `Error al subir la imagen (${response.status})`, response.status);
+  }
+  const url = (await response.json()).url as string | undefined;
+  if (!url) throw new ErrorDeSubida("errorImagen", "Error al subir la imagen", { status: response.status });
+  return url;
 }

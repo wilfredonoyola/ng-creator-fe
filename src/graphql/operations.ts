@@ -1655,6 +1655,19 @@ const CAMPOS_CLIP_EDITOR = gql`
       desdeSeg
       hastaSeg
     }
+    imagenes {
+      id
+      url
+      sinFondo
+      contorno
+      centroX
+      centroY
+      ancho
+      desdeSeg
+      hastaSeg
+      estadoRecorte
+      urlFinal
+    }
     estadoAutoEncuadre
     errorAutoEncuadre
     personasAutoEncuadre
