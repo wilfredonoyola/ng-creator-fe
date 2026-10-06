@@ -1,0 +1,6 @@
+{
+  "placeholder": "Type a hashtag and press Enter",
+  "quitar": "Remove #{hashtag}",
+  "lleno": "{max} hashtags at most",
+  "ninguno": "No hashtags"
+}

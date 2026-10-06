@@ -9,7 +9,6 @@ import {
   CLIP_EPISODIO,
   PROGRAMAR_PUBLICACION,
   PUBLICACIONES_DE_CLIP,
-  YOUTUBE_CANALES,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useMarcaActiva } from "@/lib/marca-activa";
@@ -22,8 +21,10 @@ import {
   zonaHoraria,
   type Publicacion,
 } from "@/lib/publicaciones";
-import type { CanalYoutube } from "@/components/CanalesYoutube";
-import { useCuentasUploadPost, useProveedores } from "@/lib/upload-post";
+import type { Red } from "@/lib/upload-post";
+import { type Destino, useDestinosMarca } from "@/lib/destinos";
+import { conHashtags, useAjustesPublicacion } from "@/lib/ajustes-publicacion";
+import { HashtagsChips } from "@/components/HashtagsChips";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
 import type { CalidadClip } from "@/lib/calidad";
 import { IconoRed, Poster } from "@/components/IconoRed";
@@ -33,29 +34,6 @@ import {
   versionEnCurso,
   type VersionCortaClip,
 } from "@/components/episodios/VersionFacebook";
-
-type Red = "FACEBOOK" | "INSTAGRAM" | "YOUTUBE" | "TIKTOK";
-
-/** Un lugar a donde puede salir el clip: la página de Facebook, su Instagram o un canal de YouTube de la marca. */
-interface Destino {
-  clave: string;
-  red: Red;
-  cuentaId: string;
-  nombre: string;
-  foto?: string | null;
-  formato: string;
-  etiqueta: string;
-  /** Si no se puede usar, por qué (clave en `publicarClip.motivos`). */
-  motivo?: "reconectar" | "desactivado";
-}
-
-/** Formato y etiqueta de cada red cuando el destino sale de Upload-Post. */
-const FORMATO: Record<Red, { formato: string; etiqueta: string }> = {
-  FACEBOOK: { formato: "REEL", etiqueta: "Reel" },
-  INSTAGRAM: { formato: "REEL", etiqueta: "Reel" },
-  YOUTUBE: { formato: "SHORT", etiqueta: "Short" },
-  TIKTOK: { formato: "VIDEO", etiqueta: "Video" },
-};
 
 /** Lo mismo que el backend: lo que va abajo del video y el título de YouTube. */
 const DESCRIPCION_MAX = 2200;
@@ -85,14 +63,8 @@ export default function ProgramarClipPage({
   const opera = puedeOperar(activa?._id);
 
   const clipQ = useQuery(CLIP_EPISODIO, { variables: { id: clipId, marcaId }, skip: !activa });
-  const proveedores = useProveedores();
-  const porUploadPost = (Object.keys(proveedores) as Red[]).filter((r) => proveedores[r] === "upload-post");
-  const canalesQ = useQuery(YOUTUBE_CANALES, {
-    variables: { marcaId },
-    skip: !activa || proveedores.YOUTUBE === "upload-post",
-    errorPolicy: "all",
-  });
-  const uploadPost = useCuentasUploadPost(marcaId || undefined, porUploadPost.length === 0);
+  const { destinos, proveedores, faltanUploadPost } = useDestinosMarca(activa);
+  const ajustes = useAjustesPublicacion(marcaId || undefined);
   const pubsQ = useQuery(PUBLICACIONES_DE_CLIP, {
     variables: { marcaId, clipId },
     skip: !activa,
@@ -110,66 +82,7 @@ export default function ProgramarClipPage({
     else stopPolling();
     return () => stopPolling();
   }, [versionProcesando, startPolling, stopPolling]);
-  const destinos: Destino[] = [];
   const pagina = activa?.paginaFacebook;
-  // Cada red publica por su proveedor: con 'upload-post', sus destinos son las
-  // cuentas del perfil de Upload-Post de la marca (la cola recibe su _id).
-  if (pagina && proveedores.FACEBOOK === "propio") {
-    destinos.push({
-      clave: `fb:${pagina.pageId}`,
-      red: "FACEBOOK",
-      cuentaId: pagina.pageId,
-      nombre: pagina.nombre,
-      foto: pagina.fotoUrl,
-      formato: "REEL",
-      etiqueta: "Reel",
-    });
-    // Instagram sale con la misma conexión que Facebook: la cuenta ligada a
-    // la página, si Meta dio el permiso al conectar (ng-creator-be#60).
-    if (pagina.instagramId && proveedores.INSTAGRAM === "propio") {
-      destinos.push({
-        clave: `ig:${pagina.instagramId}`,
-        red: "INSTAGRAM",
-        cuentaId: pagina.instagramId,
-        nombre: pagina.instagramUsuario ? `@${pagina.instagramUsuario}` : pagina.nombre,
-        foto: pagina.instagramFotoUrl,
-        formato: "REEL",
-        etiqueta: "Reel",
-      });
-    }
-  }
-  for (const c of uploadPost.cuentas) {
-    if (proveedores[c.red] !== "upload-post") continue;
-    destinos.push({
-      clave: `up:${c.red}:${c._id}`,
-      red: c.red,
-      cuentaId: c._id,
-      nombre: c.usuario ? `@${c.usuario}` : c.nombre,
-      foto: c.avatarUrl,
-      ...FORMATO[c.red],
-      motivo: c.activa ? undefined : "desactivado",
-    });
-  }
-  // Las redes de Upload-Post sin cuenta: se conectan en la web, en Redes conectadas.
-  const faltanUploadPost = uploadPost.cargando
-    ? []
-    : porUploadPost.filter((r) => !destinos.some((d) => d.red === r));
-  for (const c of (proveedores.YOUTUBE === "propio" ? canalesQ.data?.youtubeCanales ?? [] : []) as CanalYoutube[]) {
-    destinos.push({
-      clave: `yt:${c.canalId}`,
-      red: "YOUTUBE",
-      cuentaId: c.canalId,
-      nombre: c.nombre,
-      foto: c.miniaturaUrl,
-      formato: "SHORT",
-      etiqueta: "Short",
-      motivo: c.requiereReconexion
-        ? "reconectar"
-        : !c.activa
-          ? "desactivado"
-          : undefined,
-    });
-  }
 
   const volver = (
     <Link href={`/episodios/${episodioId}/clips/${clipId}`} className="text-sm text-white/50 hover:text-white/80">
@@ -214,6 +127,8 @@ export default function ProgramarClipPage({
           marcaId={marcaId}
           opera={opera}
           destinos={destinos}
+          hashtagsMarca={ajustes.hashtags}
+          destinosApagados={ajustes.destinosApagados}
           faltaInstagram={!!pagina && !pagina.instagramId && proveedores.INSTAGRAM === "propio"}
           faltanUploadPost={faltanUploadPost}
           tiktokPronto={proveedores.TIKTOK === "propio"}
@@ -230,6 +145,8 @@ function Formulario({
   marcaId,
   opera,
   destinos,
+  hashtagsMarca,
+  destinosApagados,
   faltaInstagram,
   faltanUploadPost,
   tiktokPronto,
@@ -253,6 +170,10 @@ function Formulario({
   marcaId: string;
   opera: boolean;
   destinos: Destino[];
+  /** Los hashtags por defecto de la marca: se precargan y se pueden quitar para este clip. */
+  hashtagsMarca: string[];
+  /** Los `cuentaId` que la marca no quiere marcados de entrada (Redes conectadas). */
+  destinosApagados: string[];
   /** La marca tiene página pero Meta no dio (o no hay) su Instagram. */
   faltaInstagram: boolean;
   /** Redes que publican por Upload-Post y no tienen cuenta conectada. */
@@ -266,15 +187,19 @@ function Formulario({
   const tv = useTranslations("versionFacebook");
   const tc = useTranslations("calidadClip");
   const locale = useLocale();
-  const [elegidos, setElegidos] = useState<Set<string>>(
-    () =>
-      new Set(
-        destinos
-          .filter((d) => !d.motivo)
-          .slice(0, 1)
-          .map((d) => d.clave),
-      ),
+  // De entrada sale marcado todo destino usable que la marca no apagó en
+  // Redes conectadas. Se guarda solo lo que la persona cambia (no la lista
+  // entera), así las cuentas y los ajustes que llegan después de montar
+  // también cuentan.
+  const [cambios, setCambios] = useState<Map<string, boolean>>(() => new Map());
+  const apagados = new Set(destinosApagados);
+  const marcadoDeEntrada = (d: Destino) => !d.motivo && !apagados.has(d.cuentaId);
+  const elegidos = new Set(
+    destinos.filter((d) => !d.motivo && (cambios.get(d.clave) ?? marcadoDeEntrada(d))).map((d) => d.clave),
   );
+  // Null = los de la marca tal cual; al tocar uno, quedan los de este clip.
+  const [hashtagsClip, setHashtagsClip] = useState<string[] | null>(null);
+  const hashtags = hashtagsClip ?? hashtagsMarca;
   const [descripcion, setDescripcion] = useState("");
   const [tituloYoutube, setTituloYoutube] = useState(clip.titulo.slice(0, TITULO_YOUTUBE_MAX));
   const [fecha, setFecha] = useState(() => aInputLocal(sugerida()));
@@ -300,14 +225,13 @@ function Formulario({
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
+  const descripcionFinal = conHashtags(descripcion, hashtags);
+  const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX;
+
   function alternar(d: Destino) {
     if (d.motivo || !opera) return;
-    setElegidos((s) => {
-      const n = new Set(s);
-      if (n.has(d.clave)) n.delete(d.clave);
-      else n.add(d.clave);
-      return n;
-    });
+    const on = elegidos.has(d.clave);
+    setCambios((m) => new Map(m).set(d.clave, !on));
   }
 
   /** Deja el día elegido y cambia la hora: los atajos de la app (12, 18, 20). */
@@ -325,6 +249,10 @@ function Formulario({
       setAviso({ tono: "error", texto: t("yaPasoLargo") });
       return;
     }
+    if (descripcionLarga) {
+      setAviso({ tono: "error", texto: t("descripcionLarga", { max: DESCRIPCION_MAX }) });
+      return;
+    }
     setEnviando(true);
     const fallas: string[] = [];
     // Una por destino: si una red rechaza, las otras salen igual.
@@ -338,7 +266,7 @@ function Formulario({
               cuentaId: d.cuentaId,
               clipId: clip._id,
               formato: d.formato,
-              descripcion: descripcion.trim() || undefined,
+              descripcion: descripcionFinal || undefined,
               ajustes: d.red === "YOUTUBE" ? { titulo: tituloYoutube.trim() || clip.titulo } : undefined,
               publicarEn: cuando.toISOString(),
             },
@@ -426,7 +354,7 @@ function Formulario({
             <button
               type="button"
               onClick={() => void enviar()}
-              disabled={enviando || aProgramar.length === 0 || yaPaso}
+              disabled={enviando || aProgramar.length === 0 || yaPaso || descripcionLarga}
               className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
             >
               {enviando
@@ -465,7 +393,9 @@ function Formulario({
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium">{d.nombre}</span>
                       <span className={`block text-xs ${d.motivo ? "text-amber-300" : "text-white/45"}`}>
-                        {d.motivo ? t(`motivos.${d.motivo}`) : `${REDES[d.red].nombre} · ${d.etiqueta}`}
+                        {d.motivo
+                          ? t(`motivos.${d.motivo}`)
+                          : `${REDES[d.red].nombre} · ${d.etiqueta}${d.red === "YOUTUBE" ? ` · ${t("youtubeTituloAparte")}` : ""}`}
                       </span>
                     </span>
                     <span
@@ -527,9 +457,21 @@ function Formulario({
               rows={4}
               className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
             />
+            <div className="space-y-1">
+              <span className="block text-xs text-white/45">{t("hashtags")}</span>
+              <HashtagsChips valor={hashtags} onChange={setHashtagsClip} />
+              <p className={`text-xs ${descripcionLarga ? "text-red-400" : "text-white/40"}`}>
+                {descripcionLarga
+                  ? t("descripcionLarga", { max: DESCRIPCION_MAX })
+                  : hashtags.length
+                    ? t("hashtagsAlFinal")
+                    : t("hashtagsVacio")}
+              </p>
+            </div>
             {conYoutube && (
               <label className="block">
                 <span className="mb-1 block text-xs text-white/45">{t("tituloYoutube")}</span>
+                <span className="mb-1 block text-[11px] text-white/35">{t("tituloYoutubeAyuda")}</span>
                 <input
                   value={tituloYoutube}
                   onChange={(e) => setTituloYoutube(e.target.value)}

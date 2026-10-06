@@ -22,6 +22,7 @@ import {
   useUploadPost,
 } from "@/lib/upload-post";
 import { IconoRed } from "@/components/IconoRed";
+import { AjustesPublicacionMarca } from "@/components/AjustesPublicacionMarca";
 import {
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
@@ -166,6 +167,7 @@ export default function AdminFacebookPage() {
       )}
 
       <VueltaDeUploadPost />
+      <AjustesPublicacionMarca />
       {redesUploadPost.length > 0 && <SeccionUploadPost redes={redesUploadPost} />}
 
       {metaPorUploadPost && (

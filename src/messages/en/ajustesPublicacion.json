@@ -1,0 +1,19 @@
+{
+  "titulo": "When publishing, by default",
+  "descripcion": "What's preloaded every time a {marca} clip is scheduled. Each clip can drop a hashtag or a network.",
+  "hashtags": "Hashtags",
+  "hashtagsAyuda": "They're added at the end of the description, on every network.",
+  "cuentas": "Accounts",
+  "sinCuentas": "No accounts connected yet. Connect them below.",
+  "preseleccionada": "Preselected",
+  "preseleccionadaEn": "Preselect {cuenta}",
+  "motivos": {
+    "reconectar": "needs reconnecting",
+    "desactivado": "disabled"
+  },
+  "guardar": "Save",
+  "guardando": "Saving…",
+  "guardado": "Saved",
+  "errorGuardar": "Couldn't save",
+  "soloPropietario": "The brand owner changes this."
+}
