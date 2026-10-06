@@ -35,6 +35,7 @@
     "desactivado": "Desactivado en Redes conectadas"
   },
   "faltaInstagram": "¿Falta Instagram? Tiene que ser una cuenta profesional ligada a la página de Facebook, y hay que volver a conectar Facebook aceptando los permisos de Instagram.",
+  "faltaRed": "¿Falta {red}? Conectala desde la web, en <link>Redes conectadas</link>.",
   "pronto": "Pronto",
   "descripcionPlaceholder": "Lo que va abajo del video, con hashtags",
   "tituloYoutube": "Título en YouTube",

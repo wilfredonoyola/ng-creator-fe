@@ -35,6 +35,7 @@
     "desactivado": "Turned off in Connected networks"
   },
   "faltaInstagram": "Missing Instagram? It has to be a professional account linked to the Facebook page, and you need to reconnect Facebook accepting the Instagram permissions.",
+  "faltaRed": "Missing {red}? Connect it on the web, under <link>Connected networks</link>.",
   "pronto": "Coming soon",
   "descripcionPlaceholder": "What goes below the video, with hashtags",
   "tituloYoutube": "YouTube title",

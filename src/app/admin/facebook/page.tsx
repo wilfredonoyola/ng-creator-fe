@@ -2,7 +2,7 @@
 
 import { FotoMarca } from "@/components/FotoMarca";
 import { useEffect, useRef, useState } from "react";
-import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import { useApolloClient, useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { ErrorDeSubida, uploadLogoPagina } from "@/lib/upload";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -11,7 +11,17 @@ import { CuentasTiktok } from "@/components/CuentasTiktok";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
 import { useMarcaActiva } from "@/lib/marca-activa";
-import { PARAMETRO_VUELTA, QUERIES_DE_CUENTAS } from "@/lib/upload-post";
+import {
+  type CuentaUploadPost,
+  PARAMETRO_VUELTA,
+  QUERIES_UPLOAD_POST,
+  REDES_UPLOAD_POST,
+  type Red,
+  useCuentasUploadPost,
+  useProveedores,
+  useUploadPost,
+} from "@/lib/upload-post";
+import { IconoRed } from "@/components/IconoRed";
 import {
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
@@ -24,6 +34,8 @@ import {
   FACEBOOK_DESCONECTAR,
   MIS_ACCESOS,
   SINCRONIZAR_UPLOAD_POST,
+  ESTADO_UPLOAD_POST,
+  VINCULAR_PERFIL_UPLOAD_POST,
 } from "@/graphql/operations";
 
 interface Pagina {
@@ -49,6 +61,11 @@ export default function AdminFacebookPage() {
   // invitación la pantalla le quedaba cerrada y no podía ni habilitar su página.
   const { esAdmin, rolEn, accesos, cargando: cargandoSesion } = useSesion();
   const tieneAlguna = accesos.length > 0;
+  const tUp = useTranslations("redesUploadPost");
+  const proveedores = useProveedores();
+  const redesUploadPost = REDES_UPLOAD_POST.filter((r) => proveedores[r] === "upload-post");
+  const metaPorUploadPost =
+    proveedores.FACEBOOK === "upload-post" || proveedores.INSTAGRAM === "upload-post";
 
   const { data: estado, loading: cargandoEstado } = useQuery(FACEBOOK_ESTADO, {
     errorPolicy: "all",
@@ -146,6 +163,13 @@ export default function AdminFacebookPage() {
         <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
           <p className="text-sm text-red-400">{error}</p>
         </div>
+      )}
+
+      <VueltaDeUploadPost />
+      {redesUploadPost.length > 0 && <SeccionUploadPost redes={redesUploadPost} />}
+
+      {metaPorUploadPost && (
+        <p className="mb-3 text-xs text-white/40">{tUp("propiaMeta")}</p>
       )}
 
       {/* Pasos 1 y 2: solo de ADMIN, porque suman cuentas nuevas al sistema. */}
@@ -337,10 +361,218 @@ FACEBOOK_TOKEN_KEY=`}
         </div>
       )}
 
-      <VueltaDeUploadPost />
-      <CanalesYoutube />
-      <CuentasTiktok />
+      {proveedores.YOUTUBE === "propio" && <CanalesYoutube />}
+      {proveedores.TIKTOK === "propio" && <CuentasTiktok />}
     </DashboardLayout>
+  );
+}
+
+/**
+ * Publicar por Upload-Post (las redes que el backend tiene en 'upload-post'):
+ * cada marca tiene su perfil allá, y en él se conectan sus cuentas, red por
+ * red. La conexión propia de Facebook sigue más abajo para el revival y las
+ * estadísticas.
+ */
+function SeccionUploadPost({ redes }: { redes: Red[] }) {
+  const t = useTranslations("redesUploadPost");
+  const { activa: marca } = useMarcaActiva();
+  const { esAdmin, esPropietario } = useSesion();
+  const marcaId = marca?._id;
+  const { data: estadoData } = useQuery(ESTADO_UPLOAD_POST, {
+    variables: { marcaId },
+    skip: !marcaId,
+    errorPolicy: "all",
+  });
+  const { cuentas, cargando } = useCuentasUploadPost(marcaId);
+  const [vincular, { loading: vinculando }] = useMutation(VINCULAR_PERFIL_UPLOAD_POST, {
+    refetchQueries: QUERIES_UPLOAD_POST,
+  });
+  const [perfilNuevo, setPerfilNuevo] = useState("");
+  const [abierto, setAbierto] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const mando = esPropietario(marcaId);
+  const puedeVincular = esAdmin || mando;
+  const perfil: string | null = estadoData?.estadoUploadPost?.perfil ?? null;
+
+  async function guardarPerfil() {
+    setError(null);
+    try {
+      await vincular({ variables: { marcaId, perfil: perfilNuevo.trim() } });
+      setPerfilNuevo("");
+      setAbierto(false);
+    } catch (e: any) {
+      setError(e?.message ?? t("errorOperacion"));
+    }
+  }
+
+  return (
+    <section className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+      <div className="flex items-center gap-2">
+        <h2 className="font-semibold">{t("titulo")}</h2>
+        {cargando && (
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-transparent" />
+        )}
+      </div>
+      {!marca ? (
+        <p className="mt-2 text-xs text-white/40">{t("eligeMarca")}</p>
+      ) : (
+        <>
+          <p className="mt-1 text-sm text-white/50">
+            {t("descripcion", { marca: marca.nombre })}
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs">
+            <span className="text-white/50">
+              {perfil
+                ? t.rich("perfil", {
+                    perfil,
+                    b: (c) => <span className="font-mono text-white/80">{c}</span>,
+                  })
+                : t("sinPerfil")}
+            </span>
+            {puedeVincular && !abierto && (
+              <button
+                onClick={() => setAbierto(true)}
+                className="text-white/50 underline-offset-2 hover:text-white hover:underline"
+              >
+                {t("vincular")}
+              </button>
+            )}
+          </div>
+          {puedeVincular && abierto && (
+            <div className="mt-2 flex gap-2">
+              <input
+                value={perfilNuevo}
+                onChange={(e) => setPerfilNuevo(e.target.value)}
+                placeholder={t("perfilPlaceholder")}
+                className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 font-mono text-xs outline-none focus:border-white/30"
+              />
+              <button
+                onClick={guardarPerfil}
+                disabled={!perfilNuevo.trim() || vinculando}
+                className="rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
+              >
+                {vinculando ? t("guardando") : t("guardar")}
+              </button>
+              <button
+                onClick={() => setAbierto(false)}
+                className="rounded-lg px-2 py-1.5 text-xs text-white/40 hover:text-white/70"
+              >
+                {t("cancelar")}
+              </button>
+            </div>
+          )}
+
+          <div className="mt-4 space-y-2">
+            {redes.map((red) => (
+              <FilaRedUploadPost
+                key={red}
+                red={red}
+                marcaId={marcaId}
+                cuentas={cuentas.filter((c) => c.red === red)}
+                mando={mando}
+              />
+            ))}
+          </div>
+          {!mando && (
+            <p className="mt-3 text-xs text-white/40">{t("soloPropietario")}</p>
+          )}
+        </>
+      )}
+      {error && (
+        <p className="mt-3 break-words rounded-lg bg-red-500/10 p-2 text-xs text-red-400">
+          {error}
+        </p>
+      )}
+    </section>
+  );
+}
+
+const NOMBRE_RED: Record<Red, string> = {
+  TIKTOK: "TikTok",
+  YOUTUBE: "YouTube",
+  INSTAGRAM: "Instagram",
+  FACEBOOK: "Facebook",
+};
+
+function FilaRedUploadPost({
+  red,
+  marcaId,
+  cuentas,
+  mando,
+}: {
+  red: Red;
+  marcaId: string | undefined;
+  cuentas: CuentaUploadPost[];
+  mando: boolean;
+}) {
+  const t = useTranslations("redesUploadPost");
+  const { conectar, desconectar, abriendo, desconectando } = useUploadPost(marcaId, red);
+  const [error, setError] = useState<string | null>(null);
+  const nombreRed = NOMBRE_RED[red];
+
+  async function abrir() {
+    setError(null);
+    try {
+      if (!(await conectar())) throw new Error(t("sinUrl"));
+    } catch (e: any) {
+      setError(e?.message ?? t("errorConectar"));
+    }
+  }
+
+  async function quitar() {
+    if (!confirm(t("confirmarDesconectar", { red: nombreRed }))) return;
+    setError(null);
+    try {
+      await desconectar();
+    } catch (e: any) {
+      setError(e?.message ?? t("errorOperacion"));
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <IconoRed red={red} url={cuentas[0]?.avatarUrl} />
+        <div className="min-w-0 flex-1">
+          {cuentas.length ? (
+            cuentas.map((c) => (
+              <p key={c._id} className="truncate text-sm font-medium">
+                {c.nombre}
+                {c.usuario && (
+                  <span className="ml-1.5 text-xs font-normal text-white/40">@{c.usuario}</span>
+                )}
+              </p>
+            ))
+          ) : (
+            <p className="text-sm font-medium">{nombreRed}</p>
+          )}
+          <p className={`text-xs ${cuentas.length ? "text-white/40" : "text-amber-400"}`}>
+            {cuentas.length ? nombreRed : t("faltaConectar")}
+          </p>
+        </div>
+        {mando &&
+          (cuentas.length ? (
+            <button
+              onClick={quitar}
+              disabled={desconectando}
+              className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/40 transition hover:border-red-500/40 hover:text-red-400 disabled:opacity-40"
+            >
+              {t("desconectar")}
+            </button>
+          ) : (
+            <button
+              onClick={abrir}
+              disabled={abriendo}
+              className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
+            >
+              {abriendo ? t("abriendo") : t("conectar", { red: nombreRed })}
+            </button>
+          ))}
+      </div>
+      {error && <p className="mt-2 break-words text-xs text-red-400">{error}</p>}
+    </div>
   );
 }
 
@@ -353,13 +585,10 @@ function VueltaDeUploadPost() {
   const t = useTranslations("redesUploadPost");
   const { activa: marca } = useMarcaActiva();
   const marcaId = marca?._id;
-  const [estado, setEstado] = useState<"nada" | "sincronizando" | "listo" | "error">("nada");
-  const [error, setError] = useState<string | null>(null);
+  const [estado, setEstado] = useState<"nada" | "sincronizando" | "listo">("nada");
   const hecho = useRef(false);
-  const [sincronizar] = useMutation(SINCRONIZAR_UPLOAD_POST, {
-    refetchQueries: QUERIES_DE_CUENTAS,
-    awaitRefetchQueries: true,
-  });
+  const client = useApolloClient();
+  const [sincronizar] = useMutation(SINCRONIZAR_UPLOAD_POST);
 
   useEffect(() => {
     if (hecho.current || !marcaId) return;
@@ -369,28 +598,21 @@ function VueltaDeUploadPost() {
     url.searchParams.delete(PARAMETRO_VUELTA);
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     setEstado("sincronizando");
+    // Si sincronizar falla, las cuentas se leen igual de Upload-Post al refrescar.
     sincronizar({ variables: { marcaId } })
-      .then(() => setEstado("listo"))
-      .catch((e: any) => {
-        setError(e?.message ?? null);
-        setEstado("error");
-      });
-  }, [marcaId, sincronizar]);
+      .catch((e) => console.warn("sincronizarUploadPost", e))
+      .then(() =>
+        client.refetchQueries({
+          include: [...QUERIES_UPLOAD_POST, "TiktokCuentas", "YoutubeCanales"],
+        }),
+      )
+      .finally(() => setEstado("listo"));
+  }, [marcaId, sincronizar, client]);
 
   if (estado === "nada") return null;
   return (
-    <div
-      className={`mt-8 rounded-xl border p-4 text-sm ${
-        estado === "error"
-          ? "border-red-500/30 bg-red-500/10 text-red-400"
-          : "border-ng-azul/30 bg-ng-teal/5 text-ng-teal"
-      }`}
-    >
-      {estado === "sincronizando"
-        ? t("sincronizando")
-        : estado === "listo"
-          ? t("conectada")
-          : error ?? t("errorSincronizar")}
+    <div className="mb-6 rounded-xl border border-ng-azul/30 bg-ng-teal/5 p-4 text-sm text-ng-teal">
+      {estado === "sincronizando" ? t("sincronizando") : t("conectada")}
     </div>
   );
 }

@@ -3,40 +3,68 @@
 import { useMutation, useQuery } from "@apollo/client";
 import {
   CONECTAR_CON_UPLOAD_POST,
+  CUENTAS_UPLOAD_POST,
   DESCONECTAR_DE_UPLOAD_POST,
   PROVEEDORES_PUBLICACION,
 } from "@/graphql/operations";
 
 export type Proveedor = "propio" | "upload-post";
-type Red = "TIKTOK" | "YOUTUBE" | "INSTAGRAM" | "FACEBOOK";
+export type Red = "TIKTOK" | "YOUTUBE" | "INSTAGRAM" | "FACEBOOK";
+export const REDES_UPLOAD_POST: Red[] = ["TIKTOK", "YOUTUBE", "INSTAGRAM", "FACEBOOK"];
+
+/** Una cuenta conectada en el perfil de Upload-Post de la marca. */
+export interface CuentaUploadPost {
+  _id: string;
+  red: Red;
+  nombre: string;
+  usuario?: string | null;
+  avatarUrl?: string | null;
+  activa: boolean;
+}
 
 /** Lo que vuelve en la URL cuando Upload-Post termina de conectar una cuenta. */
 export const PARAMETRO_VUELTA = "upload_post";
 
-/** Las queries de cuentas que hay que refrescar al conectar o desconectar. */
-export const QUERIES_DE_CUENTAS = ["TiktokCuentas", "YoutubeCanales"];
+/** Las queries que hay que refrescar al conectar, desconectar o vincular. */
+export const QUERIES_UPLOAD_POST = ["CuentasUploadPost", "EstadoUploadPost"];
 
 /**
- * Por qué flujo se conectan las cuentas NUEVAS de una red. Si el backend no
- * responde (o todavía no tiene la query) queda el flujo propio, como siempre.
+ * Por dónde publica cada red: 'propio' (nuestras apps) o 'upload-post'. Si el
+ * backend no responde (o todavía no tiene la query), todo queda en 'propio'.
  */
-export function useProveedor(red: "tiktok" | "youtube"): Proveedor {
+export function useProveedores(): Record<Red, Proveedor> {
   const { data } = useQuery(PROVEEDORES_PUBLICACION, { errorPolicy: "all" });
-  return data?.proveedoresPublicacion?.[red] === "upload-post"
-    ? "upload-post"
-    : "propio";
+  const p = data?.proveedoresPublicacion;
+  const de = (v: unknown): Proveedor => (v === "upload-post" ? "upload-post" : "propio");
+  return {
+    TIKTOK: de(p?.tiktok),
+    YOUTUBE: de(p?.youtube),
+    INSTAGRAM: de(p?.instagram),
+    FACEBOOK: de(p?.facebook),
+  };
+}
+
+/** Las cuentas de Upload-Post de la marca (vacío si no hay red que las use). */
+export function useCuentasUploadPost(marcaId: string | undefined, skip = false) {
+  const q = useQuery(CUENTAS_UPLOAD_POST, {
+    variables: { marcaId },
+    skip: !marcaId || skip,
+    errorPolicy: "all",
+  });
+  const cuentas: CuentaUploadPost[] = q.data?.cuentasUploadPost ?? [];
+  return { cuentas, cargando: q.loading };
 }
 
 /**
- * Conectar y desconectar por Upload-Post. Conectar abre su página en la misma
- * pestaña porque vuelve a Integraciones con `?upload_post=ok`, y ahí se
- * sincroniza (ver la página de integraciones).
+ * Conectar y desconectar una red por Upload-Post. Conectar abre su página en
+ * la misma pestaña porque vuelve a Redes conectadas con `?upload_post=ok`.
  */
 export function useUploadPost(marcaId: string | undefined, red: Red) {
   const [pedirUrl, { loading: abriendo }] = useMutation(CONECTAR_CON_UPLOAD_POST);
-  const [desconectarMut] = useMutation(DESCONECTAR_DE_UPLOAD_POST, {
-    refetchQueries: QUERIES_DE_CUENTAS,
-  });
+  const [desconectarMut, { loading: desconectando }] = useMutation(
+    DESCONECTAR_DE_UPLOAD_POST,
+    { refetchQueries: QUERIES_UPLOAD_POST },
+  );
 
   async function conectar(): Promise<string | null> {
     const { data } = await pedirUrl({ variables: { marcaId, red } });
@@ -50,5 +78,5 @@ export function useUploadPost(marcaId: string | undefined, red: Red) {
     await desconectarMut({ variables: { marcaId, red } });
   }
 
-  return { conectar, desconectar, abriendo };
+  return { conectar, desconectar, abriendo, desconectando };
 }

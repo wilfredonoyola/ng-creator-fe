@@ -23,6 +23,7 @@ import {
   type Publicacion,
 } from "@/lib/publicaciones";
 import type { CanalYoutube } from "@/components/CanalesYoutube";
+import { useCuentasUploadPost, useProveedores } from "@/lib/upload-post";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
 import type { CalidadClip } from "@/lib/calidad";
 import { IconoRed, Poster } from "@/components/IconoRed";
@@ -33,7 +34,7 @@ import {
   type VersionCortaClip,
 } from "@/components/episodios/VersionFacebook";
 
-type Red = "FACEBOOK" | "INSTAGRAM" | "YOUTUBE";
+type Red = "FACEBOOK" | "INSTAGRAM" | "YOUTUBE" | "TIKTOK";
 
 /** Un lugar a donde puede salir el clip: la página de Facebook, su Instagram o un canal de YouTube de la marca. */
 interface Destino {
@@ -47,6 +48,14 @@ interface Destino {
   /** Si no se puede usar, por qué (clave en `publicarClip.motivos`). */
   motivo?: "reconectar" | "desactivado";
 }
+
+/** Formato y etiqueta de cada red cuando el destino sale de Upload-Post. */
+const FORMATO: Record<Red, { formato: string; etiqueta: string }> = {
+  FACEBOOK: { formato: "REEL", etiqueta: "Reel" },
+  INSTAGRAM: { formato: "REEL", etiqueta: "Reel" },
+  YOUTUBE: { formato: "SHORT", etiqueta: "Short" },
+  TIKTOK: { formato: "VIDEO", etiqueta: "Video" },
+};
 
 /** Lo mismo que el backend: lo que va abajo del video y el título de YouTube. */
 const DESCRIPCION_MAX = 2200;
@@ -76,7 +85,14 @@ export default function ProgramarClipPage({
   const opera = puedeOperar(activa?._id);
 
   const clipQ = useQuery(CLIP_EPISODIO, { variables: { id: clipId, marcaId }, skip: !activa });
-  const canalesQ = useQuery(YOUTUBE_CANALES, { variables: { marcaId }, skip: !activa, errorPolicy: "all" });
+  const proveedores = useProveedores();
+  const porUploadPost = (Object.keys(proveedores) as Red[]).filter((r) => proveedores[r] === "upload-post");
+  const canalesQ = useQuery(YOUTUBE_CANALES, {
+    variables: { marcaId },
+    skip: !activa || proveedores.YOUTUBE === "upload-post",
+    errorPolicy: "all",
+  });
+  const uploadPost = useCuentasUploadPost(marcaId || undefined, porUploadPost.length === 0);
   const pubsQ = useQuery(PUBLICACIONES_DE_CLIP, {
     variables: { marcaId, clipId },
     skip: !activa,
@@ -96,7 +112,9 @@ export default function ProgramarClipPage({
   }, [versionProcesando, startPolling, stopPolling]);
   const destinos: Destino[] = [];
   const pagina = activa?.paginaFacebook;
-  if (pagina) {
+  // Cada red publica por su proveedor: con 'upload-post', sus destinos son las
+  // cuentas del perfil de Upload-Post de la marca (la cola recibe su _id).
+  if (pagina && proveedores.FACEBOOK === "propio") {
     destinos.push({
       clave: `fb:${pagina.pageId}`,
       red: "FACEBOOK",
@@ -108,7 +126,7 @@ export default function ProgramarClipPage({
     });
     // Instagram sale con la misma conexión que Facebook: la cuenta ligada a
     // la página, si Meta dio el permiso al conectar (ng-creator-be#60).
-    if (pagina.instagramId) {
+    if (pagina.instagramId && proveedores.INSTAGRAM === "propio") {
       destinos.push({
         clave: `ig:${pagina.instagramId}`,
         red: "INSTAGRAM",
@@ -120,7 +138,23 @@ export default function ProgramarClipPage({
       });
     }
   }
-  for (const c of (canalesQ.data?.youtubeCanales ?? []) as CanalYoutube[]) {
+  for (const c of uploadPost.cuentas) {
+    if (proveedores[c.red] !== "upload-post") continue;
+    destinos.push({
+      clave: `up:${c.red}:${c._id}`,
+      red: c.red,
+      cuentaId: c._id,
+      nombre: c.usuario ? `@${c.usuario}` : c.nombre,
+      foto: c.avatarUrl,
+      ...FORMATO[c.red],
+      motivo: c.activa ? undefined : "desactivado",
+    });
+  }
+  // Las redes de Upload-Post sin cuenta: se conectan en la web, en Redes conectadas.
+  const faltanUploadPost = uploadPost.cargando
+    ? []
+    : porUploadPost.filter((r) => !destinos.some((d) => d.red === r));
+  for (const c of (proveedores.YOUTUBE === "propio" ? canalesQ.data?.youtubeCanales ?? [] : []) as CanalYoutube[]) {
     destinos.push({
       clave: `yt:${c.canalId}`,
       red: "YOUTUBE",
@@ -180,7 +214,9 @@ export default function ProgramarClipPage({
           marcaId={marcaId}
           opera={opera}
           destinos={destinos}
-          faltaInstagram={!!pagina && !pagina.instagramId}
+          faltaInstagram={!!pagina && !pagina.instagramId && proveedores.INSTAGRAM === "propio"}
+          faltanUploadPost={faltanUploadPost}
+          tiktokPronto={proveedores.TIKTOK === "propio"}
           publicaciones={pubsQ.data?.publicacionesDeClip ?? []}
           refrescar={() => void pubsQ.refetch()}
         />
@@ -195,6 +231,8 @@ function Formulario({
   opera,
   destinos,
   faltaInstagram,
+  faltanUploadPost,
+  tiktokPronto,
   publicaciones,
   refrescar,
 }: {
@@ -217,6 +255,10 @@ function Formulario({
   destinos: Destino[];
   /** La marca tiene página pero Meta no dio (o no hay) su Instagram. */
   faltaInstagram: boolean;
+  /** Redes que publican por Upload-Post y no tienen cuenta conectada. */
+  faltanUploadPost: Red[];
+  /** TikTok por la integración propia todavía no se programa desde acá. */
+  tiktokPronto: boolean;
   publicaciones: Publicacion[];
   refrescar: () => void;
 }) {
@@ -442,13 +484,28 @@ function Formulario({
                 {t("faltaInstagram")}
               </p>
             ) : null}
-            <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 opacity-45">
-              <IconoRed red="TIKTOK" />
-              <span>
-                <span className="block text-sm font-medium">TikTok</span>
-                <span className="block text-xs text-white/45">{t("pronto")}</span>
-              </span>
-            </div>
+            {destinos.length > 0 &&
+              faltanUploadPost.map((r) => (
+                <p key={r} className="text-xs text-white/40">
+                  {t.rich("faltaRed", {
+                    red: REDES[r]?.nombre ?? r,
+                    link: (c) => (
+                      <Link href="/admin/facebook" className="text-ng-celeste hover:underline">
+                        {c}
+                      </Link>
+                    ),
+                  })}
+                </p>
+              ))}
+            {tiktokPronto && (
+              <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 opacity-45">
+                <IconoRed red="TIKTOK" />
+                <span>
+                  <span className="block text-sm font-medium">TikTok</span>
+                  <span className="block text-xs text-white/45">{t("pronto")}</span>
+                </span>
+              </div>
+            )}
           </Seccion>
 
           {conFacebook && necesitaVersion ? (

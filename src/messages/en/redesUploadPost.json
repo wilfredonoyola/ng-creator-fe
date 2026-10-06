@@ -1,7 +1,24 @@
 {
-  "via": "via Upload-Post",
+  "titulo": "Publishing (via Upload-Post)",
+  "descripcion": "{marca}'s clips are published through Upload-Post to these accounts. For another brand, switch it in the sidebar.",
+  "eligeMarca": "Pick a brand in the sidebar.",
+  "perfil": "Upload-Post profile: <b>{perfil}</b>",
+  "sinPerfil": "This brand has no Upload-Post profile yet.",
+  "vincular": "Link an existing profile",
+  "perfilPlaceholder": "profile-name",
+  "guardar": "Save",
+  "guardando": "Saving…",
+  "cancelar": "Cancel",
+  "faltaConectar": "Not connected",
+  "conectar": "Connect {red}",
+  "desconectar": "Disconnect",
+  "confirmarDesconectar": "Disconnect {red} from Upload-Post? Anything scheduled on that network will fail when it's due.",
   "abriendo": "Opening Upload-Post…",
+  "sinUrl": "The backend didn't return the Upload-Post URL",
+  "errorConectar": "Couldn't start the connection",
+  "errorOperacion": "The operation failed",
+  "soloPropietario": "Only the brand owner can connect and disconnect accounts.",
   "sincronizando": "Fetching the connected account…",
   "conectada": "Account connected",
-  "errorSincronizar": "Couldn't fetch the connected account. Try connecting it again."
+  "propiaMeta": "For revival and stats; clips are published through Upload-Post."
 }

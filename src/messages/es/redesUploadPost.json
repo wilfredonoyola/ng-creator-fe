@@ -1,7 +1,24 @@
 {
-  "via": "vía Upload-Post",
+  "titulo": "Publicación (vía Upload-Post)",
+  "descripcion": "Los clips de {marca} se publican por Upload-Post en estas cuentas. Para otra marca, cambiala en la barra lateral.",
+  "eligeMarca": "Elegí una marca en la barra lateral.",
+  "perfil": "Perfil de Upload-Post: <b>{perfil}</b>",
+  "sinPerfil": "Esta marca todavía no tiene perfil de Upload-Post.",
+  "vincular": "Vincular un perfil existente",
+  "perfilPlaceholder": "nombre-del-perfil",
+  "guardar": "Guardar",
+  "guardando": "Guardando…",
+  "cancelar": "Cancelar",
+  "faltaConectar": "Falta conectar",
+  "conectar": "Conectar {red}",
+  "desconectar": "Desconectar",
+  "confirmarDesconectar": "¿Desconectar {red} de Upload-Post? Lo programado en esa red va a fallar a su hora.",
   "abriendo": "Abriendo Upload-Post…",
+  "sinUrl": "El backend no devolvió la URL de Upload-Post",
+  "errorConectar": "No se pudo iniciar la conexión",
+  "errorOperacion": "La operación falló",
+  "soloPropietario": "Conectar y desconectar cuentas es del propietario de la marca.",
   "sincronizando": "Trayendo la cuenta conectada…",
   "conectada": "Cuenta conectada",
-  "errorSincronizar": "No se pudo traer la cuenta conectada. Probá conectarla de nuevo."
+  "propiaMeta": "Para el revival y las estadísticas; los clips se publican por Upload-Post."
 }
