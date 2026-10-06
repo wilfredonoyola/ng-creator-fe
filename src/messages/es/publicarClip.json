@@ -64,6 +64,23 @@
   "hashtagsAlFinal": "Van al final de la descripción, en todas las redes. Los que ya escribiste en el texto no se repiten.",
   "hashtagsVacio": "Sin hashtags. Los de siempre de la marca se configuran en Redes conectadas.",
   "descripcionLarga": "La descripción con los hashtags pasa de {max} caracteres: acortala o quitá alguno.",
-  "youtubeTituloAparte": "el título va aparte",
-  "tituloYoutubeAyuda": "YouTube usa este título aparte; la descripción y los hashtags van debajo del video."
+  "tituloYoutubeAyuda": "YouTube usa este título aparte; la descripción y los hashtags van debajo del video.",
+  "nRedes": "{n, plural, one {# red} other {# redes}}",
+  "comoSale": "Cómo sale en cada red",
+  "comoSaleAviso": "Se pasa del límite en {redes}",
+  "comoSaleLargo": "se pasa de {max} caracteres ({n})",
+  "tituloLargo": "el título pasa de {max} caracteres",
+  "sinTexto": "(sin texto)",
+  "portada": {
+    "titulo": "Portada",
+    "automatica": "Automática",
+    "elegir": "Elegir portada",
+    "cambiar": "Cambiar",
+    "usarAutomatica": "Usar la automática",
+    "listo": "Listo",
+    "enSeg": "Cuadro en el segundo {seg}",
+    "elegida": "Portada elegida",
+    "facebook": "En Facebook se aplica unos minutos después de publicar, si la página está conectada también en Facebook (Redes conectadas → abajo).",
+    "youtube": "YouTube solo la aplica en canales verificados."
+  }
 }

@@ -111,3 +111,32 @@ export function useDestinosMarca(marca: Marca | null | undefined) {
     cargando: uploadPost.cargando || canalesQ.loading,
   };
 }
+
+/** Lo mismo que valida el backend: lo que va abajo del video y el título de YouTube. */
+export const DESCRIPCION_MAX = 2200;
+export const TITULO_YOUTUBE_MAX = 100;
+
+/** Cómo sale el texto en una red: la descripción final y, en YouTube, su título. */
+export interface ComoSale {
+  red: Red;
+  titulo?: string;
+  texto: string;
+  /** Se pasa del límite de la red (descripción o título). */
+  largo: boolean;
+}
+
+/** Una línea por red elegida (sin repetir la red), para revisar antes de programar. */
+export function comoSaleEnCadaRed(destinos: Destino[], descripcionFinal: string, tituloYoutube: string): ComoSale[] {
+  const redes = Array.from(new Set(destinos.map((d) => d.red)));
+  const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX;
+  return redes.map((red) =>
+    red === "YOUTUBE"
+      ? {
+          red,
+          titulo: tituloYoutube,
+          texto: descripcionFinal,
+          largo: descripcionLarga || tituloYoutube.length > TITULO_YOUTUBE_MAX,
+        }
+      : { red, texto: descripcionFinal, largo: descripcionLarga },
+  );
+}
