@@ -3,7 +3,8 @@
     "guardar": "No se pudo guardar",
     "auto": "No se pudo auto-encuadrar",
     "deshacer": "No se pudo volver a como estaba",
-    "procesar": "No se pudo procesar el video"
+    "procesar": "No se pudo procesar el video",
+    "noQuitarTodo": "Tiene que quedar al menos 1 s del clip."
   },
   "confirmarAuto": "El auto-encuadre reemplaza los cambios de encuadre por los suyos. ¿Seguir?",
   "pestanas": {
@@ -29,11 +30,25 @@
   "modos": {
     "inicio": "Tocar = inicio",
     "fin": "Tocar = fin",
-    "corregir": "Tocar = corregir palabra"
+    "corregir": "Tocar = corregir palabra",
+    "quitar": "Tocar = quitar del clip"
   },
   "empieza": "Empieza",
   "termina": "Termina",
   "dura": "Dura {seg} s",
+  "duraConCortes": "Dura {seg} s ya cortado (el tramo entero: {total} s)",
+  "quitar": {
+    "ayuda": "Tocá la primera palabra y después la última de lo que querés sacar.",
+    "seleccion": "{n, plural, one {# palabra} other {# palabras}} · {seg} s",
+    "quitar": "Quitar del clip",
+    "cancelar": "Cancelar",
+    "tachada": "Cortada: tocala para volver a ponerla"
+  },
+  "reponer": {
+    "texto": "«{palabra}» está en un corte de {seg} s.",
+    "volver": "Volver a poner",
+    "cancelar": "Cancelar"
+  },
   "guardarIgual": "Guardar igual",
   "personas": "{n, plural, one {# persona} other {# personas}}",
   "videoNoListo": "El video todavía no está listo en Bunny.",

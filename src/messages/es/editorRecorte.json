@@ -49,6 +49,7 @@
     "inicioAntes": "Mover el inicio 5 s antes (el clip se alarga)",
     "inicioDespues": "Mover el inicio 5 s después (el clip se acorta)",
     "finalAntes": "Mover el final 5 s antes (el clip se acorta)",
-    "finalDespues": "Mover el final 5 s después (el clip se alarga)"
+    "finalDespues": "Mover el final 5 s después (el clip se alarga)",
+    "conCortes": "{efectiva} de {total}"
   }
 }

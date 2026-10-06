@@ -9,6 +9,7 @@ import creators_es from "./es/creators.json";
 import editorAutoEncuadre_es from "./es/editorAutoEncuadre.json";
 import editorBarra_es from "./es/editorBarra.json";
 import editorClip_es from "./es/editorClip.json";
+import editorCortes_es from "./es/editorCortes.json";
 import editorExportar_es from "./es/editorExportar.json";
 import editorGuiado_es from "./es/editorGuiado.json";
 import editorInspector_es from "./es/editorInspector.json";
@@ -97,6 +98,7 @@ import creators_en from "./en/creators.json";
 import editorAutoEncuadre_en from "./en/editorAutoEncuadre.json";
 import editorBarra_en from "./en/editorBarra.json";
 import editorClip_en from "./en/editorClip.json";
+import editorCortes_en from "./en/editorCortes.json";
 import editorExportar_en from "./en/editorExportar.json";
 import editorGuiado_en from "./en/editorGuiado.json";
 import editorInspector_en from "./en/editorInspector.json";
@@ -188,6 +190,7 @@ export const mensajes = {
     "editorAutoEncuadre": editorAutoEncuadre_es,
     "editorBarra": editorBarra_es,
     "editorClip": editorClip_es,
+    "editorCortes": editorCortes_es,
     "editorExportar": editorExportar_es,
     "editorGuiado": editorGuiado_es,
     "editorInspector": editorInspector_es,
@@ -278,6 +281,7 @@ export const mensajes = {
     "editorAutoEncuadre": editorAutoEncuadre_en,
     "editorBarra": editorBarra_en,
     "editorClip": editorClip_en,
+    "editorCortes": editorCortes_en,
     "editorExportar": editorExportar_en,
     "editorGuiado": editorGuiado_en,
     "editorInspector": editorInspector_en,

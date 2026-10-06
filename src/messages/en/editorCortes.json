@@ -1,0 +1,19 @@
+{
+  "titulo": "Cuts",
+  "ayuda": "Tap a piece or drag across the bar to mark what you don't need, then remove it. \"Cut here\" splits the piece at the playhead. Striped parts don't go in the clip; the ✕ puts them back.",
+  "ayudaEtiqueta": "How to cut inside the clip",
+  "duracion": "{efectiva} of {total}",
+  "corte": "Cut: {desde} – {hasta}",
+  "deshacerCorte": "Put back {desde} – {hasta}",
+  "cortarAca": "Cut here",
+  "ayudaCortarAca": "Splits the piece at the playhead, so you can pick just one part and remove it",
+  "quitarPedazo": "Remove this piece",
+  "noQuitarTodo": "At least 1 s of the clip has to stay.",
+  "quitarSilencios": "Remove long silences",
+  "ayudaSilencios": "Finds the long silences in the clip and marks them as cuts. You can review them one by one afterwards.",
+  "sinSilencios": "No long silences found in the clip.",
+  "errorSilencios": "Couldn't look for silences. Try again.",
+  "silenciosMarcados": "{n, plural, one {# silence} other {# silences}} marked ({seg} s). Review them; they save on their own like everything else.",
+  "deshacer": "Undo",
+  "cerrar": "Close"
+}

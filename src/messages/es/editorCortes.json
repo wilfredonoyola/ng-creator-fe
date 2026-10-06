@@ -1,0 +1,19 @@
+{
+  "titulo": "Cortes",
+  "ayuda": "Tocá un pedazo o arrastrá sobre la barra para marcar lo que sobra y quitalo. \"Cortar acá\" parte el pedazo donde está el cabezal. Lo rayado no sale en el clip; la ✕ lo vuelve a poner.",
+  "ayudaEtiqueta": "Cómo cortar en el medio del clip",
+  "duracion": "{efectiva} de {total}",
+  "corte": "Cortado: {desde} – {hasta}",
+  "deshacerCorte": "Volver a poner {desde} – {hasta}",
+  "cortarAca": "Cortar acá",
+  "ayudaCortarAca": "Parte el pedazo en el cabezal, para elegir solo una parte y quitarla",
+  "quitarPedazo": "Quitar este pedazo",
+  "noQuitarTodo": "Tiene que quedar al menos 1 s del clip.",
+  "quitarSilencios": "Quitar silencios largos",
+  "ayudaSilencios": "Busca los silencios largos del clip y los marca como cortes. Después los podés revisar uno por uno.",
+  "sinSilencios": "No encontré silencios largos en el clip.",
+  "errorSilencios": "No se pudieron buscar los silencios. Probá de nuevo.",
+  "silenciosMarcados": "Se {n, plural, one {marcó # silencio} other {marcaron # silencios}} ({seg} s). Revisalos; se guardan solos como el resto.",
+  "deshacer": "Deshacer",
+  "cerrar": "Cerrar"
+}

@@ -67,6 +67,8 @@ interface ClipResumen {
   _id: string;
   desdeSeg: number;
   hastaSeg: number;
+  /** Ya sin los cortes del medio. */
+  duracionEfectivaSeg?: number | null;
   puntuacion: number;
   motivo: string;
   titulo: string;
@@ -232,7 +234,7 @@ export default function InicioPage() {
                             {/* eslint-disable-next-line @next/next/no-img-element -- poster del CDN */}
                             <img src={c.urlPoster!} alt="" className="h-full w-full object-cover" />
                             <span className="absolute bottom-1.5 right-1.5 rounded bg-black/70 px-1.5 py-0.5 text-[10px] tabular-nums text-white">
-                              {reloj(c.hastaSeg - c.desdeSeg)}
+                              {reloj(c.duracionEfectivaSeg ?? c.hastaSeg - c.desdeSeg)}
                             </span>
                           </div>
                           <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-snug">{c.titulo}</p>

@@ -1597,6 +1597,7 @@ export const CLIPS_DE_EPISODIO = gql`
       estado
       desdeSeg
       hastaSeg
+      duracionEfectivaSeg
       puntuacion
       motivo
       titulo
@@ -1675,6 +1676,15 @@ const CAMPOS_CLIP_EDITOR = gql`
     origen
     desdeSeg
     hastaSeg
+    cortes {
+      desdeSeg
+      hastaSeg
+    }
+    tramos {
+      desdeSeg
+      hastaSeg
+    }
+    duracionEfectivaSeg
     titulo
     texto
     puntuacion
@@ -1960,6 +1970,19 @@ export const ACTUALIZAR_CLIP_EPISODIO = gql`
   mutation ActualizarClipEpisodio($id: ID!, $marcaId: String!, $input: ActualizarClipEpisodioInput!) {
     actualizarClipEpisodio(id: $id, marcaId: $marcaId, input: $input) {
       ...CamposClipEditor
+    }
+  }
+`;
+
+/**
+ * Los silencios largos del clip, como cortes propuestos: no guarda nada. El
+ * editor los une a los suyos y se guardan con el resto.
+ */
+export const SUGERIR_CORTES_DE_SILENCIO = gql`
+  query SugerirCortesDeSilencio($id: ID!, $marcaId: String!, $minimoSeg: Float, $margenSeg: Float) {
+    sugerirCortesDeSilencio(id: $id, marcaId: $marcaId, minimoSeg: $minimoSeg, margenSeg: $margenSeg) {
+      desdeSeg
+      hastaSeg
     }
   }
 `;

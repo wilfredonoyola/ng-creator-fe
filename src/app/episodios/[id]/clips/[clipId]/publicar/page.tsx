@@ -203,6 +203,8 @@ function Formulario({
     titulo: string;
     urlPoster?: string | null;
     hastaSeg: number;
+    /** Ya sin los cortes del medio. */
+    duracionEfectivaSeg?: number | null;
     desdeSeg: number;
     editadoEn?: string | null;
     renderizadoEn?: string | null;
@@ -241,7 +243,8 @@ function Formulario({
   const elegidosEnOrden = destinos.filter((d) => elegidos.has(d.clave));
   // Un Reel de Facebook dura hasta 90 s: un clip más largo sale en Facebook con
   // su versión corta, y hasta que esté lista Facebook espera. Las otras redes no.
-  const duracionClip = clip.hastaSeg - clip.desdeSeg;
+  // Ya sin los cortes del medio: es lo que dura el MP4 (y sobre eso se elige la versión para Facebook).
+  const duracionClip: number = clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg;
   const necesitaVersion = duracionClip > REEL_FACEBOOK_MAX_SEG;
   const conFacebook = elegidosEnOrden.some((d) => d.red === "FACEBOOK");
   const facebookEspera = necesitaVersion && clip.versionFacebook?.estadoRender !== "LISTO";
@@ -326,7 +329,7 @@ function Formulario({
         <Poster url={clip.urlPoster} className="h-32 w-[72px]" />
         <div className="min-w-0 flex-1">
           <p className="text-lg font-semibold">{clip.titulo}</p>
-          <p className="text-sm text-white/45">{t("duracionListo", { seg: Math.round(clip.hastaSeg - clip.desdeSeg) })}</p>
+          <p className="text-sm text-white/45">{t("duracionListo", { seg: Math.round(duracionClip) })}</p>
           {clip.calidad || clip.versionFacebook?.calidad ? (
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {clip.calidad ? <IndicadorCalidad calidad={clip.calidad} medida /> : null}

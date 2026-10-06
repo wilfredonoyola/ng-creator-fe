@@ -9,6 +9,7 @@ import {
   CLIP_EPISODIO,
   EPISODIO_EDITOR,
   RENDERIZAR_CLIP_EPISODIO,
+  SUGERIR_CORTES_DE_SILENCIO,
   AUTO_ENCUADRAR_CLIP_EPISODIO,
   DESHACER_AUTO_ENCUADRE_CLIP_EPISODIO,
   TRANSCRIPCION_EPISODIO,
@@ -31,6 +32,7 @@ import { BarraDelClip } from "@/components/episodios/BarraDelClip";
 import { GaleriaEstilos } from "@/components/estilos/GaleriaEstilos";
 import { ESTILO_TEXTO_POR_DEFECTO, resolverEstilo, temaValido, type EstiloTexto } from "@/lib/estilos-texto";
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
+import { agregarCorte, duracionEfectiva, estaCortado, normalizarCortes, type Corte } from "@/lib/cortes";
 import { Captions, Palette, ScrollText, Stamp, Type } from "lucide-react";
 
 interface Palabra {
@@ -61,6 +63,8 @@ interface Borrador {
   plantillaActiva: boolean;
   /** El estilo de texto de este clip (be#132). Null = el de la marca. */
   estiloTexto: EstiloTexto | null;
+  /** Lo que se quita del medio del clip, en segundos del episodio (normalizado). */
+  cortes: Corte[];
 }
 
 /** Las pestañas del inspector, en orden. Cada una se abre con `#id` en la dirección. */
@@ -129,8 +133,12 @@ export default function EditorClipPage({
   const [b, setB] = useState<Borrador | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [modo, setModo] = useState<"inicio" | "fin" | "corregir">("inicio");
+  const [modo, setModo] = useState<"inicio" | "fin" | "corregir" | "quitar">("inicio");
   const [corrigiendo, setCorrigiendo] = useState<Palabra | null>(null);
+  // "Quitar del clip" en la transcripción: de una palabra a otra. Y la palabra
+  // tachada que se tocó, para volver a ponerla.
+  const [seleccion, setSeleccion] = useState<{ a: Palabra; b: Palabra } | null>(null);
+  const [reponiendo, setReponiendo] = useState<{ palabra: Palabra; corte: Corte } | null>(null);
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
   const [pestana, elegirPestana] = usePestanaInspector(PESTANAS, "estilo");
   // El tramo que está guardado, y el aviso de cruces (#70) cuando el nuevo pisa
@@ -206,6 +214,7 @@ export default function EditorClipPage({
       textos,
       plantillaActiva: clip.plantillaActiva ?? true,
       estiloTexto: clip.estiloTexto ?? null,
+      cortes: normalizarCortes(clip.cortes ?? [], clip.desdeSeg, clip.hastaSeg),
     });
   }, [clip, b, estilo]);
 
@@ -271,6 +280,8 @@ export default function EditorClipPage({
               plantillaActiva: borrador.plantillaActiva,
               // null = el de la marca.
               estiloTexto: borrador.estiloTexto,
+              // La lista entera: reemplaza la guardada.
+              cortes: borrador.cortes,
             },
           },
         });
@@ -414,6 +425,7 @@ export default function EditorClipPage({
 
   const cambiar = (parcial: Partial<Borrador>) => setB((prev) => (prev ? { ...prev, ...parcial } : prev));
   const duracion = b.hastaSeg - b.desdeSeg;
+  const efectiva = duracionEfectiva(b.desdeSeg, b.hastaSeg, b.cortes);
   const redondo = (n: number) => Math.round(n * 1000) / 1000;
 
   /**
@@ -436,11 +448,28 @@ export default function EditorClipPage({
         ...corridas.filter((p) => p.desdeSeg > 0 && p.desdeSeg < hasta - desde),
       ];
     }
-    cambiar({ desdeSeg: redondo(desde), hastaSeg: redondo(hasta), posiciones });
+    // Los cortes que quedan afuera del tramo nuevo se van.
+    const cortes = normalizarCortes(b.cortes, desde, hasta);
+    cambiar({ desdeSeg: redondo(desde), hastaSeg: redondo(hasta), posiciones, cortes });
   }
 
   function tocarPalabra(p: Palabra) {
     if (!b || !opera) return;
+    // Una palabra tachada: se ofrece volver a ponerla.
+    const corte = estaCortado((p.desde + p.hasta) / 2, b.cortes);
+    if (corte) {
+      setSeleccion(null);
+      setReponiendo({ palabra: p, corte });
+      return;
+    }
+    setReponiendo(null);
+    if (modo === "quitar") {
+      // El primer toque elige una palabra; el segundo, hasta dónde va la frase.
+      setSeleccion((s) =>
+        s && s.a === s.b && s.a !== p ? (p.desde < s.a.desde ? { a: p, b: s.a } : { a: s.a, b: p }) : { a: p, b: p },
+      );
+      return;
+    }
     if (modo === "inicio") {
       cambiarTramo(p.desde, Math.max(b.hastaSeg, p.desde + 1));
     } else if (modo === "fin") {
@@ -448,6 +477,36 @@ export default function EditorClipPage({
     } else {
       setCorrigiendo(p);
     }
+  }
+
+  /** Lo elegido en la transcripción sale del clip: desde el inicio de la primera palabra hasta el fin de la última. */
+  function quitarSeleccion() {
+    if (!b || !seleccion) return;
+    const r = agregarCorte(b.cortes, { desdeSeg: seleccion.a.desde, hastaSeg: seleccion.b.hasta }, b.desdeSeg, b.hastaSeg);
+    if (!r) {
+      setError(tr("errores.noQuitarTodo"));
+      return;
+    }
+    setError(null);
+    cambiar({ cortes: r });
+    setSeleccion(null);
+  }
+
+  function reponer(c: Corte) {
+    if (!b) return;
+    cambiar({ cortes: b.cortes.filter((x) => x.desdeSeg !== c.desdeSeg || x.hastaSeg !== c.hastaSeg) });
+    setReponiendo(null);
+  }
+
+  /** Los silencios largos que propone el servidor; el editor los une a los suyos. */
+  async function sugerirSilencios(): Promise<Corte[]> {
+    if (!marcaId) return [];
+    const r = await cliente.query({
+      query: SUGERIR_CORTES_DE_SILENCIO,
+      variables: { id: clipId, marcaId },
+      fetchPolicy: "no-cache",
+    });
+    return (r.data?.sugerirCortesDeSilencio ?? []).map((c: Corte) => ({ desdeSeg: c.desdeSeg, hastaSeg: c.hastaSeg }));
   }
 
   function corregir(p: Palabra, texto: string | null) {
@@ -669,10 +728,13 @@ export default function EditorClipPage({
       contenido: (
         <>
           <div className="mb-3 flex flex-wrap gap-2">
-            {(["inicio", "fin", "corregir"] as const).map((m) => (
+            {(["inicio", "fin", "corregir", "quitar"] as const).map((m) => (
               <button
                 key={m}
-                onClick={() => setModo(m)}
+                onClick={() => {
+                  setModo(m);
+                  setSeleccion(null);
+                }}
                 className={`rounded-lg px-3 py-1.5 text-xs ${
                   modo === m ? "bg-white text-black" : "border border-white/15 text-white/70"
                 }`}
@@ -685,14 +747,22 @@ export default function EditorClipPage({
             {palabras.map((p) => {
               const mitad = (p.desde + p.hasta) / 2;
               const dentro = mitad >= b.desdeSeg && mitad <= b.hastaSeg;
+              const cortada = dentro && Boolean(estaCortado(mitad, b.cortes));
+              const elegida = seleccion && p.desde >= seleccion.a.desde && p.desde <= seleccion.b.desde;
               const corregida = correccionDe.get(Math.round(p.desde * 1000));
               return (
                 <button
                   key={p.desde}
                   onClick={() => tocarPalabra(p)}
-                  title={`${p.desde.toFixed(2)} s`}
+                  title={cortada ? tr("quitar.tachada") : `${p.desde.toFixed(2)} s`}
                   className={`mr-1 rounded px-0.5 transition ${
-                    dentro ? "bg-ng-teal/20 text-white" : "text-white/35"
+                    elegida
+                      ? "bg-marca/30 text-white"
+                      : cortada
+                        ? "text-white/30 line-through decoration-red-400 decoration-2"
+                        : dentro
+                          ? "bg-ng-teal/20 text-white"
+                          : "text-white/35"
                   } hover:bg-white/20 ${corregida !== undefined ? "underline decoration-amber-400" : ""}`}
                 >
                   {corregida !== undefined ? corregida || "∅" : p.texto}
@@ -700,6 +770,41 @@ export default function EditorClipPage({
               );
             })}
           </div>
+          {modo === "quitar" && !seleccion && !reponiendo && (
+            <p className="mt-2 text-xs text-white/45">{tr("quitar.ayuda")}</p>
+          )}
+          {seleccion && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-marca/30 bg-marca/5 p-3 text-sm">
+              <span className="min-w-0 flex-1 truncate text-white/70">
+                {tr("quitar.seleccion", {
+                  n: palabras.filter((p) => p.desde >= seleccion.a.desde && p.desde <= seleccion.b.desde).length,
+                  seg: (seleccion.b.hasta - seleccion.a.desde).toFixed(1),
+                })}
+              </span>
+              <button onClick={quitarSeleccion} className="rounded bg-marca px-2 py-1 text-xs font-medium text-ng-tinta">
+                {tr("quitar.quitar")}
+              </button>
+              <button onClick={() => setSeleccion(null)} className="text-xs text-white/40">
+                {tr("quitar.cancelar")}
+              </button>
+            </div>
+          )}
+          {reponiendo && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-red-400/30 bg-red-400/5 p-3 text-sm">
+              <span className="min-w-0 flex-1 text-white/70">
+                {tr("reponer.texto", {
+                  palabra: reponiendo.palabra.texto,
+                  seg: (reponiendo.corte.hastaSeg - reponiendo.corte.desdeSeg).toFixed(1),
+                })}
+              </span>
+              <button onClick={() => reponer(reponiendo.corte)} className="rounded bg-white px-2 py-1 text-xs text-black">
+                {tr("reponer.volver")}
+              </button>
+              <button onClick={() => setReponiendo(null)} className="text-xs text-white/40">
+                {tr("reponer.cancelar")}
+              </button>
+            </div>
+          )}
           {corrigiendo && (
             <Correccion
               palabra={corrigiendo}
@@ -722,7 +827,11 @@ export default function EditorClipPage({
               disabled={!opera}
             />
           </div>
-          <p className="mt-2 text-xs text-white/45">{tr("dura", { seg: duracion.toFixed(2) })}</p>
+          <p className="mt-2 text-xs text-white/45">
+            {b.cortes.length
+              ? tr("duraConCortes", { seg: efectiva.toFixed(2), total: duracion.toFixed(2) })
+              : tr("dura", { seg: duracion.toFixed(2) })}
+          </p>
         </>
       ),
     },
@@ -848,6 +957,9 @@ export default function EditorClipPage({
               puedeEditar={opera}
               duracionEpisodio={ep.duracionSeg ?? 0}
               onCambiarTramo={cambiarTramo}
+              cortes={b.cortes}
+              onCambiarCortes={(cortes) => cambiar({ cortes })}
+              onSugerirSilencios={sugerirSilencios}
               onCambiarFormato={(formato) => cambiar({ formato })}
               inspector={inspector}
             />

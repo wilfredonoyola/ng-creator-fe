@@ -49,6 +49,7 @@
     "inicioAntes": "Move the start 5 s earlier (the clip gets longer)",
     "inicioDespues": "Move the start 5 s later (the clip gets shorter)",
     "finalAntes": "Move the end 5 s earlier (the clip gets shorter)",
-    "finalDespues": "Move the end 5 s later (the clip gets longer)"
+    "finalDespues": "Move the end 5 s later (the clip gets longer)",
+    "conCortes": "{efectiva} of {total}"
   }
 }
