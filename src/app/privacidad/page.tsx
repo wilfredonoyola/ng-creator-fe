@@ -79,7 +79,7 @@ export default function PrivacidadPage() {
           <li>{t.rich("s4.openai", { b })}</li>
           <li>{t.rich("s4.elevenlabs", { b })}</li>
           <li>{t.rich("s4.servidores", { b })}</li>
-          <li>{t.rich("s4.wompi", { b })}</li>
+          <li>{t.rich("s4.lemon", { b })}</li>
           <li>{t.rich("s4.meta", { b })}</li>
           <li>{t.rich("s4.google", { b, enlace: enlace("https://policies.google.com/privacy") })}</li>
           <li>{t.rich("s4.tiktok", { b, enlace: enlace("https://www.tiktok.com/legal/privacy-policy") })}</li>

@@ -27,13 +27,13 @@
   },
   "s4": {
     "titulo": "4. Pago y renovación",
-    "p1": "El pago se hace con tarjeta a través de Wompi, que procesa el cobro bajo sus propios términos. Al suscribirte autorizás un cobro automático cada mes o cada año, según el periodo que elegiste, el mismo día en que te suscribiste, hasta que canceles. La suscripción se renueva sola al confirmarse cada cobro.",
+    "p1": "La suscripción la vende y la cobra Lemon Squeezy, que actúa como revendedor (merchant of record): procesa el pago con tarjeta bajo sus propios términos, cobra los impuestos que correspondan y emite la factura. Al suscribirte autorizás un cobro automático cada mes o cada año, según el periodo que elegiste, el mismo día en que te suscribiste, hasta que canceles. La suscripción se renueva sola al confirmarse cada cobro.",
     "p2": "Si cambiás de plan, el nuevo precio y sus límites rigen desde el próximo cobro, salvo que al cambiar se indique otra cosa."
   },
   "s5": {
     "titulo": "5. Cancelación y reembolsos",
     "p1": "Podés cancelar cuando quieras, sin penalidad, desde la web o escribiendo a <correo></correo>. Al cancelar no se hacen más cobros y el plan sigue activo hasta el final del periodo ya pagado.",
-    "p2": "Los pagos no son reembolsables, ni por periodos parciales ni por episodios no usados, salvo que la ley aplicable disponga otra cosa. Si se te cobró por error o dos veces por el mismo periodo, escribinos y te devolvemos ese importe."
+    "p2": "Los pagos no son reembolsables, ni por periodos parciales ni por horas de video no usadas, salvo que la ley aplicable disponga otra cosa. Si se te cobró por error o dos veces por el mismo periodo, escribinos y gestionamos con Lemon Squeezy la devolución de ese importe."
   },
   "s6": {
     "titulo": "6. Si un pago no entra",
