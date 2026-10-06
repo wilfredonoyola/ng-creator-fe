@@ -1,5 +1,6 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
 import adminSuscripciones_es from "./es/adminSuscripciones.json";
+import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
 import avisoFuente_es from "./es/avisoFuente.json";
@@ -30,6 +31,7 @@ import estilosInterfaz_es from "./es/estilosInterfaz.json";
 import estilosNombres_es from "./es/estilosNombres.json";
 import estilosTema_es from "./es/estilosTema.json";
 import grabar_es from "./es/grabar.json";
+import hashtagsChips_es from "./es/hashtagsChips.json";
 import idioma_es from "./es/idioma.json";
 import landing_es from "./es/landing.json";
 import landingApp_es from "./es/landingApp.json";
@@ -89,6 +91,7 @@ import revivalPanel_es from "./es/revivalPanel.json";
 import revivalTarjeta_es from "./es/revivalTarjeta.json";
 import versionFacebook_es from "./es/versionFacebook.json";
 import adminSuscripciones_en from "./en/adminSuscripciones.json";
+import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import avisoFuente_en from "./en/avisoFuente.json";
@@ -119,6 +122,7 @@ import estilosInterfaz_en from "./en/estilosInterfaz.json";
 import estilosNombres_en from "./en/estilosNombres.json";
 import estilosTema_en from "./en/estilosTema.json";
 import grabar_en from "./en/grabar.json";
+import hashtagsChips_en from "./en/hashtagsChips.json";
 import idioma_en from "./en/idioma.json";
 import landing_en from "./en/landing.json";
 import landingApp_en from "./en/landingApp.json";
@@ -181,6 +185,7 @@ import versionFacebook_en from "./en/versionFacebook.json";
 export const mensajes = {
   es: {
     "adminSuscripciones": adminSuscripciones_es,
+    "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
     "avisoFuente": avisoFuente_es,
@@ -211,6 +216,7 @@ export const mensajes = {
     "estilosNombres": estilosNombres_es,
     "estilosTema": estilosTema_es,
     "grabar": grabar_es,
+    "hashtagsChips": hashtagsChips_es,
     "idioma": idioma_es,
     "landing": landing_es,
     "landingApp": landingApp_es,
@@ -272,6 +278,7 @@ export const mensajes = {
   },
   en: {
     "adminSuscripciones": adminSuscripciones_en,
+    "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
     "avisoFuente": avisoFuente_en,
@@ -302,6 +309,7 @@ export const mensajes = {
     "estilosNombres": estilosNombres_en,
     "estilosTema": estilosTema_en,
     "grabar": grabar_en,
+    "hashtagsChips": hashtagsChips_en,
     "idioma": idioma_en,
     "landing": landing_en,
     "landingApp": landingApp_en,

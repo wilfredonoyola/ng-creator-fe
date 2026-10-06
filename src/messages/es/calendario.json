@@ -30,14 +30,13 @@
   "tarjeta": {
     "editadoPor": "Editado por {nombre}",
     "sinDescripcion": "Sin descripción",
-    "confirmarCancelar": "¿Cancelar «{titulo}» en {red}? No sale.",
     "errorCancelar": "No se pudo cancelar",
     "ver": "Ver ↗",
     "cambiarHora": "Cambiar hora",
-    "cancelando": "Cancelando…",
-    "cancelar": "Cancelar",
     "reintentando": "Reintentando: ",
-    "canceladaPor": "Cancelada por {nombre}"
+    "canceladaPor": "Cancelada por {nombre}",
+    "confirmarQuitar": "¿Quitar {red} de este clip?",
+    "quitarRed": "Quitar {red} de «{titulo}»"
   },
   "cambiarHora": {
     "titulo": "Cambiar hora",

@@ -1,0 +1,19 @@
+{
+  "titulo": "Al publicar, por defecto",
+  "descripcion": "Lo que se precarga cada vez que se programa un clip de {marca}. En cada clip se puede quitar un hashtag o una red.",
+  "hashtags": "Hashtags",
+  "hashtagsAyuda": "Se agregan al final de la descripción, en todas las redes.",
+  "cuentas": "Cuentas",
+  "sinCuentas": "Todavía no hay cuentas conectadas. Conectalas acá abajo.",
+  "preseleccionada": "Preseleccionada",
+  "preseleccionadaEn": "Preseleccionar {cuenta}",
+  "motivos": {
+    "reconectar": "hay que volver a conectarla",
+    "desactivado": "desactivada"
+  },
+  "guardar": "Guardar",
+  "guardando": "Guardando…",
+  "guardado": "Guardado",
+  "errorGuardar": "No se pudo guardar",
+  "soloPropietario": "Esto lo cambia el propietario de la marca."
+}

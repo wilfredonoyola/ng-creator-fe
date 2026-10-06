@@ -22,6 +22,7 @@ import {
   useUploadPost,
 } from "@/lib/upload-post";
 import { IconoRed } from "@/components/IconoRed";
+import { AjustesPublicacionMarca } from "@/components/AjustesPublicacionMarca";
 import {
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
@@ -166,6 +167,7 @@ export default function AdminFacebookPage() {
       )}
 
       <VueltaDeUploadPost />
+      <AjustesPublicacionMarca />
       {redesUploadPost.length > 0 && <SeccionUploadPost redes={redesUploadPost} />}
 
       {metaPorUploadPost && (
@@ -541,7 +543,7 @@ function FilaRedUploadPost({
               <p key={c._id} className="truncate text-sm font-medium">
                 {c.nombre}
                 {c.usuario && (
-                  <span className="ml-1.5 text-xs font-normal text-white/40">@{c.usuario}</span>
+                  <span className="ml-1.5 text-xs font-normal text-white/40">@{c.usuario.replace(/^@+/, "")}</span>
                 )}
               </p>
             ))

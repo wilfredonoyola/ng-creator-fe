@@ -37,7 +37,7 @@
   "faltaInstagram": "Missing Instagram? It has to be a professional account linked to the Facebook page, and you need to reconnect Facebook accepting the Instagram permissions.",
   "faltaRed": "Missing {red}? Connect it on the web, under <link>Connected networks</link>.",
   "pronto": "Coming soon",
-  "descripcionPlaceholder": "What goes below the video, with hashtags",
+  "descripcionPlaceholder": "What goes below the video",
   "tituloYoutube": "YouTube title",
   "irAlCalendario": "Go to calendar",
   "soloMira": "Your role in this brand is view-only: an editor or the owner does the scheduling.",
@@ -59,5 +59,11 @@
     "verPublicacion": "View post ↗",
     "cancelando": "Canceling…",
     "cancelar": "Cancel"
-  }
+  },
+  "hashtags": "Hashtags (the brand's; remove the ones that don't fit this clip)",
+  "hashtagsAlFinal": "They go at the end of the description, on every network. Ones you already typed in the text aren't repeated.",
+  "hashtagsVacio": "No hashtags. The brand's usual ones are set in Connected networks.",
+  "descripcionLarga": "The description with hashtags is over {max} characters: shorten it or remove some.",
+  "youtubeTituloAparte": "title goes separately",
+  "tituloYoutubeAyuda": "YouTube uses this title separately; the description and hashtags go below the video."
 }

@@ -2365,6 +2365,32 @@ export const GUARDAR_PREFERENCIA_NOTIFICACION = gql`
   }
 `;
 
+/**
+ * Lo que se precarga al publicar en la marca: hashtags por defecto y las
+ * cuentas que NO salen marcadas (`destinosApagados`, ids como el `cuentaId` de
+ * programarPublicacion). Null = sin hashtags y todas marcadas. Va aparte de
+ * MARCAS_ACTIVAS a propósito: si el backend todavía no tiene el campo, falla
+ * esta query sola y no el selector de marca.
+ */
+export const AJUSTES_PUBLICACION = gql`
+  query AjustesPublicacion($marcaId: String!) {
+    ajustesPublicacion(marcaId: $marcaId) {
+      hashtags
+      destinosApagados
+    }
+  }
+`;
+
+/** Solo el propietario de la marca o un ADMIN. Devuelve lo guardado ya normalizado. */
+export const GUARDAR_AJUSTES_PUBLICACION = gql`
+  mutation GuardarAjustesPublicacion($marcaId: String!, $hashtags: [String!]!, $destinosApagados: [String!]!) {
+    guardarAjustesPublicacion(marcaId: $marcaId, hashtags: $hashtags, destinosApagados: $destinosApagados) {
+      hashtags
+      destinosApagados
+    }
+  }
+`;
+
 // ---- Plan y cobro (ng-creator-be#94, Lemon Squeezy) ----
 
 const CAMPOS_PLAN = gql`

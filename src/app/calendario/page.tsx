@@ -54,6 +54,28 @@ const MARGEN_MS = 60_000;
 const REFETCH = ["PublicacionesDeMarca", "ClipsListosSinProgramar", "ClipsDeEpisodio", "ClipEpisodio"];
 
 /**
+ * Las publicaciones del mismo clip a la misma hora: una tarjeta, con un chip
+ * por red. Es como se programan (un clip, varias redes, una hora), y así se
+ * quita una red sin tocar las otras. Lo que no es de un clip va solo.
+ */
+interface Grupo {
+  clave: string;
+  pubs: PublicacionCalendario[];
+}
+
+function agrupar(pubs: PublicacionCalendario[]): Grupo[] {
+  const grupos = new Map<string, Grupo>();
+  for (const p of pubs) {
+    const minuto = Math.floor(new Date(p.publicarEn).getTime() / 60_000);
+    const clave = p.clip ? `${p.clip._id}@${minuto}` : p._id;
+    const g = grupos.get(clave);
+    if (g) g.pubs.push(p);
+    else grupos.set(clave, { clave, pubs: [p] });
+  }
+  return Array.from(grupos.values());
+}
+
+/**
  * El calendario de la marca (#70, ng-creator-be#63): qué está programado y qué
  * ya salió, semana por semana, y los clips que alguien marcó listos y nadie
  * programó todavía.
@@ -72,7 +94,7 @@ export default function CalendarioPage() {
   // Null hasta montar: el lunes depende de la zona del navegador, no de la del servidor.
   const [inicio, setInicio] = useState<Date | null>(null);
   const [filtro, setFiltro] = useState<string | null>(null);
-  const [moviendo, setMoviendo] = useState<PublicacionCalendario | null>(null);
+  const [moviendo, setMoviendo] = useState<PublicacionCalendario[] | null>(null);
   const [zona, setZona] = useState("");
   const ahora = useAhora();
 
@@ -111,7 +133,7 @@ export default function CalendarioPage() {
           return ms >= desde && ms < fin;
         })
         .sort((a, b) => new Date(a.publicarEn).getTime() - new Date(b.publicarEn).getTime());
-      return { dia, pubs };
+      return { dia, grupos: agrupar(pubs) };
     });
   }, [inicio, visibles]);
 
@@ -185,7 +207,7 @@ export default function CalendarioPage() {
 
       {/* En el teléfono, una lista por día; en pantallas anchas, las siete columnas. */}
       <div className="space-y-4 xl:grid xl:grid-cols-7 xl:gap-2 xl:space-y-0">
-        {dias.map(({ dia, pubs }) => {
+        {dias.map(({ dia, grupos }) => {
           const hoy = dia.toDateString() === new Date(ahora).toDateString();
           return (
             <section
@@ -201,12 +223,17 @@ export default function CalendarioPage() {
                 <span className="text-white/40">{dia.toLocaleDateString(locale, { day: "numeric", month: "short" })}</span>
                 {hoy && <span className="ml-auto rounded-full bg-ng-azul/20 px-1.5 text-[10px] text-ng-celeste">{t("hoy")}</span>}
               </h2>
-              {pubs.length === 0 ? (
+              {grupos.length === 0 ? (
                 <p className="px-1 pb-1 text-xs text-white/25">{pubsQ.loading && !pubsQ.data ? "…" : t("nada")}</p>
               ) : (
                 <ul className="space-y-2">
-                  {pubs.map((p) => (
-                    <TarjetaPublicacion key={p._id} p={p} opera={opera} onMover={() => setMoviendo(p)} />
+                  {grupos.map((g) => (
+                    <TarjetaGrupo
+                      key={g.clave}
+                      pubs={g.pubs}
+                      opera={opera}
+                      onMover={() => setMoviendo(g.pubs.filter((p) => p.estado === "PROGRAMADA"))}
+                    />
                   ))}
                 </ul>
               )}
@@ -215,7 +242,7 @@ export default function CalendarioPage() {
         })}
       </div>
 
-      {moviendo && <CambiarHora p={moviendo} onCerrar={() => setMoviendo(null)} />}
+      {moviendo && moviendo.length > 0 && <CambiarHora pubs={moviendo} onCerrar={() => setMoviendo(null)} />}
     </DashboardLayout>
   );
 }
@@ -269,23 +296,19 @@ function ListosParaProgramar({ listos, opera, cargando }: { listos: ClipListo[];
   );
 }
 
-function TarjetaPublicacion({
-  p,
+function TarjetaGrupo({
+  pubs,
   opera,
   onMover,
 }: {
-  p: PublicacionCalendario;
+  pubs: PublicacionCalendario[];
   opera: boolean;
   onMover: () => void;
 }) {
   const t = useTranslations("calendario");
   const locale = useLocale();
-  const [cancelar, { loading: cancelando }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries: REFETCH });
-  const [error, setError] = useState<string | null>(null);
-  const conocido = p.estado in ESTADOS_PUBLICACION;
-  const claseEstado = conocido ? ESTADOS_PUBLICACION[p.estado].clase : "bg-white/10 text-white/60";
-  const textoEstado = conocido ? t(`estados.${p.estado}`) : p.estado;
-  const hora = new Date(p.publicadaEn ?? p.publicarEn);
+  const p = pubs[0];
+  const hora = new Date(p.publicarEn);
   const titulo = p.clip?.titulo ?? (p.descripcion?.split("\n")[0].trim() || t("tarjeta.sinDescripcion"));
   // Quién editó el clip: el último que lo guardó, o quien lo tomó si nadie lo editó todavía.
   const editor = p.clip?.editadoPor?.nombre ?? p.clip?.tomadoPor?.nombre;
@@ -294,30 +317,18 @@ function TarjetaPublicacion({
     : p.expedienteId
       ? `/publicados/${p.expedienteId}`
       : null;
-  const programada = p.estado === "PROGRAMADA";
-
-  async function cancelarla() {
-    if (!window.confirm(t("tarjeta.confirmarCancelar", { titulo, red: REDES[p.red]?.nombre ?? p.red }))) return;
-    setError(null);
-    try {
-      await cancelar({ variables: { marcaId: p.marcaId, id: p._id } });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("tarjeta.errorCancelar"));
-    }
-  }
+  const hayProgramadas = pubs.some((x) => x.estado === "PROGRAMADA");
+  const todasCanceladas = pubs.every((x) => x.estado === "CANCELADA");
 
   return (
-    <li
-      className={`rounded-lg border border-white/10 bg-ng-tarjeta p-2 ${p.estado === "CANCELADA" ? "opacity-45" : ""}`}
-    >
+    <li className={`rounded-lg border border-white/10 bg-ng-tarjeta p-2 ${todasCanceladas ? "opacity-45" : ""}`}>
       <div className="flex gap-2">
         <Poster url={p.clip?.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 text-xs">
+          <p className="text-xs">
             <span className="font-semibold tabular-nums" title={fechaCompleta(hora.toISOString(), locale)}>
               {horaCorta(hora, locale)}
             </span>
-            <IconoRed red={p.red} chico />
           </p>
           {enlace ? (
             <Link href={enlace} className="mt-0.5 line-clamp-2 text-sm leading-snug hover:underline">
@@ -326,53 +337,105 @@ function TarjetaPublicacion({
           ) : (
             <p className="mt-0.5 line-clamp-2 text-sm leading-snug">{titulo}</p>
           )}
-          <p className="truncate text-[11px] text-white/40" title={p.cuentaNombre ?? undefined}>
-            {REDES[p.red]?.nombre ?? p.red}
-            {p.cuentaNombre ? ` · ${p.cuentaNombre}` : ""}
-          </p>
           {editor && <p className="truncate text-[11px] text-white/55">{t("tarjeta.editadoPor", { nombre: editor })}</p>}
         </div>
       </div>
-      <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px]">
-        <span className={`rounded-full px-2 py-0.5 ${claseEstado}`}>{textoEstado}</span>
-        {p.estado === "PUBLICADA" && p.permalink && (
-          <a href={p.permalink} target="_blank" rel="noreferrer" className="text-ng-celeste hover:underline">
-            {t("tarjeta.ver")}
-          </a>
-        )}
-        {opera && programada && (
-          <>
-            <button onClick={onMover} className="text-white/55 hover:text-white hover:underline">
-              {t("tarjeta.cambiarHora")}
-            </button>
-            <button
-              onClick={() => void cancelarla()}
-              disabled={cancelando}
-              className="text-red-400/75 hover:text-red-400 hover:underline disabled:opacity-50"
-            >
-              {cancelando ? t("tarjeta.cancelando") : t("tarjeta.cancelar")}
-            </button>
-          </>
-        )}
+      <div className="mt-1.5 flex flex-wrap gap-1">
+        {pubs.map((x) => (
+          <ChipRed key={x._id} p={x} titulo={titulo} opera={opera} />
+        ))}
       </div>
-      {/* El motivo del fallo a la vista: es lo que hay que leer para arreglarlo.
-          En una programada, es un intento que falló y espera su reintento. */}
-      {p.error && (p.estado === "FALLIDA" || programada) && (
-        <p className={`mt-1 break-words text-[11px] ${programada ? "text-amber-400/80" : "text-red-400"}`}>
-          {programada ? t("tarjeta.reintentando") : ""}
-          {p.error}
-        </p>
+      {opera && hayProgramadas && (
+        <button onClick={onMover} className="mt-1.5 text-[11px] text-white/55 hover:text-white hover:underline">
+          {t("tarjeta.cambiarHora")}
+        </button>
       )}
-      {p.estado === "CANCELADA" && p.canceladoPor?.nombre && (
-        <p className="mt-1 text-[11px] text-white/40">{t("tarjeta.canceladaPor", { nombre: p.canceladoPor.nombre })}</p>
-      )}
-      {error && <p className="mt-1 text-[11px] text-red-400">{error}</p>}
     </li>
   );
 }
 
+/**
+ * Una red de la tarjeta: icono, cuenta y estado. La programada lleva una ✕
+ * que la quita solo a ella; lo publicado o fallido se ve, sin ✕.
+ */
+function ChipRed({ p, titulo, opera }: { p: PublicacionCalendario; titulo: string; opera: boolean }) {
+  const t = useTranslations("calendario");
+  const [cancelar, { loading: cancelando }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries: REFETCH });
+  const [error, setError] = useState<string | null>(null);
+  const conocido = p.estado in ESTADOS_PUBLICACION;
+  const claseEstado = conocido ? ESTADOS_PUBLICACION[p.estado].clase : "bg-white/10 text-white/60";
+  const textoEstado = conocido ? t(`estados.${p.estado}`) : p.estado;
+  const programada = p.estado === "PROGRAMADA";
+  const red = REDES[p.red]?.nombre ?? p.red;
+  const cuenta = p.cuentaNombre ?? red;
+
+  async function quitar() {
+    if (!window.confirm(t("tarjeta.confirmarQuitar", { red }))) return;
+    setError(null);
+    try {
+      await cancelar({ variables: { marcaId: p.marcaId, id: p._id } });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("tarjeta.errorCancelar"));
+    }
+  }
+
+  const contenido = (
+    <>
+      <IconoRed red={p.red} chico />
+      <span className={`truncate ${p.estado === "CANCELADA" ? "line-through" : ""}`}>{cuenta}</span>
+      <span className={`shrink-0 rounded-full px-1.5 ${claseEstado}`}>{textoEstado}</span>
+    </>
+  );
+
+  return (
+    <div className="max-w-full">
+      <span
+        title={`${red} · ${cuenta} · ${textoEstado}${p.canceladoPor?.nombre ? ` · ${t("tarjeta.canceladaPor", { nombre: p.canceladoPor.nombre })}` : ""}`}
+        className={`flex max-w-full items-center gap-1 rounded-full border border-white/10 bg-white/[0.04] py-0.5 pl-0.5 text-[11px] ${
+          opera && programada ? "pr-0.5" : "pr-1.5"
+        } ${p.estado === "CANCELADA" ? "opacity-50" : ""}`}
+      >
+        {p.estado === "PUBLICADA" && p.permalink ? (
+          <a
+            href={p.permalink}
+            target="_blank"
+            rel="noreferrer"
+            className="flex min-w-0 items-center gap-1 hover:underline"
+            aria-label={`${red} · ${t("tarjeta.ver")}`}
+          >
+            {contenido}
+          </a>
+        ) : (
+          contenido
+        )}
+        {opera && programada && (
+          <button
+            onClick={() => void quitar()}
+            disabled={cancelando}
+            aria-label={t("tarjeta.quitarRed", { red, titulo })}
+            title={t("tarjeta.quitarRed", { red, titulo })}
+            className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white/50 hover:bg-red-500/20 hover:text-red-400 disabled:opacity-50"
+          >
+            {cancelando ? "…" : "✕"}
+          </button>
+        )}
+      </span>
+      {/* El motivo del fallo a la vista: es lo que hay que leer para arreglarlo.
+          En una programada, es un intento que falló y espera su reintento. */}
+      {p.error && (p.estado === "FALLIDA" || programada) && (
+        <p className={`mt-0.5 break-words text-[11px] ${programada ? "text-amber-400/80" : "text-red-400"}`}>
+          {red}: {programada ? t("tarjeta.reintentando") : ""}
+          {p.error}
+        </p>
+      )}
+      {error && <p className="mt-0.5 text-[11px] text-red-400">{error}</p>}
+    </div>
+  );
+}
+
 /** Elegir la hora nueva de una programada. Sin arrastrar: un selector y listo. */
-function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () => void }) {
+function CambiarHora({ pubs, onCerrar }: { pubs: PublicacionCalendario[]; onCerrar: () => void }) {
+  const p = pubs[0];
   const t = useTranslations("calendario.cambiarHora");
   const locale = useLocale();
   const [fecha, setFecha] = useState(() => aInputLocal(new Date(p.publicarEn)));
@@ -391,7 +454,10 @@ function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () =
     if (!cuando || yaPaso) return;
     setError(null);
     try {
-      await reprogramar({ variables: { marcaId: p.marcaId, id: p._id, publicarEn: cuando.toISOString() } });
+      // Todas las redes programadas de la tarjeta se mueven juntas.
+      for (const x of pubs) {
+        await reprogramar({ variables: { marcaId: x.marcaId, id: x._id, publicarEn: cuando.toISOString() } });
+      }
       onCerrar();
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errorCambiar"));
@@ -409,7 +475,8 @@ function CambiarHora({ p, onCerrar }: { p: PublicacionCalendario; onCerrar: () =
       >
         <p className="font-semibold">{t("titulo")}</p>
         <p className="mt-0.5 truncate text-sm text-white/50">
-          {p.clip?.titulo ?? p.descripcion ?? t("publicacion")} · {REDES[p.red]?.nombre ?? p.red}
+          {p.clip?.titulo ?? p.descripcion ?? t("publicacion")} ·{" "}
+          {pubs.map((x) => REDES[x.red]?.nombre ?? x.red).join(", ")}
         </p>
         <p className="mt-2 text-xs text-white/40">{t("ahoraSale", { cuando: diaYHora(new Date(p.publicarEn), locale) })}</p>
         <input
