@@ -27,13 +27,13 @@
   },
   "s4": {
     "titulo": "4. Payment and renewal",
-    "p1": "Payment is made by card through Wompi, which processes the charge under its own terms. By subscribing you authorize an automatic charge every month or every year, depending on the period you chose, on the same day you subscribed, until you cancel. The subscription renews automatically as each charge is confirmed.",
+    "p1": "The subscription is sold and billed by Lemon Squeezy, acting as reseller (merchant of record): it processes the card payment under its own terms, collects any applicable taxes and issues the invoice. By subscribing you authorize an automatic charge every month or every year, depending on the period you chose, on the same day you subscribed, until you cancel. The subscription renews automatically as each charge is confirmed.",
     "p2": "If you change plans, the new price and its limits apply from the next charge, unless otherwise stated when changing."
   },
   "s5": {
     "titulo": "5. Cancellation and refunds",
     "p1": "You can cancel at any time, without penalty, from the web or by writing to <correo></correo>. When you cancel, no further charges are made and the plan stays active until the end of the period already paid.",
-    "p2": "Payments are non-refundable, whether for partial periods or unused episodes, unless applicable law provides otherwise. If you were charged by mistake or twice for the same period, write to us and we will refund that amount."
+    "p2": "Payments are non-refundable, whether for partial periods or unused video hours, unless applicable law provides otherwise. If you were charged by mistake or twice for the same period, write to us and we will arrange the refund of that amount with Lemon Squeezy."
   },
   "s6": {
     "titulo": "6. If a payment fails",
