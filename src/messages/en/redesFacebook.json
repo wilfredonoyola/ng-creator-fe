@@ -4,7 +4,7 @@
   "errorOperacion": "The operation failed",
   "sinPaginas": "No pages to configure",
   "sinPaginasDetalle": "Connecting new Facebook accounts is for admins. If you already work on a page, you'll see yours here.",
-  "titulo": "Facebook integration",
+  "titulo": "Connected networks",
   "subtituloAdmin": "Connect an account and choose which pages can be posted to.",
   "subtituloPropietario": "Configure the pages you own.",
   "paso1": {
