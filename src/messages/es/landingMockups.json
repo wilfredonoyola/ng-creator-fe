@@ -1,0 +1,110 @@
+{
+  "comun": { "cliente": "Cliente {letra}", "dias": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie" } },
+  "ia": {
+    "alt": "Vista de Clipfine: un episodio horizontal con los momentos marcados en su línea de tiempo y, debajo, la lista de clips sugeridos con su puntaje de 0 a 100, su título y el motivo por el que funciona.",
+    "episodio": "episodio 16:9",
+    "sugeridos": "12 clips sugeridos",
+    "puntaje": "puntaje",
+    "clips": {
+      "c1": { "titulo": "El error que casi nos cuesta el negocio", "porque": "Gancho fuerte" },
+      "c2": { "titulo": "Nadie habla de esta parte", "porque": "Opinión polémica" },
+      "c3": { "titulo": "La frase que repetimos en cada reunión", "porque": "Frase citable" }
+    }
+  },
+  "edicion": {
+    "alt": "El editor de Clipfine: un clip vertical con el recuadro siguiendo a quien habla, los formatos 9:16, 1:1 y 16:9, los cuatro diseños y una línea de tiempo con el tramo elegido y un corte en el medio.",
+    "autoEncuadre": "Auto-encuadre",
+    "habla": "habla",
+    "formato": "Formato",
+    "diseno": "Diseño",
+    "disenos": { "uno": "Uno", "dividido": "Dividido", "horizontal": "Horizontal", "centrado": "Centrado" },
+    "tramo": "Tramo",
+    "corte": "corte",
+    "silencios": "Quitar silencios"
+  },
+  "textos": {
+    "alt": "Un clip vertical con un gancho en una caja blanca arriba, subtítulos estilo karaoke con la palabra que se dice resaltada en amarillo y, al lado, los estilos de subtítulo y la llamada a la acción del final.",
+    "gancho": "Lo que nadie te cuenta",
+    "sub1": "y ahí",
+    "sub2": "entendí",
+    "sub3": "todo",
+    "estilo": "Estilo de subtítulos",
+    "estilos": { "pop": "Pop", "karaoke": "Karaoke", "bestia": "Bestia", "editorial": "Editorial", "keynote": "Keynote" },
+    "corregir": "Corregir palabra",
+    "cta": "Llamada a la acción",
+    "ctaTexto": "Mirá el episodio completo"
+  },
+  "imagenes": {
+    "alt": "Un clip con el diseño Horizontal: el título arriba, el video 16:9 en el medio y abajo dos personas recortadas con contorno blanco tipo sticker; al lado, las opciones Quitar fondo y Contorno blanco encendidas.",
+    "titulo": "Lo que aprendimos en 10 años",
+    "imagenes": "Imágenes (2/3)",
+    "imagen": "Imagen {n}",
+    "quitarFondo": "Quitar fondo",
+    "contorno": "Contorno blanco",
+    "cuando": "Todo el clip",
+    "diseno": "Horizontal"
+  },
+  "marca": {
+    "alt": "El Brand Kit de un cliente: su logo con la esquina elegida, la paleta de colores tomada del logo, su estilo de texto y un clip vertical con todo eso aplicado.",
+    "logo": "Logo",
+    "esquina": "Esquina",
+    "opacidad": "Opacidad 90%",
+    "colores": "Colores",
+    "tomar": "Tomar del logo",
+    "estilo": "Estilo",
+    "estiloNombre": "Bestia",
+    "gancho1": "El secreto está en",
+    "gancho2": "la constancia",
+    "aplica": "Se aplica a todos los clips"
+  },
+  "calidad": {
+    "alt": "El mismo clip en cuatro vistas previas, con la pantalla de TikTok, Instagram Reels, YouTube Shorts y Facebook encima, y la etiqueta de calidad Excelente en 1080p.",
+    "calidad": "Calidad: Excelente · 1080p",
+    "fps": "30 fps · sin recomprimir",
+    "sub": "esto cambia todo",
+    "corta": "versión corta",
+    "descargar": "Descargar MP4"
+  },
+  "importar": {
+    "alt": "Las dos formas de traer un episodio: una zona para soltar el video desde la computadora y la grabación de un live trayéndose desde Restream con su barra de progreso.",
+    "soltar": "Soltá el video del episodio",
+    "formatos": "MP4 o MOV · se transcribe solo",
+    "elegir": "Elegir archivo",
+    "o": "o",
+    "restream": "Traer de Restream",
+    "live": "Live del martes",
+    "trayendo": "Trayendo… 64%",
+    "siguiente": "Después: transcripción y momentos"
+  },
+  "publicar": {
+    "alt": "Programar un clip: TikTok, YouTube Shorts, Instagram Reels y Facebook encendidos, la descripción con sus hashtags y un calendario de la semana con clips programados y publicados.",
+    "redes": "Publicar en",
+    "descripcion": "Descripción",
+    "texto": "El error que casi nos cuesta el negocio",
+    "hashtags": "#podcast #emprender #agencias",
+    "largo": "cabe en las 4 redes",
+    "semana": "Esta semana",
+    "publicada": "publicada",
+    "programar": "Programar"
+  },
+  "equipo": {
+    "alt": "El equipo de una marca: el selector de marcas, las personas con su rol de propietario, editor o lector, una invitación por correo y un clip que muestra quién lo editó y quién lo terminó.",
+    "equipo": "Equipo",
+    "roles": { "propietario": "Propietario", "editor": "Editor", "lector": "Lector" },
+    "invitada": "invitada",
+    "invitar": "+ Invitar",
+    "clip": "Clip 03 · Nadie habla de esta parte",
+    "tomado": "Tomado por Ana",
+    "autoria": "Editado por Ana · terminado por Leo"
+  },
+  "app": {
+    "alt": "La app de Clipfine en un teléfono, con la lista de clips de una marca y su estado, un aviso del equipo y el selector de idioma en español e inglés.",
+    "clips": "Clips",
+    "estados": { "listo": "Listo", "programado": "Programado", "editando": "Editando" },
+    "titulos": { "c1": "El error que casi nos cuesta…", "c2": "Nadie habla de esta parte", "c3": "La frase de cada reunión" },
+    "nav": { "inicio": "Inicio", "clips": "Clips", "calendario": "Calendario" },
+    "aviso": "Leo programó un clip para el jueves",
+    "idioma": "Idioma",
+    "fotos": "Guardar en Fotos"
+  }
+}

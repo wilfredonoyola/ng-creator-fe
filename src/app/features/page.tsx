@@ -67,6 +67,7 @@ import {
   enlaceDemo,
 } from "@/components/landing/Publica";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
+import { MAQUETAS } from "@/components/landing/mockups";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landingFunciones");
@@ -254,6 +255,7 @@ export default function PaginaFunciones() {
         {/* ---- Secciones ---- */}
         {SECCIONES.map((s, i) => {
           const beige = i % 2 === 0;
+          const Maqueta = MAQUETAS[s.id];
           return (
             <section key={s.id} id={s.id} aria-labelledby={`${s.id}-titulo`} className={`scroll-mt-[76px] ${beige ? "bg-[#F4F3EE]" : "bg-white"}`}>
               <div className={`${ANCHO} flex flex-col gap-10 py-16 lg:py-24`}>
@@ -266,17 +268,27 @@ export default function PaginaFunciones() {
                   </div>
                   <p className="text-lg leading-relaxed text-[#3A3935] sm:text-[19px]">{t(`secciones.${s.id}.texto`)}</p>
                 </div>
-                <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                  {s.items.map(({ clave, icono: Icono }) => (
-                    <li key={clave} className={`flex flex-col gap-4 rounded-xl p-6 sm:p-7 ${beige ? "bg-white" : "bg-[#F4F3EE]"}`}>
-                      <span aria-hidden className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#0A0A0A]">
-                        <Icono size={22} strokeWidth={2} color="#FFD400" />
-                      </span>
-                      <h3 className="text-[22px] font-extrabold leading-[1.15]">{t(`items.${clave}.titulo`)}</h3>
-                      <p className="leading-normal text-[#3A3935]">{t(`items.${clave}.texto`)}</p>
-                    </li>
-                  ))}
-                </ul>
+                {/* La maqueta a un lado y las funciones al otro, alternando; en el celular, la maqueta arriba. */}
+                <div
+                  className={`grid items-start gap-8 lg:gap-14 ${
+                    beige ? "lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]" : "lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]"
+                  }`}
+                >
+                  <div className={`min-w-0 lg:sticky lg:top-24 ${beige ? "" : "lg:order-last"}`}>
+                    <Maqueta />
+                  </div>
+                  <ul className="grid gap-4 sm:grid-cols-2">
+                    {s.items.map(({ clave, icono: Icono }) => (
+                      <li key={clave} className={`flex flex-col gap-3 rounded-xl p-5 sm:p-6 ${beige ? "bg-white" : "bg-[#F4F3EE]"}`}>
+                        <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0A0A0A]">
+                          <Icono size={20} strokeWidth={2} color="#FFD400" />
+                        </span>
+                        <h3 className="text-xl font-extrabold leading-[1.15]">{t(`items.${clave}.titulo`)}</h3>
+                        <p className="leading-normal text-[#3A3935]">{t(`items.${clave}.texto`)}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </section>
           );

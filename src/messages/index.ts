@@ -39,6 +39,7 @@ import landingFunciones_es from "./es/landingFunciones.json";
 import landingImagen_es from "./es/landingImagen.json";
 import landingMaquetaTelefono_es from "./es/landingMaquetaTelefono.json";
 import landingMarco_es from "./es/landingMarco.json";
+import landingMockups_es from "./es/landingMockups.json";
 import legal_es from "./es/legal.json";
 import legalPrivacidad_es from "./es/legalPrivacidad.json";
 import legalTerminos_es from "./es/legalTerminos.json";
@@ -128,6 +129,7 @@ import landingFunciones_en from "./en/landingFunciones.json";
 import landingImagen_en from "./en/landingImagen.json";
 import landingMaquetaTelefono_en from "./en/landingMaquetaTelefono.json";
 import landingMarco_en from "./en/landingMarco.json";
+import landingMockups_en from "./en/landingMockups.json";
 import legal_en from "./en/legal.json";
 import legalPrivacidad_en from "./en/legalPrivacidad.json";
 import legalTerminos_en from "./en/legalTerminos.json";
@@ -220,6 +222,7 @@ export const mensajes = {
     "landingImagen": landingImagen_es,
     "landingMaquetaTelefono": landingMaquetaTelefono_es,
     "landingMarco": landingMarco_es,
+    "landingMockups": landingMockups_es,
     "legal": legal_es,
     "legalPrivacidad": legalPrivacidad_es,
     "legalTerminos": legalTerminos_es,
@@ -311,6 +314,7 @@ export const mensajes = {
     "landingImagen": landingImagen_en,
     "landingMaquetaTelefono": landingMaquetaTelefono_en,
     "landingMarco": landingMarco_en,
+    "landingMockups": landingMockups_en,
     "legal": legal_en,
     "legalPrivacidad": legalPrivacidad_en,
     "legalTerminos": legalTerminos_en,

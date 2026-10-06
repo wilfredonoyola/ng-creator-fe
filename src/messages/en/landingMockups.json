@@ -1,0 +1,110 @@
+{
+  "comun": { "cliente": "Client {letra}", "dias": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri" } },
+  "ia": {
+    "alt": "Clipfine view: a landscape episode with its moments marked on the timeline and, below, the list of suggested clips with their 0–100 score, title and the reason they work.",
+    "episodio": "16:9 episode",
+    "sugeridos": "12 suggested clips",
+    "puntaje": "score",
+    "clips": {
+      "c1": { "titulo": "The mistake that almost cost us the business", "porque": "Strong hook" },
+      "c2": { "titulo": "Nobody talks about this part", "porque": "Hot take" },
+      "c3": { "titulo": "The line we repeat in every meeting", "porque": "Quotable line" }
+    }
+  },
+  "edicion": {
+    "alt": "The Clipfine editor: a vertical clip with the frame following whoever is talking, the 9:16, 1:1 and 16:9 formats, the four layouts and a timeline with the chosen span and a cut in the middle.",
+    "autoEncuadre": "Auto-reframe",
+    "habla": "talking",
+    "formato": "Format",
+    "diseno": "Layout",
+    "disenos": { "uno": "Single", "dividido": "Split", "horizontal": "Landscape", "centrado": "Centered" },
+    "tramo": "Span",
+    "corte": "cut",
+    "silencios": "Remove silences"
+  },
+  "textos": {
+    "alt": "A vertical clip with a hook in a white box at the top, karaoke-style captions with the spoken word highlighted in yellow and, next to it, the caption styles and the closing call to action.",
+    "gancho": "What nobody tells you",
+    "sub1": "and that's",
+    "sub2": "when",
+    "sub3": "it clicked",
+    "estilo": "Caption style",
+    "estilos": { "pop": "Pop", "karaoke": "Karaoke", "bestia": "Beast", "editorial": "Editorial", "keynote": "Keynote" },
+    "corregir": "Fix word",
+    "cta": "Call to action",
+    "ctaTexto": "Watch the full episode"
+  },
+  "imagenes": {
+    "alt": "A clip in the Landscape layout: the title at the top, the 16:9 video in the middle and two cut-out people with a white sticker outline at the bottom; next to it, Remove background and White outline switched on.",
+    "titulo": "What we learned in 10 years",
+    "imagenes": "Images (2/3)",
+    "imagen": "Image {n}",
+    "quitarFondo": "Remove background",
+    "contorno": "White outline",
+    "cuando": "Whole clip",
+    "diseno": "Landscape"
+  },
+  "marca": {
+    "alt": "A client's Brand Kit: its logo with the chosen corner, the color palette picked from the logo, its text style and a vertical clip with all of it applied.",
+    "logo": "Logo",
+    "esquina": "Corner",
+    "opacidad": "Opacity 90%",
+    "colores": "Colors",
+    "tomar": "Pick from logo",
+    "estilo": "Style",
+    "estiloNombre": "Beast",
+    "gancho1": "The secret is",
+    "gancho2": "consistency",
+    "aplica": "Applied to every clip"
+  },
+  "calidad": {
+    "alt": "The same clip in four previews, with the TikTok, Instagram Reels, YouTube Shorts and Facebook screens on top, and the quality label Excellent at 1080p.",
+    "calidad": "Quality: Excellent · 1080p",
+    "fps": "30 fps · no re-compression",
+    "sub": "this changes everything",
+    "corta": "short version",
+    "descargar": "Download MP4"
+  },
+  "importar": {
+    "alt": "The two ways to bring in an episode: an area to drop the video from your computer and a live recording coming in from Restream with its progress bar.",
+    "soltar": "Drop the episode video",
+    "formatos": "MP4 or MOV · transcribed automatically",
+    "elegir": "Choose file",
+    "o": "or",
+    "restream": "Bring from Restream",
+    "live": "Tuesday's live",
+    "trayendo": "Importing… 64%",
+    "siguiente": "Next: transcript and moments"
+  },
+  "publicar": {
+    "alt": "Scheduling a clip: TikTok, YouTube Shorts, Instagram Reels and Facebook switched on, the description with its hashtags and a weekly calendar with scheduled and published clips.",
+    "redes": "Publish to",
+    "descripcion": "Description",
+    "texto": "The mistake that almost cost us the business",
+    "hashtags": "#podcast #business #agencies",
+    "largo": "fits all 4 networks",
+    "semana": "This week",
+    "publicada": "published",
+    "programar": "Schedule"
+  },
+  "equipo": {
+    "alt": "A brand's team: the brand selector, people with their owner, editor or viewer role, an email invitation and a clip showing who edited it and who finished it.",
+    "equipo": "Team",
+    "roles": { "propietario": "Owner", "editor": "Editor", "lector": "Viewer" },
+    "invitada": "invited",
+    "invitar": "+ Invite",
+    "clip": "Clip 03 · Nobody talks about this part",
+    "tomado": "Taken by Ana",
+    "autoria": "Edited by Ana · finished by Leo"
+  },
+  "app": {
+    "alt": "The Clipfine app on a phone, with a brand's list of clips and their status, a team notification and the English and Spanish language selector.",
+    "clips": "Clips",
+    "estados": { "listo": "Ready", "programado": "Scheduled", "editando": "Editing" },
+    "titulos": { "c1": "The mistake that almost cost…", "c2": "Nobody talks about this part", "c3": "The line from every meeting" },
+    "nav": { "inicio": "Home", "clips": "Clips", "calendario": "Calendar" },
+    "aviso": "Leo scheduled a clip for Thursday",
+    "idioma": "Language",
+    "fotos": "Save to Photos"
+  }
+}
