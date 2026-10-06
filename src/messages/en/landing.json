@@ -24,7 +24,6 @@
     "texto": "Upload a client's long video and get its best moments as captioned, vertical clips. Schedule them from one calendar and see what works, for every client your agency manages.",
     "letraChica": "15-day free trial · No card required",
     "publicaEn": "Post to",
-    "redesPronto": "Instagram, TikTok and YouTube: soon",
     "maqueta": {
       "alt": "Clipfine workspace: a client switcher, a long episode turned into captioned vertical clips, and a weekly posting calendar.",
       "cliente": "Client {letra}",
@@ -54,6 +53,7 @@
   },
   "funciones": {
     "etiqueta": "Features",
+    "verTodas": "See all features",
     "clientes": {
       "titulo": "Every client in one platform",
       "texto": "Run all your clients from one account. Each one has its own space for episodes, clips, calendar and analytics, plus a Brand Kit with its colors, fonts and logo. Your team works with its role on the clients assigned to it, and nothing gets mixed up.",
@@ -194,6 +194,7 @@
   },
   "pie": {
     "lema": "AI clipping software for agencies.",
+    "funciones": "Features",
     "app": "App",
     "privacidad": "Privacy",
     "terminos": "Terms",

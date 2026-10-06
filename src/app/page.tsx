@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { LogoNG } from "@/components/LogoNG";
-import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { ENLACE_EMPEZAR } from "@/components/landing/Marco";
+import {
+  ANCHO,
+  BOTON_CORAL,
+  CONDENSADA,
+  CabeceraPublica,
+  ENLACE_FUNCIONES,
+  ETIQUETA,
+  FOCO,
+  H2,
+  LINK_SUBRAYADO,
+  MONO,
+  PiePublico,
+  RAYADO,
+  Seccion,
+  enlaceDemo as armarEnlaceDemo,
+} from "@/components/landing/Publica";
 import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
@@ -32,9 +45,9 @@ const CORREO_DEMO = "soporte@ngstudios.co";
 /** Dónde se publica desde el calendario. `hoy` es lo que ya funciona (#64). */
 const REDES = [
   { nombre: "Facebook", hoy: true },
-  { nombre: "Instagram", hoy: false },
-  { nombre: "TikTok", hoy: false },
-  { nombre: "YouTube", hoy: false },
+  { nombre: "Instagram", hoy: true },
+  { nombre: "TikTok", hoy: true },
+  { nombre: "YouTube", hoy: true },
 ] as const;
 
 const TIPOS_AGENCIA = ["clips", "podcast", "b2b", "redes"] as const;
@@ -64,31 +77,6 @@ const CALENDARIO: { dia: Dia; posts: [Red, string][] }[] = [
 
 const ONDA = [7, 12, 9, 15, 11, 6, 14, 18, 10, 8, 13, 17, 12, 9, 6, 11, 16, 19, 14, 10, 7, 12, 15, 9, 13, 18, 11, 8, 10, 14, 17, 12, 9, 6, 11, 15, 10, 13, 8, 7];
 const BARRAS = [42, 58, 35, 71, 49, 88, 40, 62, 54, 77, 45, 66, 38, 52, 60];
-
-/* Las clases que se repiten: el sistema del diseño, en un solo lugar. */
-const ANCHO = "mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-16";
-const ETIQUETA = "font-[family-name:var(--font-grotesk)]";
-const MONO = "font-[family-name:var(--font-mono)]";
-const CONDENSADA = "font-black uppercase [font-stretch:75%] [text-wrap:balance]";
-const H2 = `${CONDENSADA} text-[44px] leading-[.95] sm:text-[76px]`;
-const RAYADO = "bg-[repeating-linear-gradient(135deg,#262624_0_1px,#1F1F1D_1px_10px)]";
-const FOCO = "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px]";
-const BOTON_CORAL = `flex items-center rounded-md bg-[#FF4D3D] font-bold text-[#0A0A0A] hover:bg-[#E8392A] active:translate-y-px active:bg-[#D63323] ${FOCO}`;
-const LINK_SUBRAYADO = "font-semibold underline decoration-[1.5px] underline-offset-[6px] hover:decoration-[3px]";
-
-/** La etiqueta de sección con el corte de la marca. `titulo` cuando es el h2 de la sección. */
-function Seccion({ children, titulo = false }: { children: React.ReactNode; titulo?: boolean }) {
-  const Etiqueta = titulo ? "h2" : "p";
-  return (
-    <Etiqueta className={`${ETIQUETA} flex items-center gap-3 text-[13px] font-bold uppercase tracking-[.12em]`}>
-      <span aria-hidden className="flex flex-col gap-0.5">
-        <span className="ml-[3px] h-[5px] w-3.5 bg-[#0A0A0A]" />
-        <span className="h-[5px] w-3.5 bg-[#0A0A0A]" />
-      </span>
-      {children}
-    </Etiqueta>
-  );
-}
 
 function IconoRed({ red }: { red: (typeof REDES)[number]["nombre"] }) {
   switch (red) {
@@ -237,7 +225,7 @@ function Funcion({
 export default function Landing() {
   const t = useTranslations("landing");
   const locale = useLocale();
-  const enlaceDemo = `mailto:${CORREO_DEMO}?subject=${encodeURIComponent(t("demoAsunto"))}`;
+  const enlaceDemo = armarEnlaceDemo(t("demoAsunto"));
 
   /** Para Google: qué es y cuánto cuesta, y las preguntas como FAQ. */
   const datosEstructurados = [
@@ -272,30 +260,7 @@ export default function Landing() {
       <RedirigirSiHaySesion />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }} />
 
-      {/* ---- Navegación ---- */}
-      <header className="sticky top-0 z-30 border-b border-[#E9E8E4] bg-white">
-        <div className={`${ANCHO} flex h-[76px] items-center justify-between gap-4`}>
-          <div className="flex items-center gap-14">
-            <Link href="/" aria-label={t("nav.inicio")} className="flex">
-              <Image src="/brand/clipfine-wordmark-ink.svg" alt="Clipfine" width={130} height={23} priority unoptimized />
-            </Link>
-            <nav className="hidden gap-8 text-[15px] font-medium lg:flex">
-              <a href="#funciones" className="underline-offset-[6px] hover:underline">{t("nav.funciones")}</a>
-              <a href="#como" className="underline-offset-[6px] hover:underline">{t("nav.como")}</a>
-              <a href="#precios" className="underline-offset-[6px] hover:underline">{t("nav.precios")}</a>
-              <a href="#preguntas" className="underline-offset-[6px] hover:underline">{t("nav.preguntas")}</a>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <SelectorIdiomaCompacto claro className="hidden sm:flex" />
-            <Link href="/login" className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
-            <a href={enlaceDemo} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
-            <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-11 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
-              {t("nav.empezar")}
-            </Link>
-          </div>
-        </div>
-      </header>
+      <CabeceraPublica enLanding />
 
       {/* ---- Portada ---- */}
       <section className="bg-[#0A0A0A] text-white">
@@ -326,7 +291,6 @@ export default function Landing() {
                     </li>
                   ))}
                 </ul>
-                <span className={`${ETIQUETA} text-xs font-medium text-[#8A8983]`}>{t("portada.redesPronto")}</span>
               </div>
             </div>
           </div>
@@ -436,6 +400,9 @@ export default function Landing() {
               </div>
             </Funcion>
           </div>
+          <Link href={ENLACE_FUNCIONES} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}>
+            {t("funciones.verTodas")} →
+          </Link>
         </div>
       </section>
 
@@ -531,35 +498,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ---- Pie ---- */}
-      <footer className="bg-[#0A0A0A] text-white">
-        <div className={`${ANCHO} flex flex-col gap-12 pb-12 pt-16`}>
-          <div className="flex flex-col justify-between gap-10 md:flex-row">
-            <div className="flex flex-col gap-[18px]">
-              <LogoNG tamano={56} />
-              <p className="text-[#D9D8D2]">{t("pie.lema")}</p>
-            </div>
-            <nav className="flex flex-col gap-3.5">
-              <Link href="/app" className="underline-offset-[5px] hover:underline">{t("pie.app")}</Link>
-              <Link href="/privacidad" className="underline-offset-[5px] hover:underline">{t("pie.privacidad")}</Link>
-              <Link href="/terminos" className="underline-offset-[5px] hover:underline">{t("pie.terminos")}</Link>
-              <Link href="/login" className="underline-offset-[5px] hover:underline">{t("nav.entrar")}</Link>
-            </nav>
-          </div>
-          <div className={`${MONO} flex flex-wrap items-center justify-between gap-4 border-t border-[#2E2E2B] pt-6 text-sm text-[#D9D8D2]`}>
-            <span>
-              {t.rich("pie.productoDe", {
-                link: (c) => (
-                  <a href="https://ngstudios.co" className="font-semibold text-white hover:underline">
-                    {c}
-                  </a>
-                ),
-              })}
-            </span>
-            <SelectorIdiomaCompacto />
-          </div>
-        </div>
-      </footer>
+      <PiePublico />
     </div>
   );
 }

@@ -24,7 +24,6 @@
     "texto": "Subí el video largo de un cliente y recibí sus mejores momentos como clips verticales con subtítulos. Programalos desde un calendario y mirá qué funciona, para cada cliente que maneja tu agencia.",
     "letraChica": "15 días gratis · Sin tarjeta",
     "publicaEn": "Publicá en",
-    "redesPronto": "Instagram, TikTok y YouTube: pronto",
     "maqueta": {
       "alt": "El espacio de Clipfine: un selector de clientes, un episodio largo convertido en clips verticales con subtítulos y un calendario semanal de publicaciones.",
       "cliente": "Cliente {letra}",
@@ -54,6 +53,7 @@
   },
   "funciones": {
     "etiqueta": "Funciones",
+    "verTodas": "Ver todas las funciones",
     "clientes": {
       "titulo": "Todos tus clientes en una plataforma",
       "texto": "Manejá todos tus clientes desde una cuenta. Cada uno tiene su espacio con sus episodios, clips, calendario y análisis, y su Brand Kit con sus colores, letras y logo. Tu equipo entra con su rol en los clientes que le tocan, sin mezclar nada.",
@@ -194,6 +194,7 @@
   },
   "pie": {
     "lema": "Software de clips con IA para agencias.",
+    "funciones": "Funciones",
     "app": "App",
     "privacidad": "Privacidad",
     "terminos": "Términos",
