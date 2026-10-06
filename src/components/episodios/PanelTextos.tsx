@@ -306,7 +306,7 @@ function MuestraDiseno({ estilo }: { estilo: ReturnType<typeof disenosDeTexto>[n
   );
 }
 
-function Fila({ etiqueta, children }: { etiqueta: string; children: React.ReactNode }) {
+export function Fila({ etiqueta, children }: { etiqueta: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <span className="w-20 shrink-0 text-xs text-white/50">{etiqueta}</span>
@@ -315,7 +315,7 @@ function Fila({ etiqueta, children }: { etiqueta: string; children: React.ReactN
   );
 }
 
-function Opcion({
+export function Opcion({
   activa,
   onClick,
   children,
@@ -364,7 +364,7 @@ function Color({
   );
 }
 
-function Segundos({
+export function Segundos({
   valor,
   max,
   onCambio,

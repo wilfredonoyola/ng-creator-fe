@@ -9,7 +9,7 @@
   "confirmarAuto": "El auto-encuadre reemplaza los cambios de encuadre por los suyos. ¿Seguir?",
   "pestanas": {
     "estilo": { "etiqueta": "Estilo", "titulo": "Estilo del texto" },
-    "textos": { "etiqueta": "Textos", "titulo": "Gancho y textos" },
+    "textos": { "etiqueta": "Textos", "titulo": "Gancho, textos e imágenes" },
     "subtitulos": { "etiqueta": "Subtítulos" },
     "marca": { "etiqueta": "Marca", "titulo": "Brand Kit" },
     "transcripcion": { "etiqueta": "Transcripción", "titulo": "Tramo en la transcripción" }

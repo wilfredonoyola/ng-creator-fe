@@ -39,6 +39,10 @@ import {
   type PosicionEfectiva,
   type Region,
   type Texto,
+  IMAGEN_ANCHO_MAX,
+  IMAGEN_ANCHO_MIN,
+  type EstadoRecorte,
+  type ImagenClip,
 } from "@/lib/clip-encuadre";
 
 export interface LineaSubtitulo {
@@ -93,6 +97,12 @@ export function EditorRecorte({
   onCambiarTextos,
   textoElegido,
   onElegirTexto,
+  imagenes = SIN_IMAGENES,
+  vistasImagenes = SIN_VISTAS,
+  onCambiarImagenes,
+  imagenElegida = null,
+  onElegirImagen,
+  onSoltarImagen,
   estilo,
   puedeEditar,
   inspector,
@@ -136,6 +146,18 @@ export function EditorRecorte({
   /** El que se está editando en el panel: se marca en la vista previa. */
   textoElegido: number | null;
   onElegirTexto: (i: number) => void;
+  /**
+   * Las imágenes sobre el clip: encima del video y debajo de los textos. Se
+   * arrastran para moverlas y se agrandan desde la esquina.
+   */
+  imagenes?: ImagenClip[];
+  /** Qué se dibuja de cada una (vistaDeImagen), en el mismo orden. */
+  vistasImagenes?: { src: string; estado: EstadoRecorte | null }[];
+  onCambiarImagenes?: (imagenes: ImagenClip[]) => void;
+  imagenElegida?: number | null;
+  onElegirImagen?: (i: number) => void;
+  /** Un archivo soltado sobre la vista previa. Sin esto, no se puede soltar. */
+  onSoltarImagen?: (file: File) => void;
   estilo: EstiloClip;
   puedeEditar: boolean;
   /**
@@ -190,6 +212,8 @@ export function EditorRecorte({
   onSugerirSilencios?: () => Promise<Corte[]>;
 }) {
   const tr = useTranslations("editorRecorte");
+  const ti = useTranslations("editorImagenes");
+  const [soltando, setSoltando] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const cuadro = useRef<HTMLDivElement>(null);
   const lienzoRef = useRef<HTMLCanvasElement>(null);
@@ -505,6 +529,39 @@ export function EditorRecorte({
     window.addEventListener("pointerup", soltar);
   }
 
+  /**
+   * Mover una imagen arrastrándola, o agrandarla desde la esquina de abajo a
+   * la derecha con el centro quieto (el alto sigue al aspecto de la imagen).
+   */
+  function arrastrarImagen(e: React.PointerEvent, i: number, modo: "mover" | "agrandar") {
+    e.stopPropagation();
+    onElegirImagen?.(i);
+    if (!puedeEditar || !onCambiarImagenes) return;
+    e.preventDefault();
+    const caja = vista.current?.getBoundingClientRect();
+    if (!caja) return;
+    const inicial = imagenes[i];
+    const x0 = e.clientX;
+    const y0 = e.clientY;
+    const mover = (ev: PointerEvent) => {
+      const dx = (ev.clientX - x0) / caja.width;
+      const dy = (ev.clientY - y0) / caja.height;
+      const cambio =
+        modo === "mover"
+          ? { centroX: redondo3(Math.min(1, Math.max(0, inicial.centroX + dx))), centroY: redondo3(Math.min(1, Math.max(0, inicial.centroY + dy))) }
+          : { ancho: redondo3(Math.min(IMAGEN_ANCHO_MAX, Math.max(IMAGEN_ANCHO_MIN, inicial.ancho + 2 * dx))) };
+      onCambiarImagenes(imagenes.map((im, k) => (k === i ? { ...im, ...cambio } : im)));
+    };
+    const soltar = () => {
+      window.removeEventListener("pointermove", mover);
+      window.removeEventListener("pointerup", soltar);
+    };
+    window.addEventListener("pointermove", mover);
+    window.addEventListener("pointerup", soltar);
+  }
+
+  const aceptaSoltar = puedeEditar && !!onSoltarImagen;
+
   return (
     // Desde md el editor ocupa el alto de la ventana y cada columna scrollea
     // por dentro. Las columnas están en globals.css (editor-clip) y dependen
@@ -787,6 +844,19 @@ export function EditorRecorte({
           <div
             ref={vista}
             onClick={alternar}
+            onDragOver={(e) => {
+              if (!aceptaSoltar || !e.dataTransfer.types.includes("Files")) return;
+              e.preventDefault();
+              setSoltando(true);
+            }}
+            onDragLeave={() => setSoltando(false)}
+            onDrop={(e) => {
+              setSoltando(false);
+              if (!aceptaSoltar) return;
+              e.preventDefault();
+              const f = e.dataTransfer.files[0];
+              if (f) onSoltarImagen?.(f);
+            }}
             className="relative mx-auto cursor-pointer overflow-hidden rounded-lg bg-black"
             style={{
               aspectRatio: `${lienzo.ancho} / ${lienzo.alto}`,
@@ -800,6 +870,47 @@ export function EditorRecorte({
               height={Math.max(1, Math.round(altoVista * 2))}
               className="absolute inset-0 h-full w-full"
             />
+            {imagenes.map((im, i) => {
+              // En el tiempo original del clip, como los textos.
+              const hastaIm = im.hastaSeg && im.hastaSeg > im.desdeSeg ? im.hastaSeg : duracion;
+              const visible = tc >= im.desdeSeg && tc < hastaIm;
+              const elegida = imagenElegida === i;
+              if (!visible && !elegida) return null;
+              const v = vistasImagenes[i] ?? { src: im.url, estado: null };
+              const velo = v.estado === "PENDIENTE" || v.estado === "FALLIDO";
+              return (
+                <div
+                  key={im.id}
+                  onPointerDown={(e) => arrastrarImagen(e, i, "mover")}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`group absolute ${puedeEditar ? "cursor-move" : ""} ${
+                    elegida ? "outline-dashed outline-1 outline-offset-2 outline-white/70" : ""
+                  } ${visible ? "" : "opacity-40"}`}
+                  style={{
+                    left: im.centroX * anchoVista,
+                    top: im.centroY * altoVista,
+                    width: im.ancho * anchoVista,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- la imagen viene del CDN, tal cual va al render */}
+                  <img src={v.src} alt="" draggable={false} className="pointer-events-none block h-auto w-full select-none" />
+                  {velo && (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 p-1 text-center text-[10px] leading-tight text-white">
+                      {v.estado === "FALLIDO" ? ti("estados.FALLIDO") : im.sinFondo ? ti("estados.PENDIENTE") : ti("preparando")}
+                    </div>
+                  )}
+                  {puedeEditar && onCambiarImagenes && (
+                    <span
+                      onPointerDown={(e) => arrastrarImagen(e, i, "agrandar")}
+                      className={`absolute -bottom-1.5 -right-1.5 h-3.5 w-3.5 cursor-nwse-resize rounded-full border-2 border-ng-azul bg-white ${
+                        elegida ? "block" : "hidden group-hover:block"
+                      }`}
+                    />
+                  )}
+                </div>
+              );
+            })}
             {plantilla.logo && (
               // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca, tal cual va al render
               <img src={plantilla.logo.url} alt="" style={estiloDelLogo(plantilla.logo.plantilla, anchoVista)} />
@@ -988,6 +1099,11 @@ export function EditorRecorte({
                 </div>
               );
             })()}
+            {soltando && (
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/50 text-sm text-white outline-dashed outline-2 -outline-offset-4 outline-ng-azul">
+                {ti("soltaAca")}
+              </div>
+            )}
             {formato === "VERTICAL" && plataforma && anchoVista > 0 && (
               <InterfazPlataforma plataforma={plataforma} ancho={anchoVista} nombreMarca={nombreMarca} />
             )}
@@ -1229,3 +1345,5 @@ const redondo3 = (n: number) => Math.round(n * 1000) / 1000;
 
 /** Fijo, para que el valor por defecto no cambie en cada render. */
 const SIN_CORTES: Corte[] = [];
+const SIN_IMAGENES: ImagenClip[] = [];
+const SIN_VISTAS: { src: string; estado: EstadoRecorte | null }[] = [];

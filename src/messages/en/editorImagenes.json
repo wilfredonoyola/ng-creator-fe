@@ -1,0 +1,28 @@
+{
+  "titulo": "Images ({n}/{max})",
+  "agregar": "Image",
+  "subiendo": "Uploading…",
+  "ayudaAgregar": "Upload an image from your computer (JPG, PNG or WebP, up to 15 MB) or drop it here",
+  "maximo": "Up to {max} images per clip",
+  "vacio": "Add a photo, a logo or a cut-out person. You can drop the file here or on the preview.",
+  "sinImagenes": "This clip has no images.",
+  "errorSubir": "The image couldn't be uploaded",
+  "quitarFondo": "Remove background",
+  "contorno": "White outline",
+  "ayudaPendiente": "The image is being prepared; meanwhile you see the original.",
+  "estados": {
+    "PENDIENTE": "Removing background…",
+    "FALLIDO": "The background couldn't be removed",
+    "FALLIDOCorto": "failed"
+  },
+  "preparando": "Preparing…",
+  "tamano": "Size {n}% of the width",
+  "oArrastrala": "Drag it on the preview to move it; the corner resizes it.",
+  "cuando": "When",
+  "todoElClip": "Whole clip",
+  "de": "from",
+  "a": "to",
+  "eliminar": "Delete this image",
+  "soltaAca": "Drop the image to add it",
+  "confirmarRender": "Some images are still having their background removed. If you process now they may come out without the cut-out. Process anyway?"
+}

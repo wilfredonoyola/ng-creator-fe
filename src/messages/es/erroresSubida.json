@@ -35,5 +35,7 @@
   "sesionLogo": "Sesión requerida para subir el logo",
   "logoNoImagen": "El logo tiene que ser una imagen (PNG o JPG)",
   "logoMuyPesado": "El logo debe pesar menos de 10 MB",
-  "errorLogo": "No se pudo subir el logo ({status})"
+  "errorLogo": "No se pudo subir el logo ({status})",
+  "imagenClipFormato": "La imagen tiene que ser JPG, PNG o WebP",
+  "imagenClipMuyPesada": "La imagen debe pesar menos de 15 MB"
 }
