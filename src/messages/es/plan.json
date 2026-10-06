@@ -1,0 +1,50 @@
+{
+  "titulo": "Mi plan",
+  "subtitulo": "Tu plan, las horas de video que usaste este mes y el pago.",
+  "cargando": "Cargando tu plan…",
+  "sinPlan": "Tu cuenta no tiene plan de cobro: tus marcas no tienen límites. Si querés sumar una marca nueva con prueba gratis, creala desde el selector de marcas.",
+  "tuPlan": "Tu plan",
+  "planes": {
+    "PRUEBA": "Prueba gratis",
+    "STARTER": "Starter",
+    "AGENCY": "Agency",
+    "AGENCY_PRO": "Agency Pro",
+    "CUSTOM": "Custom",
+    "INTERNO": "Interno"
+  },
+  "periodo": "Periodo de cobro",
+  "periodos": {
+    "MENSUAL": "Mensual",
+    "ANUAL": "Anual"
+  },
+  "ahorro": "ahorrá hasta 21%",
+  "estados": {
+    "prueba": "La prueba termina el {fecha} ({dias, plural, one {queda # día} other {quedan # días}}).",
+    "pruebaTermino": "Terminó la prueba gratis. Elegí un plan para seguir subiendo videos; lo que ya hiciste sigue disponible.",
+    "activa": "Activo.",
+    "renueva": "Se renueva el {fecha}.",
+    "cancelada": "Cancelado: sigue activo hasta el {fecha}. Podés reactivarlo desde Administrar pago.",
+    "pagoPendiente": "No pudimos cobrar la última renovación y la estamos reintentando. Revisá tu tarjeta en Administrar pago.",
+    "vencida": "Tu plan no está vigente: no se pueden subir videos nuevos. Elegí un plan para volver; lo que ya hiciste sigue disponible."
+  },
+  "administrarPago": "Administrar pago",
+  "uso": "{usadas} de {tope} h de video usadas",
+  "vuelveACero": "Vuelve a cero el {fecha}",
+  "sinLimite": "Sin límite de horas.",
+  "elegiUnPlan": "Elegí un plan",
+  "cambiarPlan": "Cambiar de plan",
+  "horasSuman": "Las horas de video suman todas tus marcas. Los clips y las exportaciones no tienen límite.",
+  "horasMes": "{n} horas de video al mes",
+  "porMes": "/mes",
+  "cobroMensual": "Cobro mensual",
+  "cobroAnual": "Cobro anual de US${total}",
+  "planActual": "Tu plan actual",
+  "elegir": "Elegir",
+  "cambiarAEste": "Cambiar a este",
+  "abriendo": "Abriendo…",
+  "cambiado": "Listo: cambiamos tu plan. La diferencia se cobra ahora, prorrateada.",
+  "procesandoPago": "Estamos confirmando tu pago. En unos segundos se actualiza tu plan.",
+  "cobroNoListo": "El pago todavía no está habilitado. Si querés un plan ya, escribinos a {correo}.",
+  "custom": "¿Necesitás más de 80 horas al mes? <correo>Escribinos</correo> y armamos un plan Custom.",
+  "lemon": "El pago lo procesa Lemon Squeezy, que emite la factura. Podés cancelar cuando quieras."
+}

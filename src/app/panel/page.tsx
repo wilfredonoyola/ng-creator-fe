@@ -9,7 +9,7 @@ import { CLIPS_DE_EPISODIO, COLA_DE_REVISION, EPISODIOS } from "@/graphql/operat
 import { ReproductorEpisodio, type ControlReproductor } from "@/components/ReproductorEpisodio";
 import { MOTIVOS, reloj } from "@/lib/momentos";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
+import { AvisoPlan, usePlanDeMarca } from "@/components/prueba/AvisoPlan";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 
@@ -86,7 +86,7 @@ interface ClipResumen {
 export default function InicioPage() {
   const t = useTranslations("panel");
   const { activa } = useMarcaActiva();
-  const { agotada } = usePrueba();
+  const { bloqueado: agotada } = usePlanDeMarca();
   const { usuario, esAdmin } = useSesion();
   const marcaId = activa?._id ?? "";
   const { data, loading } = useQuery(EPISODIOS, {
@@ -157,7 +157,7 @@ export default function InicioPage() {
         )}
       </div>
 
-      <AvisoPrueba className="mb-6" />
+      <AvisoPlan className="mb-6" />
 
       {episodios.length > 0 && (
         <div className="mb-6 flex flex-wrap gap-2 text-xs">

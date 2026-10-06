@@ -2390,3 +2390,90 @@ export const GUARDAR_AJUSTES_PUBLICACION = gql`
     }
   }
 `;
+
+// ---- Plan y cobro (ng-creator-be#94, Lemon Squeezy) ----
+
+const CAMPOS_PLAN = gql`
+  fragment CamposPlan on MiPlan {
+    plan
+    periodo
+    estado
+    pruebaHasta
+    topeHoras
+    horasUsadas
+    cicloHasta
+    renuevaEn
+    terminaEn
+    puedeSubir
+    motivo
+    pagaConLemon
+  }
+`;
+
+/** El plan de la cuenta, solo para su titular. Null si no paga ninguna marca. */
+export const MI_PLAN = gql`
+  ${CAMPOS_PLAN}
+  query MiPlan {
+    miPlan {
+      ...CamposPlan
+    }
+    cobroConfigurado
+  }
+`;
+
+/** Si se puede subir en esta marca (para quien opera, sin datos de cobro). Null: sin límites. */
+export const PLAN_DE_MARCA = gql`
+  ${CAMPOS_PLAN}
+  query PlanDeMarca($marcaId: ID!) {
+    planDeMarca(marcaId: $marcaId) {
+      ...CamposPlan
+    }
+  }
+`;
+
+export const INICIAR_SUSCRIPCION = gql`
+  mutation IniciarSuscripcion($plan: PlanSuscripcion!, $periodo: PeriodoSuscripcion!) {
+    iniciarSuscripcion(plan: $plan, periodo: $periodo) {
+      url
+      cambiado
+    }
+  }
+`;
+
+export const PORTAL_SUSCRIPCION = gql`
+  mutation PortalSuscripcion {
+    portalSuscripcion
+  }
+`;
+
+export const SUSCRIPCIONES_ADMIN = gql`
+  ${CAMPOS_PLAN}
+  query SuscripcionesAdmin {
+    suscripcionesAdmin {
+      ...CamposPlan
+      titularId
+      email
+      nombre
+      marcas
+      lemonSuscripcionId
+      modoPrueba
+      creadaEn
+      ajustes {
+        accion
+        detalle
+        porEmail
+        en
+      }
+    }
+  }
+`;
+
+export const AJUSTAR_SUSCRIPCION = gql`
+  ${CAMPOS_PLAN}
+  mutation AjustarSuscripcion($input: AjusteSuscripcionInput!) {
+    ajustarSuscripcion(input: $input) {
+      ...CamposPlan
+      titularId
+    }
+  }
+`;

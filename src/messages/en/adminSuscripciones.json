@@ -1,0 +1,46 @@
+{
+  "titulo": "Subscriptions",
+  "subtitulo": "Each paying account's plan, its usage and manual adjustments.",
+  "soloAdmin": "Only Clipfine administrators can see subscriptions.",
+  "cargando": "Loading…",
+  "vacio": "No accounts in this filter.",
+  "filtros": {
+    "todas": "All",
+    "prueba": "On trial",
+    "vencePronto": "Ending soon or payment pending",
+    "vencidas": "Can't upload"
+  },
+  "col": {
+    "cuenta": "Account (owner)",
+    "plan": "Plan",
+    "estado": "Status",
+    "horas": "Hours this month",
+    "fecha": "Trial end / renewal",
+    "marcas": "Brands"
+  },
+  "periodo": {
+    "MENSUAL": "monthly",
+    "ANUAL": "annual"
+  },
+  "estado": {
+    "PRUEBA": "On trial",
+    "ACTIVA": "Active",
+    "PAGO_PENDIENTE": "Payment pending",
+    "CANCELADA": "Cancelled",
+    "VENCIDA": "Expired"
+  },
+  "diasRestan": "{dias, plural, =0 {ended} one {# day left} other {# days left}}",
+  "ajustar": "Adjust",
+  "cerrar": "Close",
+  "dias": "Days",
+  "horas": "Hours",
+  "acciones": {
+    "EXTENDER_PRUEBA": "Extend trial",
+    "DEVOLVER_HORAS": "Give hours back",
+    "PASAR_A_INTERNO": "Make internal",
+    "DAR_PLAN": "Give this plan"
+  },
+  "ayuda": "Extend adds the days and, if you enter hours, adds them to the cap. Give plan uses the plan's hours, or the ones you enter (for Custom). Internal: no billing, no limits.",
+  "historial": "Adjustments",
+  "sinAjustes": "No manual adjustments."
+}
