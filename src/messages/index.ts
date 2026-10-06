@@ -85,9 +85,6 @@ import requisitosPassword_es from "./es/requisitosPassword.json";
 import revision_es from "./es/revision.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
-import revival_es from "./es/revival.json";
-import revivalPanel_es from "./es/revivalPanel.json";
-import revivalTarjeta_es from "./es/revivalTarjeta.json";
 import versionFacebook_es from "./es/versionFacebook.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
@@ -175,9 +172,6 @@ import requisitosPassword_en from "./en/requisitosPassword.json";
 import revision_en from "./en/revision.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
 import revisionVideoCard_en from "./en/revisionVideoCard.json";
-import revival_en from "./en/revival.json";
-import revivalPanel_en from "./en/revivalPanel.json";
-import revivalTarjeta_en from "./en/revivalTarjeta.json";
 import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
@@ -268,9 +262,6 @@ export const mensajes = {
     "revision": revision_es,
     "revisionTarjeta": revisionTarjeta_es,
     "revisionVideoCard": revisionVideoCard_es,
-    "revival": revival_es,
-    "revivalPanel": revivalPanel_es,
-    "revivalTarjeta": revivalTarjeta_es,
     "versionFacebook": versionFacebook_es,
   },
   en: {
@@ -360,9 +351,6 @@ export const mensajes = {
     "revision": revision_en,
     "revisionTarjeta": revisionTarjeta_en,
     "revisionVideoCard": revisionVideoCard_en,
-    "revival": revival_en,
-    "revivalPanel": revivalPanel_en,
-    "revivalTarjeta": revivalTarjeta_en,
     "versionFacebook": versionFacebook_en,
   },
 };

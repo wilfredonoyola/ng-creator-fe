@@ -355,19 +355,6 @@ export async function uploadLogoPagina(
   return subirImagen("page-logo", file, { pageId });
 }
 
-/**
- * Sube la imagen nueva de un revival. El backend le aplica la marca de agua de
- * la página antes de guardarla: no se confía en que venga puesta, porque es un
- * requisito del producto y desde el cliente se saltearía.
- */
-export async function uploadImagenRevival(
-  file: File,
-  pageId: string,
-  postId: string,
-): Promise<UploadResult> {
-  return subirImagen("revival-imagen", file, { pageId, postId });
-}
-
 async function subirImagen(
   endpoint: string,
   file: File,

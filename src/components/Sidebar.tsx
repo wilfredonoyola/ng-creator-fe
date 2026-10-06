@@ -68,8 +68,6 @@ export const NAV_PRINCIPAL: ItemNav[] = [
  * ve el admin; con los planes (ng-creator-be#89) pasa a verse en las marcas
  * del plan Interno. Revisión está acá porque hoy revisa estos videos; cuando
  * exista la revisión de clips (#70) sube a la principal.
- *
- * Revival salió del menú: no se usa. La ruta sigue, por si vuelve.
  */
 export const NAV_REACCION: ItemNav[] = [
   { href: "/crear", icon: Clapperboard, clave: "crearVideo" },
