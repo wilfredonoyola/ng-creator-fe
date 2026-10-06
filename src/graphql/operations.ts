@@ -574,6 +574,37 @@ export const REPROGRAMAR_PUBLICACION = gql`
   ${CAMPOS_PUBLICACION}
 `;
 
+/**
+ * Cambia el texto, el título de YouTube o la portada de una PROGRAMADA. Lo
+ * que no se manda (o va null) no se toca; `quitarPortada` vuelve a la
+ * automática de cada red.
+ */
+export const EDITAR_PUBLICACION = gql`
+  mutation EditarPublicacion(
+    $marcaId: ID!
+    $id: ID!
+    $descripcion: String
+    $tituloYoutube: String
+    $portadaSeg: Float
+    $quitarPortada: Boolean
+  ) {
+    editarPublicacion(
+      marcaId: $marcaId
+      id: $id
+      descripcion: $descripcion
+      tituloYoutube: $tituloYoutube
+      portadaSeg: $portadaSeg
+      quitarPortada: $quitarPortada
+    ) {
+      ...CamposPublicacion
+      descripcion
+      portadaSeg
+      ajustes
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
 /** Las de un expediente, de la cola y de antes, las más nuevas primero. */
 export const PUBLICACIONES_DE_EXPEDIENTE = gql`
   query PublicacionesDeExpediente($marcaId: ID!, $expedienteId: ID!) {
@@ -604,11 +635,18 @@ export const PUBLICACIONES_DE_MARCA = gql`
       ...CamposPublicacion
       descripcion
       portadaUrl
+      mediaUrl
+      portadaSeg
+      ajustes
       clip {
         _id
         episodioId
         titulo
         urlPoster
+        urlVideo
+        desdeSeg
+        hastaSeg
+        duracionEfectivaSeg
         editadoPor {
           nombre
         }
