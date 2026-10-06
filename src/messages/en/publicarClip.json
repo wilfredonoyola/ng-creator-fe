@@ -64,6 +64,23 @@
   "hashtagsAlFinal": "They go at the end of the description, on every network. Ones you already typed in the text aren't repeated.",
   "hashtagsVacio": "No hashtags. The brand's usual ones are set in Connected networks.",
   "descripcionLarga": "The description with hashtags is over {max} characters: shorten it or remove some.",
-  "youtubeTituloAparte": "title goes separately",
-  "tituloYoutubeAyuda": "YouTube uses this title separately; the description and hashtags go below the video."
+  "tituloYoutubeAyuda": "YouTube uses this title separately; the description and hashtags go below the video.",
+  "nRedes": "{n, plural, one {# network} other {# networks}}",
+  "comoSale": "How it looks on each network",
+  "comoSaleAviso": "Over the limit on {redes}",
+  "comoSaleLargo": "over {max} characters ({n})",
+  "tituloLargo": "the title is over {max} characters",
+  "sinTexto": "(no text)",
+  "portada": {
+    "titulo": "Cover",
+    "automatica": "Automatic",
+    "elegir": "Choose cover",
+    "cambiar": "Change",
+    "usarAutomatica": "Use automatic",
+    "listo": "Done",
+    "enSeg": "Frame at second {seg}",
+    "elegida": "Chosen cover",
+    "facebook": "On Facebook it's applied a few minutes after publishing, if the page is also connected through Facebook (Connected networks → bottom).",
+    "youtube": "YouTube only applies it on verified channels."
+  }
 }
