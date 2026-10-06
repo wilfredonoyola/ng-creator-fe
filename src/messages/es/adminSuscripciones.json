@@ -1,0 +1,46 @@
+{
+  "titulo": "Suscripciones",
+  "subtitulo": "El plan de cada cuenta que paga, cuánto usó y los ajustes a mano.",
+  "soloAdmin": "Solo los administradores de Clipfine ven las suscripciones.",
+  "cargando": "Cargando…",
+  "vacio": "No hay cuentas en este filtro.",
+  "filtros": {
+    "todas": "Todas",
+    "prueba": "En prueba",
+    "vencePronto": "Vence pronto o pago pendiente",
+    "vencidas": "Sin poder subir"
+  },
+  "col": {
+    "cuenta": "Cuenta (titular)",
+    "plan": "Plan",
+    "estado": "Estado",
+    "horas": "Horas del mes",
+    "fecha": "Fin de prueba / renovación",
+    "marcas": "Marcas"
+  },
+  "periodo": {
+    "MENSUAL": "mensual",
+    "ANUAL": "anual"
+  },
+  "estado": {
+    "PRUEBA": "En prueba",
+    "ACTIVA": "Activa",
+    "PAGO_PENDIENTE": "Pago pendiente",
+    "CANCELADA": "Cancelada",
+    "VENCIDA": "Vencida"
+  },
+  "diasRestan": "{dias, plural, =0 {terminó} one {queda # día} other {quedan # días}}",
+  "ajustar": "Ajustar",
+  "cerrar": "Cerrar",
+  "dias": "Días",
+  "horas": "Horas",
+  "acciones": {
+    "EXTENDER_PRUEBA": "Extender prueba",
+    "DEVOLVER_HORAS": "Devolver horas",
+    "PASAR_A_INTERNO": "Pasar a Interno",
+    "DAR_PLAN": "Dar este plan"
+  },
+  "ayuda": "Extender suma los días y, si ponés horas, las suma al tope. Dar plan usa las horas del plan, o las que pongas (para Custom). Interno: sin cobro ni límites.",
+  "historial": "Ajustes",
+  "sinAjustes": "Sin ajustes a mano."
+}
