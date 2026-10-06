@@ -126,7 +126,7 @@ export interface ComoSale {
 }
 
 /** Una línea por red elegida (sin repetir la red), para revisar antes de programar. */
-export function comoSaleEnCadaRed(destinos: Destino[], descripcionFinal: string, tituloYoutube: string): ComoSale[] {
+export function comoSaleEnCadaRed(destinos: Pick<Destino, "red">[], descripcionFinal: string, tituloYoutube: string): ComoSale[] {
   const redes = Array.from(new Set(destinos.map((d) => d.red)));
   const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX;
   return redes.map((red) =>

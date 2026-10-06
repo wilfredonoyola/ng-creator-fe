@@ -31,12 +31,12 @@
     "editadoPor": "Edited by {nombre}",
     "sinDescripcion": "No description",
     "errorCancelar": "Couldn't cancel",
-    "ver": "View ↗",
     "cambiarHora": "Change time",
     "reintentando": "Retrying: ",
-    "canceladaPor": "Canceled by {nombre}",
     "confirmarQuitar": "Remove {red} from this clip?",
-    "quitarRed": "Remove {red} from “{titulo}”"
+    "quitarRed": "Remove {red} from this clip",
+    "apagada": "Not going out on {red}",
+    "verEn": "View on {red}"
   },
   "cambiarHora": {
     "titulo": "Change time",
@@ -48,5 +48,35 @@
     "volver": "Back",
     "guardando": "Saving…",
     "guardar": "Save"
+  },
+  "detalle": {
+    "titulo": "Scheduled post",
+    "tituloSalio": "Post",
+    "cerrar": "Close",
+    "sale": "Goes out {cuando}",
+    "salio": "Went out {cuando}",
+    "horaDe": "Times in {zona}",
+    "programadoPor": "Scheduled by {nombre}",
+    "abrirClip": "Open the clip",
+    "redes": "Networks",
+    "noSale": "Not going out",
+    "verEn": "View on {red}",
+    "reintentando": "Retrying: {error}",
+    "editar": "Edit",
+    "soloLectura": "It already went out on every network: view only.",
+    "descripcion": "Description",
+    "descripcionAyuda": "One text for every network that hasn't gone out yet.",
+    "sinDescripcion": "No description",
+    "descripcionLarga": "The description is over {max} characters.",
+    "tituloYoutube": "YouTube title",
+    "portada": "Cover",
+    "cambiarHora": "Change time",
+    "agregarRedes": "Add networks",
+    "guardar": "Save changes",
+    "guardando": "Saving…",
+    "guardado": "Saved",
+    "sinCambios": "There are no changes to save.",
+    "errorRed": "{red}: {mensaje}",
+    "noSePudo": "couldn't save"
   }
 }
