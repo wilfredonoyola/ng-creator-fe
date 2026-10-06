@@ -37,7 +37,7 @@
   "faltaInstagram": "¿Falta Instagram? Tiene que ser una cuenta profesional ligada a la página de Facebook, y hay que volver a conectar Facebook aceptando los permisos de Instagram.",
   "faltaRed": "¿Falta {red}? Conectala desde la web, en <link>Redes conectadas</link>.",
   "pronto": "Pronto",
-  "descripcionPlaceholder": "Lo que va abajo del video, con hashtags",
+  "descripcionPlaceholder": "Lo que va abajo del video",
   "tituloYoutube": "Título en YouTube",
   "irAlCalendario": "Ir al calendario",
   "soloMira": "Tu rol en esta marca solo mira: programar lo hace un editor o el propietario.",
@@ -59,5 +59,11 @@
     "verPublicacion": "Ver publicación ↗",
     "cancelando": "Cancelando…",
     "cancelar": "Cancelar"
-  }
+  },
+  "hashtags": "Hashtags (los de la marca; quitá los que no van en este clip)",
+  "hashtagsAlFinal": "Van al final de la descripción, en todas las redes. Los que ya escribiste en el texto no se repiten.",
+  "hashtagsVacio": "Sin hashtags. Los de siempre de la marca se configuran en Redes conectadas.",
+  "descripcionLarga": "La descripción con los hashtags pasa de {max} caracteres: acortala o quitá alguno.",
+  "youtubeTituloAparte": "el título va aparte",
+  "tituloYoutubeAyuda": "YouTube usa este título aparte; la descripción y los hashtags van debajo del video."
 }
