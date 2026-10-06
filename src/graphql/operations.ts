@@ -645,7 +645,6 @@ const CAMPOS_CANAL_YOUTUBE = gql`
     miniaturaUrl
     activa
     requiereReconexion
-    proveedor
   }
 `;
 
@@ -710,7 +709,6 @@ const CAMPOS_CUENTA_TIKTOK = gql`
     avatarUrl
     activa
     requiereReconexion
-    proveedor
   }
 `;
 
@@ -770,12 +768,11 @@ export const TIKTOK_DESCONECTAR = gql`
   }
 `;
 
-// ---- Upload-Post: publicar en TikTok y YouTube por un intermediario ----
+// ---- Upload-Post: publicar en las 4 redes por un intermediario ----
 
 /**
- * Qué flujo de conexión se ofrece para cuentas nuevas en cada red:
- * 'propio' (nuestra app de TikTok/Google) o 'upload-post'. Las cuentas ya
- * conectadas dicen el suyo en `proveedor`.
+ * Por dónde publica cada red: 'propio' (nuestras apps de Meta, TikTok y
+ * Google) o 'upload-post' (las cuentas de `cuentasUploadPost`).
  */
 export const PROVEEDORES_PUBLICACION = gql`
   query ProveedoresPublicacion {
@@ -785,6 +782,41 @@ export const PROVEEDORES_PUBLICACION = gql`
       instagram
       facebook
     }
+  }
+`;
+
+/** Qué redes tiene conectadas la marca en su perfil de Upload-Post. */
+export const ESTADO_UPLOAD_POST = gql`
+  query EstadoUploadPost($marcaId: String!) {
+    estadoUploadPost(marcaId: $marcaId) {
+      perfil
+      redesConectadas
+    }
+  }
+`;
+
+/**
+ * Las cuentas de las 4 redes conectadas en el perfil de Upload-Post de la
+ * marca. Cuando una red publica por Upload-Post, sus destinos salen de acá y
+ * la cola recibe el `_id` como cuentaId.
+ */
+export const CUENTAS_UPLOAD_POST = gql`
+  query CuentasUploadPost($marcaId: String!) {
+    cuentasUploadPost(marcaId: $marcaId) {
+      _id
+      red
+      nombre
+      usuario
+      avatarUrl
+      activa
+    }
+  }
+`;
+
+/** Vincula a la marca un perfil que ya existe en Upload-Post (ADMIN o propietario). */
+export const VINCULAR_PERFIL_UPLOAD_POST = gql`
+  mutation VincularPerfilUploadPost($marcaId: String!, $perfil: String!) {
+    vincularPerfilUploadPost(marcaId: $marcaId, perfil: $perfil)
   }
 `;
 
