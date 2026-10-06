@@ -1,7 +1,7 @@
 "use client";
 
 import { FotoMarca } from "@/components/FotoMarca";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { ErrorDeSubida, uploadLogoPagina } from "@/lib/upload";
@@ -10,6 +10,8 @@ import { CanalesYoutube } from "@/components/CanalesYoutube";
 import { CuentasTiktok } from "@/components/CuentasTiktok";
 import { ESTILO_ROL, RolPagina, useSesion } from "@/lib/sesion";
 import { fechaCompleta, tiempoRelativo } from "@/lib/time";
+import { useMarcaActiva } from "@/lib/marca-activa";
+import { PARAMETRO_VUELTA, QUERIES_DE_CUENTAS } from "@/lib/upload-post";
 import {
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
@@ -21,6 +23,7 @@ import {
   FACEBOOK_REGISTRAR_PAGINA_POR_ID,
   FACEBOOK_DESCONECTAR,
   MIS_ACCESOS,
+  SINCRONIZAR_UPLOAD_POST,
 } from "@/graphql/operations";
 
 interface Pagina {
@@ -334,9 +337,61 @@ FACEBOOK_TOKEN_KEY=`}
         </div>
       )}
 
+      <VueltaDeUploadPost />
       <CanalesYoutube />
       <CuentasTiktok />
     </DashboardLayout>
+  );
+}
+
+/**
+ * Upload-Post vuelve acá con `?upload_post=ok` después de conectar una cuenta:
+ * se traen las cuentas que la marca tiene allá, se refrescan las listas y se
+ * limpia el parámetro para que recargar no vuelva a sincronizar.
+ */
+function VueltaDeUploadPost() {
+  const t = useTranslations("redesUploadPost");
+  const { activa: marca } = useMarcaActiva();
+  const marcaId = marca?._id;
+  const [estado, setEstado] = useState<"nada" | "sincronizando" | "listo" | "error">("nada");
+  const [error, setError] = useState<string | null>(null);
+  const hecho = useRef(false);
+  const [sincronizar] = useMutation(SINCRONIZAR_UPLOAD_POST, {
+    refetchQueries: QUERIES_DE_CUENTAS,
+    awaitRefetchQueries: true,
+  });
+
+  useEffect(() => {
+    if (hecho.current || !marcaId) return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.get(PARAMETRO_VUELTA) !== "ok") return;
+    hecho.current = true;
+    url.searchParams.delete(PARAMETRO_VUELTA);
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    setEstado("sincronizando");
+    sincronizar({ variables: { marcaId } })
+      .then(() => setEstado("listo"))
+      .catch((e: any) => {
+        setError(e?.message ?? null);
+        setEstado("error");
+      });
+  }, [marcaId, sincronizar]);
+
+  if (estado === "nada") return null;
+  return (
+    <div
+      className={`mt-8 rounded-xl border p-4 text-sm ${
+        estado === "error"
+          ? "border-red-500/30 bg-red-500/10 text-red-400"
+          : "border-ng-azul/30 bg-ng-teal/5 text-ng-teal"
+      }`}
+    >
+      {estado === "sincronizando"
+        ? t("sincronizando")
+        : estado === "listo"
+          ? t("conectada")
+          : error ?? t("errorSincronizar")}
+    </div>
   );
 }
 

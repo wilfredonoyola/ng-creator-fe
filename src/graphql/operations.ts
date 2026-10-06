@@ -645,6 +645,7 @@ const CAMPOS_CANAL_YOUTUBE = gql`
     miniaturaUrl
     activa
     requiereReconexion
+    proveedor
   }
 `;
 
@@ -709,6 +710,7 @@ const CAMPOS_CUENTA_TIKTOK = gql`
     avatarUrl
     activa
     requiereReconexion
+    proveedor
   }
 `;
 
@@ -765,6 +767,44 @@ export const TIKTOK_SET_CUENTA_ACTIVA = gql`
 export const TIKTOK_DESCONECTAR = gql`
   mutation TiktokDesconectar($marcaId: ID!, $openId: String!) {
     tiktokDesconectar(marcaId: $marcaId, openId: $openId)
+  }
+`;
+
+// ---- Upload-Post: publicar en TikTok y YouTube por un intermediario ----
+
+/**
+ * Qué flujo de conexión se ofrece para cuentas nuevas en cada red:
+ * 'propio' (nuestra app de TikTok/Google) o 'upload-post'. Las cuentas ya
+ * conectadas dicen el suyo en `proveedor`.
+ */
+export const PROVEEDORES_PUBLICACION = gql`
+  query ProveedoresPublicacion {
+    proveedoresPublicacion {
+      tiktok
+      youtube
+      instagram
+      facebook
+    }
+  }
+`;
+
+/** URL de Upload-Post (marca blanca) para conectar la cuenta; vuelve con ?upload_post=ok. */
+export const CONECTAR_CON_UPLOAD_POST = gql`
+  mutation ConectarConUploadPost($marcaId: String!, $red: RedSocial!) {
+    conectarConUploadPost(marcaId: $marcaId, red: $red)
+  }
+`;
+
+/** Trae a nuestra base las cuentas que la marca tiene conectadas en Upload-Post. */
+export const SINCRONIZAR_UPLOAD_POST = gql`
+  mutation SincronizarUploadPost($marcaId: String!) {
+    sincronizarUploadPost(marcaId: $marcaId)
+  }
+`;
+
+export const DESCONECTAR_DE_UPLOAD_POST = gql`
+  mutation DesconectarDeUploadPost($marcaId: String!, $red: RedSocial!) {
+    desconectarDeUploadPost(marcaId: $marcaId, red: $red)
   }
 `;
 

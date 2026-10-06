@@ -78,6 +78,7 @@ import redesCallback_es from "./es/redesCallback.json";
 import redesEstadoFacebook_es from "./es/redesEstadoFacebook.json";
 import redesFacebook_es from "./es/redesFacebook.json";
 import redesTiktok_es from "./es/redesTiktok.json";
+import redesUploadPost_es from "./es/redesUploadPost.json";
 import redesYoutube_es from "./es/redesYoutube.json";
 import registro_es from "./es/registro.json";
 import requisitosPassword_es from "./es/requisitosPassword.json";
@@ -167,6 +168,7 @@ import redesCallback_en from "./en/redesCallback.json";
 import redesEstadoFacebook_en from "./en/redesEstadoFacebook.json";
 import redesFacebook_en from "./en/redesFacebook.json";
 import redesTiktok_en from "./en/redesTiktok.json";
+import redesUploadPost_en from "./en/redesUploadPost.json";
 import redesYoutube_en from "./en/redesYoutube.json";
 import registro_en from "./en/registro.json";
 import requisitosPassword_en from "./en/requisitosPassword.json";
@@ -259,6 +261,7 @@ export const mensajes = {
     "redesEstadoFacebook": redesEstadoFacebook_es,
     "redesFacebook": redesFacebook_es,
     "redesTiktok": redesTiktok_es,
+    "redesUploadPost": redesUploadPost_es,
     "redesYoutube": redesYoutube_es,
     "registro": registro_es,
     "requisitosPassword": requisitosPassword_es,
@@ -350,6 +353,7 @@ export const mensajes = {
     "redesEstadoFacebook": redesEstadoFacebook_en,
     "redesFacebook": redesFacebook_en,
     "redesTiktok": redesTiktok_en,
+    "redesUploadPost": redesUploadPost_en,
     "redesYoutube": redesYoutube_en,
     "registro": registro_en,
     "requisitosPassword": requisitosPassword_en,

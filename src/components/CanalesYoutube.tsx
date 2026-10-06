@@ -12,6 +12,7 @@ import {
 } from "@/graphql/operations";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
+import { useProveedor, useUploadPost } from "@/lib/upload-post";
 
 export interface CanalYoutube {
   _id: string;
@@ -21,6 +22,8 @@ export interface CanalYoutube {
   miniaturaUrl?: string | null;
   activa: boolean;
   requiereReconexion: boolean;
+  /** 'propio' o 'upload-post': por dónde se conectó y se publica. */
+  proveedor?: string | null;
 }
 
 /**
@@ -32,10 +35,15 @@ export interface CanalYoutube {
  */
 export function CanalesYoutube() {
   const t = useTranslations("redesYoutube");
+  const tUp = useTranslations("redesUploadPost");
   const { activa: marca } = useMarcaActiva();
   const { esPropietario } = useSesion();
   const marcaId = marca?._id;
   const mando = esPropietario(marcaId);
+  // Las cuentas nuevas se conectan por Upload-Post o por nuestra app, según el
+  // backend. Las que ya están siguen por donde se conectaron.
+  const porUploadPost = useProveedor("youtube") === "upload-post";
+  const uploadPost = useUploadPost(marcaId, "YOUTUBE");
 
   const { data: estado } = useQuery(YOUTUBE_CONFIGURADO, { errorPolicy: "all" });
   const { data, loading } = useQuery(YOUTUBE_CANALES, {
@@ -57,6 +65,7 @@ export function CanalesYoutube() {
   const canales: CanalYoutube[] = data?.youtubeCanales ?? [];
 
   async function conectar() {
+    if (porUploadPost) return conectarPorUploadPost();
     setError(null);
     try {
       const { data: r, error: e } = await pedirUrl({ variables: { marcaId } });
@@ -64,6 +73,15 @@ export function CanalesYoutube() {
       const url = r?.youtubeUrlDeConexion;
       if (!url) throw new Error(t("sinUrl"));
       window.location.href = url;
+    } catch (e: any) {
+      setError(e?.message ?? t("errorConectar"));
+    }
+  }
+
+  async function conectarPorUploadPost() {
+    setError(null);
+    try {
+      if (!(await uploadPost.conectar())) throw new Error(t("sinUrl"));
     } catch (e: any) {
       setError(e?.message ?? t("errorConectar"));
     }
@@ -95,7 +113,7 @@ export function CanalesYoutube() {
         {t("descripcion")}
       </p>
 
-      {!configurado ? (
+      {!configurado && !porUploadPost ? (
         <p className="rounded-lg border border-dashed border-white/15 p-3 text-xs text-white/40">
           {t("sinCredenciales")}
         </p>
@@ -131,12 +149,17 @@ export function CanalesYoutube() {
                         {c.activa ? t("habilitado") : t("deshabilitado")}
                       </p>
                     )}
+                    {mando && c.proveedor === "upload-post" && (
+                      <p className="text-[10px] text-white/30">{tUp("via")}</p>
+                    )}
                   </div>
                   {mando && (
                     <div className="flex shrink-0 items-center gap-3 text-xs">
                       {c.requiereReconexion ? (
                         <button
-                          onClick={conectar}
+                          onClick={
+                            c.proveedor === "upload-post" ? conectarPorUploadPost : conectar
+                          }
                           className="text-amber-400 hover:underline"
                         >
                           {t("reconectar")}
@@ -167,9 +190,11 @@ export function CanalesYoutube() {
                             )
                           ) {
                             void accion(() =>
-                              desconectar({
-                                variables: { marcaId, canalId: c.canalId },
-                              }),
+                              c.proveedor === "upload-post"
+                                ? uploadPost.desconectar()
+                                : desconectar({
+                                    variables: { marcaId, canalId: c.canalId },
+                                  }),
                             );
                           }
                         }}
@@ -187,11 +212,13 @@ export function CanalesYoutube() {
           {mando ? (
             <button
               onClick={conectar}
-              disabled={pidiendoUrl}
+              disabled={pidiendoUrl || uploadPost.abriendo}
               className="rounded-lg bg-[#FF0000] px-4 py-2 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
             >
-              {pidiendoUrl
-                ? t("abriendo")
+              {pidiendoUrl || uploadPost.abriendo
+                ? porUploadPost
+                  ? tUp("abriendo")
+                  : t("abriendo")
                 : canales.length
                   ? t("conectarOtro")
                   : t("conectarPrimero")}
@@ -202,9 +229,11 @@ export function CanalesYoutube() {
             </p>
           )}
 
-          <p className="mt-3 text-[11px] text-white/30">
-            {t("aprobacion")}
-          </p>
+          {!porUploadPost && (
+            <p className="mt-3 text-[11px] text-white/30">
+              {t("aprobacion")}
+            </p>
+          )}
         </>
       )}
 

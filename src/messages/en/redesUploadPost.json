@@ -1,0 +1,7 @@
+{
+  "via": "via Upload-Post",
+  "abriendo": "Opening Upload-Post…",
+  "sincronizando": "Fetching the connected account…",
+  "conectada": "Account connected",
+  "errorSincronizar": "Couldn't fetch the connected account. Try connecting it again."
+}
