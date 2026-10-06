@@ -1,7 +1,7 @@
 {
   "meta": {
     "titulo": "Terms of service",
-    "descripcion": "Clipfine's terms of use: accounts, plans and pricing, monthly billing, cancellation, content, connected networks and responsibilities."
+    "descripcion": "Clipfine's terms of use: accounts, plans and pricing, monthly or annual billing, cancellation, content, connected networks and responsibilities."
   },
   "titulo": "Terms of service",
   "s1": {
@@ -16,15 +16,18 @@
   },
   "s3": {
     "titulo": "3. Plans and pricing",
-    "p1": "The service is offered as a monthly subscription, in United States dollars:",
-    "creador": "<b>Creator — US$19.99 per month:</b> 1 person, 1 brand and up to 12 episodes per billing period.",
-    "equipo": "<b>Team — US$49.99 per month:</b> up to 5 people, 1 brand and up to 16 episodes per billing period.",
-    "p2": "On both plans, each episode can be up to 3 hours long, and clips and exports are unlimited within reasonable use. Episodes not used in a period do not carry over to the next. Any applicable taxes are shown at the time of payment.",
-    "p3": "We may change prices or what each plan includes. If a change affects you, we will notify you by email at least 30 days in advance and it takes effect from the first charge after that period; if you do not agree, you can cancel before then."
+    "p1": "The service is offered as a monthly or annual subscription, in United States dollars. On annual billing, the twelve months are charged upfront at the stated monthly price:",
+    "p2": "Video hours are the total length of the videos uploaded each month, across all brands on the account. Hours not used in a month do not carry over to the next. Clips and exports are unlimited within reasonable use. Any applicable taxes are shown at the time of payment.",
+    "p3": "We may change prices or what each plan includes. If a change affects you, we will notify you by email at least 30 days in advance and it takes effect from the first charge after that period; if you do not agree, you can cancel before then.",
+    "prueba": "<b>Free trial — 15 days:</b> every feature and up to 3 video hours, no card required.",
+    "starter": "<b>Starter — US$19 per month, or US$15 per month billed annually:</b> up to 10 video hours per month.",
+    "agency": "<b>Agency — US$59 per month, or US$49 per month billed annually:</b> up to 30 video hours per month.",
+    "agencyPro": "<b>Agency Pro — US$149 per month, or US$119 per month billed annually:</b> up to 80 video hours per month.",
+    "custom": "<b>Custom — from US$399 per month, on an annual contract:</b> more than 200 video hours per month, on terms agreed in writing."
   },
   "s4": {
     "titulo": "4. Payment and renewal",
-    "p1": "Payment is made by card through Wompi, which processes the charge under its own terms. By subscribing you authorize an automatic charge every month, on the same day you subscribed, until you cancel. The subscription renews automatically as each charge is confirmed.",
+    "p1": "Payment is made by card through Wompi, which processes the charge under its own terms. By subscribing you authorize an automatic charge every month or every year, depending on the period you chose, on the same day you subscribed, until you cancel. The subscription renews automatically as each charge is confirmed.",
     "p2": "If you change plans, the new price and its limits apply from the next charge, unless otherwise stated when changing."
   },
   "s5": {

@@ -57,8 +57,9 @@ export default function TerminosPage() {
       <Seccion titulo={t("s3.titulo")}>
         <p>{t("s3.p1")}</p>
         <ul className="ml-5 list-disc space-y-1.5">
-          <li>{t.rich("s3.creador", { b })}</li>
-          <li>{t.rich("s3.equipo", { b })}</li>
+          {(["prueba", "starter", "agency", "agencyPro", "custom"] as const).map((plan) => (
+            <li key={plan}>{t.rich(`s3.${plan}`, { b })}</li>
+          ))}
         </ul>
         <p>{t("s3.p2")}</p>
         <p>{t("s3.p3")}</p>

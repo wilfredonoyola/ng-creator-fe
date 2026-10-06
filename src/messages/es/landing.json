@@ -1,247 +1,202 @@
 {
   "meta": {
-    "titulo": "Clipfine — De tu podcast a clips publicados en TikTok, Reels, Shorts y Facebook",
-    "descripcion": "Para podcasts, lives de TikTok y streams. El flujo completo en un solo lugar: subí el episodio, se transcribe solo, la IA encuentra los mejores momentos, tu equipo los edita con subtítulos y los aprueba, y los publicás en todas tus redes. Web y app para iPhone y Android."
+    "titulo": "Clipfine — Software de clips con IA para agencias",
+    "descripcion": "Convertí los podcasts y videos largos de cada cliente en clips verticales con subtítulos, programalos desde un calendario y mirá qué funciona. Hecho para agencias con muchos clientes. 15 días gratis."
   },
   "datos": {
-    "descripcion": "Convertí episodios de podcast, lives de TikTok y streams en clips verticales con subtítulos para TikTok, Reels y Shorts. La IA encuentra los mejores momentos y tu equipo los edita y publica."
+    "descripcion": "Software de clips con IA para agencias: convierte los podcasts y videos largos de cada cliente en clips verticales con subtítulos, los programa desde un calendario y muestra qué funciona, cliente por cliente."
   },
-  "pasos": {
-    "subir": {
-      "titulo": "Subís el episodio",
-      "texto": "El video completo, de una o tres horas, directo desde el navegador. Si se corta internet, sigue donde quedó."
-    },
-    "transcribir": {
-      "titulo": "Se transcribe solo",
-      "texto": "Cada palabra con su segundo exacto. Es la base de los cortes y de los subtítulos."
+  "nav": {
+    "funciones": "Funciones",
+    "como": "Cómo funciona",
+    "precios": "Precios",
+    "preguntas": "Preguntas",
+    "entrar": "Entrar",
+    "demo": "Agendá una demo",
+    "empezar": "Empezar gratis",
+    "inicio": "Clipfine, inicio"
+  },
+  "demoAsunto": "Quiero una demo de Clipfine",
+  "pronto": "Pronto",
+  "portada": {
+    "etiqueta": "Software de clips con IA para agencias",
+    "titulo": "Clips, publicaciones y resultados de todos tus clientes, en un solo lugar.",
+    "texto": "Subí el video largo de un cliente y recibí sus mejores momentos como clips verticales con subtítulos. Programalos desde un calendario y mirá qué funciona, para cada cliente que maneja tu agencia.",
+    "letraChica": "15 días gratis · Sin tarjeta",
+    "publicaEn": "Publicá en",
+    "redesPronto": "Instagram, TikTok y YouTube: pronto",
+    "maqueta": {
+      "alt": "El espacio de Clipfine: un selector de clientes, un episodio largo convertido en clips verticales con subtítulos y un calendario semanal de publicaciones.",
+      "cliente": "Cliente {letra}",
+      "sumarCliente": "+ Sumar cliente",
+      "cuadro": "cuadro del episodio 16:9",
+      "listos": "Clips listos",
+      "formato": "Subtítulos · 9:16",
+      "transcripcion": "Transcripción",
+      "momentos": "Momentos",
+      "encuadre": "Encuadre",
+      "hecho": "listo",
+      "mas": "clips más",
+      "calendario": "Calendario · esta semana",
+      "redes": "4 redes",
+      "clips": {
+        "c1": { "antes": "El gancho está en los", "marca": "primeros", "despues": "tres segundos" },
+        "c2": { "antes": "Nadie", "marca": "habla", "despues": "de esta parte" },
+        "c3": { "antes": "Ahí fue cuando nos", "marca": "cayó", "despues": "la ficha" },
+        "c4": { "antes": "Esto lo haríamos", "marca": "distinto", "despues": "" }
+      }
+    }
+  },
+  "dias": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie", "sab": "Sáb", "dom": "Dom" },
+  "problema": {
+    "titulo": "Tus clientes quieren más clips. Tu equipo ya no da abasto.",
+    "texto": "Cada cliente nuevo son más videos para mirar, más clips para cortar y subtitular, cuatro redes donde publicar y otro reporte para mandar. Clipfine junta todo eso en un solo lugar para cada cliente: entran los videos, salen los clips programados y los resultados a la vista. Así sumás clientes sin sumar sueldos."
+  },
+  "funciones": {
+    "etiqueta": "Funciones",
+    "clientes": {
+      "titulo": "Todos tus clientes en una plataforma",
+      "texto": "Manejá todos tus clientes desde una cuenta. Cada uno tiene su espacio con sus episodios, clips, calendario y análisis, y su Brand Kit con sus colores, letras y logo. Tu equipo entra con su rol en los clientes que le tocan, sin mezclar nada.",
+      "alt": "Lista de cuatro clientes, cada uno con sus episodios, clips, calendario y análisis",
+      "pestanas": { "episodios": "Episodios", "clips": "Clips", "calendario": "Calendario", "analisis": "Análisis", "brandKit": "Brand Kit" },
+      "estados": { "listo": "Listo", "programado": "Programado", "procesando": "Procesando", "publicado": "Publicado" }
     },
     "momentos": {
-      "titulo": "La IA encuentra los momentos",
-      "texto": "Propone los clips que se entienden solos, con su potencial viral y el porqué."
+      "titulo": "Los mejores momentos, ya cortados",
+      "texto": "Subí un podcast o un video largo: Clipfine lo transcribe, encuentra los momentos que se entienden solos y los arma en vertical 9:16, con subtítulos y siguiendo a quien habla. Tu equipo arranca con una tanda de clips, no con una línea de tiempo de 90 minutos.",
+      "alt": "Una tanda de clips verticales, con uno elegido y abierto en el editor, con los bordes de recorte en la línea de tiempo",
+      "encabezado": "Clips · EP-142",
+      "editor": "Editor"
     },
-    "editar": {
-      "titulo": "Editás en minutos",
-      "texto": "El auto-encuadre sigue a quien habla; vos sumás subtítulos con la palabra resaltada y textos con diseño. Lo que ves es lo que sale."
+    "calendario": {
+      "titulo": "Publicá desde un calendario",
+      "texto": "Programá los clips de cada cliente desde un calendario y publicalos sin descargar ni volver a subir nada. Hoy en Facebook; Instagram, TikTok y YouTube vienen en camino. Mientras tanto, bajás el MP4 listo para cualquier red.",
+      "alt": "Calendario semanal con clips programados en Facebook, Instagram, TikTok y YouTube",
+      "encabezado": "Cliente B · semana 41"
     },
-    "equipo": {
-      "titulo": "Tu equipo revisa y aprueba",
-      "texto": "Cada uno trabaja su clip y nada sale sin que una persona lo apruebe."
-    },
-    "publicar": {
-      "titulo": "Publicás en todas tus redes",
-      "texto": "Desde aquí mismo, a la hora que elijas. Sin descargar el video ni entrar red por red."
-    }
-  },
-  "autoEncuadre": {
-    "etiqueta": "Auto-encuadre",
-    "titulo": "La cámara sigue a quien habla. Sola.",
-    "texto": "Tu podcast se graba con una cámara abierta sobre toda la mesa. Para vertical hay que elegir a quién mostrar en cada segundo, y a mano eso es lo que más tiempo lleva. Con un botón, Clipfine mira el clip y arma los cambios de plano como lo haría un editor.",
-    "puntos": {
-      "quienHabla": {
-        "titulo": "Sabe quién habla",
-        "texto": "Reconoce cada voz y la une con la cara que mueve los labios. Quien gesticula, asiente o se tapa la cara no le roba el plano a quien habla."
-      },
-      "divide": {
-        "titulo": "Divide la pantalla cuando discuten",
-        "texto": "Si hablan tres a la vez, en vez de saltar de cara en cara cada segundo, muestra la mesa partida: dos arriba y dos abajo."
-      },
-      "reacciones": {
-        "titulo": "Suma reacciones",
-        "texto": "En una toma larga, corta un par de segundos a quien se ríe o reacciona, y vuelve. El clip se ve editado, no grabado de corrido."
-      },
-      "ultimaPalabra": {
-        "titulo": "Vos tenés la última palabra",
-        "texto": "Cada plano queda en el editor para moverlo o cambiarlo. Ves cuánto salió cada persona y, si no te convence, volvés a como estaba."
-      },
-      "webYApp": {
-        "titulo": "En la web y en la app",
-        "texto": "Lo pedís desde la computadora o el celular y sigue trabajando aunque cierres la pantalla."
-      }
-    }
-  },
-  "lives": {
-    "etiqueta": "Para streamers de TikTok",
-    "proximamente": "Próximamente",
-    "titulo": "Terminás el live. Los clips ya están listos.",
-    "texto": "Un live de dos horas tiene diez clips buenos adentro, y casi nadie tiene tiempo de buscarlos. Si transmitís desde la computadora, con TikTok LIVE Studio, OBS o Streamlabs, Clipfine convierte tu live en clips verticales con subtítulos, listos para publicar.",
-    "pie": "También para YouTube, Facebook y Twitch. Mientras tanto, ya podés subir la grabación de tu live como cualquier episodio.",
-    "pasos": {
-      "transmitis": {
-        "titulo": "Transmitís como siempre",
-        "texto": "Con TikTok LIVE Studio, OBS o Streamlabs. Tu live no cambia."
-      },
-      "llega": {
-        "titulo": "Tu live llega a Clipfine",
-        "texto": "Con OBS o Streamlabs, sumás Clipfine como un destino más y lo grabamos mientras sale al aire. Con TikTok LIVE Studio, activás Grabar y subís el archivo: sale en mejor calidad que la repetición de TikTok."
-      },
-      "terminas": {
-        "titulo": "Terminás y los clips ya están",
-        "texto": "Transcripción, los mejores momentos con IA, auto-encuadre y subtítulos. Los revisás y los publicás."
-      }
+    "analisis": {
+      "titulo": "Mirá qué funciona",
+      "texto": "Clipfine lee el historial de la página de cada cliente y te dice a qué hora, qué día y en qué formato le conviene publicar, con sus reacciones y comentarios. Sabés qué funciona y se lo podés mostrar al cliente.",
+      "alt": "Análisis con datos de ejemplo: publicaciones, reacciones, comentarios y rendimiento por hora",
+      "encabezado": "Cliente A · análisis",
+      "ejemplo": "Datos de ejemplo",
+      "publicaciones": "Publicaciones",
+      "reacciones": "Reacciones",
+      "comentarios": "Comentarios",
+      "mejorHora": "Mejor hora",
+      "porHora": "Rendimiento por hora"
     }
   },
   "paraQuien": {
     "etiqueta": "Para quién es",
-    "titulo": "Hecho para podcasts. Sirve para cualquier video largo.",
-    "loNuestro": "Lo nuestro",
-    "traeTuVideo": "Traé tu video como te quede más cómodo",
-    "casos": {
-      "podcasts": {
-        "titulo": "Podcasts",
-        "texto": "Episodios de dos o tres horas con toda la mesa: sigue a quien habla, divide la pantalla cuando discuten y subtitula en español."
-      },
-      "lives": {
-        "titulo": "Lives de TikTok",
-        "texto": "Con TikTok LIVE Studio, OBS o Streamlabs: del live de dos horas a los diez momentos que valen."
-      },
-      "streams": {
-        "titulo": "Streams",
-        "texto": "Tus lives de YouTube, Facebook o Twitch, traídos desde Restream sin descargar nada."
-      },
-      "entrevistas": {
-        "titulo": "Entrevistas, clases y webinars",
-        "texto": "Cualquier video largo donde alguien habla: la IA encuentra lo que se entiende solo."
-      }
+    "titulo": "Hecho para agencias que manejan video para muchos clientes.",
+    "texto": "Ya sea que los clips sean todo tu negocio o un extra de tu producción, Clipfine junta los clips, las publicaciones y los resultados de cada cliente en un solo lugar.",
+    "porTipo": "Por tipo de agencia",
+    "porUso": "Por caso de uso",
+    "tipos": {
+      "clips": { "titulo": "Agencias de clips", "texto": "Manejá más canales de clientes sin sumar editores." },
+      "podcast": { "titulo": "Productoras de podcast", "texto": "Sumá clips cortos a cada episodio que producís." },
+      "b2b": { "titulo": "Podcasts B2B", "texto": "Convertí entrevistas con ejecutivos en clips que ventas y redes pueden usar." },
+      "redes": { "titulo": "Agencias de redes", "texto": "Mantené el feed de cada cliente lleno de video, y mostrá que funciona." }
     },
-    "entradas": {
-      "archivo": { "titulo": "Subí el archivo", "texto": "mp4, mov, webm o mkv, hasta 50 GB" },
-      "restream": { "titulo": "Conectá Restream", "texto": "tus lives, sin descargarlos" },
-      "liveStudio": { "titulo": "Grabación de TikTok LIVE Studio", "texto": "en mejor calidad que la repetición" },
-      "obs": { "titulo": "OBS y Streamlabs", "texto": "grabamos el live mientras sale al aire" }
+    "usos": {
+      "podcast": { "titulo": "Del podcast a Shorts, Reels y TikTok", "texto": "Entra un episodio, salen sus mejores clips, programados desde un calendario." },
+      "lives": { "titulo": "Lives y streams", "texto": "Subí la grabación del live o del stream como cualquier episodio y salen los clips." }
     }
   },
-  "antes": {
-    "etiqueta": "Hoy, sin Clipfine",
-    "titulo": "Seis herramientas y una tarde por episodio",
-    "items": {
-      "drive": "Pasar el archivo de dos horas por Drive o WeTransfer",
-      "verEntero": "Ver el episodio entero buscando los momentos",
-      "cortar": "Cortar en Premiere o CapCut y reencuadrar a mano quién habla",
-      "subtitulos": "Otra app para los subtítulos",
-      "whatsapp": "Mandar los clips a un grupo de WhatsApp para que los aprueben",
-      "descargar": "Descargar y subir red por red"
+  "como": {
+    "etiqueta": "Cómo funciona",
+    "pasos": {
+      "subir": { "titulo": "Sumá un cliente y subí su video.", "texto": "Un podcast, un live o cualquier video largo. También lo traemos de Restream." },
+      "clips": { "titulo": "Recibí los mejores clips.", "texto": "Clipfine encuentra los momentos y los convierte en clips verticales con subtítulos. Ajustá el que quieras en el editor." },
+      "publicar": { "titulo": "Programá, publicá y medí.", "texto": "Poné los clips en el calendario y mirá en el análisis qué le funciona a cada cliente." }
     }
-  },
-  "ahora": {
-    "etiqueta": "Con Clipfine",
-    "titulo": "Una pestaña, de principio a fin"
-  },
-  "funciones": {
-    "titulo": "Todo lo que necesita un clip",
-    "items": {
-      "transcripcion": { "titulo": "Transcripción con tiempos", "texto": "Cada palabra en su segundo exacto, en episodios de horas." },
-      "momentos": { "titulo": "Momentos con IA", "texto": "Hasta 15 clips por episodio, ordenados por potencial viral." },
-      "autoEncuadre": { "titulo": "Auto-encuadre", "texto": "Sigue a quien habla, divide la pantalla cuando discuten y suma reacciones de los demás." },
-      "recorte": { "titulo": "Recorte arrastrable", "texto": "Mové y agrandá el encuadre sobre el cuadro entero, y cambialo a mitad del clip." },
-      "dividido": { "titulo": "Diseño dividido", "texto": "Dos recuadros apilados para que entren los cuatro de la mesa." },
-      "subtitulos": { "titulo": "Subtítulos que se leen", "texto": "Grandes, con la palabra que se dice resaltada. Corregí una palabra sin tocar tiempos." },
-      "textos": { "titulo": "Textos con diseño", "texto": "Hasta cuatro por clip, con contorno, sombra o caja, y palabras destacadas." },
-      "mp4": { "titulo": "MP4 listo para redes", "texto": "1080×1920 en H.264, procesado en la nube. Descargalo o publicalo." },
-      "app": { "titulo": "App para iPhone y Android", "texto": "Revisá los clips que encontró la IA desde el celular." },
-      "lives": { "titulo": "Clips de tus lives", "texto": "Para streamers de TikTok, con LIVE Studio, OBS o Streamlabs: terminás el live y tenés los clips." },
-      "revision": { "titulo": "Revisión en equipo", "texto": "Asignar, editar, enviar a revisión y aprobar." },
-      "publicar": { "titulo": "Publicar y programar", "texto": "Facebook hoy; Instagram, TikTok y YouTube en camino, todo desde el mismo lugar." }
-    }
-  },
-  "equipo": {
-    "titulo": "Hecho para trabajar en equipo",
-    "texto": "El productor sube, los editores arman los clips, alguien los aprueba y salen. Cada persona entra con su cuenta y su rol, y cada marca tiene su espacio: nadie ve lo que no le toca.",
-    "puntos": {
-      "roles": "Roles por marca: dueño, editor, lector",
-      "variasMarcas": "Varias marcas en una misma cuenta",
-      "mismaCuenta": "Web y app con la misma cuenta"
-    },
-    "ejemplo": {
-      "ana": "Dueña · sube el episodio",
-      "luis": "Editando el clip #4",
-      "carla": "Aprobó 3 clips"
-    }
-  },
-  "app": {
-    "etiqueta": "iPhone y Android",
-    "titulo": "Tus clips, también en el bolsillo",
-    "texto": "La misma cuenta en la web y en el celular. Mirá cómo va cada episodio, revisá los clips que propuso la IA con su puntaje y lo que se dice en cada uno, y decidí cuáles salen desde donde estés.",
-    "verLaApp": "Ver la app"
   },
   "precios": {
-    "titulo": "Precios simples",
-    "subtitulo": "En dólares, por mes. Cancelás cuando quieras.",
-    "paraEquipos": "Para equipos",
+    "titulo": "Empezá gratis. Crecé con tu cartera de clientes.",
+    "periodo": "Periodo de cobro",
+    "mensual": "Mensual",
+    "anual": "Anual",
+    "ahorro": "Ahorrá hasta 21%",
     "porMes": "/mes",
-    "empezarCon": "Empezar con {plan}",
+    "cobroMensual": "Cobro mensual",
+    "cobroAnual": "Cobro anual",
+    "recomendado": "Recomendado",
+    "horas": "{n} horas de video",
+    "horasMes": "{n} horas de video al mes",
+    "empezarPrueba": "Empezar la prueba",
+    "empezar": "Empezar gratis",
     "planes": {
-      "creador": { "nombre": "Creador", "para": "Para quien hace su podcast solo." },
-      "equipo": { "nombre": "Equipo", "para": "Para el podcast con productor, editores y redes." }
+      "prueba": { "nombre": "Prueba gratis", "para": "Probá todo con tu primer cliente.", "nota": "15 días · Sin tarjeta" },
+      "starter": { "nombre": "Starter", "para": "Para agencias chicas y primeros clientes." },
+      "agency": { "nombre": "Agency", "para": "Para agencias con varios clientes." },
+      "agencyPro": { "nombre": "Agency Pro", "para": "Para equipos con mucho volumen y muchos clientes." }
     },
+    "custom": {
+      "nombre": "Custom",
+      "texto": "Más de 200 horas de video al mes, configuración a medida y onboarding guiado, con contrato anual. Desde US$399 al mes.",
+      "boton": "Hablar con ventas"
+    },
+    "incluyen": "Todos los planes incluyen",
     "incluye": {
-      "unaPersona": "1 persona",
-      "cincoPersonas": "Hasta 5 personas, con roles",
-      "unaMarca": "1 marca",
-      "doceEpisodios": "Hasta 12 episodios al mes (~3 por semana)",
-      "dieciseisEpisodios": "Hasta 16 episodios al mes (~4 por semana)",
-      "tresHoras": "Episodios de hasta 3 horas",
-      "ilimitados": "Clips y exportaciones ilimitados",
-      "editorYApp": "Editor completo y app para iPhone y Android",
-      "revision": "Revisión y aprobación en equipo (pronto)"
+      "momentos": "Momentos elegidos con IA, en vertical y con subtítulos",
+      "editor": "Editor con auto-encuadre",
+      "brandKit": "Brand Kit por cliente",
+      "calendario": "Calendario de publicaciones",
+      "analisis": "Análisis por cliente",
+      "app": "App para iPhone y Android"
     }
   },
   "preguntas": {
     "titulo": "Preguntas",
     "items": {
-      "convertir": {
-        "p": "¿Cómo convierto mi podcast en clips para TikTok, Reels y Shorts?",
-        "r": "Subís el video del episodio. Clipfine lo transcribe, la IA marca los momentos que se entienden solos y cada uno se abre en el editor ya en vertical 9:16, con subtítulos. Ajustás el encuadre y el texto, y bajás el MP4."
+      "gratis": {
+        "p": "¿Clipfine es gratis?",
+        "r": "Podés probarlo gratis 15 días con 3 horas de video, sin tarjeta. Después, los planes empiezan en US$15 al mes con cobro anual, o US$19 con cobro mensual."
       },
-      "tiempo": {
-        "p": "¿Cuánto tardo en sacar clips de un episodio?",
-        "r": "La transcripción y los momentos de un episodio de dos horas están en unos minutos. Después, cada clip se ajusta en uno o dos minutos: el encuadre, los subtítulos y el gancho ya vienen armados."
+      "horas": {
+        "p": "¿Qué cuenta como hora de video?",
+        "r": "La duración de los videos que subís en el mes, sumando todos tus clientes. Los clips y las exportaciones no tienen límite. Las horas que no usás no pasan al mes siguiente."
       },
-      "descargar": {
-        "p": "¿Tengo que descargar el episodio para editar?",
-        "r": "No. El original queda en la nube; la edición y el render pasan en nuestros servidores. Solo bajás el MP4 terminado, si querés."
+      "custom": {
+        "p": "¿Qué cambia en el plan Custom?",
+        "r": "Las agencias que procesan más de 200 horas de video al mes tienen una configuración a medida con contrato anual y onboarding guiado. Agendá una demo y lo vemos con tu forma de trabajar."
+      },
+      "redes": {
+        "p": "¿En qué redes puedo publicar?",
+        "r": "Hoy publicás en Facebook desde el calendario de Clipfine. Instagram, TikTok y YouTube vienen en camino. Mientras tanto, cada clip se baja como MP4 vertical, listo para cualquier red."
+      },
+      "clientes": {
+        "p": "¿Puedo manejar varios clientes en una cuenta?",
+        "r": "Sí, para eso está hecho. Cada cliente tiene su espacio con sus episodios, clips, calendario, análisis y Brand Kit, y cada persona del equipo entra con su rol. Un solo equipo maneja muchos clientes sin mezclarlos."
+      },
+      "opus": {
+        "p": "¿En qué se diferencia de Opus Clip o Descript?",
+        "r": "Esas herramientas están pensadas para un creador. Clipfine está pensado para agencias con muchos clientes: los clips, el calendario y el análisis están juntos y ordenados por cliente, con precios que crecen con tu cartera."
       },
       "sigue": {
         "p": "¿El clip sigue a la persona que habla?",
-        "r": "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula o se tapa la cara. Cuando discuten varios, divide la pantalla; en una toma larga, corta un par de segundos a la reacción de otro. Cada plano se puede corregir, y si no te convence, volvés a como estaba."
-      },
-      "lives": {
-        "p": "¿Sirve para mis lives de TikTok?",
-        "r": "Hoy, sí: subís la grabación del live como cualquier episodio y salen los clips. Si transmitís con TikTok LIVE Studio, activá Grabar: el archivo sale en mejor calidad que la repetición que guarda TikTok. Pronto va a ser automático con OBS o Streamlabs: sumás Clipfine como un destino más, grabamos el live mientras sale al aire y al terminar los clips ya están. También para YouTube, Facebook y Twitch."
-      },
-      "subtitulos": {
-        "p": "¿Pone subtítulos automáticos?",
-        "r": "Sí. Salen de la transcripción palabra por palabra, grandes y con la palabra que se está diciendo resaltada. Si alguna palabra quedó mal, la corregís sin tocar los tiempos."
-      },
-      "app": {
-        "p": "¿Hay app para el celular?",
-        "r": "Sí, para iPhone y Android, con la misma cuenta de la web. Hoy sirve para ver los episodios y revisar los clips que encontró la IA; la edición desde el teléfono viene en camino."
+        "r": "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula. Cuando hablan varios, divide la pantalla. Cada plano se puede corregir en el editor."
       },
       "idioma": {
         "p": "¿En qué idioma funciona?",
-        "r": "Está pensado para podcasts en español: la transcripción, los momentos y los subtítulos."
+        "r": "Está pensado para videos en español: la transcripción, los momentos y los subtítulos."
       },
-      "flojo": {
-        "p": "¿Qué pasa si la IA elige un momento flojo?",
-        "r": "Nada sale sin que una persona lo apruebe. La IA propone con un puntaje y el porqué; ustedes deciden, y también pueden armar clips a mano desde la transcripción."
-      },
-      "episodio": {
-        "p": "¿Qué cuenta como episodio?",
-        "r": "Cada video largo que subís. De un episodio salen todos los clips que quieras, sin límite."
+      "app": {
+        "p": "¿Hay app para el celular?",
+        "r": "Sí, para iPhone y Android, con la misma cuenta de la web y los mismos clientes."
       }
     }
   },
-  "portada": {
-    "etiqueta": "Del podcast o el live a tus redes, en un solo lugar",
-    "titulo": "Subí el episodio. <marca>Publicá los clips.</marca> Todo en un solo lugar.",
-    "texto": "Clipfine hace el camino completo: transcribe tu podcast, la IA encuentra los mejores momentos, tu equipo los edita en vertical con subtítulos y los aprueba, y los publicás en tus redes desde aquí. Sin descargar nada y sin saltar entre cinco programas.",
-    "verComoFunciona": "Ver cómo funciona"
+  "cierre": {
+    "titulo": "Sumá clientes sin contratar más editores.",
+    "texto": "Empezá tus 15 días gratis hoy, o agendá una llamada y armamos Clipfine alrededor de tu forma de trabajar."
   },
-  "flujo": {
-    "etiqueta": "El flujo completo",
-    "titulo": "Del archivo de dos horas a los clips publicados, sin salir de aquí"
-  },
-  "pronto": "· pronto",
-  "prontoEtiqueta": "Pronto",
-  "empezar": "Empezar",
-  "cierre": "Subí un episodio. Salí con diez clips."
+  "pie": {
+    "lema": "Software de clips con IA para agencias.",
+    "app": "App",
+    "privacidad": "Privacidad",
+    "terminos": "Términos",
+    "productoDe": "Un producto de <link>NG Studios</link>"
+  }
 }

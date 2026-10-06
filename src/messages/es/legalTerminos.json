@@ -1,7 +1,7 @@
 {
   "meta": {
     "titulo": "Términos del servicio",
-    "descripcion": "Condiciones de uso de Clipfine: cuentas, planes y precios, cobro mensual, cancelación, contenido, redes conectadas y responsabilidades."
+    "descripcion": "Condiciones de uso de Clipfine: cuentas, planes y precios, cobro mensual o anual, cancelación, contenido, redes conectadas y responsabilidades."
   },
   "titulo": "Términos del servicio",
   "s1": {
@@ -16,15 +16,18 @@
   },
   "s3": {
     "titulo": "3. Planes y precios",
-    "p1": "El servicio se ofrece por suscripción mensual, en dólares de los Estados Unidos:",
-    "creador": "<b>Creador — US$19.99 al mes:</b> 1 persona, 1 marca y hasta 12 episodios por periodo de cobro.",
-    "equipo": "<b>Equipo — US$49.99 al mes:</b> hasta 5 personas, 1 marca y hasta 16 episodios por periodo de cobro.",
-    "p2": "En los dos planes, cada episodio puede durar hasta 3 horas, y los clips y exportaciones no tienen límite dentro de un uso razonable. Los episodios que no se usan en un periodo no pasan al siguiente. Los impuestos que correspondan se indican al momento de pagar.",
-    "p3": "Podemos cambiar los precios o lo que incluye cada plan. Si un cambio te afecta, te avisamos por correo con al menos 30 días de anticipación y rige desde el cobro siguiente a ese plazo; si no estás de acuerdo, podés cancelar antes."
+    "p1": "El servicio se ofrece por suscripción mensual o anual, en dólares de los Estados Unidos. En la anual, los doce meses se cobran por adelantado al precio mensual indicado:",
+    "p2": "Las horas de video son la duración total de los videos que se suben en cada mes, sumando todas las marcas de la cuenta. Las horas que no se usan en un mes no pasan al siguiente. Los clips y exportaciones no tienen límite dentro de un uso razonable. Los impuestos que correspondan se indican al momento de pagar.",
+    "p3": "Podemos cambiar los precios o lo que incluye cada plan. Si un cambio te afecta, te avisamos por correo con al menos 30 días de anticipación y rige desde el cobro siguiente a ese plazo; si no estás de acuerdo, podés cancelar antes.",
+    "prueba": "<b>Prueba gratis — 15 días:</b> todas las funciones y hasta 3 horas de video, sin tarjeta.",
+    "starter": "<b>Starter — US$19 al mes, o US$15 al mes con cobro anual:</b> hasta 10 horas de video por mes.",
+    "agency": "<b>Agency — US$59 al mes, o US$49 al mes con cobro anual:</b> hasta 30 horas de video por mes.",
+    "agencyPro": "<b>Agency Pro — US$149 al mes, o US$119 al mes con cobro anual:</b> hasta 80 horas de video por mes.",
+    "custom": "<b>Custom — desde US$399 al mes, con contrato anual:</b> más de 200 horas de video por mes, en las condiciones que se acuerden por escrito."
   },
   "s4": {
     "titulo": "4. Pago y renovación",
-    "p1": "El pago se hace con tarjeta a través de Wompi, que procesa el cobro bajo sus propios términos. Al suscribirte autorizás un cobro automático cada mes, el mismo día en que te suscribiste, hasta que canceles. La suscripción se renueva sola al confirmarse cada cobro.",
+    "p1": "El pago se hace con tarjeta a través de Wompi, que procesa el cobro bajo sus propios términos. Al suscribirte autorizás un cobro automático cada mes o cada año, según el periodo que elegiste, el mismo día en que te suscribiste, hasta que canceles. La suscripción se renueva sola al confirmarse cada cobro.",
     "p2": "Si cambiás de plan, el nuevo precio y sus límites rigen desde el próximo cobro, salvo que al cambiar se indique otra cosa."
   },
   "s5": {

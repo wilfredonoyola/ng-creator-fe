@@ -1,247 +1,202 @@
 {
   "meta": {
-    "titulo": "Clipfine — From your podcast to clips posted on TikTok, Reels, Shorts and Facebook",
-    "descripcion": "For podcasts, TikTok lives and streams. The whole workflow in one place: upload the episode, it transcribes itself, AI finds the best moments, your team edits them with captions and approves them, and you post them to all your socials. Web and app for iPhone and Android."
+    "titulo": "Clipfine — AI clipping software for agencies",
+    "descripcion": "Turn every client's podcasts and long videos into captioned vertical clips, schedule them from one calendar and see what works. Built for agencies managing many clients. 15 days free."
   },
   "datos": {
-    "descripcion": "Turn podcast episodes, TikTok lives and streams into vertical clips with captions for TikTok, Reels and Shorts. AI finds the best moments and your team edits and posts them."
+    "descripcion": "AI clipping software for agencies: turns each client's podcasts and long videos into captioned vertical clips, schedules them from one calendar and shows what works, client by client."
   },
-  "pasos": {
-    "subir": {
-      "titulo": "You upload the episode",
-      "texto": "The full video, one or three hours long, straight from the browser. If your internet drops, it picks up where it left off."
-    },
-    "transcribir": {
-      "titulo": "It transcribes itself",
-      "texto": "Every word with its exact second. It's the basis for the cuts and the captions."
+  "nav": {
+    "funciones": "Features",
+    "como": "How it works",
+    "precios": "Pricing",
+    "preguntas": "FAQ",
+    "entrar": "Log in",
+    "demo": "Book a demo",
+    "empezar": "Sign up for free",
+    "inicio": "Clipfine home"
+  },
+  "demoAsunto": "I'd like a Clipfine demo",
+  "pronto": "Soon",
+  "portada": {
+    "etiqueta": "AI clipping software for agencies",
+    "titulo": "Clips, posts and results for every client, in one place.",
+    "texto": "Upload a client's long video and get its best moments as captioned, vertical clips. Schedule them from one calendar and see what works, for every client your agency manages.",
+    "letraChica": "15-day free trial · No card required",
+    "publicaEn": "Post to",
+    "redesPronto": "Instagram, TikTok and YouTube: soon",
+    "maqueta": {
+      "alt": "Clipfine workspace: a client switcher, a long episode turned into captioned vertical clips, and a weekly posting calendar.",
+      "cliente": "Client {letra}",
+      "sumarCliente": "+ Add client",
+      "cuadro": "16:9 episode frame",
+      "listos": "Clips ready",
+      "formato": "Captioned · 9:16",
+      "transcripcion": "Transcript",
+      "momentos": "Moments",
+      "encuadre": "Reframe",
+      "hecho": "done",
+      "mas": "more clips",
+      "calendario": "Calendar · this week",
+      "redes": "4 platforms",
+      "clips": {
+        "c1": { "antes": "The hook is in the", "marca": "first", "despues": "three seconds" },
+        "c2": { "antes": "Nobody", "marca": "talks", "despues": "about this part" },
+        "c3": { "antes": "That's when it", "marca": "clicked", "despues": "for us" },
+        "c4": { "antes": "Here's what we'd do", "marca": "differently", "despues": "" }
+      }
+    }
+  },
+  "dias": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri", "sab": "Sat", "dom": "Sun" },
+  "problema": {
+    "titulo": "Your clients want more clips. Your team is already full.",
+    "texto": "Every new client means more videos to watch, more clips to cut and caption, four platforms to post to and another report to send. Clipfine puts all of it in one place for every client: videos in, clips scheduled, results in view. So you can take on more clients without more payroll."
+  },
+  "funciones": {
+    "etiqueta": "Features",
+    "clientes": {
+      "titulo": "Every client in one platform",
+      "texto": "Run all your clients from one account. Each one has its own space for episodes, clips, calendar and analytics, plus a Brand Kit with its colors, fonts and logo. Your team works with its role on the clients assigned to it, and nothing gets mixed up.",
+      "alt": "List of four clients, each with its own episodes, clips, calendar and analytics",
+      "pestanas": { "episodios": "Episodes", "clips": "Clips", "calendario": "Calendar", "analisis": "Analytics", "brandKit": "Brand Kit" },
+      "estados": { "listo": "Ready", "programado": "Scheduled", "procesando": "Processing", "publicado": "Posted" }
     },
     "momentos": {
-      "titulo": "AI finds the moments",
-      "texto": "It suggests the clips that stand on their own, with their viral potential and why."
+      "titulo": "The best moments, already cut",
+      "texto": "Upload a podcast or long video: Clipfine transcribes it, finds the moments that stand on their own and builds them as vertical 9:16 clips, captioned and following whoever is speaking. Your team starts with a batch of clips, not a 90-minute timeline.",
+      "alt": "A batch of vertical clips with one selected and open in the editor, with trim handles on the timeline",
+      "encabezado": "Clips · EP-142",
+      "editor": "Editor"
     },
-    "editar": {
-      "titulo": "You edit in minutes",
-      "texto": "Auto-framing follows whoever is speaking; you add captions with the word highlighted and styled text. What you see is what you get."
+    "calendario": {
+      "titulo": "Post from one calendar",
+      "texto": "Schedule each client's clips from one calendar and publish them without downloading and re-uploading. Facebook today; Instagram, TikTok and YouTube are on the way. Meanwhile, every clip downloads as an MP4 ready for any platform.",
+      "alt": "Weekly calendar with clips scheduled to Facebook, Instagram, TikTok and YouTube",
+      "encabezado": "Client B · week 41"
     },
-    "equipo": {
-      "titulo": "Your team reviews and approves",
-      "texto": "Everyone works on their own clip, and nothing goes out until a person approves it."
-    },
-    "publicar": {
-      "titulo": "You post to all your socials",
-      "texto": "Right from here, at the time you choose. No downloading the video or logging into each network."
-    }
-  },
-  "autoEncuadre": {
-    "etiqueta": "Auto-framing",
-    "titulo": "The camera follows whoever is speaking. On its own.",
-    "texto": "Your podcast is recorded with one wide camera on the whole table. For vertical, you have to pick who to show every second, and doing that by hand is what takes the longest. With one button, Clipfine watches the clip and builds the shot changes the way an editor would.",
-    "puntos": {
-      "quienHabla": {
-        "titulo": "It knows who's speaking",
-        "texto": "It recognizes each voice and matches it to the face whose lips are moving. Someone gesturing, nodding or covering their face doesn't steal the shot from the speaker."
-      },
-      "divide": {
-        "titulo": "It splits the screen when they argue",
-        "texto": "If three people talk at once, instead of jumping from face to face every second, it shows the table split: two on top and two below."
-      },
-      "reacciones": {
-        "titulo": "It adds reactions",
-        "texto": "In a long take, it cuts for a couple of seconds to whoever laughs or reacts, then comes back. The clip looks edited, not recorded in one go."
-      },
-      "ultimaPalabra": {
-        "titulo": "You have the final say",
-        "texto": "Every shot stays in the editor so you can move or change it. You see how much each person got on screen and, if you don't like it, you go back to how it was."
-      },
-      "webYApp": {
-        "titulo": "On the web and in the app",
-        "texto": "Start it from your computer or your phone, and it keeps working even if you close the screen."
-      }
-    }
-  },
-  "lives": {
-    "etiqueta": "For TikTok streamers",
-    "proximamente": "Coming soon",
-    "titulo": "Your live ends. The clips are already ready.",
-    "texto": "A two-hour live has ten good clips inside, and hardly anyone has time to find them. If you stream from your computer, with TikTok LIVE Studio, OBS or Streamlabs, Clipfine turns your live into vertical clips with captions, ready to post.",
-    "pie": "Also for YouTube, Facebook and Twitch. In the meantime, you can already upload your live's recording like any episode.",
-    "pasos": {
-      "transmitis": {
-        "titulo": "You stream as usual",
-        "texto": "With TikTok LIVE Studio, OBS or Streamlabs. Your live doesn't change."
-      },
-      "llega": {
-        "titulo": "Your live reaches Clipfine",
-        "texto": "With OBS or Streamlabs, you add Clipfine as one more destination and we record it while it's on air. With TikTok LIVE Studio, you turn on Record and upload the file: it comes out in better quality than TikTok's replay."
-      },
-      "terminas": {
-        "titulo": "You finish and the clips are there",
-        "texto": "Transcription, the best moments with AI, auto-framing and captions. You review them and post them."
-      }
+    "analisis": {
+      "titulo": "See what performs",
+      "texto": "Clipfine reads each client's page history and tells you the best hour, day and format to post, with their reactions and comments. Know what's working and show it to the client.",
+      "alt": "Analytics with sample data: posts, reactions, comments and performance by hour",
+      "encabezado": "Client A · analytics",
+      "ejemplo": "Sample data",
+      "publicaciones": "Posts",
+      "reacciones": "Reactions",
+      "comentarios": "Comments",
+      "mejorHora": "Best hour",
+      "porHora": "Performance by hour"
     }
   },
   "paraQuien": {
     "etiqueta": "Who it's for",
-    "titulo": "Built for podcasts. Works for any long video.",
-    "loNuestro": "Our thing",
-    "traeTuVideo": "Bring your video however works best for you",
-    "casos": {
-      "podcasts": {
-        "titulo": "Podcasts",
-        "texto": "Two- or three-hour episodes with the whole table: it follows whoever is speaking, splits the screen when they argue and captions in Spanish."
-      },
-      "lives": {
-        "titulo": "TikTok lives",
-        "texto": "With TikTok LIVE Studio, OBS or Streamlabs: from a two-hour live to the ten moments worth it."
-      },
-      "streams": {
-        "titulo": "Streams",
-        "texto": "Your YouTube, Facebook or Twitch lives, brought in from Restream without downloading anything."
-      },
-      "entrevistas": {
-        "titulo": "Interviews, classes and webinars",
-        "texto": "Any long video where someone talks: AI finds what stands on its own."
-      }
+    "titulo": "Built for agencies that run video for many clients.",
+    "texto": "Whether clips are your whole business or an add-on to your production work, Clipfine keeps every client's clips, posts and results in one place.",
+    "porTipo": "By agency type",
+    "porUso": "By use case",
+    "tipos": {
+      "clips": { "titulo": "Clipping agencies", "texto": "Run more client channels without adding editors." },
+      "podcast": { "titulo": "Podcast production agencies", "texto": "Add short clips to every episode you produce." },
+      "b2b": { "titulo": "B2B podcast agencies", "texto": "Turn executive interviews into clips that sales and social can use." },
+      "redes": { "titulo": "Social media agencies", "texto": "Keep every client's feed full of video, and prove it's working." }
     },
-    "entradas": {
-      "archivo": { "titulo": "Upload the file", "texto": "mp4, mov, webm or mkv, up to 50 GB" },
-      "restream": { "titulo": "Connect Restream", "texto": "your lives, without downloading them" },
-      "liveStudio": { "titulo": "TikTok LIVE Studio recording", "texto": "in better quality than the replay" },
-      "obs": { "titulo": "OBS and Streamlabs", "texto": "we record the live while it's on air" }
+    "usos": {
+      "podcast": { "titulo": "Podcast to Shorts, Reels and TikTok", "texto": "One episode in, its best clips out, scheduled from one calendar." },
+      "lives": { "titulo": "Lives and streams", "texto": "Upload the live or stream recording like any episode and get the clips." }
     }
   },
-  "antes": {
-    "etiqueta": "Today, without Clipfine",
-    "titulo": "Six tools and an afternoon per episode",
-    "items": {
-      "drive": "Send the two-hour file through Drive or WeTransfer",
-      "verEntero": "Watch the whole episode looking for the moments",
-      "cortar": "Cut in Premiere or CapCut and reframe the speaker by hand",
-      "subtitulos": "Another app for the captions",
-      "whatsapp": "Send the clips to a WhatsApp group to get them approved",
-      "descargar": "Download and upload to each network one by one"
+  "como": {
+    "etiqueta": "How it works",
+    "pasos": {
+      "subir": { "titulo": "Add a client and upload their video.", "texto": "A podcast, a live or any long video. We can also bring it in from Restream." },
+      "clips": { "titulo": "Get the best clips.", "texto": "Clipfine finds the moments and turns them into captioned, vertical clips. Fine-tune any of them in the editor." },
+      "publicar": { "titulo": "Schedule, post and track.", "texto": "Put clips on the calendar and see in analytics what works for each client." }
     }
-  },
-  "ahora": {
-    "etiqueta": "With Clipfine",
-    "titulo": "One tab, start to finish"
-  },
-  "funciones": {
-    "titulo": "Everything a clip needs",
-    "items": {
-      "transcripcion": { "titulo": "Timed transcription", "texto": "Every word at its exact second, in hours-long episodes." },
-      "momentos": { "titulo": "AI moments", "texto": "Up to 15 clips per episode, ranked by viral potential." },
-      "autoEncuadre": { "titulo": "Auto-framing", "texto": "Follows whoever is speaking, splits the screen when they argue and adds reactions from the others." },
-      "recorte": { "titulo": "Draggable crop", "texto": "Move and resize the frame over the full shot, and change it mid-clip." },
-      "dividido": { "titulo": "Split layout", "texto": "Two stacked boxes so all four people at the table fit." },
-      "subtitulos": { "titulo": "Captions people can read", "texto": "Big, with the spoken word highlighted. Fix a word without touching the timing." },
-      "textos": { "titulo": "Styled text", "texto": "Up to four per clip, with outline, shadow or box, and highlighted words." },
-      "mp4": { "titulo": "MP4 ready for socials", "texto": "1080×1920 in H.264, processed in the cloud. Download it or post it." },
-      "app": { "titulo": "App for iPhone and Android", "texto": "Review the clips AI found from your phone." },
-      "lives": { "titulo": "Clips from your lives", "texto": "For TikTok streamers, with LIVE Studio, OBS or Streamlabs: you end the live and you have the clips." },
-      "revision": { "titulo": "Team review", "texto": "Assign, edit, send for review and approve." },
-      "publicar": { "titulo": "Post and schedule", "texto": "Facebook today; Instagram, TikTok and YouTube on the way, all from the same place." }
-    }
-  },
-  "equipo": {
-    "titulo": "Built for teamwork",
-    "texto": "The producer uploads, the editors build the clips, someone approves them and they go out. Everyone signs in with their own account and role, and each brand has its own space: nobody sees what isn't theirs.",
-    "puntos": {
-      "roles": "Roles per brand: owner, editor, viewer",
-      "variasMarcas": "Several brands in one account",
-      "mismaCuenta": "Web and app with the same account"
-    },
-    "ejemplo": {
-      "ana": "Owner · uploads the episode",
-      "luis": "Editing clip #4",
-      "carla": "Approved 3 clips"
-    }
-  },
-  "app": {
-    "etiqueta": "iPhone and Android",
-    "titulo": "Your clips, in your pocket too",
-    "texto": "The same account on the web and on your phone. See how each episode is going, review the clips AI suggested with their score and what's said in each one, and decide which ones go out from wherever you are.",
-    "verLaApp": "See the app"
   },
   "precios": {
-    "titulo": "Simple pricing",
-    "subtitulo": "In US dollars, per month. Cancel anytime.",
-    "paraEquipos": "For teams",
+    "titulo": "Start free. Scale with your client roster.",
+    "periodo": "Billing period",
+    "mensual": "Monthly",
+    "anual": "Annual",
+    "ahorro": "Save up to 21%",
     "porMes": "/mo",
-    "empezarCon": "Start with {plan}",
+    "cobroMensual": "Billed monthly",
+    "cobroAnual": "Billed annually",
+    "recomendado": "Recommended",
+    "horas": "{n} video hours",
+    "horasMes": "{n} video hours / mo",
+    "empezarPrueba": "Start free trial",
+    "empezar": "Sign up for free",
     "planes": {
-      "creador": { "nombre": "Creator", "para": "For people who run their podcast solo." },
-      "equipo": { "nombre": "Team", "para": "For podcasts with a producer, editors and a social team." }
+      "prueba": { "nombre": "Free trial", "para": "Try every feature on your first client.", "nota": "15 days · No card required" },
+      "starter": { "nombre": "Starter", "para": "For small agencies and first clients." },
+      "agency": { "nombre": "Agency", "para": "For agencies running several clients." },
+      "agencyPro": { "nombre": "Agency Pro", "para": "For high-volume teams and large rosters." }
     },
+    "custom": {
+      "nombre": "Custom",
+      "texto": "200+ video hours a month, custom setup and guided onboarding on an annual contract. From US$399 a month.",
+      "boton": "Talk to sales"
+    },
+    "incluyen": "Every plan includes",
     "incluye": {
-      "unaPersona": "1 person",
-      "cincoPersonas": "Up to 5 people, with roles",
-      "unaMarca": "1 brand",
-      "doceEpisodios": "Up to 12 episodes a month (~3 a week)",
-      "dieciseisEpisodios": "Up to 16 episodes a month (~4 a week)",
-      "tresHoras": "Episodes up to 3 hours long",
-      "ilimitados": "Unlimited clips and exports",
-      "editorYApp": "Full editor and app for iPhone and Android",
-      "revision": "Team review and approval (coming soon)"
+      "momentos": "AI-picked moments, vertical and captioned",
+      "editor": "Editor with auto-reframe",
+      "brandKit": "Brand Kit per client",
+      "calendario": "Posting calendar",
+      "analisis": "Analytics per client",
+      "app": "iPhone and Android app"
     }
   },
   "preguntas": {
     "titulo": "FAQ",
     "items": {
-      "convertir": {
-        "p": "How do I turn my podcast into clips for TikTok, Reels and Shorts?",
-        "r": "Upload the episode's video. Clipfine transcribes it, AI marks the moments that stand on their own, and each one opens in the editor already vertical 9:16, with captions. You adjust the framing and the text, and download the MP4."
+      "gratis": {
+        "p": "Is Clipfine free?",
+        "r": "You can try Clipfine free for 15 days with 3 video hours. No card is required. After the trial, plans start at US$15 a month billed annually, or US$19 billed monthly."
       },
-      "tiempo": {
-        "p": "How long does it take to get clips from an episode?",
-        "r": "The transcription and moments for a two-hour episode are ready in a few minutes. After that, each clip takes a minute or two to adjust: the framing, captions and hook come already built."
+      "horas": {
+        "p": "What counts as a video hour?",
+        "r": "The length of the videos you upload in the month, across all your clients. Clips and exports are unlimited. Unused hours don't carry over to the next month."
       },
-      "descargar": {
-        "p": "Do I have to download the episode to edit?",
-        "r": "No. The original stays in the cloud; editing and rendering happen on our servers. You only download the finished MP4, if you want."
+      "custom": {
+        "p": "What's different on the Custom plan?",
+        "r": "Agencies processing 200+ video hours a month get a custom setup on an annual contract, plus guided onboarding. Book a demo and we'll walk through your workflow."
+      },
+      "redes": {
+        "p": "Which platforms can I post to?",
+        "r": "Today you post to Facebook from Clipfine's calendar. Instagram, TikTok and YouTube are on the way. Meanwhile, every clip downloads as a vertical MP4, ready for any platform."
+      },
+      "clientes": {
+        "p": "Can I manage several clients in one account?",
+        "r": "Yes, it's what Clipfine is built for. Each client has its own space for episodes, clips, calendar, analytics and Brand Kit, and every team member works with their own role. One team can run many clients without mixing them up."
+      },
+      "opus": {
+        "p": "How is Clipfine different from Opus Clip or Descript?",
+        "r": "Those tools are built for a single creator. Clipfine is built for agencies with many clients: clips, calendar and analytics sit together, organized by client, with pricing that scales with your roster."
       },
       "sigue": {
         "p": "Does the clip follow the person speaking?",
-        "r": "Yes, with auto-framing. It recognizes voices and watches who's moving their lips, so it doesn't get confused by someone gesturing or covering their face. When several people argue, it splits the screen; in a long take, it cuts for a couple of seconds to someone else's reaction. Every shot can be corrected, and if you don't like it, you go back to how it was."
-      },
-      "lives": {
-        "p": "Does it work for my TikTok lives?",
-        "r": "Today, yes: you upload the live's recording like any episode and get the clips. If you stream with TikTok LIVE Studio, turn on Record: the file comes out in better quality than the replay TikTok saves. Soon it'll be automatic with OBS or Streamlabs: you add Clipfine as one more destination, we record the live while it's on air, and when it ends the clips are ready. Also for YouTube, Facebook and Twitch."
-      },
-      "subtitulos": {
-        "p": "Does it add captions automatically?",
-        "r": "Yes. They come from the word-by-word transcription, big and with the word being spoken highlighted. If a word came out wrong, you fix it without touching the timing."
-      },
-      "app": {
-        "p": "Is there a mobile app?",
-        "r": "Yes, for iPhone and Android, with the same account as the web. Today it lets you see your episodes and review the clips AI found; editing from your phone is on the way."
+        "r": "Yes, with auto-reframe. It recognizes voices and watches who's moving their lips, so it isn't fooled by someone gesturing. When several people talk, it splits the screen. Every shot can be corrected in the editor."
       },
       "idioma": {
         "p": "What language does it work in?",
-        "r": "It's built for Spanish-language podcasts: the transcription, the moments and the captions."
+        "r": "It's built for Spanish-language videos: the transcription, the moments and the captions."
       },
-      "flojo": {
-        "p": "What if the AI picks a weak moment?",
-        "r": "Nothing goes out until a person approves it. AI suggests with a score and the reason; you decide, and you can also build clips by hand from the transcript."
-      },
-      "episodio": {
-        "p": "What counts as an episode?",
-        "r": "Every long video you upload. You can get as many clips as you want from one episode, no limit."
+      "app": {
+        "p": "Is there a mobile app?",
+        "r": "Yes, for iPhone and Android, with the same account and the same clients as the web."
       }
     }
   },
-  "portada": {
-    "etiqueta": "From podcast or live to your socials, in one place",
-    "titulo": "Upload the episode. <marca>Post the clips.</marca> All in one place.",
-    "texto": "Clipfine handles the whole journey: it transcribes your podcast, AI finds the best moments, your team edits them vertically with captions and approves them, and you post them to your socials from here. No downloading anything and no jumping between five programs.",
-    "verComoFunciona": "See how it works"
+  "cierre": {
+    "titulo": "Take on more clients without hiring more editors.",
+    "texto": "Start your 15-day free trial today, or book a call and we'll set Clipfine up around your workflow."
   },
-  "flujo": {
-    "etiqueta": "The whole workflow",
-    "titulo": "From a two-hour file to posted clips, without leaving this place"
-  },
-  "pronto": "· soon",
-  "prontoEtiqueta": "Soon",
-  "empezar": "Get started",
-  "cierre": "Upload an episode. Walk away with ten clips."
+  "pie": {
+    "lema": "AI clipping software for agencies.",
+    "app": "App",
+    "privacidad": "Privacy",
+    "terminos": "Terms",
+    "productoDe": "A product of <link>NG Studios</link>"
+  }
 }

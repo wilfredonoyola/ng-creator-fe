@@ -33,9 +33,6 @@ import idioma_es from "./es/idioma.json";
 import landing_es from "./es/landing.json";
 import landingApp_es from "./es/landingApp.json";
 import landingImagen_es from "./es/landingImagen.json";
-import landingMaquetaAutoEncuadre_es from "./es/landingMaquetaAutoEncuadre.json";
-import landingMaquetaLives_es from "./es/landingMaquetaLives.json";
-import landingMaquetaProducto_es from "./es/landingMaquetaProducto.json";
 import landingMaquetaTelefono_es from "./es/landingMaquetaTelefono.json";
 import landingMarco_es from "./es/landingMarco.json";
 import legal_es from "./es/legal.json";
@@ -122,9 +119,6 @@ import idioma_en from "./en/idioma.json";
 import landing_en from "./en/landing.json";
 import landingApp_en from "./en/landingApp.json";
 import landingImagen_en from "./en/landingImagen.json";
-import landingMaquetaAutoEncuadre_en from "./en/landingMaquetaAutoEncuadre.json";
-import landingMaquetaLives_en from "./en/landingMaquetaLives.json";
-import landingMaquetaProducto_en from "./en/landingMaquetaProducto.json";
 import landingMaquetaTelefono_en from "./en/landingMaquetaTelefono.json";
 import landingMarco_en from "./en/landingMarco.json";
 import legal_en from "./en/legal.json";
@@ -214,9 +208,6 @@ export const mensajes = {
     "landing": landing_es,
     "landingApp": landingApp_es,
     "landingImagen": landingImagen_es,
-    "landingMaquetaAutoEncuadre": landingMaquetaAutoEncuadre_es,
-    "landingMaquetaLives": landingMaquetaLives_es,
-    "landingMaquetaProducto": landingMaquetaProducto_es,
     "landingMaquetaTelefono": landingMaquetaTelefono_es,
     "landingMarco": landingMarco_es,
     "legal": legal_es,
@@ -305,9 +296,6 @@ export const mensajes = {
     "landing": landing_en,
     "landingApp": landingApp_en,
     "landingImagen": landingImagen_en,
-    "landingMaquetaAutoEncuadre": landingMaquetaAutoEncuadre_en,
-    "landingMaquetaLives": landingMaquetaLives_en,
-    "landingMaquetaProducto": landingMaquetaProducto_en,
     "landingMaquetaTelefono": landingMaquetaTelefono_en,
     "landingMarco": landingMarco_en,
     "legal": legal_en,
