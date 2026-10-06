@@ -42,6 +42,9 @@ import {
 } from "@/components/episodios/VersionFacebook";
 import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 
+/** Lo que todavía va a salir: esa cuenta no se vuelve a marcar para este clip. */
+const PENDIENTES: string[] = ["PROGRAMADA", "SUBIENDO", "PROCESANDO", "AGENDADA_EN_RED"];
+
 /** Con menos margen, la hora ya pasó cuando llega al servidor. */
 const MARGEN_MS = 60_000;
 
@@ -197,7 +200,13 @@ function Formulario({
   // también cuentan.
   const [cambios, setCambios] = useState<Map<string, boolean>>(() => new Map());
   const apagados = new Set(destinosApagados);
-  const marcadoDeEntrada = (d: Destino) => !d.motivo && !apagados.has(d.cuentaId);
+  // Una cuenta donde este clip ya está por salir no se vuelve a marcar: si no,
+  // reintentar después de un fallo parcial lo programaba dos veces.
+  const yaVa = new Set(
+    publicaciones.filter((p) => PENDIENTES.includes(p.estado)).map((p) => `${p.red}:${p.cuentaId}`),
+  );
+  const marcadoDeEntrada = (d: Destino) =>
+    !d.motivo && !apagados.has(d.cuentaId) && !yaVa.has(`${d.red}:${d.cuentaId}`);
   const elegidos = new Set(
     destinos.filter((d) => !d.motivo && (cambios.get(d.clave) ?? marcadoDeEntrada(d))).map((d) => d.clave),
   );
@@ -284,6 +293,8 @@ function Formulario({
           // El clip sale de "Listos para programar" y su tarjeta pasa a "Programado".
           refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
         });
+        // Ya programada: se desmarca, así reintentar manda solo las que fallaron.
+        setCambios((m) => new Map(m).set(d.clave, false));
       } catch (e) {
         fallas.push(`${REDES[d.red]?.nombre ?? d.red}: ${e instanceof Error ? e.message : t("noSePudo")}`);
       }
