@@ -28,6 +28,7 @@
     "programar": "Programar"
   },
   "tarjeta": {
+    "editadoPor": "Editado por {nombre}",
     "sinDescripcion": "Sin descripción",
     "confirmarCancelar": "¿Cancelar «{titulo}» en {red}? No sale.",
     "errorCancelar": "No se pudo cancelar",
