@@ -472,7 +472,7 @@ function SeccionUploadPost({ redes }: { redes: Red[] }) {
                 key={red}
                 red={red}
                 marcaId={marcaId}
-                cuentas={cuentas.filter((c) => c.red === red)}
+                cuentas={cuentas.filter((c) => c.red === red && c.activa)}
                 mando={mando}
               />
             ))}
