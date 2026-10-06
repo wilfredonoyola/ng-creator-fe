@@ -2,4 +2,4 @@
 export const RESPONSABLE = "NG Studios";
 export const CONTACTO = "soporte@ngstudios.co";
 /** Fecha de la última versión (AAAA-MM-DD); LegalLayout la muestra en el idioma de quien lee. */
-export const ACTUALIZADO = "2026-10-01";
+export const ACTUALIZADO = "2026-10-06";

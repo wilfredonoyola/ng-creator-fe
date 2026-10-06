@@ -1,36 +1,15 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import {
-  AudioLines,
-  CalendarClock,
-  X,
-  Captions,
-  Check,
-  Crop,
-  Download,
-  LayoutPanelTop,
-  ListChecks,
-  Mic,
-  Radio,
-  Send,
-  Smartphone,
-  Sparkles,
-  Type,
-  Upload,
-  Users,
-  Video,
-  Clapperboard,
-  type LucideIcon,
-} from "lucide-react";
 import { LogoNG } from "@/components/LogoNG";
-import { Cabecera, ENLACE_EMPEZAR, Pie } from "@/components/landing/Marco";
-import { MaquetaTelefono } from "@/components/landing/MaquetaTelefono";
-import { MaquetaProducto } from "@/components/landing/MaquetaProducto";
-import { MaquetaAutoEncuadre } from "@/components/landing/MaquetaAutoEncuadre";
-import { MaquetaLives } from "@/components/landing/MaquetaLives";
+import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
+import { ENLACE_EMPEZAR } from "@/components/landing/Marco";
+import { Precios } from "@/components/landing/Precios";
+import { PLANES } from "@/components/landing/planes";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
+import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landing");
@@ -41,115 +20,226 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-/** El camino completo, del archivo a las redes: es lo que se vende. */
-const PASOS = [
-  { clave: "subir", icono: Upload },
-  { clave: "transcribir", icono: AudioLines },
-  { clave: "momentos", icono: Sparkles },
-  { clave: "editar", icono: Crop },
-  { clave: "equipo", icono: Users },
-  { clave: "publicar", icono: Send },
-] as const satisfies readonly { clave: string; icono: LucideIcon }[];
+/**
+ * La landing para agencias, a partir del diseño de
+ * branding/Clipfine Logo Directions (6)/Clipfine Landing.dc.html. Solo muestra
+ * lo que ya funciona; lo que falta va con "Pronto".
+ */
 
-/** Dónde se publica. `hoy` es lo que ya funciona; el resto está en camino (#64). */
-const REDES: { nombre: string; hoy: boolean }[] = [
+/** "Agendá una demo" abre un correo hasta que haya agenda. */
+const CORREO_DEMO = "soporte@ngstudios.co";
+
+/** Dónde se publica desde el calendario. `hoy` es lo que ya funciona (#64). */
+const REDES = [
   { nombre: "Facebook", hoy: true },
   { nombre: "Instagram", hoy: false },
   { nombre: "TikTok", hoy: false },
   { nombre: "YouTube", hoy: false },
+] as const;
+
+const TIPOS_AGENCIA = ["clips", "podcast", "b2b", "redes"] as const;
+const USOS = ["podcast", "lives"] as const;
+const PASOS = ["subir", "clips", "publicar"] as const;
+const PREGUNTAS = ["gratis", "horas", "custom", "redes", "clientes", "opus", "sigue", "idioma", "app"] as const;
+
+const CLIPS = ["c1", "c2", "c3", "c4"] as const;
+const CLIENTES = [
+  { letra: "A", punto: "#FFD400" },
+  { letra: "B", punto: "#FF4D3D" },
+  { letra: "C", punto: "#D9D8D2" },
+  { letra: "D", punto: "#8A8983" },
+] as const;
+
+type Dia = "lun" | "mar" | "mie" | "jue" | "vie" | "sab" | "dom";
+type Red = "FB" | "IG" | "TT" | "YT";
+const CALENDARIO: { dia: Dia; posts: [Red, string][] }[] = [
+  { dia: "lun", posts: [["TT", "09:00"], ["IG", "12:30"]] },
+  { dia: "mar", posts: [["YT", "10:00"]] },
+  { dia: "mie", posts: [["FB", "08:30"], ["TT", "18:00"]] },
+  { dia: "jue", posts: [["IG", "11:00"]] },
+  { dia: "vie", posts: [["YT", "09:30"], ["FB", "16:00"]] },
+  { dia: "sab", posts: [["TT", "12:00"]] },
+  { dia: "dom", posts: [] },
 ];
 
-/** Lo que hace el auto-encuadre (#105), dicho para quien edita a mano. */
-const AUTO_ENCUADRE = ["quienHabla", "divide", "reacciones", "ultimaPalabra", "webYApp"] as const;
+const ONDA = [7, 12, 9, 15, 11, 6, 14, 18, 10, 8, 13, 17, 12, 9, 6, 11, 16, 19, 14, 10, 7, 12, 15, 9, 13, 18, 11, 8, 10, 14, 17, 12, 9, 6, 11, 15, 10, 13, 8, 7];
+const BARRAS = [42, 58, 35, 71, 49, 88, 40, 62, 54, 77, 45, 66, 38, 52, 60];
 
-/**
- * Lo que viene para quien transmite desde la computadora: con OBS o
- * Streamlabs, Clipfine como un destino mas, que graba el live mientras sale
- * al aire (todavia no existe: la seccion va como "Proximamente"). TikTok LIVE
- * Studio no manda a un segundo destino, pero graba el lienzo en un archivo
- * (MP4, MOV o MKV) de mejor calidad que la repeticion de TikTok: ese archivo
- * ya se puede subir hoy.
- */
-const LIVES = ["transmitis", "llega", "terminas"] as const;
+/* Las clases que se repiten: el sistema del diseño, en un solo lugar. */
+const ANCHO = "mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-16";
+const ETIQUETA = "font-[family-name:var(--font-grotesk)]";
+const MONO = "font-[family-name:var(--font-mono)]";
+const CONDENSADA = "font-black uppercase [font-stretch:75%] [text-wrap:balance]";
+const H2 = `${CONDENSADA} text-[44px] leading-[.95] sm:text-[76px]`;
+const RAYADO = "bg-[repeating-linear-gradient(135deg,#262624_0_1px,#1F1F1D_1px_10px)]";
+const FOCO = "focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px]";
+const BOTON_CORAL = `flex items-center rounded-md bg-[#FF4D3D] font-bold text-[#0A0A0A] hover:bg-[#E8392A] active:translate-y-px active:bg-[#D63323] ${FOCO}`;
+const LINK_SUBRAYADO = "font-semibold underline decoration-[1.5px] underline-offset-[6px] hover:decoration-[3px]";
 
-/**
- * Para quien es. Lo nuestro son los podcasts de mesa (#121); el resto es lo
- * mismo con otra entrada: cualquier video largo donde la gente habla.
- */
-const PARA_QUIEN = [
-  { clave: "podcasts", icono: Mic, principal: true },
-  { clave: "lives", icono: Radio, principal: false },
-  { clave: "streams", icono: Video, principal: false },
-  { clave: "entrevistas", icono: Clapperboard, principal: false },
-] as const satisfies readonly { clave: string; icono: LucideIcon; principal: boolean }[];
+/** La etiqueta de sección con el corte de la marca. `titulo` cuando es el h2 de la sección. */
+function Seccion({ children, titulo = false }: { children: React.ReactNode; titulo?: boolean }) {
+  const Etiqueta = titulo ? "h2" : "p";
+  return (
+    <Etiqueta className={`${ETIQUETA} flex items-center gap-3 text-[13px] font-bold uppercase tracking-[.12em]`}>
+      <span aria-hidden className="flex flex-col gap-0.5">
+        <span className="ml-[3px] h-[5px] w-3.5 bg-[#0A0A0A]" />
+        <span className="h-[5px] w-3.5 bg-[#0A0A0A]" />
+      </span>
+      {children}
+    </Etiqueta>
+  );
+}
 
-/** De donde llega el video. `pronto` es lo que todavia no existe. */
-const ENTRADAS = [
-  { clave: "archivo", pronto: false },
-  { clave: "restream", pronto: false },
-  { clave: "liveStudio", pronto: false },
-  { clave: "obs", pronto: true },
-] as const;
+function IconoRed({ red }: { red: (typeof REDES)[number]["nombre"] }) {
+  switch (red) {
+    case "TikTok":
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden>
+          <path d="M14 2h3.2c.3 2.4 1.8 4 4.3 4.2v3.3c-1.6 0-3-.5-4.3-1.3v7.1A6.3 6.3 0 1 1 10.9 9v3.4a3 3 0 1 0 3.1 3z" />
+        </svg>
+      );
+    case "Instagram":
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.2" aria-hidden>
+          <rect x="3" y="3" width="18" height="18" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.3" cy="6.7" r="1" fill="#FFFFFF" stroke="none" />
+        </svg>
+      );
+    case "YouTube":
+      return (
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+          <rect x="1.5" y="5" width="21" height="14" rx="4.5" fill="#FFFFFF" />
+          <path d="M10 9v6l5.2-3z" fill="#1C1C1A" />
+        </svg>
+      );
+    case "Facebook":
+      return (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden>
+          <path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8z" />
+        </svg>
+      );
+  }
+}
 
-/** Lo que hoy hace falta para lo mismo, sin Clipfine. */
-const ANTES = ["drive", "verEntero", "cortar", "subtitulos", "whatsapp", "descargar"] as const;
+/** La red en el calendario de las maquetas. */
+function EtiquetaRed({ red }: { red: Red }) {
+  return <span className={`${ETIQUETA} rounded-sm bg-[#FFD400] px-[3px] text-[9px] font-bold text-[#0A0A0A]`}>{red}</span>;
+}
 
-const FUNCIONES = [
-  { clave: "transcripcion", icono: AudioLines, pronto: false },
-  { clave: "momentos", icono: Sparkles, pronto: false },
-  { clave: "autoEncuadre", icono: Mic, pronto: false },
-  { clave: "recorte", icono: Crop, pronto: false },
-  { clave: "dividido", icono: LayoutPanelTop, pronto: false },
-  { clave: "subtitulos", icono: Captions, pronto: false },
-  { clave: "textos", icono: Type, pronto: false },
-  { clave: "mp4", icono: Download, pronto: false },
-  { clave: "app", icono: Smartphone, pronto: false },
-  { clave: "lives", icono: Radio, pronto: true },
-  { clave: "revision", icono: ListChecks, pronto: true },
-  { clave: "publicar", icono: CalendarClock, pronto: false },
-] as const satisfies readonly { clave: string; icono: LucideIcon; pronto: boolean }[];
+/** El producto en la portada: clientes, un episodio hecho clips y la semana. */
+function MaquetaPortada() {
+  const t = useTranslations("landing");
+  const m = (k: "alt" | "sumarCliente" | "cuadro" | "listos" | "formato" | "transcripcion" | "momentos" | "encuadre" | "hecho" | "mas" | "calendario" | "redes") =>
+    t(`portada.maqueta.${k}`);
+  return (
+    <div role="img" aria-label={m("alt")} className="flex min-w-0 flex-col gap-3.5 rounded-xl border border-[#2E2E2B] bg-[#1C1C1A] p-4 sm:p-[18px]">
+      <div className="flex items-center gap-1.5 overflow-hidden border-b border-[#2E2E2B] pb-3.5">
+        {CLIENTES.map((c, i) => (
+          <div
+            key={c.letra}
+            className={`flex shrink-0 items-center gap-2 rounded-md px-3 py-[7px] text-[13px] font-semibold ${
+              i === 0 ? "bg-white text-[#0A0A0A]" : "text-[#D9D8D2] shadow-[inset_0_0_0_1px_#33332F] max-sm:hidden"
+            }`}
+          >
+            <span className="h-2 w-2 rounded-full" style={{ background: c.punto }} />
+            {t("portada.maqueta.cliente", { letra: c.letra })}
+          </div>
+        ))}
+        <div className={`${MONO} ml-auto shrink-0 text-xs text-[#8A8983]`}>{m("sumarCliente")}</div>
+      </div>
+      <div className={`${MONO} flex justify-between gap-3 text-xs text-[#A3A29C]`}>
+        <span className="truncate">{t("portada.maqueta.cliente", { letra: "A" })} / EP-142_full.mp4</span>
+        <span>01:12:08</span>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
+        <div className={`${MONO} ${RAYADO} flex aspect-video items-center justify-center rounded-md border border-[#33332F] text-[11px] text-[#8A8983]`}>
+          {m("cuadro")}
+        </div>
+        <div className={`${MONO} flex flex-col justify-between gap-3 py-0.5 text-xs text-[#A3A29C]`}>
+          <div className="flex flex-col gap-1">
+            <span className="font-[family-name:var(--font-archivo)] text-2xl font-extrabold text-white">{m("listos")}</span>
+            <span>{m("formato")}</span>
+          </div>
+          <div className="flex flex-col gap-[7px]">
+            {(["transcripcion", "momentos", "encuadre"] as const).map((k) => (
+              <div key={k} className="flex justify-between">
+                <span>{m(k)}</span>
+                <span className="text-[#FFD400]">{m("hecho")}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
+        {CLIPS.map((c, i) => (
+          <div key={c} className={`${RAYADO} relative aspect-[9/16] overflow-hidden rounded-md border border-[#33332F] ${i === 3 ? "max-sm:hidden" : ""}`}>
+            <div className={`${MONO} absolute left-2 top-2 text-[10px] text-[#8A8983]`}>0{i + 1}</div>
+            <div className={`${CONDENSADA} absolute left-2 right-2 top-[54%] text-center text-[13px] leading-[1.04] text-white sm:text-[17px]`}>
+              {t(`portada.maqueta.clips.${c}.antes`)} <span className="bg-[#FFD400] px-[3px] text-[#0A0A0A]">{t(`portada.maqueta.clips.${c}.marca`)}</span>{" "}
+              {t(`portada.maqueta.clips.${c}.despues`)}
+            </div>
+          </div>
+        ))}
+        <div className="flex aspect-[9/16] flex-col items-center justify-center gap-1 rounded-md border border-dashed border-[#4A4A45] max-sm:hidden">
+          <span className="text-[30px] font-black text-white [font-stretch:75%]">+11</span>
+          <span className={`${MONO} text-[10px] text-[#A3A29C]`}>{m("mas")}</span>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2.5 rounded-lg border border-[#2E2E2B] bg-[#0A0A0A] p-3">
+        <div className={`${MONO} flex justify-between text-[11px] text-[#A3A29C]`}>
+          <span className="text-white">{m("calendario")}</span>
+          <span>{m("redes")}</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+          {CALENDARIO.slice(0, 5).map((d, i) => (
+            <div key={d.dia} className={`flex flex-col gap-1.5 ${i > 2 ? "max-sm:hidden" : ""}`}>
+              <div className={`${MONO} text-[10px] text-[#8A8983]`}>{t(`dias.${d.dia}`)}</div>
+              {d.posts.map(([red, hora]) => (
+                <div key={red + hora} className={`${MONO} flex items-center gap-1.5 rounded bg-[#1C1C1A] px-1.5 py-[5px] text-[10px] text-[#D9D8D2]`}>
+                  <span className="h-3.5 w-2 shrink-0 rounded-[1px] bg-[#3A3A36]" />
+                  <EtiquetaRed red={red} />
+                  <span>{hora}</span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-const PLANES = [
-  {
-    clave: "creador",
-    precio: "19.99",
-    incluye: ["unaPersona", "unaMarca", "doceEpisodios", "tresHoras", "ilimitados", "editorYApp"],
-    destacado: false,
-  },
-  {
-    clave: "equipo",
-    precio: "49.99",
-    incluye: ["cincoPersonas", "unaMarca", "dieciseisEpisodios", "tresHoras", "ilimitados", "revision"],
-    destacado: true,
-  },
-] as const;
+/** Una tarjeta de función: la viñeta de interfaz arriba y el texto abajo. */
+function Funcion({
+  clave,
+  alt,
+  children,
+}: {
+  clave: "clientes" | "momentos" | "calendario" | "analisis";
+  alt: string;
+  children: React.ReactNode;
+}) {
+  const t = useTranslations("landing.funciones");
+  return (
+    <div className="flex flex-col gap-7 rounded-xl bg-white px-4 pb-9 pt-4 sm:px-5 sm:pt-5">
+      <div role="img" aria-label={alt} className={`${MONO} flex h-[280px] flex-col overflow-hidden rounded-md bg-[#0A0A0A] p-[18px] text-[11px] text-[#A3A29C]`}>
+        {children}
+      </div>
+      <div className="flex flex-col gap-3 px-2">
+        <h3 className="text-[28px] font-extrabold leading-[1.1] tracking-[-0.01em]">{t(`${clave}.titulo`)}</h3>
+        <p className="leading-relaxed text-[#3A3935]">{t(`${clave}.texto`)}</p>
+      </div>
+    </div>
+  );
+}
 
-const EQUIPO_PUNTOS = ["roles", "variasMarcas", "mismaCuenta"] as const;
-
-const EQUIPO_EJEMPLO = [
-  { ini: "A", nombre: "Ana", clave: "ana", tono: "text-ng-celeste" },
-  { ini: "L", nombre: "Luis", clave: "luis", tono: "text-ng-teal" },
-  { ini: "C", nombre: "Carla", clave: "carla", tono: "text-ng-lila" },
-] as const;
-
-const PREGUNTAS = [
-  "convertir",
-  "tiempo",
-  "descargar",
-  "sigue",
-  "lives",
-  "subtitulos",
-  "app",
-  "idioma",
-  "flojo",
-  "episodio",
-] as const;
-
-export default function Producto() {
+export default function Landing() {
   const t = useTranslations("landing");
   const locale = useLocale();
+  const enlaceDemo = `mailto:${CORREO_DEMO}?subject=${encodeURIComponent(t("demoAsunto"))}`;
 
-  /** Para Google: qué es, en qué corre y cuánto cuesta, y las preguntas como FAQ. */
+  /** Para Google: qué es y cuánto cuesta, y las preguntas como FAQ. */
   const datosEstructurados = [
     {
       "@context": "https://schema.org",
@@ -162,7 +252,7 @@ export default function Producto() {
       offers: PLANES.map((p) => ({
         "@type": "Offer",
         name: t(`precios.planes.${p.clave}.nombre`),
-        price: p.precio,
+        price: String(p.mensual),
         priceCurrency: "USD",
       })),
     },
@@ -178,327 +268,247 @@ export default function Producto() {
   ];
 
   return (
-    <div className="min-h-screen bg-ng-hondo text-ng-texto">
+    <div className={`${VARIABLES_FUENTES} min-h-screen bg-white font-[family-name:var(--font-archivo)] text-[#0A0A0A]`}>
       <RedirigirSiHaySesion />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }} />
 
-      <Cabecera />
+      {/* ---- Navegación ---- */}
+      <header className="sticky top-0 z-30 border-b border-[#E9E8E4] bg-white">
+        <div className={`${ANCHO} flex h-[76px] items-center justify-between gap-4`}>
+          <div className="flex items-center gap-14">
+            <Link href="/" aria-label={t("nav.inicio")} className="flex">
+              <Image src="/brand/clipfine-wordmark-ink.svg" alt="Clipfine" width={130} height={23} priority unoptimized />
+            </Link>
+            <nav className="hidden gap-8 text-[15px] font-medium lg:flex">
+              <a href="#funciones" className="underline-offset-[6px] hover:underline">{t("nav.funciones")}</a>
+              <a href="#como" className="underline-offset-[6px] hover:underline">{t("nav.como")}</a>
+              <a href="#precios" className="underline-offset-[6px] hover:underline">{t("nav.precios")}</a>
+              <a href="#preguntas" className="underline-offset-[6px] hover:underline">{t("nav.preguntas")}</a>
+            </nav>
+          </div>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <SelectorIdiomaCompacto claro className="hidden sm:flex" />
+            <Link href="/login" className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
+            <a href={enlaceDemo} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
+            <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-11 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
+              {t("nav.empezar")}
+            </Link>
+          </div>
+        </div>
+      </header>
 
       {/* ---- Portada ---- */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[900px] -translate-x-1/2 opacity-60 blur-3xl"
-          style={{ background: "transparent" }}
-        />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.1fr_1fr] lg:pt-24">
-          <div>
-            <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-ng-secundario">
-              <Sparkles size={13} className="text-ng-celeste" aria-hidden /> {t("portada.etiqueta")}
-            </p>
-            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
-              {t.rich("portada.titulo", { marca: (c) => <span className="texto-marca">{c}</span> })}
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ng-secundario">{t("portada.texto")}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-6 py-3 text-base font-semibold text-ng-tinta brillo-marca hover:brightness-110">
-                {t("empezar")}
-              </Link>
-              <a href="#como" className="rounded-ng-md border border-white/15 bg-white/5 px-6 py-3 text-base font-semibold hover:bg-white/10">
-                {t("portada.verComoFunciona")}
-              </a>
+      <section className="bg-[#0A0A0A] text-white">
+        <div className={`${ANCHO} grid items-center gap-12 py-16 lg:grid-cols-[minmax(0,540px)_minmax(0,1fr)] lg:gap-16 lg:pb-24 lg:pt-[88px]`}>
+          <div className="flex flex-col gap-7">
+            <p className={`${ETIQUETA} text-sm font-bold uppercase tracking-[.12em] text-[#FFD400]`}>{t("portada.etiqueta")}</p>
+            <h1 className={`${CONDENSADA} text-[52px] leading-[.93] tracking-[-0.005em] sm:text-[84px]`}>{t("portada.titulo")}</h1>
+            <p className="text-lg leading-relaxed text-[#D9D8D2] sm:text-[19px]">{t("portada.texto")}</p>
+            <div className="mt-1 flex flex-col gap-3.5">
+              <div className="flex flex-wrap items-center gap-7">
+                <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] focus-visible:outline-white`}>
+                  {t("nav.empezar")}
+                </Link>
+                <a href={enlaceDemo} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
+              </div>
+              <p className={`${ETIQUETA} text-sm font-medium text-[#A3A29C]`}>{t("portada.letraChica")}</p>
+              <div className="mt-2.5 flex flex-wrap items-center gap-3.5 border-t border-[#2E2E2B] pt-[18px]">
+                <span className={`${ETIQUETA} text-sm font-medium text-[#D9D8D2]`}>{t("portada.publicaEn")}</span>
+                <ul className="flex gap-2">
+                  {REDES.map((r) => (
+                    <li
+                      key={r.nombre}
+                      title={r.hoy ? r.nombre : `${r.nombre} · ${t("pronto")}`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-[7px] border border-[#2E2E2B] bg-[#1C1C1A] ${r.hoy ? "" : "opacity-45"}`}
+                    >
+                      <IconoRed red={r.nombre} />
+                      <span className="sr-only">{r.hoy ? r.nombre : `${r.nombre}, ${t("pronto")}`}</span>
+                    </li>
+                  ))}
+                </ul>
+                <span className={`${ETIQUETA} text-xs font-medium text-[#8A8983]`}>{t("portada.redesPronto")}</span>
+              </div>
             </div>
-            <p className="mt-6 text-xs uppercase tracking-[0.22em] text-ng-tenue">Create · Share · Grow</p>
           </div>
-          <MaquetaProducto />
+          <MaquetaPortada />
         </div>
       </section>
 
-      {/* ---- El flujo completo ---- */}
-      <section id="como" className="border-t border-white/5 bg-ng-fondo">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("flujo.etiqueta")}</p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">{t("flujo.titulo")}</h2>
-          <ol className="relative mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {PASOS.map((p, i) => {
-              const ultimo = i === PASOS.length - 1;
-              return (
-                <li
-                  key={p.clave}
-                  className={`relative rounded-ng-xl border p-5 ${ultimo ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-tarjeta"}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-marca text-sm font-bold text-ng-tinta">{i + 1}</span>
-                    <p.icono size={18} className="text-ng-celeste" aria-hidden />
+      {/* ---- El problema ---- */}
+      <section className={`${ANCHO} grid items-end gap-8 py-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-20 lg:py-32`}>
+        <h2 className={H2}>{t("problema.titulo")}</h2>
+        <p className="text-lg leading-relaxed text-[#3A3935] sm:text-xl">{t("problema.texto")}</p>
+      </section>
+
+      {/* ---- Funciones ---- */}
+      <section id="funciones" className="scroll-mt-20 bg-[#F4F3EE]">
+        <div className={`${ANCHO} flex flex-col gap-12 py-20 lg:py-28`}>
+          <Seccion titulo>{t("funciones.etiqueta")}</Seccion>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Funcion clave="clientes" alt={t("funciones.clientes.alt")}>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 overflow-hidden whitespace-nowrap border-b border-[#2E2E2B] pb-2.5">
+                  {(["episodios", "clips", "calendario", "analisis", "brandKit"] as const).map((k, i) => (
+                    <span key={k} className={i === 0 ? "text-white" : ""}>{t(`funciones.clientes.pestanas.${k}`)}</span>
+                  ))}
+                </div>
+                {(["listo", "programado", "procesando", "publicado"] as const).map((estado, i) => (
+                  <div key={estado} className="flex justify-between rounded bg-[#1C1C1A] px-3 py-2.5 text-xs">
+                    <span className="text-white">{t("portada.maqueta.cliente", { letra: CLIENTES[i].letra })}</span>
+                    <span className={i === 0 ? "text-[#FFD400]" : ""}>{t(`funciones.clientes.estados.${estado}`)}</span>
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold">{t(`pasos.${p.clave}.titulo`)}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ng-secundario">{t(`pasos.${p.clave}.texto`)}</p>
-                  {ultimo && (
-                    <ul className="mt-4 flex flex-wrap gap-2">
-                      {REDES.map((r) => (
-                        <li
-                          key={r.nombre}
-                          className={`rounded-full border px-2.5 py-1 text-xs ${r.hoy ? "border-ng-teal/40 bg-ng-teal/10 text-ng-teal" : "border-white/10 text-ng-secundario"}`}
-                        >
-                          {r.nombre}
-                          {!r.hoy && <span className="ml-1 text-ng-lila">{t("pronto")}</span>}
-                        </li>
+                ))}
+              </div>
+            </Funcion>
+
+            <Funcion clave="momentos" alt={t("funciones.momentos.alt")}>
+              <div className="flex h-full flex-col gap-3.5">
+                <div className="flex justify-between">
+                  <span className="text-white">{t("funciones.momentos.encabezado")}</span>
+                  <span>{t("funciones.momentos.editor")}</span>
+                </div>
+                <div className="grid flex-1 grid-cols-6 gap-2">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className={`rounded ${RAYADO} ${i === 0 ? "shadow-[inset_0_0_0_2px_#FFD400]" : ""}`} />
+                  ))}
+                </div>
+                <div className="relative flex h-10 items-center gap-[3px] overflow-hidden rounded bg-[#1C1C1A] px-2">
+                  {ONDA.map((h, i) => (
+                    <span key={i} className="flex-1 rounded-[1px] bg-[#3A3A36]" style={{ height: h }} />
+                  ))}
+                  <div className="absolute inset-y-0 left-[34%] w-[28%] rounded-[3px] bg-[#FFD400]/10 shadow-[inset_0_0_0_2px_#FFD400]" />
+                  <div className="absolute inset-y-1.5 left-[calc(34%-4px)] w-2 rounded-sm bg-[#FFD400]" />
+                  <div className="absolute inset-y-1.5 left-[calc(62%-4px)] w-2 rounded-sm bg-[#FFD400]" />
+                </div>
+                <div className="flex justify-between">
+                  <span>00:22:31</span>
+                  <span className="text-white">0:38</span>
+                  <span>00:23:09</span>
+                </div>
+              </div>
+            </Funcion>
+
+            <Funcion clave="calendario" alt={t("funciones.calendario.alt")}>
+              <div className="flex h-full flex-col gap-3">
+                <div className="flex justify-between gap-3">
+                  <span className="text-white">{t("funciones.calendario.encabezado")}</span>
+                  <span className="truncate">{REDES.map((r) => r.nombre).join(" · ")}</span>
+                </div>
+                <div className="grid flex-1 grid-cols-4 gap-1.5 sm:grid-cols-7">
+                  {CALENDARIO.map((d, i) => (
+                    <div key={d.dia} className={`flex flex-col gap-1.5 rounded bg-[#141413] p-1.5 ${i > 3 ? "max-sm:hidden" : ""}`}>
+                      <div className="text-[10px] text-[#8A8983]">{t(`dias.${d.dia}`)}</div>
+                      {d.posts.map(([red, hora]) => (
+                        <div key={red + hora} className="flex flex-col gap-1 rounded-[3px] bg-[#262624] p-[5px]">
+                          <div className="h-[30px] rounded-sm bg-[repeating-linear-gradient(135deg,#33332F_0_1px,#2A2A27_1px_6px)]" />
+                          <div className="flex items-center justify-between">
+                            <EtiquetaRed red={red} />
+                            <span className="text-[9px]">{hora}</span>
+                          </div>
+                        </div>
                       ))}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Funcion>
+
+            <Funcion clave="analisis" alt={t("funciones.analisis.alt")}>
+              <div className="flex h-full flex-col gap-3.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-white">{t("funciones.analisis.encabezado")}</span>
+                  <span className="rounded-full border border-dashed border-[#6B6A64] px-2 py-0.5 text-[10px]">{t("funciones.analisis.ejemplo")}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                  {(["publicaciones", "reacciones", "comentarios", "mejorHora"] as const).map((k, i) => (
+                    <div key={k} className={`flex flex-col gap-1 rounded bg-[#1C1C1A] p-2.5 ${i > 1 ? "max-sm:hidden" : ""}`}>
+                      <span className="truncate text-[10px]">{t(`funciones.analisis.${k}`)}</span>
+                      <span className="font-[family-name:var(--font-archivo)] text-[22px] font-extrabold text-white">{k === "mejorHora" ? "00:00" : "0.0K"}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-1 items-end gap-1.5 border-b border-[#2E2E2B] px-0.5">
+                  {BARRAS.map((h, i) => (
+                    <span key={i} className={`flex-1 rounded-t-sm ${i === 5 ? "bg-[#FFD400]" : "bg-[#3A3A36]"}`} style={{ height: `${h}%` }} />
+                  ))}
+                </div>
+                <div className="text-center text-[10px]">{t("funciones.analisis.porHora")}</div>
+              </div>
+            </Funcion>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Para quién ---- */}
+      <section className={`${ANCHO} flex flex-col gap-12 py-20 lg:py-28`}>
+        <div className="grid items-end gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-20">
+          <div className="flex flex-col gap-5">
+            <Seccion>{t("paraQuien.etiqueta")}</Seccion>
+            <h2 className={H2}>{t("paraQuien.titulo")}</h2>
+          </div>
+          <p className="text-lg leading-relaxed text-[#3A3935] sm:text-[19px]">{t("paraQuien.texto")}</p>
+        </div>
+        <div className="flex flex-col gap-4">
+          <p className={`${ETIQUETA} text-xs font-bold uppercase tracking-[.12em] text-[#6B6A64]`}>{t("paraQuien.porTipo")}</p>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {TIPOS_AGENCIA.map((k) => (
+              <div key={k} className="flex flex-col gap-3 rounded-xl bg-[#F4F3EE] p-7 sm:min-h-[200px]">
+                <h3 className="text-2xl font-extrabold leading-[1.12]">{t(`paraQuien.tipos.${k}.titulo`)}</h3>
+                <p className="leading-normal text-[#3A3935]">{t(`paraQuien.tipos.${k}.texto`)}</p>
+              </div>
+            ))}
+          </div>
+          <p className={`${ETIQUETA} mt-4 text-xs font-bold uppercase tracking-[.12em] text-[#6B6A64]`}>{t("paraQuien.porUso")}</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {USOS.map((k) => (
+              <div key={k} className="flex flex-col gap-2.5 rounded-xl bg-[#F4F3EE] p-7">
+                <h3 className="text-2xl font-extrabold leading-[1.12]">{t(`paraQuien.usos.${k}.titulo`)}</h3>
+                <p className="leading-normal text-[#3A3935]">{t(`paraQuien.usos.${k}.texto`)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Cómo funciona ---- */}
+      <section id="como" className="scroll-mt-20 bg-[#F4F3EE]">
+        <div className={`${ANCHO} flex flex-col gap-14 py-20 lg:py-28`}>
+          <Seccion titulo>{t("como.etiqueta")}</Seccion>
+          <ol className="grid border-t-2 border-[#0A0A0A] md:grid-cols-3">
+            {PASOS.map((k, i) => (
+              <li
+                key={k}
+                className={`flex flex-col gap-4 pt-8 md:px-10 ${i === 0 ? "md:pl-0" : "max-md:mt-8 max-md:border-t max-md:border-[#D9D8D2] md:border-l md:border-[#D9D8D2]"} ${i === PASOS.length - 1 ? "md:pr-0" : ""}`}
+              >
+                <div className="text-[72px] font-black leading-[.9] [font-stretch:75%] sm:text-[88px]">0{i + 1}</div>
+                <h3 className="text-[28px] font-extrabold leading-[1.1]">{t(`como.pasos.${k}.titulo`)}</h3>
+                <p className="text-[17px] leading-relaxed text-[#3A3935]">{t(`como.pasos.${k}.texto`)}</p>
+              </li>
+            ))}
           </ol>
         </div>
       </section>
 
-      {/* ---- Para quien ---- */}
-      <section id="para-quien" className="border-t border-white/5">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("paraQuien.etiqueta")}</p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl">{t("paraQuien.titulo")}</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {PARA_QUIEN.map((c) => (
-              <div
-                key={c.clave}
-                className={`rounded-ng-lg border p-5 ${c.principal ? "border-ng-azul/50 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-superficie/50"}`}
-              >
-                <div className="flex items-center justify-between">
-                  <c.icono size={20} className="text-ng-celeste" aria-hidden />
-                  {c.principal && (
-                    <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-semibold text-ng-tinta">{t("paraQuien.loNuestro")}</span>
-                  )}
-                </div>
-                <h3 className="mt-3 font-semibold">{t(`paraQuien.casos.${c.clave}.titulo`)}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{t(`paraQuien.casos.${c.clave}.texto`)}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-10 text-sm font-semibold">{t("paraQuien.traeTuVideo")}</p>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {ENTRADAS.map((e) => (
-              <li
-                key={e.clave}
-                className={`rounded-full border px-3 py-1.5 text-xs ${e.pronto ? "border-white/10 text-ng-secundario" : "border-ng-teal/40 bg-ng-teal/10 text-ng-texto"}`}
-              >
-                <span className="font-semibold">{t(`paraQuien.entradas.${e.clave}.titulo`)}</span>{" "}
-                <span className="text-ng-secundario">· {t(`paraQuien.entradas.${e.clave}.texto`)}</span>
-                {e.pronto && <span className="ml-1 text-ng-lila">{t("pronto")}</span>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      {/* ---- Auto-encuadre ---- */}
-      <section id="auto-encuadre" className="border-t border-white/5 bg-ng-fondo">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("autoEncuadre.etiqueta")}</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t("autoEncuadre.titulo")}</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">{t("autoEncuadre.texto")}</p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {AUTO_ENCUADRE.map((clave) => (
-                <li key={clave} className="flex items-start gap-2.5">
-                  <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden />
-                  <span>
-                    <span className="font-semibold">{t(`autoEncuadre.puntos.${clave}.titulo`)}.</span>{" "}
-                    <span className="text-ng-secundario">{t(`autoEncuadre.puntos.${clave}.texto`)}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <MaquetaAutoEncuadre />
-        </div>
-      </section>
-
-      {/* ---- Lives (proximamente) ---- */}
-      <section id="lives" className="border-t border-white/5">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1fr]">
-          <div className="lg:order-2">
-            <p className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-ng-celeste">
-              {t("lives.etiqueta")}
-              <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium normal-case tracking-normal text-ng-lila">
-                {t("lives.proximamente")}
-              </span>
-            </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t("lives.titulo")}</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">{t("lives.texto")}</p>
-            <ol className="mt-6 space-y-4">
-              {LIVES.map((clave, i) => (
-                <li key={clave} className="flex items-start gap-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-marca text-xs font-bold text-ng-tinta">{i + 1}</span>
-                  <span className="text-sm">
-                    <span className="font-semibold">{t(`lives.pasos.${clave}.titulo`)}.</span>{" "}
-                    <span className="text-ng-secundario">{t(`lives.pasos.${clave}.texto`)}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-6 text-sm text-ng-tenue">{t("lives.pie")}</p>
-          </div>
-          <div className="lg:order-1">
-            <MaquetaLives />
-          </div>
-        </div>
-      </section>
-
-      {/* ---- Antes y ahora ---- */}
-      <section className="border-t border-white/5">
-        <div className="mx-auto grid max-w-6xl gap-6 px-5 py-20 lg:grid-cols-2">
-          <div className="rounded-ng-xl border border-white/10 bg-ng-superficie/40 p-7">
-            <p className="text-sm font-semibold text-ng-tenue">{t("antes.etiqueta")}</p>
-            <p className="mt-1 text-2xl font-bold">{t("antes.titulo")}</p>
-            <ul className="mt-6 space-y-3 text-sm text-ng-secundario">
-              {ANTES.map((clave) => (
-                <li key={clave} className="flex items-start gap-2.5">
-                  <X size={16} className="mt-0.5 shrink-0 text-red-400/80" aria-hidden /> {t(`antes.items.${clave}`)}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-ng-xl border border-ng-azul/50 bg-ng-tarjeta p-7 brillo-marca">
-            <p className="text-sm font-semibold text-ng-celeste">{t("ahora.etiqueta")}</p>
-            <p className="mt-1 text-2xl font-bold">{t("ahora.titulo")}</p>
-            <ul className="mt-6 space-y-3 text-sm">
-              {PASOS.map((p) => (
-                <li key={p.clave} className="flex items-start gap-2.5">
-                  <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {t(`pasos.${p.clave}.titulo`)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* ---- Qué hace ---- */}
-      <section className="border-t border-white/5">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t("funciones.titulo")}</h2>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {FUNCIONES.map((f) => (
-              <div key={f.clave} className="rounded-ng-lg border border-white/10 bg-ng-superficie/50 p-5">
-                <div className="flex items-center justify-between">
-                  <f.icono size={20} className="text-ng-celeste" aria-hidden />
-                  {f.pronto && (
-                    <span className="rounded-full bg-ng-violeta/15 px-2 py-0.5 text-[11px] font-medium text-ng-lila">{t("prontoEtiqueta")}</span>
-                  )}
-                </div>
-                <h3 className="mt-3 font-semibold">{t(`funciones.items.${f.clave}.titulo`)}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ng-secundario">{t(`funciones.items.${f.clave}.texto`)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---- Equipo ---- */}
-      <section className="border-t border-white/5 bg-ng-fondo">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-20 lg:grid-cols-2">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{t("equipo.titulo")}</h2>
-            <p className="mt-4 leading-relaxed text-ng-secundario">{t("equipo.texto")}</p>
-            <ul className="mt-6 space-y-2 text-sm">
-              {EQUIPO_PUNTOS.map((clave) => (
-                <li key={clave} className="flex items-center gap-2">
-                  <Check size={16} className="text-ng-teal" aria-hidden /> {t(`equipo.puntos.${clave}`)}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-ng-xl border border-white/10 bg-ng-tarjeta p-5">
-            {EQUIPO_EJEMPLO.map(({ ini, nombre, clave, tono }) => (
-              <div key={nombre} className="flex items-center gap-3 border-b border-white/5 py-3 last:border-0">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-ng-elevada text-sm font-semibold">
-                  {ini}
-                </span>
-                <span className="flex-1 text-sm font-medium">{nombre}</span>
-                <span className={`text-xs ${tono}`}>{t(`equipo.ejemplo.${clave}`)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ---- La app ---- */}
-      <section className="border-t border-white/5">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_auto]">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-ng-celeste">{t("app.etiqueta")}</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{t("app.titulo")}</h2>
-            <p className="mt-4 max-w-xl leading-relaxed text-ng-secundario">{t("app.texto")}</p>
-            <Link href="/app" className="mt-6 inline-block rounded-ng-md border border-white/15 bg-white/5 px-5 py-2.5 font-semibold hover:bg-white/10">
-              {t("app.verLaApp")}
-            </Link>
-          </div>
-          <MaquetaTelefono />
-        </div>
-      </section>
-
-      {/* ---- Precios ---- */}
-      <section id="precios" className="border-t border-white/5">
-        <div className="mx-auto max-w-5xl px-5 py-20">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">{t("precios.titulo")}</h2>
-          <p className="mt-3 text-center text-ng-secundario">{t("precios.subtitulo")}</p>
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {PLANES.map((plan) => {
-              const nombre = t(`precios.planes.${plan.clave}.nombre`);
-              return (
-                <div
-                  key={plan.clave}
-                  className={`relative rounded-ng-xl border p-7 ${
-                    plan.destacado ? "border-ng-azul/60 bg-ng-tarjeta brillo-marca" : "border-white/10 bg-ng-superficie/60"
-                  }`}
-                >
-                  {plan.destacado && (
-                    <span className="absolute -top-3 left-7 rounded-full bg-marca px-3 py-1 text-xs font-semibold text-ng-tinta">
-                      {t("precios.paraEquipos")}
-                    </span>
-                  )}
-                  <h3 className="text-lg font-semibold">{nombre}</h3>
-                  <p className="mt-1 text-sm text-ng-secundario">{t(`precios.planes.${plan.clave}.para`)}</p>
-                  <p className="mt-6 flex items-baseline gap-1">
-                    <span className="text-5xl font-bold tracking-tight">${plan.precio}</span>
-                    <span className="text-ng-tenue">{t("precios.porMes")}</span>
-                  </p>
-                  <ul className="mt-6 space-y-2.5 text-sm">
-                    {plan.incluye.map((i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <Check size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden /> {t(`precios.incluye.${i}`)}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={ENLACE_EMPEZAR}
-                    className={`mt-8 block rounded-ng-md py-3 text-center font-semibold ${
-                      plan.destacado ? "bg-marca text-ng-tinta hover:brightness-110" : "border border-white/15 bg-white/5 hover:bg-white/10"
-                    }`}
-                  >
-                    {t("precios.empezarCon", { plan: nombre })}
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <Precios enlaceDemo={enlaceDemo} />
 
       {/* ---- Preguntas ---- */}
-      <section className="border-t border-white/5 bg-ng-fondo">
-        <div className="mx-auto max-w-3xl px-5 py-20">
-          <h2 className="text-3xl font-bold tracking-tight">{t("preguntas.titulo")}</h2>
-          <div className="mt-8 divide-y divide-white/10 rounded-ng-xl border border-white/10 bg-ng-tarjeta">
-            {PREGUNTAS.map((q) => (
-              <details key={q} className="group p-5">
-                <summary className="cursor-pointer list-none font-medium marker:hidden">
-                  <span className="flex items-center justify-between gap-4">
-                    {t(`preguntas.items.${q}.p`)}
-                    <span className="text-ng-tenue transition group-open:rotate-45">+</span>
+      <section id="preguntas" className="scroll-mt-20 border-t border-[#E9E8E4]">
+        <div className={`${ANCHO} grid gap-10 py-20 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16 lg:py-28`}>
+          <h2 className={H2}>{t("preguntas.titulo")}</h2>
+          <div className="flex flex-col border-t-2 border-[#0A0A0A]">
+            {PREGUNTAS.map((q, i) => (
+              <details key={q} open={i === 0} className="group border-b border-[#D9D8D2]">
+                <summary className={`flex cursor-pointer list-none items-center justify-between gap-6 py-[26px] text-lg font-bold leading-tight hover:text-[#3A3935] sm:text-[22px] [&::-webkit-details-marker]:hidden ${FOCO} focus-visible:outline-[#0A0A0A]`}>
+                  {t(`preguntas.items.${q}.p`)}
+                  <span
+                    aria-hidden
+                    className={`${MONO} flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-[1.5px] border-[#0A0A0A] text-lg group-open:bg-[#0A0A0A] group-open:text-white`}
+                  >
+                    <span className="group-open:hidden">+</span>
+                    <span className="hidden group-open:inline">–</span>
                   </span>
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-ng-secundario">{t(`preguntas.items.${q}.r`)}</p>
+                <p className="pb-7 pr-12 text-base leading-relaxed text-[#3A3935] sm:pr-20 sm:text-lg">{t(`preguntas.items.${q}.r`)}</p>
               </details>
             ))}
           </div>
@@ -506,22 +516,50 @@ export default function Producto() {
       </section>
 
       {/* ---- Cierre ---- */}
-      <section className="relative overflow-hidden border-t border-white/5">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-50"
-          style={{ background: "transparent" }}
-        />
-        <div className="relative mx-auto max-w-3xl px-5 py-24 text-center">
-          <LogoNG tamano={56} soloIcono />
-          <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-5xl">{t("cierre")}</h2>
-          <Link href={ENLACE_EMPEZAR} className="mt-8 inline-block rounded-ng-md bg-marca px-8 py-3.5 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
-            {t("empezar")}
-          </Link>
+      <section className="bg-[#FFD400]">
+        <div className={`${ANCHO} grid items-end gap-10 py-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16 lg:py-28`}>
+          <h2 className={`${CONDENSADA} text-[52px] leading-[.92] sm:text-[96px]`}>{t("cierre.titulo")}</h2>
+          <div className="flex flex-col gap-7">
+            <p className="text-lg leading-normal sm:text-xl">{t("cierre.texto")}</p>
+            <div className="flex flex-wrap items-center gap-7">
+              <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] shadow-[inset_0_0_0_1.5px_#0A0A0A] focus-visible:outline-[#0A0A0A]`}>
+                {t("nav.empezar")}
+              </Link>
+              <a href={enlaceDemo} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
+            </div>
+          </div>
         </div>
       </section>
 
-      <Pie />
+      {/* ---- Pie ---- */}
+      <footer className="bg-[#0A0A0A] text-white">
+        <div className={`${ANCHO} flex flex-col gap-12 pb-12 pt-16`}>
+          <div className="flex flex-col justify-between gap-10 md:flex-row">
+            <div className="flex flex-col gap-[18px]">
+              <LogoNG tamano={56} />
+              <p className="text-[#D9D8D2]">{t("pie.lema")}</p>
+            </div>
+            <nav className="flex flex-col gap-3.5">
+              <Link href="/app" className="underline-offset-[5px] hover:underline">{t("pie.app")}</Link>
+              <Link href="/privacidad" className="underline-offset-[5px] hover:underline">{t("pie.privacidad")}</Link>
+              <Link href="/terminos" className="underline-offset-[5px] hover:underline">{t("pie.terminos")}</Link>
+              <Link href="/login" className="underline-offset-[5px] hover:underline">{t("nav.entrar")}</Link>
+            </nav>
+          </div>
+          <div className={`${MONO} flex flex-wrap items-center justify-between gap-4 border-t border-[#2E2E2B] pt-6 text-sm text-[#D9D8D2]`}>
+            <span>
+              {t.rich("pie.productoDe", {
+                link: (c) => (
+                  <a href="https://ngstudios.co" className="font-semibold text-white hover:underline">
+                    {c}
+                  </a>
+                ),
+              })}
+            </span>
+            <SelectorIdiomaCompacto />
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
