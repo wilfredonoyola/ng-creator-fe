@@ -1891,6 +1891,30 @@ export const CREAR_CLIP_EPISODIO = gql`
   }
 `;
 
+/**
+ * La vista previa de una imagen antes de guardar el clip: encola su recorte
+ * (quitar fondo, contorno) si hace falta y devuelve como está. Idempotente;
+ * uno FALLIDO se reintenta. Es el mismo trabajo que usa el guardado.
+ */
+export const PREPARAR_RECORTE_IMAGEN = gql`
+  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
+    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+      estadoRecorte
+      urlFinal
+    }
+  }
+`;
+
+/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. */
+export const RECORTE_IMAGEN = gql`
+  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
+    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+      estadoRecorte
+      urlFinal
+    }
+  }
+`;
+
 export const ACTUALIZAR_CLIP_EPISODIO = gql`
   ${CAMPOS_CLIP_EDITOR}
   mutation ActualizarClipEpisodio($id: ID!, $marcaId: String!, $input: ActualizarClipEpisodioInput!) {

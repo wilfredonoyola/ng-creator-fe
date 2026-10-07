@@ -9,13 +9,14 @@
   "errorSubir": "No se pudo subir la imagen",
   "quitarFondo": "Quitar fondo",
   "contorno": "Contorno blanco",
-  "ayudaPendiente": "Se está preparando la imagen; mientras tanto se ve la original.",
   "estados": {
     "PENDIENTE": "Quitando fondo…",
     "FALLIDO": "No se pudo quitar el fondo",
     "FALLIDOCorto": "falló"
   },
   "preparando": "Preparando…",
+  "sigueProcesando": "Sigue procesando…",
+  "reintentar": "Reintentar",
   "tamano": "Tamaño {n}% del ancho",
   "oArrastrala": "Arrastrala en la vista previa para moverla; la esquina la agranda.",
   "cuando": "Cuándo",
