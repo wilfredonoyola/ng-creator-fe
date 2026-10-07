@@ -45,6 +45,8 @@ export function imagenNueva(url: string, existentes: ImagenClip[], horizontal: b
 export function PanelImagenes({
   imagenes,
   estados,
+  lentas,
+  onReintentar,
   onCambiar,
   elegida,
   onElegir,
@@ -55,6 +57,10 @@ export function PanelImagenes({
   imagenes: ImagenClip[];
   /** El estado del recorte de cada una, en el mismo orden (vistaDeImagen). */
   estados: (EstadoRecorte | null)[];
+  /** Las que llevan más de 90 s recortándose, en el mismo orden. */
+  lentas?: boolean[];
+  /** Vuelve a pedir el recorte de una que falló. */
+  onReintentar?: (i: number) => void;
   onCambiar: (imagenes: ImagenClip[]) => void;
   elegida: number | null;
   onElegir: (i: number | null) => void;
@@ -179,8 +185,24 @@ export function PanelImagenes({
             />
             {tr("contorno")}
           </label>
-          {estados[elegida] === "PENDIENTE" && <p className="text-xs text-white/45">{tr("ayudaPendiente")}</p>}
-          {estados[elegida] === "FALLIDO" && <p className="text-xs text-red-400/80">{tr("estados.FALLIDO")}</p>}
+          {estados[elegida] === "PENDIENTE" && (
+            <p className="text-xs text-white/45">
+              {lentas?.[elegida] ? tr("sigueProcesando") : im.sinFondo ? tr("estados.PENDIENTE") : tr("preparando")}
+            </p>
+          )}
+          {estados[elegida] === "FALLIDO" && (
+            <p className="flex items-center gap-2 text-xs text-red-400/80">
+              {tr("estados.FALLIDO")}
+              {!deshabilitado && onReintentar && (
+                <button
+                  onClick={() => onReintentar(elegida)}
+                  className="rounded border border-white/15 px-2 py-0.5 text-white/80 hover:bg-white/5"
+                >
+                  {tr("reintentar")}
+                </button>
+              )}
+            </p>
+          )}
 
           <label className="block text-xs text-white/50">
             {tr("tamano", { n: Math.round(im.ancho * 100) })}

@@ -9,13 +9,14 @@
   "errorSubir": "The image couldn't be uploaded",
   "quitarFondo": "Remove background",
   "contorno": "White outline",
-  "ayudaPendiente": "The image is being prepared; meanwhile you see the original.",
   "estados": {
     "PENDIENTE": "Removing background…",
     "FALLIDO": "The background couldn't be removed",
     "FALLIDOCorto": "failed"
   },
   "preparando": "Preparing…",
+  "sigueProcesando": "Still processing…",
+  "reintentar": "Retry",
   "tamano": "Size {n}% of the width",
   "oArrastrala": "Drag it on the preview to move it; the corner resizes it.",
   "cuando": "When",

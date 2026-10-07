@@ -152,7 +152,7 @@ export function EditorRecorte({
    */
   imagenes?: ImagenClip[];
   /** Qué se dibuja de cada una (vistaDeImagen), en el mismo orden. */
-  vistasImagenes?: { src: string; estado: EstadoRecorte | null }[];
+  vistasImagenes?: { src: string; estado: EstadoRecorte | null; lento?: boolean }[];
   onCambiarImagenes?: (imagenes: ImagenClip[]) => void;
   imagenElegida?: number | null;
   onElegirImagen?: (i: number) => void;
@@ -897,7 +897,13 @@ export function EditorRecorte({
                   <img src={v.src} alt="" draggable={false} className="pointer-events-none block h-auto w-full select-none" />
                   {velo && (
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 p-1 text-center text-[10px] leading-tight text-white">
-                      {v.estado === "FALLIDO" ? ti("estados.FALLIDO") : im.sinFondo ? ti("estados.PENDIENTE") : ti("preparando")}
+                      {v.estado === "FALLIDO"
+                        ? ti("estados.FALLIDO")
+                        : v.lento
+                          ? ti("sigueProcesando")
+                          : im.sinFondo
+                            ? ti("estados.PENDIENTE")
+                            : ti("preparando")}
                     </div>
                   )}
                   {puedeEditar && onCambiarImagenes && (

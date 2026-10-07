@@ -287,9 +287,10 @@ export interface Texto {
  * de la imagen). El tiempo, como los textos: segundos del clip en tiempo
  * original (hastaSeg null = hasta el final).
  *
- * `sinFondo` y `contorno` (el efecto sticker) los hace el servidor: deja el
- * PNG en `urlFinal` del clip guardado y, mientras tanto, `estadoRecorte` es
- * PENDIENTE. Por eso no están acá: son del clip, no del borrador.
+ * `sinFondo` y `contorno` (el efecto sticker) los hace el servidor. El
+ * editor los pide apenas se prenden (useRecortesImagen) y, guardado, el clip
+ * los trae en `urlFinal`/`estadoRecorte`. Por eso no están acá: no son del
+ * borrador.
  */
 export interface ImagenClip {
   /** Lo genera el cliente: con él se cruza con el estado del recorte. */
@@ -318,16 +319,23 @@ export const IMAGEN_ANCHO_MIN = 0.05;
 export const IMAGEN_ANCHO_MAX = 1;
 
 /**
- * Qué se dibuja de una imagen del borrador: el PNG del servidor si es de esta
- * misma versión (misma original, mismos interruptores) y está listo; si no,
- * la original, con el estado del recorte. Un cambio que todavía no se guardó
- * cuenta como pendiente.
+ * Qué se dibuja de una imagen del borrador. Primero el recorte pedido desde
+ * el editor (`local`, ver useRecortesImagen), que no espera a guardar; si no
+ * hay, el PNG del servidor si es de esta misma versión (misma original,
+ * mismos interruptores) y está listo; si no, la original, con el estado del
+ * recorte.
  */
 export function vistaDeImagen(
   im: ImagenClip,
   servidor: ImagenClipServidor[] | null | undefined,
-): { src: string; estado: EstadoRecorte | null } {
+  local?: { estadoRecorte: EstadoRecorte | null; urlFinal: string | null; lento?: boolean },
+): { src: string; estado: EstadoRecorte | null; lento?: boolean } {
   const procesa = im.sinFondo || im.contorno;
+  if (procesa && local) {
+    if (local.estadoRecorte === "LISTO" && local.urlFinal) return { src: local.urlFinal, estado: "LISTO" };
+    if (local.estadoRecorte === "FALLIDO") return { src: im.url, estado: "FALLIDO" };
+    return { src: im.url, estado: "PENDIENTE", lento: local.lento };
+  }
   const s = servidor?.find((x) => x.id === im.id);
   const misma = s && s.url === im.url && s.sinFondo === im.sinFondo && s.contorno === im.contorno;
   if (!misma) return { src: im.url, estado: procesa ? "PENDIENTE" : null };

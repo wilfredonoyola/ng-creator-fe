@@ -27,6 +27,7 @@ import { LIENZOS, MAXIMO_IMAGENES, SUBTITULO_TAMANO_MAX, SUBTITULO_TAMANO_MIN, s
 import { disenosDeTexto, PanelTextos, textoNuevo } from "@/components/episodios/PanelTextos";
 import { imagenNueva, PanelImagenes } from "@/components/episodios/PanelImagenes";
 import { ErrorDeSubida, uploadImagenClip } from "@/lib/upload";
+import { useRecortesImagen } from "@/lib/use-recortes-imagen";
 import { InspectorClip, usePestanaInspector, type PestanaInspector } from "@/components/episodios/InspectorClip";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
@@ -432,6 +433,9 @@ export default function EditorClipPage({
   // pregunta seguido, hasta que queden LISTO o FALLIDO.
   const imagenesServidor: ImagenClipServidor[] = clipQ.data?.clipEpisodio?.imagenes ?? [];
   const recortando = imagenesServidor.some((im) => im.estadoRecorte === "PENDIENTE");
+  // Y las del borrador, sin esperar a guardar: la vista previa muestra el
+  // recorte apenas está (ver useRecortesImagen).
+  const { recorteDe, reintentar: reintentarRecorte } = useRecortesImagen(marcaId, b?.imagenes ?? [], opera);
 
   const { startPolling, stopPolling } = clipQ;
   useEffect(() => {
@@ -597,7 +601,7 @@ export default function EditorClipPage({
   const lineas: LineaSubtitulo[] = clip.lineasSubtitulo ?? [];
 
   // ---- Imágenes ----
-  const vistasImagenes = b.imagenes.map((im) => vistaDeImagen(im, imagenesServidor));
+  const vistasImagenes = b.imagenes.map((im) => vistaDeImagen(im, imagenesServidor, recorteDe(im)));
   // Con el video 16:9 en el medio, la imagen nueva va a la franja de abajo.
   const conHorizontal = b.formato === "VERTICAL" && (b.diseno === "HORIZONTAL" || b.posiciones.some((p) => p.diseno === "HORIZONTAL"));
 
@@ -698,6 +702,11 @@ export default function EditorClipPage({
             <PanelImagenes
               imagenes={b.imagenes}
               estados={vistasImagenes.map((v) => v.estado)}
+              lentas={vistasImagenes.map((v) => !!v.lento)}
+              onReintentar={(i) => {
+                const im = b.imagenes[i];
+                if (im) void reintentarRecorte(im);
+              }}
               onCambiar={(imagenes) => cambiar({ imagenes })}
               elegida={imagenElegida}
               onElegir={elegirImagen}
