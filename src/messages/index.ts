@@ -1,4 +1,5 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
+import adminMarcas_es from "./es/adminMarcas.json";
 import adminOrigenes_es from "./es/adminOrigenes.json";
 import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
@@ -91,11 +92,13 @@ import redesTiktok_es from "./es/redesTiktok.json";
 import redesUploadPost_es from "./es/redesUploadPost.json";
 import redesYoutube_es from "./es/redesYoutube.json";
 import registro_es from "./es/registro.json";
+import renombrarMarca_es from "./es/renombrarMarca.json";
 import requisitosPassword_es from "./es/requisitosPassword.json";
 import revision_es from "./es/revision.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import versionFacebook_es from "./es/versionFacebook.json";
+import adminMarcas_en from "./en/adminMarcas.json";
 import adminOrigenes_en from "./en/adminOrigenes.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
@@ -188,6 +191,7 @@ import redesTiktok_en from "./en/redesTiktok.json";
 import redesUploadPost_en from "./en/redesUploadPost.json";
 import redesYoutube_en from "./en/redesYoutube.json";
 import registro_en from "./en/registro.json";
+import renombrarMarca_en from "./en/renombrarMarca.json";
 import requisitosPassword_en from "./en/requisitosPassword.json";
 import revision_en from "./en/revision.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
@@ -196,6 +200,7 @@ import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
+    "adminMarcas": adminMarcas_es,
     "adminOrigenes": adminOrigenes_es,
     "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
@@ -288,6 +293,7 @@ export const mensajes = {
     "redesUploadPost": redesUploadPost_es,
     "redesYoutube": redesYoutube_es,
     "registro": registro_es,
+    "renombrarMarca": renombrarMarca_es,
     "requisitosPassword": requisitosPassword_es,
     "revision": revision_es,
     "revisionTarjeta": revisionTarjeta_es,
@@ -295,6 +301,7 @@ export const mensajes = {
     "versionFacebook": versionFacebook_es,
   },
   en: {
+    "adminMarcas": adminMarcas_en,
     "adminOrigenes": adminOrigenes_en,
     "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
@@ -387,6 +394,7 @@ export const mensajes = {
     "redesUploadPost": redesUploadPost_en,
     "redesYoutube": redesYoutube_en,
     "registro": registro_en,
+    "renombrarMarca": renombrarMarca_en,
     "requisitosPassword": requisitosPassword_en,
     "revision": revision_en,
     "revisionTarjeta": revisionTarjeta_en,

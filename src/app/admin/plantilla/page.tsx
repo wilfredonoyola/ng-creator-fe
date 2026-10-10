@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
+import { RenombrarMarca } from "@/components/RenombrarMarca";
 import { ErrorDeSubida, uploadMarcaLogo } from "@/lib/upload";
 import { FUENTES, LIENZOS, medidasEfecto } from "@/lib/clip-encuadre";
 import { GUARDAR_PLANTILLA_CLIP, GUARDAR_TEMA_MARCA, PLANTILLA_CLIP_MARCA } from "@/graphql/operations";
@@ -146,6 +147,7 @@ export default function PlantillaClipsPage() {
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: colorDeMarca(activa) }} />
             {activa.nombre}
           </span>
+          {propietario && marcaId && <RenombrarMarca marcaId={marcaId} actual={activa.nombre} />}
         </p>
         <p className="mt-2 max-w-2xl text-sm text-white/35">
           {t("intro")}
