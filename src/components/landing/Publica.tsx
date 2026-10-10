@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
-import { ENLACE_EMPEZAR, ENLACE_ENTRAR } from "@/components/landing/Marco";
+import { ENLACE_EMPEZAR, ENLACE_ENTRAR, ENLACE_PANEL } from "@/components/landing/Marco";
+import { SegunSesion } from "@/components/landing/SegunSesion";
 
 /**
  * El sistema de las páginas públicas para agencias (la landing y /features):
@@ -87,11 +88,22 @@ export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boo
         </div>
         <div className="flex items-center gap-4 sm:gap-6">
           <SelectorIdiomaCompacto claro className="hidden sm:flex" />
-          <Link href={ENLACE_ENTRAR} className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
-          <a {...LINK_DEMO} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
-          <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
-            {t("nav.empezar")}
-          </Link>
+          <SegunSesion
+            conSesion={
+              <Link href={ENLACE_PANEL} className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
+                {t("nav.irApp")} →
+              </Link>
+            }
+            sinSesion={
+              <>
+                <Link href={ENLACE_ENTRAR} className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
+                <a {...LINK_DEMO} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
+                <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
+                  {t("nav.empezar")}
+                </Link>
+              </>
+            }
+          />
         </div>
       </div>
     </header>

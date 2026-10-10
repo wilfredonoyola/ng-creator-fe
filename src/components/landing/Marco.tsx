@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { PREFIJO_APP } from "@/lib/sitio";
+import { SegunSesion } from "./SegunSesion";
 
 /**
  * A dónde lleva "Empezar": al registro, que da una prueba gratis. "Entrar"
@@ -10,6 +11,8 @@ import { PREFIJO_APP } from "@/lib/sitio";
  */
 export const ENLACE_EMPEZAR = `${PREFIJO_APP}/registro`;
 export const ENLACE_ENTRAR = `${PREFIJO_APP}/login`;
+/** "Ir a la app", para quien ya tiene sesión. */
+export const ENLACE_PANEL = `${PREFIJO_APP}/panel`;
 
 /** Cabecera y pie de las páginas públicas (la landing y /app). */
 export function Cabecera() {
@@ -26,10 +29,21 @@ export function Cabecera() {
           <Link href="/app" className="hidden text-ng-secundario hover:text-white sm:inline">{t("app")}</Link>
           <Link href="/#precios" className="hidden text-ng-secundario hover:text-white sm:inline">{t("precios")}</Link>
           <SelectorIdiomaCompacto />
-          <Link href={ENLACE_ENTRAR} className="text-ng-secundario hover:text-white">{t("entrar")}</Link>
-          <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
-            {t("empezar")}
-          </Link>
+          <SegunSesion
+            conSesion={
+              <Link href={ENLACE_PANEL} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
+                {t("irApp")} →
+              </Link>
+            }
+            sinSesion={
+              <>
+                <Link href={ENLACE_ENTRAR} className="text-ng-secundario hover:text-white">{t("entrar")}</Link>
+                <Link href={ENLACE_EMPEZAR} className="rounded-ng-md bg-marca px-4 py-2 font-semibold text-ng-tinta brillo-marca hover:brightness-110">
+                  {t("empezar")}
+                </Link>
+              </>
+            }
+          />
         </nav>
       </div>
     </header>
