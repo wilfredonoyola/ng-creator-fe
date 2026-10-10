@@ -274,7 +274,7 @@ export default function Landing() {
             <p className="text-lg leading-relaxed text-[#D9D8D2] sm:text-[19px]">{t("portada.texto")}</p>
             <div className="mt-1 flex flex-col gap-3.5">
               <div className="flex flex-wrap items-center gap-7">
-                <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] focus-visible:outline-white`}>
+                <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] focus-visible:outline-white`}>
                   {t("nav.empezar")}
                 </Link>
                 <a href={enlaceDemo} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
@@ -517,7 +517,7 @@ export default function Landing() {
           <div className="flex flex-col gap-7">
             <p className="text-lg leading-normal sm:text-xl">{t("cierre.texto")}</p>
             <div className="flex flex-wrap items-center gap-7">
-              <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] shadow-[inset_0_0_0_1.5px_#0A0A0A] focus-visible:outline-[#0A0A0A]`}>
+              <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] shadow-[inset_0_0_0_1.5px_#0A0A0A] focus-visible:outline-[#0A0A0A]`}>
                 {t("nav.empezar")}
               </Link>
               <a href={enlaceDemo} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>

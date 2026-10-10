@@ -95,7 +95,7 @@ export function Precios({ enlaceDemo }: { enlaceDemo: string }) {
                 <p className={`${ETIQUETA} text-[13px] font-medium`}>{t(anual ? "cobroAnual" : "cobroMensual")}</p>
               </div>
               <Punto texto={t("horasMes", { n: p.horas })} />
-              <Link href={ENLACE_EMPEZAR} className={p.destacado ? BOTON_CORAL : BOTON_BORDE}>
+              <Link href={ENLACE_EMPEZAR} data-track="start-free" className={p.destacado ? BOTON_CORAL : BOTON_BORDE}>
                 {t("empezar")}
               </Link>
             </div>
