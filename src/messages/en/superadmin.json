@@ -1,0 +1,82 @@
+{
+  "secciones": {
+    "clientes": "Clients",
+    "usuarios": "Users",
+    "origenes": "How people found us"
+  },
+  "irAlPanel": "Go to dashboard",
+  "salir": "Sign out",
+  "noEsSuperadmin": "The account {email} doesn't have superadmin access.",
+  "volverAlPanel": "Back to dashboard",
+  "otraCuenta": "Sign in with another account",
+  "login": {
+    "titulo": "Clipfine administration",
+    "subtitulo": "For the Clipfine team only.",
+    "correo": "Email",
+    "password": "Password",
+    "entrar": "Sign in",
+    "entrando": "Signing in…",
+    "error": "Couldn't sign in.",
+    "sinAcceso": "This account doesn't have superadmin access.",
+    "primeraVez": "It's your first sign-in: choose your password in the regular login and come back.",
+    "olvide": "Forgot your password? Use the regular login"
+  },
+  "clientes": {
+    "titulo": "Clients",
+    "subtitulo": "Every Clipfine brand: who owns it, how much it uses, whether it's a demo and how many episodes it can upload. Turning a client off cuts access for its whole team without deleting anything.",
+    "buscar": "Search by brand or email",
+    "cargando": "Loading…",
+    "vacio": "No clients with that filter.",
+    "nombre": "Brand name",
+    "demo": "Demo",
+    "esDemo": "Demo account",
+    "cupo": "Episodes it can upload",
+    "sinTope": "No limit",
+    "usados": "Used {usados} of {tope}",
+    "guardar": "Save",
+    "guardando": "Saving…",
+    "guardado": "Saved.",
+    "error": "Couldn't save.",
+    "apagado": "Off",
+    "sinPropietario": "No owner",
+    "resumen": "{miembros, plural, one {1 person} other {# people}} · {episodios, plural, one {1 episode} other {# episodes}}",
+    "desde": "since {fecha}",
+    "apagar": "Turn off",
+    "prender": "Turn on",
+    "confirmarApagar": "Turn off {nombre}? Nobody on its team will be able to get in until you turn it back on. Nothing is deleted.",
+    "filtros": {
+      "activos": "Active",
+      "demo": "Demo",
+      "archivados": "Off",
+      "todos": "All"
+    }
+  },
+  "usuarios": {
+    "titulo": "Users",
+    "subtitulo": "{n, plural, one {1 person has} other {# people have}} a Clipfine account.",
+    "buscar": "Search by email, name or brand",
+    "cargando": "Loading…",
+    "sinAcceso": "No access",
+    "sinMarcas": "No brands",
+    "conocio": "Found us through",
+    "entro": "Signed in {cuando}",
+    "nuncaEntro": "Never signed in",
+    "cortar": "Cut access",
+    "devolver": "Restore access",
+    "confirmarCortar": "Cut access for {email}? They won't be able to sign in to Clipfine until you restore it.",
+    "error": "Couldn't change it."
+  },
+  "origenes": {
+    "titulo": "How people found us",
+    "subtitulo": "What each person answered in onboarding: where did you hear about us?",
+    "cargando": "Loading…",
+    "vacio": "Nobody has answered yet. The question has been in onboarding since October 9.",
+    "resumen": {
+      "titulo": "By channel",
+      "totales": "{respondieron} answered · {sinRespuesta} without an answer (accounts from before the question, or invited)"
+    },
+    "lista": {
+      "titulo": "Answers, newest first"
+    }
+  }
+}

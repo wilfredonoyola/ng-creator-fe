@@ -1,6 +1,4 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
-import adminMarcas_es from "./es/adminMarcas.json";
-import adminOrigenes_es from "./es/adminOrigenes.json";
 import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
@@ -97,9 +95,8 @@ import requisitosPassword_es from "./es/requisitosPassword.json";
 import revision_es from "./es/revision.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
+import superadmin_es from "./es/superadmin.json";
 import versionFacebook_es from "./es/versionFacebook.json";
-import adminMarcas_en from "./en/adminMarcas.json";
-import adminOrigenes_en from "./en/adminOrigenes.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
@@ -196,12 +193,11 @@ import requisitosPassword_en from "./en/requisitosPassword.json";
 import revision_en from "./en/revision.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
 import revisionVideoCard_en from "./en/revisionVideoCard.json";
+import superadmin_en from "./en/superadmin.json";
 import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
-    "adminMarcas": adminMarcas_es,
-    "adminOrigenes": adminOrigenes_es,
     "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
@@ -298,11 +294,10 @@ export const mensajes = {
     "revision": revision_es,
     "revisionTarjeta": revisionTarjeta_es,
     "revisionVideoCard": revisionVideoCard_es,
+    "superadmin": superadmin_es,
     "versionFacebook": versionFacebook_es,
   },
   en: {
-    "adminMarcas": adminMarcas_en,
-    "adminOrigenes": adminOrigenes_en,
     "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
@@ -399,6 +394,7 @@ export const mensajes = {
     "revision": revision_en,
     "revisionTarjeta": revisionTarjeta_en,
     "revisionVideoCard": revisionVideoCard_en,
+    "superadmin": superadmin_en,
     "versionFacebook": versionFacebook_en,
   },
 };

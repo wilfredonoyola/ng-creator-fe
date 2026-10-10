@@ -11,9 +11,8 @@
     "creators": "Creators",
     "equipo": "Equipo",
     "brandKit": "Brand Kit",
-    "marcas": "Marcas",
-    "redesConectadas": "Redes conectadas",
-    "comoNosConocieron": "Cómo nos conocieron"
+    "superadmin": "Superadmin",
+    "redesConectadas": "Redes conectadas"
   },
   "cerrarMenu": "Cerrar menú",
   "trabajandoEnTitulo": "Trabajando en {marca}. Expandí el menú para cambiarla.",
