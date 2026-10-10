@@ -71,7 +71,7 @@ import {
   MONO,
   PiePublico,
   Seccion,
-  enlaceDemo,
+  LINK_DEMO,
 } from "@/components/landing/Publica";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MAQUETAS } from "@/components/landing/mockups";
@@ -242,7 +242,7 @@ export default function PaginaFunciones() {
                 <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] focus-visible:outline-white`}>
                   {t("portada.cta")}
                 </Link>
-                <a href={enlaceDemo(tl("demoAsunto"))} className={`text-[17px] ${LINK_SUBRAYADO}`}>{tl("nav.demo")}</a>
+                <a {...LINK_DEMO} className={`text-[17px] ${LINK_SUBRAYADO}`}>{tl("nav.demo")}</a>
               </div>
               <p className={`${ETIQUETA} text-sm font-medium text-[#A3A29C]`}>{tl("portada.letraChica")}</p>
             </div>
@@ -326,7 +326,7 @@ export default function PaginaFunciones() {
                 >
                   {t("cierre.cta")}
                 </Link>
-                <a href={enlaceDemo(tl("demoAsunto"))} className={`text-[17px] ${LINK_SUBRAYADO}`}>{tl("nav.demo")}</a>
+                <a {...LINK_DEMO} className={`text-[17px] ${LINK_SUBRAYADO}`}>{tl("nav.demo")}</a>
               </div>
               <p className={`${ETIQUETA} text-sm font-medium`}>{tl("portada.letraChica")}</p>
             </div>
