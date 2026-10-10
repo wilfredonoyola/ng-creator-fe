@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useMutation } from "@apollo/client";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, Ellipsis, LoaderCircle, Redo2, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, Redo2, Send, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
 import { SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/graphql/operations";
 import { useSesion } from "@/lib/sesion";
 import type { CalidadClip } from "@/lib/calidad";
 import { Menu } from "@/components/Menu";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
-import { EstadoGuardado } from "@/components/episodios/ExportarClip";
+import { EstadoGuardado, useDescargarMp4 } from "@/components/episodios/ExportarClip";
 import type { Autoria } from "@/components/episodios/TomarClip";
 import { PanelExportar } from "./PanelExportar";
 import type { EstadoGuardado as Guardado } from "./useGuardado";
@@ -20,10 +20,17 @@ const ICONO = "inline-flex h-10 w-10 shrink-0 items-center justify-center rounde
 /**
  * La barra de arriba del editor: volver al episodio, el título del clip, cómo
  * va el guardado (es automático: no hay botón Guardar), quién lo edita,
- * deshacer y rehacer, la calidad estimada y Exportar.
+ * deshacer y rehacer, la calidad estimada, Descargar y Programar.
  *
- * Exportar abre un panel con el MP4, "Listo" y Programar. En lo angosto, quién
- * lo edita pasa al menú "···".
+ * Dos caminos, cada uno a un toque: hay quien solo quiere el clip y hay quien
+ * lo programa desde acá.
+ * - Descargar baja el MP4 si está al día; si no, lo exporta y baja solo al
+ *   terminar. La flechita abre el panel del MP4 (exportar de nuevo, calidad,
+ *   "Listo" para el equipo).
+ * - Programar no espera al MP4: si falta o quedó viejo, se exporta solo antes
+ *   de publicar (ng-creator-be, `esperaVideo`).
+ *
+ * En lo angosto, quién lo edita pasa al menú "···".
  */
 export function BarraSuperior({
   clipId,
@@ -38,6 +45,7 @@ export function BarraSuperior({
   deshacer,
   calidad,
   exportar,
+  hrefProgramar,
 }: {
   clipId: string;
   marcaId: string;
@@ -51,7 +59,8 @@ export function BarraSuperior({
   deshacer: { puede: boolean; puedeRehacer: boolean; deshacer: () => void; rehacer: () => void };
   /** La calidad estimada con el encuadre de ahora (null si no se sabe la fuente). */
   calidad: CalidadClip | null;
-  exportar: Omit<ComponentProps<typeof PanelExportar>, "clipId" | "marcaId" | "titulo" | "puedeOperar">;
+  exportar: Omit<ComponentProps<typeof PanelExportar>, "clipId" | "marcaId" | "puedeOperar" | "bajada" | "bajarAlTerminar">;
+  hrefProgramar: string;
 }) {
   const t = useTranslations("editorBarra");
   const th = useTranslations("editorHerramientas");
@@ -62,7 +71,42 @@ export function BarraSuperior({
   const [abierto, setAbierto] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
   const mio = Boolean(tomadoPor && tomadoPor.usuarioId === usuario?._id);
-  const procesando = exportar.render.estado === "EN_COLA" || exportar.render.estado === "RENDERIZANDO" || exportar.render.pidiendo;
+  const { render } = exportar;
+  const procesando = render.estado === "EN_COLA" || render.estado === "RENDERIZANDO" || render.pidiendo;
+  const alDia = render.estado === "LISTO" && Boolean(render.urlVideo) && !render.desactualizado;
+  const bajada = useDescargarMp4(render.urlVideo, titulo);
+  const [bajarAlTerminar, setBajarAlTerminar] = useState(false);
+  const { fallidas = 0 } = exportar.publicacion ?? {};
+
+  // Se pidió "Descargar" sin el MP4 al día: baja solo en cuanto termina. Un
+  // FALLIDO de antes no cuenta: solo el del render que se pidió ahora.
+  const vioProceso = useRef(false);
+  useEffect(() => {
+    if (!bajarAlTerminar) return;
+    if (procesando) {
+      vioProceso.current = true;
+      return;
+    }
+    if (render.estado === "FALLIDO" && vioProceso.current) {
+      vioProceso.current = false;
+      setBajarAlTerminar(false);
+      return;
+    }
+    if (!alDia) return;
+    vioProceso.current = false;
+    setBajarAlTerminar(false);
+    void bajada.descargar();
+  }, [bajarAlTerminar, procesando, alDia, render.estado, bajada]);
+
+  function descargar() {
+    if (alDia && !procesando) {
+      void bajada.descargar();
+      return;
+    }
+    if (!procesando) exportar.onExportar();
+    setBajarAlTerminar(true);
+    setAbierto(true);
+  }
 
   // El panel de Exportar se cierra al tocar afuera o con Escape.
   useEffect(() => {
@@ -179,26 +223,53 @@ export function BarraSuperior({
         </div>
       )}
 
-      <div ref={caja} className="relative">
-        <button
-          type="button"
-          onClick={() => setAbierto((a) => !a)}
-          aria-expanded={abierto}
-          aria-haspopup="dialog"
-          className="inline-flex h-10 items-center gap-2 rounded-ng-md bg-ng-azul px-4 text-sm font-bold text-ng-tinta transition hover:brightness-110"
-        >
-          {procesando && <LoaderCircle size={16} className="animate-spin" aria-hidden />}
-          <span className="tabular-nums">
-            {procesando && exportar.render.estado === "RENDERIZANDO" ? th("barra.exportando", { n: exportar.render.progreso }) : t("exportar")}
-          </span>
-        </button>
+      <div ref={caja} className="relative flex items-center gap-2">
+        <div className="flex h-10 items-stretch overflow-hidden rounded-ng-md border border-white/20">
+          <button
+            type="button"
+            onClick={descargar}
+            disabled={bajada.bajando || (!puedeOperar && !alDia)}
+            title={alDia ? t("descargar.mp4") : th("exportar.bajaAlTerminar")}
+            className="inline-flex items-center gap-2 px-3 text-sm font-semibold text-white transition hover:bg-white/5 disabled:opacity-50"
+          >
+            {procesando || bajada.bajando ? <LoaderCircle size={16} className="animate-spin" aria-hidden /> : <Download size={16} aria-hidden />}
+            <span className="hidden tabular-nums sm:inline">
+              {procesando && render.estado === "RENDERIZANDO"
+                ? th("barra.exportando", { n: render.progreso })
+                : bajada.bajando
+                  ? t("descargar.bajando")
+                  : th("barra.descargar")}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setAbierto((a) => !a)}
+            aria-expanded={abierto}
+            aria-haspopup="dialog"
+            aria-label={th("barra.opcionesVideo")}
+            title={th("barra.opcionesVideo")}
+            className="inline-flex w-8 items-center justify-center border-l border-white/20 text-white/80 transition hover:bg-white/5"
+          >
+            <ChevronDown size={16} aria-hidden />
+          </button>
+        </div>
+        {puedeOperar && (
+          <Link
+            href={hrefProgramar}
+            title={alDia ? undefined : th("exportar.seExportaSolo")}
+            className="inline-flex h-10 items-center gap-2 rounded-ng-md bg-ng-azul px-4 text-sm font-bold text-ng-tinta transition hover:brightness-110"
+          >
+            <Send size={16} aria-hidden />
+            {fallidas ? t("programar.reintentar") : t("programar.programar")}
+          </Link>
+        )}
         {abierto && (
           <div
             role="dialog"
-            aria-label={t("exportar")}
+            aria-label={th("barra.opcionesVideo")}
             className="absolute right-0 top-full z-40 mt-2 max-h-[80vh] w-[min(22rem,calc(100vw-1rem))] overflow-y-auto rounded-ng-lg border border-white/10 bg-ng-elevada p-4 shadow-2xl"
           >
-            <PanelExportar clipId={clipId} marcaId={marcaId} titulo={titulo} puedeOperar={puedeOperar} {...exportar} />
+            <PanelExportar clipId={clipId} marcaId={marcaId} puedeOperar={puedeOperar} bajada={bajada} bajarAlTerminar={bajarAlTerminar} {...exportar} />
           </div>
         )}
       </div>

@@ -13,7 +13,9 @@
     "deshacerAtajo": "Undo (⌘Z / Ctrl+Z)",
     "rehacer": "Redo",
     "rehacerAtajo": "Redo (⇧⌘Z / Ctrl+Y)",
-    "exportando": "Exporting {n}%"
+    "exportando": "Exporting {n}%",
+    "descargar": "Download",
+    "opcionesVideo": "Video options"
   },
   "errores": {
     "exportar": "Couldn't export the video"
@@ -26,7 +28,8 @@
     "alDia": "It already has every change: only if you want to redo it.",
     "equipo": "For the team",
     "listoSinVideo": "Export the video to mark it ready.",
-    "seExportaSolo": "It exports on its own before publishing."
+    "seExportaSolo": "It exports on its own before publishing.",
+    "bajaAlTerminar": "It downloads on its own once the export finishes."
   },
   "escenario": {
     "verEnRed": "Preview as TikTok, Reels or Shorts",

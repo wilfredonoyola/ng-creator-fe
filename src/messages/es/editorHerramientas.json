@@ -13,7 +13,9 @@
     "deshacerAtajo": "Deshacer (⌘Z / Ctrl+Z)",
     "rehacer": "Rehacer",
     "rehacerAtajo": "Rehacer (⇧⌘Z / Ctrl+Y)",
-    "exportando": "Exportando {n}%"
+    "exportando": "Exportando {n}%",
+    "descargar": "Descargar",
+    "opcionesVideo": "Opciones del video"
   },
   "errores": {
     "exportar": "No se pudo exportar el video"
@@ -26,7 +28,8 @@
     "alDia": "Ya tiene todos los cambios: solo si querés rehacerlo.",
     "equipo": "Para el equipo",
     "listoSinVideo": "Exportá el video para marcarlo listo.",
-    "seExportaSolo": "Se exporta solo antes de publicar."
+    "seExportaSolo": "Se exporta solo antes de publicar.",
+    "bajaAlTerminar": "Se descarga solo cuando termine de exportarse."
   },
   "escenario": {
     "verEnRed": "Ver como en TikTok, Reels o Shorts",
