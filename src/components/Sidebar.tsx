@@ -8,8 +8,7 @@ import {
   Clapperboard,
   House,
   Link2,
-  Megaphone,
-  Tags,
+  ShieldCheck,
   ListChecks,
   LogOut,
   PanelLeftClose,
@@ -25,6 +24,7 @@ import {
 import { cerrarSesion } from "@/lib/auth";
 import { LogoNG } from "./LogoNG";
 import { useSesion } from "@/lib/sesion";
+import { useSoySuperadmin } from "@/lib/superadmin";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
@@ -45,8 +45,7 @@ type ClaveNav =
   | "equipo"
   | "brandKit"
   | "redesConectadas"
-  | "comoNosConocieron"
-  | "marcas";
+  | "superadmin";
 
 interface ItemNav {
   href: string;
@@ -93,10 +92,10 @@ export const NAV_REACCION: ItemNav[] = [
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
+/** El panel de quienes administran Clipfine: aparte, con su propio login. */
+const navSuperadmin: ItemNav = { href: "/superadmin", icon: ShieldCheck, clave: "superadmin" };
 const navAdmin: ItemNav[] = [
   { href: "/admin/facebook", icon: Link2, clave: "redesConectadas" },
-  { href: "/admin/marcas", icon: Tags, clave: "marcas" },
-  { href: "/admin/origenes", icon: Megaphone, clave: "comoNosConocieron" },
 ];
 
 export function esActivo(item: ItemNav, pathname: string): boolean {
@@ -140,6 +139,7 @@ export function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const { usuario, esAdmin, rolEn, veMetricas } = useSesion();
+  const { soy: soySuperadmin } = useSoySuperadmin();
   const { activa } = useMarcaActiva();
   const rolAqui = rolEn(activa?._id);
 
@@ -265,6 +265,16 @@ export function Sidebar({
                 />
               ))}
           </>
+        )}
+
+        {soySuperadmin && (
+          <BotonNav
+            {...navSuperadmin}
+            label={t(`nav.${navSuperadmin.clave}`)}
+            colapsado={c}
+            activo={false}
+            onClick={() => ir(navSuperadmin.href)}
+          />
         )}
       </nav>
 

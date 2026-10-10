@@ -1,0 +1,82 @@
+{
+  "secciones": {
+    "clientes": "Clientes",
+    "usuarios": "Usuarios",
+    "origenes": "Cómo nos conocieron"
+  },
+  "irAlPanel": "Ir al panel",
+  "salir": "Salir",
+  "noEsSuperadmin": "La cuenta {email} no tiene acceso a superadmin.",
+  "volverAlPanel": "Volver al panel",
+  "otraCuenta": "Entrar con otra cuenta",
+  "login": {
+    "titulo": "Administración de Clipfine",
+    "subtitulo": "Solo para el equipo de Clipfine.",
+    "correo": "Correo",
+    "password": "Contraseña",
+    "entrar": "Entrar",
+    "entrando": "Entrando…",
+    "error": "No se pudo entrar.",
+    "sinAcceso": "Esta cuenta no tiene acceso a superadmin.",
+    "primeraVez": "Es tu primer ingreso: elegí tu contraseña en el login normal y volvé.",
+    "olvide": "¿Olvidaste tu contraseña? Usá el login normal"
+  },
+  "clientes": {
+    "titulo": "Clientes",
+    "subtitulo": "Cada marca de Clipfine: quién la tiene, cuánto usa, si es de demo y cuántos episodios puede subir. Apagar un cliente le corta el acceso a todo su equipo sin borrar nada.",
+    "buscar": "Buscar por marca o correo",
+    "cargando": "Cargando…",
+    "vacio": "No hay clientes con ese filtro.",
+    "nombre": "Nombre de la marca",
+    "demo": "Demo",
+    "esDemo": "Cuenta de demo",
+    "cupo": "Episodios que puede subir",
+    "sinTope": "Sin tope",
+    "usados": "Usó {usados} de {tope}",
+    "guardar": "Guardar",
+    "guardando": "Guardando…",
+    "guardado": "Guardado.",
+    "error": "No se pudo guardar.",
+    "apagado": "Apagado",
+    "sinPropietario": "Sin propietario",
+    "resumen": "{miembros, plural, one {1 persona} other {# personas}} · {episodios, plural, one {1 episodio} other {# episodios}}",
+    "desde": "desde {fecha}",
+    "apagar": "Apagar",
+    "prender": "Prender",
+    "confirmarApagar": "¿Apagar {nombre}? Nadie de su equipo va a poder entrar hasta que la prendas de nuevo. No se borra nada.",
+    "filtros": {
+      "activos": "Activos",
+      "demo": "Demo",
+      "archivados": "Apagados",
+      "todos": "Todos"
+    }
+  },
+  "usuarios": {
+    "titulo": "Usuarios",
+    "subtitulo": "{n, plural, one {1 persona tiene} other {# personas tienen}} cuenta en Clipfine.",
+    "buscar": "Buscar por correo, nombre o marca",
+    "cargando": "Cargando…",
+    "sinAcceso": "Sin acceso",
+    "sinMarcas": "Sin marcas",
+    "conocio": "Nos conoció por",
+    "entro": "Entró {cuando}",
+    "nuncaEntro": "Nunca entró",
+    "cortar": "Cortar acceso",
+    "devolver": "Devolver acceso",
+    "confirmarCortar": "¿Cortarle el acceso a {email}? No va a poder entrar a Clipfine hasta que se lo devuelvas.",
+    "error": "No se pudo cambiar."
+  },
+  "origenes": {
+    "titulo": "Cómo nos conocieron",
+    "subtitulo": "Lo que contestó cada persona en el onboarding: ¿dónde escuchaste de nosotros?",
+    "cargando": "Cargando…",
+    "vacio": "Todavía nadie contestó. La pregunta está en el onboarding desde el 9 de octubre.",
+    "resumen": {
+      "titulo": "Por canal",
+      "totales": "{respondieron} respondieron · {sinRespuesta} sin respuesta (cuentas de antes de la pregunta o invitadas)"
+    },
+    "lista": {
+      "titulo": "Respuestas, las más nuevas primero"
+    }
+  }
+}

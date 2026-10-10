@@ -345,20 +345,6 @@ export const USUARIOS = gql`
   }
 `;
 
-/** Dónde nos conoció cada persona (respuesta del onboarding). Solo ADMIN. */
-export const USUARIOS_ORIGEN = gql`
-  query UsuariosOrigen {
-    usuarios {
-      _id
-      email
-      nombre
-      comoNosConocio
-      comoNosConocioDetalle
-      createdAt
-    }
-  }
-`;
-
 // ---- Facebook: integracion ----
 
 export const FACEBOOK_ESTADO = gql`
@@ -416,25 +402,80 @@ export const RENOMBRAR_MARCA = gql`
   }
 `;
 
-/** Todas las marcas, con su prueba y si son de demo. Solo ADMIN. */
-export const MARCAS_ADMIN = gql`
-  query MarcasAdmin {
-    marcasAdmin {
-      _id
-      nombre
-      activa
-      archivadaEn
-      demo
-      createdAt
-      prueba {
-        topeEpisodios
-        episodiosUsados
+/** Si la sesión actual es de un superadmin (lista fija en el backend). */
+export const SOY_SUPERADMIN = gql`
+  query SoySuperadmin {
+    soySuperadmin
+  }
+`;
+
+/** Los clientes (marcas) con propietarios, miembros y episodios. Solo superadmin. */
+export const CLIENTES_SUPERADMIN = gql`
+  query ClientesSuperadmin {
+    clientesSuperadmin {
+      propietarios
+      miembros
+      episodios
+      marca {
+        _id
+        nombre
+        archivadaEn
+        demo
+        createdAt
+        prueba {
+          topeEpisodios
+          episodiosUsados
+        }
       }
     }
   }
 `;
 
-/** Lo que solo un ADMIN cambia de una marca: nombre, demo y cupo (o sin tope). */
+/** Apaga (archiva) o vuelve a prender un cliente. Solo superadmin. */
+export const ARCHIVAR_CLIENTE_SUPERADMIN = gql`
+  mutation ArchivarClienteSuperadmin($marcaId: ID!, $archivada: Boolean!) {
+    archivarClienteSuperadmin(marcaId: $marcaId, archivada: $archivada) {
+      _id
+      archivadaEn
+    }
+  }
+`;
+
+/** Las personas con sus marcas. Solo superadmin. */
+export const USUARIOS_SUPERADMIN = gql`
+  query UsuariosSuperadmin {
+    usuariosSuperadmin {
+      esSuperadmin
+      usuario {
+        _id
+        email
+        nombre
+        activo
+        ultimoAccesoEn
+        createdAt
+        comoNosConocio
+        comoNosConocioDetalle
+      }
+      accesos {
+        marcaId
+        marcaNombre
+        rol
+      }
+    }
+  }
+`;
+
+/** Corta o devuelve el acceso de una persona. Solo superadmin. */
+export const SET_USUARIO_ACTIVO_SUPERADMIN = gql`
+  mutation SetUsuarioActivoSuperadmin($usuarioId: ID!, $activo: Boolean!) {
+    setUsuarioActivoSuperadmin(usuarioId: $usuarioId, activo: $activo) {
+      _id
+      activo
+    }
+  }
+`;
+
+/** Lo que solo un superadmin cambia de una marca: nombre, demo y cupo (o sin tope). */
 export const AJUSTAR_MARCA_ADMIN = gql`
   mutation AjustarMarcaAdmin($marcaId: ID!, $nombre: String, $demo: Boolean, $topeEpisodios: Int, $sinTope: Boolean) {
     ajustarMarcaAdmin(marcaId: $marcaId, nombre: $nombre, demo: $demo, topeEpisodios: $topeEpisodios, sinTope: $sinTope) {
