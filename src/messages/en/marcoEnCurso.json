@@ -1,0 +1,15 @@
+{
+  "pastilla": "{n, plural, one {1 episode in progress} other {# episodes in progress}}",
+  "titulo": "In progress on this brand",
+  "cerrar": "Close",
+  "por": "started by {nombre}",
+  "fases": {
+    "reimportando": "Re-importing from Restream",
+    "importando": "Importing from Restream",
+    "subiendo": "Uploading",
+    "transcribiendo": "Transcribing",
+    "enColaTranscripcion": "Queued for transcription",
+    "buscandoClips": "Finding clips",
+    "procesando": "Processing the video"
+  }
+}

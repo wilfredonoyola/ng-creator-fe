@@ -49,6 +49,7 @@ import marcoCampanita_es from "./es/marcoCampanita.json";
 import marcoCrear_es from "./es/marcoCrear.json";
 import marcoDashboard_es from "./es/marcoDashboard.json";
 import marcoElegirPortada_es from "./es/marcoElegirPortada.json";
+import marcoEnCurso_es from "./es/marcoEnCurso.json";
 import marcoNavInferior_es from "./es/marcoNavInferior.json";
 import marcoNotificaciones_es from "./es/marcoNotificaciones.json";
 import marcoRoles_es from "./es/marcoRoles.json";
@@ -144,6 +145,7 @@ import marcoCampanita_en from "./en/marcoCampanita.json";
 import marcoCrear_en from "./en/marcoCrear.json";
 import marcoDashboard_en from "./en/marcoDashboard.json";
 import marcoElegirPortada_en from "./en/marcoElegirPortada.json";
+import marcoEnCurso_en from "./en/marcoEnCurso.json";
 import marcoNavInferior_en from "./en/marcoNavInferior.json";
 import marcoNotificaciones_en from "./en/marcoNotificaciones.json";
 import marcoRoles_en from "./en/marcoRoles.json";
@@ -242,6 +244,7 @@ export const mensajes = {
     "marcoCrear": marcoCrear_es,
     "marcoDashboard": marcoDashboard_es,
     "marcoElegirPortada": marcoElegirPortada_es,
+    "marcoEnCurso": marcoEnCurso_es,
     "marcoNavInferior": marcoNavInferior_es,
     "marcoNotificaciones": marcoNotificaciones_es,
     "marcoRoles": marcoRoles_es,
@@ -339,6 +342,7 @@ export const mensajes = {
     "marcoCrear": marcoCrear_en,
     "marcoDashboard": marcoDashboard_en,
     "marcoElegirPortada": marcoElegirPortada_en,
+    "marcoEnCurso": marcoEnCurso_en,
     "marcoNavInferior": marcoNavInferior_en,
     "marcoNotificaciones": marcoNotificaciones_en,
     "marcoRoles": marcoRoles_en,

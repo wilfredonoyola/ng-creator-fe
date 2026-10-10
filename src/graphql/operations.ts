@@ -1572,6 +1572,33 @@ export const EPISODIOS = gql`
 `;
 
 /**
+ * Lo que la marca tiene en marcha, para el aviso global (EnCurso): solo lo
+ * necesario para decir qué paso va, cuánto falta y quién lo empezó.
+ */
+export const EPISODIOS_EN_CURSO = gql`
+  query EpisodiosEnCurso($marcaId: String!) {
+    episodiosEnCurso(marcaId: $marcaId) {
+      _id
+      titulo
+      estado
+      progresoBunny
+      estadoImportacion
+      progresoImportacion
+      estadoTranscripcion
+      progresoTranscripcion
+      estadoMomentos
+      reimportacion {
+        estado
+        progreso
+      }
+      subidoPor {
+        nombre
+      }
+    }
+  }
+`;
+
+/**
  * Crea el episodio (o retoma el que quedó a medias con el mismo archivo) y
  * devuelve la firma para subir directo a Bunny. La llave de Bunny no viene:
  * solo el hash que la usa.

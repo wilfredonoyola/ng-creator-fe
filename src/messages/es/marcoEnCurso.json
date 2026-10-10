@@ -1,0 +1,15 @@
+{
+  "pastilla": "{n, plural, one {1 episodio en proceso} other {# episodios en proceso}}",
+  "titulo": "En proceso en esta marca",
+  "cerrar": "Cerrar",
+  "por": "lo empezó {nombre}",
+  "fases": {
+    "reimportando": "Reimportando de Restream",
+    "importando": "Importando de Restream",
+    "subiendo": "Subiendo",
+    "transcribiendo": "Transcribiendo",
+    "enColaTranscripcion": "En cola para transcribir",
+    "buscandoClips": "Buscando clips",
+    "procesando": "Procesando el video"
+  }
+}
