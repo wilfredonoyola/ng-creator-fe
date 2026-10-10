@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
-import { Download } from "lucide-react";
+import { Download, FileSpreadsheet, FileText, LoaderCircle } from "lucide-react";
 import { RESUMEN_METRICAS } from "@/graphql/operations";
 import { FotoMarca } from "@/components/FotoMarca";
+import { AvisoExportar, useExportarMetricas } from "@/components/metricas/ExportarMetricas";
 import { BarrasGrupos } from "@/components/metricas/BarrasGrupos";
 import { haySesion } from "@/lib/auth";
 import { useMarcaActiva } from "@/lib/marca-activa";
@@ -74,6 +75,8 @@ function Reporte() {
     errorPolicy: "all",
   });
   const r: ResumenMetricas | undefined = data?.resumenMetricas;
+  const tExportar = useTranslations("metricasExportar");
+  const exportar = useExportarMetricas(marca?._id, dias);
 
   // El título es el nombre que el navegador le propone al PDF.
   useEffect(() => {
@@ -107,6 +110,32 @@ function Reporte() {
         ))}
         <button
           type="button"
+          onClick={() => void exportar.descargar("CSV")}
+          disabled={!r || Boolean(exportar.ocupado)}
+          className="flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-sm font-medium text-white/80 hover:bg-white/5 disabled:opacity-50"
+        >
+          {exportar.ocupado === "CSV" ? (
+            <LoaderCircle size={15} strokeWidth={2} className="animate-spin" aria-hidden />
+          ) : (
+            <FileSpreadsheet size={15} strokeWidth={2} aria-hidden />
+          )}
+          {tExportar("descargarCsv")}
+        </button>
+        <button
+          type="button"
+          onClick={() => void exportar.descargar("MARKDOWN")}
+          disabled={!r || Boolean(exportar.ocupado)}
+          className="flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-sm font-medium text-white/80 hover:bg-white/5 disabled:opacity-50"
+        >
+          {exportar.ocupado === "MARKDOWN" ? (
+            <LoaderCircle size={15} strokeWidth={2} className="animate-spin" aria-hidden />
+          ) : (
+            <FileText size={15} strokeWidth={2} aria-hidden />
+          )}
+          {tExportar("descargarMarkdown")}
+        </button>
+        <button
+          type="button"
           onClick={() => window.print()}
           disabled={!r}
           className="bg-marca flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold disabled:opacity-50"
@@ -114,6 +143,11 @@ function Reporte() {
           <Download size={15} strokeWidth={2} aria-hidden />
           {t("descargar")}
         </button>
+        {exportar.error && (
+          <div className="w-full text-right">
+            <AvisoExportar error={exportar.error} copiado={false} />
+          </div>
+        )}
       </div>
 
       <article className="mx-auto max-w-3xl rounded-xl bg-white p-5 text-ng-tinta sm:p-10 print:max-w-none print:rounded-none print:p-0">

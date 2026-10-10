@@ -4,12 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
-import { FileText } from "lucide-react";
 import { RESUMEN_METRICAS } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { IconoRed, Poster } from "@/components/IconoRed";
 import { BarrasGrupos } from "@/components/metricas/BarrasGrupos";
 import { BarrasHora } from "@/components/metricas/BarrasHora";
+import { ExportarMetricas } from "@/components/metricas/ExportarMetricas";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { esMotivo } from "@/lib/momentos";
 import { etiquetaHora } from "@/lib/analitica";
@@ -93,14 +93,8 @@ export default function MetricasPage() {
             </p>
           )}
         </div>
-        {/* La acción principal: el reporte que la agencia le manda al cliente. */}
-        <Link
-          href={`/metricas/reporte?dias=${dias}`}
-          className="bg-marca flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold"
-        >
-          <FileText size={15} strokeWidth={2} aria-hidden />
-          {t("reporte")}
-        </Link>
+        {/* La acción principal: llevarse los números (el PDF es el reporte para el cliente). */}
+        <ExportarMetricas marcaId={activa?._id} dias={dias} />
       </div>
 
       <div className="mb-5 flex flex-wrap items-center gap-2">

@@ -1465,6 +1465,21 @@ export const RESUMEN_METRICAS = gql`
   }
 `;
 
+/**
+ * Las métricas como archivo (CSV o Markdown), armado por el backend en el
+ * idioma de quien lo pide (el header `x-idioma`). Es un archivo, no estado:
+ * se pide con `fetchPolicy: "no-cache"`.
+ */
+export const EXPORTAR_METRICAS = gql`
+  query ExportarMetricas($marcaId: ID!, $formato: FormatoExportacion!, $dias: Int!, $zonaHoraria: String) {
+    exportarMetricas(marcaId: $marcaId, formato: $formato, dias: $dias, zonaHoraria: $zonaHoraria) {
+      nombre
+      tipo
+      contenido
+    }
+  }
+`;
+
 // ---- Puente teléfono → computadora ----
 
 /**
