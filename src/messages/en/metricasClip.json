@@ -1,0 +1,66 @@
+{
+  "titulo": "How it did on social",
+  "actualizado": "Updated {cuando}",
+  "sinLecturas": "Metrics show up about an hour after posting.",
+  "actualizar": "Refresh",
+  "actualizando": "Refreshing…",
+  "actualizarAyuda": "Reads the metrics from the networks again. Anything read in the last 10 minutes isn't re-read.",
+  "errorActualizar": "Couldn't refresh the metrics. Try again in a bit.",
+  "totales": {
+    "vistas": "Views",
+    "interacciones": "Interactions",
+    "tasa": "Engagement",
+    "seguidores": "Followers gained",
+    "likes": "Likes",
+    "comentarios": "Comments",
+    "compartidos": "Shares",
+    "guardados": "Saves"
+  },
+  "detalleTotales": "{likes} likes · {comentarios} comments · {compartidos} shares · {guardados} saves. “—” means that network doesn't report it.",
+  "porRed": "On each network",
+  "crecimiento": "How views grew",
+  "retencion": "TikTok retention",
+  "youtubeVisto": "On YouTube, viewers watched <b>{pct}</b> of the video on average.",
+  "tiempoMedio": "About {seg} seconds per view.",
+  "origenesTitulo": "Where people came from",
+  "paisesTitulo": "Countries",
+  "nuevosTitulo": "New or returning viewers",
+  "seguidoresTitulo": "Followers or not",
+  "origenes": {
+    "paraTi": "For You",
+    "siguiendo": "Following",
+    "perfil": "Profile",
+    "busqueda": "Search",
+    "sonido": "Sound",
+    "mensajes": "Direct messages",
+    "otros": "Other"
+  },
+  "publico": {
+    "NEW_VIEWER": "New",
+    "RETURN_VIEWER": "Returning",
+    "FOLLOWER_PERCENT": "Followers",
+    "NON_FOLLOWER_PERCENT": "Non-followers"
+  },
+  "ia": {
+    "puntuacion": "AI score: <b>{n}/100</b>",
+    "resultado": "Got <b>{vistas}</b> views",
+    "veces": "{veces}× the brand average (90 days)",
+    "acerto": "The AI got it right: it expected a lot and the clip beat the average.",
+    "sorpresa": "Surprise: the AI didn't expect much and the clip beat the average.",
+    "esperabaMas": "The AI expected more: the clip did worse than the brand average.",
+    "acertoBajo": "The AI didn't expect much, and the clip did worse than the average."
+  },
+  "verPublicacion": "View post ↗",
+  "todaviaNoLeida": "No reading yet: it comes in about an hour after posting.",
+  "leida": "Read {cuando}",
+  "volver": "Metrics",
+  "noEncontrado": "We couldn't find this clip",
+  "otraMarca": "It may belong to another brand: switch brands in the menu.",
+  "hechoAMano": "Made by hand",
+  "verEpisodio": "View the episode",
+  "verPublicaciones": "See where it went out",
+  "sinPublicar": {
+    "titulo": "This clip hasn't gone out yet",
+    "detalle": "Once it's posted, its metrics show up here about an hour later."
+  }
+}

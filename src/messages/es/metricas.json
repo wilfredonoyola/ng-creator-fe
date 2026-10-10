@@ -1,0 +1,76 @@
+{
+  "titulo": "Métricas",
+  "subtitulo": "Cómo les fue a los clips que salieron de Clipfine en",
+  "actualizado": "Actualizado {cuando}",
+  "reporte": "Reporte para el cliente",
+  "periodo": "{n} días",
+  "irAnalisis": "Análisis de la página de Facebook →",
+  "sinMarca": {
+    "titulo": "Elegí una marca",
+    "detalle": "Las métricas son de una marca: elegí sobre cuál estás trabajando en el menú."
+  },
+  "error": {
+    "titulo": "No se pudieron cargar las métricas",
+    "detalle": "Probá de nuevo en un rato."
+  },
+  "vacio": {
+    "titulo": "No salió ningún clip en los últimos {dias} días",
+    "detalle": "Programá un clip desde su episodio. Sus métricas aparecen acá más o menos una hora después de que se publique.",
+    "irEpisodios": "Ir a Episodios"
+  },
+  "sinLecturas": {
+    "titulo": "Las métricas vienen en camino",
+    "detalle": "Ya hay clips publicados, pero las redes todavía no dieron números. La primera lectura llega más o menos una hora después de publicar, y después se vuelve a leer a las 6 h, 24 h, 2 días y así hasta los 90."
+  },
+  "cifras": {
+    "vistas": "Vistas",
+    "interacciones": "Interacciones",
+    "tasa": "Tasa de interacción",
+    "seguidores": "Seguidores ganados",
+    "clips": "Clips publicados",
+    "publicaciones": "{n, plural, one {# publicación} other {# publicaciones}}",
+    "vsAnterior": "{flecha} {valor}% vs. el período anterior",
+    "vsAnteriorPuntos": "{flecha} {valor} pts vs. el período anterior"
+  },
+  "conclusion": {
+    "titulo": "Qué funciona",
+    "motivo": "Los clips de <b>{motivo}</b> son los que más rinden: {vistas} vistas en promedio ({n, plural, one {# clip} other {# clips}}).",
+    "hora": "La mejor hora para publicar es a las <b>{hora}</b> ({n, plural, one {# clip} other {# clips}})."
+  },
+  "redes": {
+    "publicaciones": "{n, plural, one {# publicación} other {# publicaciones}}",
+    "vistas": "Vistas",
+    "interacciones": "Interacciones",
+    "seguidores": "Seguidores"
+  },
+  "mejores": {
+    "titulo": "Los clips que más rindieron",
+    "detalle": "Por vistas, sumando todas las redes. Al lado, la puntuación que les dio la IA."
+  },
+  "peores": {
+    "titulo": "Los que menos rindieron",
+    "detalle": "Para mirar qué tienen en común."
+  },
+  "porMotivo": {
+    "titulo": "Qué funciona",
+    "descripcion": "Vistas promedio según por qué la IA eligió el momento."
+  },
+  "porPuntuacion": {
+    "titulo": "La IA vs. la realidad",
+    "descripcion": "Vistas promedio según la puntuación que la IA le dio a cada clip. Si la IA acierta, las barras bajan de arriba hacia abajo."
+  },
+  "porHora": {
+    "titulo": "Mejor hora para publicar",
+    "descripcion": "Vistas promedio según la hora a la que salió cada clip (hora de {zona})."
+  },
+  "rangos": {
+    "90+": "90 o más",
+    "70-89": "De 70 a 89",
+    "50-69": "De 50 a 69",
+    "<50": "Menos de 50"
+  },
+  "sinTitulo": "Sin título",
+  "hechoAMano": "Hecho a mano",
+  "vistas": "vistas",
+  "ia": "IA {n}"
+}

@@ -43,6 +43,7 @@ import {
 import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 import { CuadroPortada, ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
+import { MetricasClip } from "@/components/metricas/MetricasClip";
 
 /** Lo que todavía va a salir: esa cuenta no se vuelve a marcar para este clip. */
 const PENDIENTES: string[] = ["PROGRAMADA", "SUBIENDO", "PROCESANDO", "AGENDADA_EN_RED"];
@@ -144,6 +145,14 @@ export default function ProgramarClipPage({
           publicaciones={pubsQ.data?.publicacionesDeClip ?? []}
           refrescar={() => void pubsQ.refetch()}
         />
+        {/* Cómo le fue a lo que ya salió. Sin publicaciones no se dibuja. */}
+        <div className="mt-6">
+          <MetricasClip
+            marcaId={marcaId}
+            clipId={clip._id}
+            puntuacion={clip.origen === "MANUAL" ? null : clip.puntuacion}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );

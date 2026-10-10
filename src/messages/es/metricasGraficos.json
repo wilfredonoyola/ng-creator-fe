@@ -1,0 +1,22 @@
+{
+  "sinDatos": "Todavía no hay clips con métricas para esto.",
+  "vistasPromedio": "{vistas} vistas prom.",
+  "muestra": "{n, plural, one {# clip} other {# clips}}",
+  "tasa": "{tasa} de interacción",
+  "pocaMuestra": "poca muestra",
+  "leyendaMuestra": "En gris: menos de {n} clips. Ese promedio todavía no alcanza para sacar conclusiones.",
+  "tocaUnaHora": "Pasá el mouse o tocá una barra para ver el detalle.",
+  "nadaEnEsaHora": "no salió ningún clip a esa hora",
+  "curvaVacia": "La primera lectura llega más o menos una hora después de publicar.",
+  "curvaTitulo": "Vistas desde que salió",
+  "unidad": {
+    "h": "{n} h",
+    "d": "{n} d"
+  },
+  "vistas": "{n} vistas",
+  "seFueEnTres": "<b>{pct}</b> se fue en los primeros 3 segundos",
+  "vioEntero": "<b>{pct}</b> lo vio hasta el final",
+  "retencionTitulo": "Qué parte de la gente sigue mirando en cada segundo",
+  "gancho": "Gancho",
+  "segundos": "{n} s"
+}

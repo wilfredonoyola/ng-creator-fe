@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   CalendarDays,
+  ChartColumnIncreasing,
   Clapperboard,
   House,
   Link2,
@@ -35,6 +36,7 @@ type ClaveNav =
   | "episodios"
   | "calendario"
   | "publicaciones"
+  | "metricas"
   | "crearVideo"
   | "montaje"
   | "revision"
@@ -62,6 +64,9 @@ export const NAV_PRINCIPAL: ItemNav[] = [
   { href: "/episodios", icon: Mic, clave: "episodios" },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
   { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
+  // Cómo le fue a lo publicado, en todas las redes (ng-creator-be#119): es lo
+  // que la agencia le muestra al cliente, así que va a la vista y no adentro.
+  { href: "/metricas", icon: ChartColumnIncreasing, clave: "metricas" },
 ];
 
 /**

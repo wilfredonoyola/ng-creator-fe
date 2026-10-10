@@ -24,6 +24,22 @@ body {
 }
 
 /*
+ * Imprimir (el reporte de métricas para el cliente, /metricas/reporte): hoja
+ * blanca y los colores tal cual, que si no el navegador saca las barras.
+ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: #FFFFFF;
+    color: #0A0A0A;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/*
  * La fuente de los subtítulos de los clips de episodio: la misma que quema
  * ffmpeg (ng-creator-be/docker/fonts). Servida desde acá para que la vista
  * previa del editor se vea igual que el MP4.

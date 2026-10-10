@@ -1,0 +1,76 @@
+{
+  "titulo": "Metrics",
+  "subtitulo": "How the clips posted from Clipfine did on",
+  "actualizado": "Updated {cuando}",
+  "reporte": "Client report",
+  "periodo": "{n} days",
+  "irAnalisis": "Facebook Page analysis →",
+  "sinMarca": {
+    "titulo": "Pick a brand",
+    "detalle": "Metrics belong to a brand: pick the one you're working on in the menu."
+  },
+  "error": {
+    "titulo": "Couldn't load the metrics",
+    "detalle": "Try again in a bit."
+  },
+  "vacio": {
+    "titulo": "No clips went out in the last {dias} days",
+    "detalle": "Schedule a clip from its episode. Its metrics show up here about an hour after it's posted.",
+    "irEpisodios": "Go to Episodes"
+  },
+  "sinLecturas": {
+    "titulo": "Metrics are on the way",
+    "detalle": "Clips have been posted, but the networks haven't reported numbers yet. The first reading comes in about an hour after posting, then again at 6h, 24h, 2 days and so on up to 90."
+  },
+  "cifras": {
+    "vistas": "Views",
+    "interacciones": "Interactions",
+    "tasa": "Engagement rate",
+    "seguidores": "Followers gained",
+    "clips": "Clips posted",
+    "publicaciones": "{n, plural, one {# post} other {# posts}}",
+    "vsAnterior": "{flecha} {valor}% vs. previous period",
+    "vsAnteriorPuntos": "{flecha} {valor} pts vs. previous period"
+  },
+  "conclusion": {
+    "titulo": "What works",
+    "motivo": "<b>{motivo}</b> clips perform best: {vistas} views on average ({n, plural, one {# clip} other {# clips}}).",
+    "hora": "The best time to post is <b>{hora}</b> ({n, plural, one {# clip} other {# clips}})."
+  },
+  "redes": {
+    "publicaciones": "{n, plural, one {# post} other {# posts}}",
+    "vistas": "Views",
+    "interacciones": "Interactions",
+    "seguidores": "Followers"
+  },
+  "mejores": {
+    "titulo": "Top-performing clips",
+    "detalle": "By views, across all networks. Next to each, the score the AI gave it."
+  },
+  "peores": {
+    "titulo": "Lowest-performing clips",
+    "detalle": "To see what they have in common."
+  },
+  "porMotivo": {
+    "titulo": "What works",
+    "descripcion": "Average views by why the AI picked the moment."
+  },
+  "porPuntuacion": {
+    "titulo": "AI vs. reality",
+    "descripcion": "Average views by the score the AI gave each clip. If the AI is right, the bars shrink from top to bottom."
+  },
+  "porHora": {
+    "titulo": "Best time to post",
+    "descripcion": "Average views by the hour each clip went out ({zona} time)."
+  },
+  "rangos": {
+    "90+": "90 or more",
+    "70-89": "70 to 89",
+    "50-69": "50 to 69",
+    "<50": "Under 50"
+  },
+  "sinTitulo": "Untitled",
+  "hechoAMano": "Made by hand",
+  "vistas": "views",
+  "ia": "AI {n}"
+}
