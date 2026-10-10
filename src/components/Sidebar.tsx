@@ -138,7 +138,7 @@ export function Sidebar({
   const tRol = useTranslations("marcoRoles");
   const pathname = usePathname();
   const router = useRouter();
-  const { usuario, esAdmin, rolEn } = useSesion();
+  const { usuario, esAdmin, rolEn, veMetricas } = useSesion();
   const { soy: soySuperadmin } = useSoySuperadmin();
   const { activa } = useMarcaActiva();
   const rolAqui = rolEn(activa?._id);
@@ -212,7 +212,7 @@ export function Sidebar({
 
       {/* Navegacion. Scrollea sola si no entra, sin arrastrar el resto. */}
       <nav className={`flex-1 space-y-1 overflow-y-auto px-3 pb-4 ${c ? "md:px-2" : ""}`}>
-        {NAV_PRINCIPAL.map((item) => (
+        {NAV_PRINCIPAL.filter((item) => item.clave !== "metricas" || veMetricas(activa?._id)).map((item) => (
           <BotonNav key={item.href} {...item} label={t(`nav.${item.clave}`)} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
         ))}
         {/* Una fila más del menú, que abre la lista al costado: así entra igual

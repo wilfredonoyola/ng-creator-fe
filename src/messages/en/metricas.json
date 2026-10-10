@@ -8,6 +8,10 @@
     "titulo": "Pick a brand",
     "detalle": "Metrics belong to a brand: pick the one you're working on in the menu."
   },
+  "sinAcceso": {
+    "titulo": "Analytics aren't part of your role",
+    "detalle": "The supplier role can't see the brand's analytics. If you need them, ask the brand's admin to change your role."
+  },
   "error": {
     "titulo": "Couldn't load the metrics",
     "detalle": "Try again in a bit."
