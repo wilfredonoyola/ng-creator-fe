@@ -1,0 +1,19 @@
+{
+  "titulo": "Brands",
+  "subtitulo": "Rename any brand, mark it as a demo account and set how many episodes it can upload.",
+  "soloAdmin": "This view is for administrators only.",
+  "buscar": "Search for a brand",
+  "cargando": "Loading…",
+  "vacio": "No brands with that name.",
+  "nombre": "Brand name",
+  "demo": "Demo",
+  "archivada": "Archived",
+  "esDemo": "Demo account",
+  "cupo": "Episodes it can upload",
+  "sinTope": "No limit",
+  "usados": "Used {usados} of {tope}",
+  "guardar": "Save",
+  "guardando": "Saving…",
+  "guardado": "Saved.",
+  "error": "Couldn't save."
+}

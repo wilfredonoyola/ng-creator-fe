@@ -9,6 +9,7 @@ import {
   House,
   Link2,
   Megaphone,
+  Tags,
   ListChecks,
   LogOut,
   PanelLeftClose,
@@ -44,7 +45,8 @@ type ClaveNav =
   | "equipo"
   | "brandKit"
   | "redesConectadas"
-  | "comoNosConocieron";
+  | "comoNosConocieron"
+  | "marcas";
 
 interface ItemNav {
   href: string;
@@ -93,6 +95,7 @@ const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo"
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
 const navAdmin: ItemNav[] = [
   { href: "/admin/facebook", icon: Link2, clave: "redesConectadas" },
+  { href: "/admin/marcas", icon: Tags, clave: "marcas" },
   { href: "/admin/origenes", icon: Megaphone, clave: "comoNosConocieron" },
 ];
 

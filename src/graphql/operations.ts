@@ -406,6 +406,49 @@ export const FACEBOOK_PAGINAS = gql`
  * Facebook (historial, análisis, publicar) trabajan sobre ella, y porque su
  * foto es la que se ve en el selector desde antes de que existieran las marcas.
  */
+/** Cambia el nombre de la marca. Solo el propietario (be#170). */
+export const RENOMBRAR_MARCA = gql`
+  mutation RenombrarMarca($marcaId: ID!, $nombre: String!) {
+    renombrarMarca(marcaId: $marcaId, nombre: $nombre) {
+      _id
+      nombre
+    }
+  }
+`;
+
+/** Todas las marcas, con su prueba y si son de demo. Solo ADMIN. */
+export const MARCAS_ADMIN = gql`
+  query MarcasAdmin {
+    marcasAdmin {
+      _id
+      nombre
+      activa
+      archivadaEn
+      demo
+      createdAt
+      prueba {
+        topeEpisodios
+        episodiosUsados
+      }
+    }
+  }
+`;
+
+/** Lo que solo un ADMIN cambia de una marca: nombre, demo y cupo (o sin tope). */
+export const AJUSTAR_MARCA_ADMIN = gql`
+  mutation AjustarMarcaAdmin($marcaId: ID!, $nombre: String, $demo: Boolean, $topeEpisodios: Int, $sinTope: Boolean) {
+    ajustarMarcaAdmin(marcaId: $marcaId, nombre: $nombre, demo: $demo, topeEpisodios: $topeEpisodios, sinTope: $sinTope) {
+      _id
+      nombre
+      demo
+      prueba {
+        topeEpisodios
+        episodiosUsados
+      }
+    }
+  }
+`;
+
 export const MARCAS_ACTIVAS = gql`
   query MarcasActivas {
     marcasActivas {
