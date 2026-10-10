@@ -8,6 +8,10 @@
     "titulo": "Elegí una marca",
     "detalle": "Las métricas son de una marca: elegí sobre cuál estás trabajando en el menú."
   },
+  "sinAcceso": {
+    "titulo": "Las métricas no están en tu rol",
+    "detalle": "Con el rol de proveedor no se ven las métricas de la marca. Si las necesitás, pedile a quien administra la marca que te cambie el rol."
+  },
   "error": {
     "titulo": "No se pudieron cargar las métricas",
     "detalle": "Probá de nuevo en un rato."

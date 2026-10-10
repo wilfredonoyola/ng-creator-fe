@@ -9,6 +9,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
 import { BarrasRendimiento } from "@/components/analisis/BarrasRendimiento";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
+import { useSesion } from "@/lib/sesion";
 import {
   etiquetaHora,
   mejorTramo,
@@ -45,6 +46,7 @@ export default function AnalisisPage() {
   const nombreDia = (d: number) => (esDia(String(d)) ? t(`dias.${String(d) as DiaSemana}`) : String(d));
   const diaCorto = (d: number) => (esDia(String(d)) ? t(`diasCortos.${String(d) as DiaSemana}`) : String(d));
   const { activa, cargando: cargandoPagina } = useMarcaActiva();
+  const { veMetricas } = useSesion();
   // El análisis es del historial de la página de Facebook de la marca.
   const pageId = activa?.paginaFacebook?.pageId;
   const [dias, setDias] = useState(0);
@@ -124,9 +126,11 @@ export default function AnalisisPage() {
         ))}
         {/* Esto es la página de Facebook entera; lo que salió de Clipfine, en
             todas las redes, está en Métricas. */}
-        <Link href="/metricas" className="ml-auto text-xs text-white/40 hover:text-white/70">
-          {t("irMetricas")}
-        </Link>
+        {veMetricas(activa?._id) && (
+          <Link href="/metricas" className="ml-auto text-xs text-white/40 hover:text-white/70">
+            {t("irMetricas")}
+          </Link>
+        )}
       </div>
 
       {sinHistorial ? (
