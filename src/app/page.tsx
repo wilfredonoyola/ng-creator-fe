@@ -21,7 +21,6 @@ import {
 } from "@/components/landing/Publica";
 import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
-import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MaquetaMetricas } from "@/components/landing/MaquetaMetricas";
 
@@ -260,7 +259,6 @@ export default function Landing() {
 
   return (
     <div className={`${VARIABLES_FUENTES} min-h-screen bg-white font-[family-name:var(--font-archivo)] text-[#0A0A0A]`}>
-      <RedirigirSiHaySesion />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(datosEstructurados) }} />
 
       <CabeceraPublica enLanding />
