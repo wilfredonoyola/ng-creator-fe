@@ -503,7 +503,6 @@ export default function EditorClipPage({
             exportar={{
               listoPor: clip.listoPor,
               publicacion: clip.publicacion,
-              hrefProgramar: `/episodios/${episodioId}/clips/${clipId}/publicar`,
               render: {
                 estado: estadoRender ?? null,
                 progreso: clip.progresoRender ?? 0,
@@ -515,6 +514,7 @@ export default function EditorClipPage({
               },
               onExportar: () => void exportar(),
             }}
+            hrefProgramar={`/episodios/${episodioId}/clips/${clipId}/publicar`}
           />
           {(error || guardado.cruces) && (
             <div className="space-y-2 px-3 pb-2 md:px-4">

@@ -1,15 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
-import { Check, Clapperboard, Download, LoaderCircle, RefreshCw, Send, Undo2 } from "lucide-react";
+import { Check, Clapperboard, Download, LoaderCircle, RefreshCw, Undo2 } from "lucide-react";
 import { MARCAR_CLIP_LISTO } from "@/graphql/operations";
 import { diaYHora } from "@/lib/publicaciones";
 import type { CalidadClip } from "@/lib/calidad";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
-import { estadoDelMp4, useDescargarMp4, type EstadoRender } from "@/components/episodios/ExportarClip";
+import { estadoDelMp4, type EstadoRender, type useDescargarMp4 } from "@/components/episodios/ExportarClip";
 import type { Autoria } from "@/components/episodios/TomarClip";
 import type { ResumenPublicacionClip } from "@/components/episodios/ListoClip";
 
@@ -35,33 +34,32 @@ export interface RenderClip {
 }
 
 /**
- * Lo que se abre con "Exportar": el MP4 (exportar, cómo va, descargar), marcar
- * el clip listo para el equipo y programarlo.
- *
- * Programar ya no pide exportar antes: si el MP4 falta o quedó viejo, se
- * exporta solo antes de publicar y la publicación espera (ng-creator-be,
- * `esperaVideo`).
+ * Lo que se abre desde "Descargar": el MP4 (exportar, cómo va, descargar) y
+ * marcar el clip listo para el equipo. Programar va en su propio botón de la
+ * barra: no pide exportar antes (ng-creator-be, `esperaVideo`).
  */
 export function PanelExportar({
   clipId,
   marcaId,
-  titulo,
   puedeOperar,
   listoPor,
   publicacion,
-  hrefProgramar,
   render,
   onExportar,
+  bajada,
+  bajarAlTerminar,
 }: {
   clipId: string;
   marcaId: string;
-  titulo: string;
   puedeOperar: boolean;
   listoPor?: Autoria | null;
   publicacion?: ResumenPublicacionClip | null;
-  hrefProgramar: string;
   render: RenderClip;
   onExportar: () => void;
+  /** La descarga vive en la barra: sigue aunque el panel se cierre. */
+  bajada: ReturnType<typeof useDescargarMp4>;
+  /** Se pidió "Descargar" sin el MP4 al día: baja solo cuando termina. */
+  bajarAlTerminar: boolean;
 }) {
   const t = useTranslations("editorHerramientas");
   const tb = useTranslations("editorBarra");
@@ -69,11 +67,9 @@ export function PanelExportar({
   const locale = useLocale();
   const [marcar, { loading: marcando }] = useMutation(MARCAR_CLIP_LISTO, { refetchQueries: ["ClipsListosSinProgramar"] });
   const [error, setError] = useState<string | null>(null);
-  const bajada = useDescargarMp4(render.urlVideo, titulo);
   const mp4 = estadoDelMp4(render, te);
   // Marcar listo sí pide un MP4 (el backend lo rechaza sin uno), aunque sea viejo.
   const conVideo = Boolean(render.urlVideo);
-  const alDia = mp4.listo && !render.desactualizado;
 
   async function terminar(listo: boolean) {
     setError(null);
@@ -107,6 +103,7 @@ export function PanelExportar({
         <h2 className="text-[11px] font-semibold uppercase tracking-wide text-ng-secundario">{t("exportar.video")}</h2>
         <p className={`font-medium ${TONOS[mp4.tono]}`}>{mp4.texto}</p>
         <p className="break-words text-xs text-white/50">{mp4.detalle}</p>
+        {bajarAlTerminar && <p className="text-xs text-ng-azul">{t("exportar.bajaAlTerminar")}</p>}
         {render.estado === "RENDERIZANDO" && (
           <div className="h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={render.progreso} aria-valuemin={0} aria-valuemax={100}>
             <div className="h-full rounded-full bg-ng-azul transition-all duration-700" style={{ width: `${Math.max(3, render.progreso)}%` }} />
@@ -184,23 +181,10 @@ export function PanelExportar({
         </section>
       )}
 
-      {/* ---- Programar ---- */}
-      {puedeOperar && (
-        <section className="space-y-2 border-t border-white/10 pt-4">
-          <Link
-            href={hrefProgramar}
-            className="flex w-full items-center justify-center gap-2 rounded-ng-md bg-white px-3 py-2.5 font-semibold text-ng-tinta hover:bg-white/90"
-          >
-            <Send size={16} aria-hidden />
-            {fallidas ? tb("programar.reintentar") : tb("programar.programar")}
-          </Link>
-          {!alDia && <p className="text-xs text-white/50">{t("exportar.seExportaSolo")}</p>}
-          {redes && (
-            <p className={`text-xs ${TONOS[redes.tono]}`}>
-              {redes.texto}. <span className="text-white/45">{redes.ayuda}</span>
-            </p>
-          )}
-        </section>
+      {redes && (
+        <p className={`border-t border-white/10 pt-4 text-xs ${TONOS[redes.tono]}`}>
+          {redes.texto}. <span className="text-white/45">{redes.ayuda}</span>
+        </p>
       )}
     </div>
   );
