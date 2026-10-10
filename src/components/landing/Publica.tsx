@@ -12,12 +12,17 @@ import { SegunSesion } from "@/components/landing/SegunSesion";
  * Diseño: branding/Clipfine Logo Directions (6)/Clipfine Landing.dc.html.
  */
 
-/** "Agendá una demo" abre un correo hasta que haya agenda. */
-const CORREO_DEMO = "soporte@ngstudios.co";
-
-export function enlaceDemo(asunto: string): string {
-  return `mailto:${CORREO_DEMO}?subject=${encodeURIComponent(asunto)}`;
-}
+/**
+ * "Agendá una demo": el calendario de Cal.com, en otra pestaña. `data-track`
+ * es para medir los clics en Google Tag Manager (ng-creator-be#168). Se
+ * esparce en cada link de demo: `<a {...LINK_DEMO}>`.
+ */
+export const LINK_DEMO = {
+  href: "https://cal.com/clipfine-demo/15min",
+  target: "_blank",
+  rel: "noopener noreferrer",
+  "data-track": "schedule-demo",
+} as const;
 
 /** Todas las funciones, en su propia página. */
 export const ENLACE_FUNCIONES = "/features";
@@ -92,7 +97,7 @@ export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boo
             sinSesion={
               <>
                 <Link href={ENLACE_ENTRAR} className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
-                <a href={enlaceDemo(t("demoAsunto"))} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
+                <a {...LINK_DEMO} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
                 <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
                   {t("nav.empezar")}
                 </Link>
