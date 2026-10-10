@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useMarcaActiva, type PruebaMarca } from "@/lib/marca-activa";
+import { PREFIJO_SITIO } from "@/lib/sitio";
 
 /** Los planes, en la landing. */
-export const ENLACE_PLANES = "/#precios";
+export const ENLACE_PLANES = `${PREFIJO_SITIO}/#precios`;
 
 /**
  * La prueba gratis de la marca activa, si tiene: cuánto usó y si ya no puede

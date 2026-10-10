@@ -9,3 +9,10 @@ export const URL_APP = process.env.NEXT_PUBLIC_URL_APP ?? "https://app.clipfine.
  * en local para no saltar de localhost al panel de producción.
  */
 export const PREFIJO_APP = process.env.NODE_ENV === "production" ? URL_APP : "";
+
+/**
+ * Lo mismo al revés: prefijo de los links del panel a la landing (inicio,
+ * precios, privacidad, términos). En app.clipfine.io "/" es el panel, así que
+ * un link relativo a "/" nunca llegaría a la página de venta.
+ */
+export const PREFIJO_SITIO = process.env.NODE_ENV === "production" ? URL_SITIO : "";

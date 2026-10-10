@@ -10,6 +10,7 @@ import { LogoNG } from "@/components/LogoNG";
 import { TemaDeMarca, temaCompleto } from "@/components/estilos/TemaDeMarca";
 import { GaleriaEstilos } from "@/components/estilos/GaleriaEstilos";
 import { haySesion } from "@/lib/auth";
+import { PREFIJO_SITIO } from "@/lib/sitio";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { ErrorDeSubida, uploadMarcaLogo } from "@/lib/upload";
 import { URL_SITIO } from "@/lib/sitio";
@@ -65,7 +66,7 @@ export default function OnboardingPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-ng-hondo px-4 py-10">
-      <Link href="/" aria-label={t("inicio")} className="mb-8">
+      <Link href={`${PREFIJO_SITIO}/`} aria-label={t("inicio")} className="mb-8">
         <LogoNG tamano={36} />
       </Link>
 

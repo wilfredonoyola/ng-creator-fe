@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { useRedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
+import { PREFIJO_SITIO } from "@/lib/sitio";
 
 /**
  * A donde volver despues de entrar.
@@ -51,7 +52,7 @@ export function MarcoAcceso({
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ng-hondo px-4 py-16">
       <Link
-        href="/"
+        href={`${PREFIJO_SITIO}/`}
         className="absolute left-4 top-4 text-xs text-white/40 transition hover:text-white sm:left-6 sm:top-6"
       >
         {t("volverAlInicio")}
@@ -62,7 +63,7 @@ export function MarcoAcceso({
           className="relative w-full max-w-sm rounded-ng-xl border border-white/10 bg-ng-tarjeta/80 p-8 backdrop-blur"
         >
           <div className="mb-6 flex flex-col items-center text-center">
-            <Link href="/" aria-label={t("inicio")}>
+            <Link href={`${PREFIJO_SITIO}/`} aria-label={t("inicio")}>
               <LogoNG tamano={56} soloIcono />
             </Link>
             <h1 className="mt-4 text-2xl font-bold tracking-tight">{titulo}</h1>
@@ -73,10 +74,10 @@ export function MarcoAcceso({
 
           {/* Enlaces públicos: Meta espera encontrarlos accesibles sin sesión. */}
           <div className="mt-6 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs">
-            <a href="/privacidad" className="text-white/40 hover:text-ng-celeste">
+            <a href={`${PREFIJO_SITIO}/privacidad`} className="text-white/40 hover:text-ng-celeste">
               {t("privacidad")}
             </a>
-            <a href="/terminos" className="text-white/40 hover:text-ng-celeste">
+            <a href={`${PREFIJO_SITIO}/terminos`} className="text-white/40 hover:text-ng-celeste">
               {t("terminos")}
             </a>
             <SelectorIdiomaCompacto />
