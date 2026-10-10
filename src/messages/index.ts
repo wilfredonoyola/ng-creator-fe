@@ -59,6 +59,7 @@ import marcoTopBar_es from "./es/marcoTopBar.json";
 import meta_es from "./es/meta.json";
 import metricas_es from "./es/metricas.json";
 import metricasClip_es from "./es/metricasClip.json";
+import metricasExportar_es from "./es/metricasExportar.json";
 import metricasGraficos_es from "./es/metricasGraficos.json";
 import metricasReporte_es from "./es/metricasReporte.json";
 import montaje_es from "./es/montaje.json";
@@ -154,6 +155,7 @@ import marcoTopBar_en from "./en/marcoTopBar.json";
 import meta_en from "./en/meta.json";
 import metricas_en from "./en/metricas.json";
 import metricasClip_en from "./en/metricasClip.json";
+import metricasExportar_en from "./en/metricasExportar.json";
 import metricasGraficos_en from "./en/metricasGraficos.json";
 import metricasReporte_en from "./en/metricasReporte.json";
 import montaje_en from "./en/montaje.json";
@@ -252,6 +254,7 @@ export const mensajes = {
     "meta": meta_es,
     "metricas": metricas_es,
     "metricasClip": metricasClip_es,
+    "metricasExportar": metricasExportar_es,
     "metricasGraficos": metricasGraficos_es,
     "metricasReporte": metricasReporte_es,
     "montaje": montaje_es,
@@ -349,6 +352,7 @@ export const mensajes = {
     "meta": meta_en,
     "metricas": metricas_en,
     "metricasClip": metricasClip_en,
+    "metricasExportar": metricasExportar_en,
     "metricasGraficos": metricasGraficos_en,
     "metricasReporte": metricasReporte_en,
     "montaje": montaje_en,
