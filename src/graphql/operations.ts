@@ -345,6 +345,20 @@ export const USUARIOS = gql`
   }
 `;
 
+/** Dónde nos conoció cada persona (respuesta del onboarding). Solo ADMIN. */
+export const USUARIOS_ORIGEN = gql`
+  query UsuariosOrigen {
+    usuarios {
+      _id
+      email
+      nombre
+      comoNosConocio
+      comoNosConocioDetalle
+      createdAt
+    }
+  }
+`;
+
 // ---- Facebook: integracion ----
 
 export const FACEBOOK_ESTADO = gql`

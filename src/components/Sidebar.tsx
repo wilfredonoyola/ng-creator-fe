@@ -7,6 +7,7 @@ import {
   Clapperboard,
   House,
   Link2,
+  Megaphone,
   ListChecks,
   LogOut,
   PanelLeftClose,
@@ -40,7 +41,8 @@ type ClaveNav =
   | "creators"
   | "equipo"
   | "brandKit"
-  | "redesConectadas";
+  | "redesConectadas"
+  | "comoNosConocieron";
 
 interface ItemNav {
   href: string;
@@ -84,7 +86,10 @@ export const NAV_REACCION: ItemNav[] = [
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
-const navAdmin: ItemNav[] = [{ href: "/admin/facebook", icon: Link2, clave: "redesConectadas" }];
+const navAdmin: ItemNav[] = [
+  { href: "/admin/facebook", icon: Link2, clave: "redesConectadas" },
+  { href: "/admin/origenes", icon: Megaphone, clave: "comoNosConocieron" },
+];
 
 export function esActivo(item: ItemNav, pathname: string): boolean {
   return [item.href, ...(item.tambien ?? [])].some((r) => pathname === r || pathname.startsWith(`${r}/`));
