@@ -28,6 +28,11 @@ export interface Publicacion {
   publicadaEn?: string | null;
   portadaAplicada?: boolean | null;
   portadaError?: string | null;
+  /**
+   * Se programó sin el MP4 al día: el render quedó pedido y la publicación
+   * espera a que termine (ng-creator-be#172). Si el render falla, queda FALLIDA.
+   */
+  esperaVideo?: boolean | null;
   createdAt: string;
   creadoPor?: { nombre: string } | null;
   canceladoPor?: { nombre: string } | null;

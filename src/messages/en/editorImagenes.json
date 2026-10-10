@@ -25,5 +25,5 @@
   "a": "to",
   "eliminar": "Delete this image",
   "soltaAca": "Drop the image to add it",
-  "confirmarRender": "Some images are still having their background removed. If you process now they may come out without the cut-out. Process anyway?"
+  "confirmarRender": "Some images are still having their background removed. If you export now they may come out without the cut-out. Export anyway?"
 }

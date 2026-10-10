@@ -416,7 +416,8 @@ function TarjetaClip({
             {t("tarjeta.metricas")}
           </Link>
         )}
-        {opera && tieneVideo && (
+        {/* Programar no pide el MP4: si falta o quedó viejo, se exporta solo antes de publicar. */}
+        {opera && (
           <Link
             href={`${editar}/publicar`}
             className="rounded-lg border border-indigo-400/40 px-3 py-1.5 text-center text-xs text-indigo-200 hover:bg-indigo-400/10"

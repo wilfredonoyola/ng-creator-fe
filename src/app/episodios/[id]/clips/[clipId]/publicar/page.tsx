@@ -52,7 +52,11 @@ const PENDIENTES: string[] = ["PROGRAMADA", "SUBIENDO", "PROCESANDO", "AGENDADA_
 const MARGEN_MS = 60_000;
 
 /**
- * Programar un clip ya procesado en las redes de la marca (#70, ng-creator-be#71).
+ * Programar un clip en las redes de la marca (#70, ng-creator-be#71).
+ *
+ * No hace falta exportarlo antes: si el MP4 falta o quedó viejo, el backend lo
+ * manda a exportar y la publicación espera el video (`esperaVideo`); a la
+ * hora sale siempre el MP4 de la última edición.
  *
  * La misma pantalla que la de la app (ng-creator-app, episodio/[id]/publicar),
  * menos "Publicar ahora": por ahora los clips solo se programan, y quedan en el
@@ -116,17 +120,6 @@ export default function ProgramarClipPage({
     );
   }
 
-  if (clip.estadoRender !== "LISTO" || !clip.urlVideo) {
-    return (
-      <DashboardLayout>
-        {volver}
-        <div className="mt-4">
-          <Vacio titulo={t("primeroProcesa")} detalle={t("primeroProcesaDetalle")} />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
     <DashboardLayout>
       {volver}
@@ -181,7 +174,8 @@ function Formulario({
     desdeSeg: number;
     editadoEn?: string | null;
     renderizadoEn?: string | null;
-    urlVideo: string;
+    estadoRender?: string | null;
+    urlVideo?: string | null;
     versionFacebook?: VersionCortaClip | null;
     calidad?: CalidadClip | null;
   };
@@ -245,10 +239,13 @@ function Formulario({
   const esperaVersion = (d: Destino) => d.red === "FACEBOOK" && facebookEspera;
   const aProgramar = elegidosEnOrden.filter((d) => !esperaVersion(d));
   const conYoutube = destinos.some((d) => d.red === "YOUTUBE" && elegidos.has(d.clave));
+  const conVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
   const editadoSinProcesar =
     clip.editadoEn &&
     clip.renderizadoEn &&
     new Date(clip.editadoEn).getTime() > new Date(clip.renderizadoEn).getTime() + 1000;
+  // La portada es un cuadro del MP4 final: solo se elige si el que hay ya es ese.
+  const portadaElegible = conVideo && !editadoSinProcesar ? clip.urlVideo ?? null : null;
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
@@ -297,7 +294,7 @@ function Formulario({
               formato: d.formato,
               descripcion: descripcionFinal || undefined,
               ajustes: d.red === "YOUTUBE" ? { titulo: tituloYoutube.trim() || clip.titulo } : undefined,
-              ...(portadaSeg != null ? { portadaSeg } : {}),
+              ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
               publicarEn: cuando.toISOString(),
             },
           },
@@ -342,9 +339,9 @@ function Formulario({
           ) : null}
         </div>
       </div>
-      {editadoSinProcesar ? (
-        <p className="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3 text-sm text-amber-300">
-          {t("cambiosSinProcesar")}
+      {!conVideo || editadoSinProcesar ? (
+        <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/60">
+          {conVideo ? t("cambiosSinProcesar") : t("sinVideo")}
         </p>
       ) : null}
 
@@ -353,8 +350,8 @@ function Formulario({
           {/* Dónde y cuándo sale, al día con lo que se marca abajo, y el botón
               arriba: no hace falta bajar hasta el final para programar. */}
           <div className="sticky top-2 z-10 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-ng-fondo/95 p-3 backdrop-blur">
-            {portadaSeg != null ? (
-              <CuadroPortada url={clip.urlVideo} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
+            {portadaSeg != null && portadaElegible ? (
+              <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
             ) : null}
             <div className="min-w-0 flex-1 space-y-1.5">
               <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/55"}`}>
@@ -458,7 +455,7 @@ function Formulario({
               ))}
           </Seccion>
 
-          {conFacebook && necesitaVersion ? (
+          {conFacebook && necesitaVersion && conVideo && clip.urlVideo ? (
             <SeccionVersionFacebook
               clipId={clip._id}
               marcaId={marcaId}
@@ -505,12 +502,11 @@ function Formulario({
           </Seccion>
 
           <Seccion titulo={t("portada.titulo")}>
-            <ElegirPortadaClip
-              url={clip.urlVideo}
-              duracion={duracionClip}
-              valor={portadaSeg}
-              onCambiar={setPortadaSeg}
-            />
+            {portadaElegible ? (
+              <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
+            ) : (
+              <p className="text-xs text-white/45">{t("portadaSinVideo")}</p>
+            )}
           </Seccion>
 
           <Seccion titulo={t("secciones.cuando")}>
@@ -625,6 +621,9 @@ function FilaPublicacionClip({
           {p.cuentaNombre ? ` · ${p.cuentaNombre}` : ""}
         </p>
         <EtiquetaProveedor proveedor={p.proveedor} />
+        {p.esperaVideo && p.estado === "PROGRAMADA" ? (
+          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">{t("esperaVideo")}</span>
+        ) : null}
         <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.clase}`}>{e.texto}</span>
       </div>
       {fecha ? (

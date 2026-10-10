@@ -395,6 +395,9 @@ function TarjetaGrupo({
             <p className="mt-0.5 line-clamp-2 break-words text-sm leading-snug">{titulo}</p>
           )}
           {editor && <p className="truncate text-[11px] text-white/55">{t("tarjeta.editadoPor", { nombre: editor })}</p>}
+          {pubs.some((x) => x.esperaVideo && x.estado === "PROGRAMADA") && (
+            <p className="truncate text-[11px] text-ng-azul">{t("esperaVideo")}</p>
+          )}
         </div>
       </div>
       <LogosDeRedes pubs={pubs} opera={opera} />
@@ -451,7 +454,9 @@ function LogoRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
   // El detalle de cada publicación de la red, con el motivo si falló: es lo que hay que leer para arreglarlo.
   const detalle = pubs
     .map((x) => {
-      const base = `${nombre}${x.cuentaNombre ? ` · ${x.cuentaNombre}` : ""} · ${estado(x.estado)}`;
+      const base = `${nombre}${x.cuentaNombre ? ` · ${x.cuentaNombre}` : ""} · ${estado(x.estado)}${
+        x.esperaVideo && x.estado === "PROGRAMADA" ? ` · ${t("esperaVideo")}` : ""
+      }`;
       if (!x.error || (x.estado !== "FALLIDA" && x.estado !== "PROGRAMADA")) return base;
       return `${base}\n${x.estado === "PROGRAMADA" ? t("tarjeta.reintentando") : ""}${x.error}`;
     })
@@ -677,6 +682,7 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
                   {t("detalle.verEn", { red: nombre })}
                 </a>
               )}
+              {x.esperaVideo && x.estado === "PROGRAMADA" && <p className="text-xs text-white/55">{t("esperaVideo")}</p>}
               {x.estado === "FALLIDA" && x.error && <p className="break-words text-xs text-red-400">{x.error}</p>}
               {x.estado === "PROGRAMADA" && x.error && (
                 <p className="break-words text-xs text-amber-300">{t("detalle.reintentando", { error: x.error })}</p>

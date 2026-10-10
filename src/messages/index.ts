@@ -13,6 +13,7 @@ import editorClip_es from "./es/editorClip.json";
 import editorCortes_es from "./es/editorCortes.json";
 import editorExportar_es from "./es/editorExportar.json";
 import editorGuiado_es from "./es/editorGuiado.json";
+import editorHerramientas_es from "./es/editorHerramientas.json";
 import editorImagenes_es from "./es/editorImagenes.json";
 import editorInspector_es from "./es/editorInspector.json";
 import editorListo_es from "./es/editorListo.json";
@@ -111,6 +112,7 @@ import editorClip_en from "./en/editorClip.json";
 import editorCortes_en from "./en/editorCortes.json";
 import editorExportar_en from "./en/editorExportar.json";
 import editorGuiado_en from "./en/editorGuiado.json";
+import editorHerramientas_en from "./en/editorHerramientas.json";
 import editorImagenes_en from "./en/editorImagenes.json";
 import editorInspector_en from "./en/editorInspector.json";
 import editorListo_en from "./en/editorListo.json";
@@ -212,6 +214,7 @@ export const mensajes = {
     "editorCortes": editorCortes_es,
     "editorExportar": editorExportar_es,
     "editorGuiado": editorGuiado_es,
+    "editorHerramientas": editorHerramientas_es,
     "editorImagenes": editorImagenes_es,
     "editorInspector": editorInspector_es,
     "editorListo": editorListo_es,
@@ -312,6 +315,7 @@ export const mensajes = {
     "editorCortes": editorCortes_en,
     "editorExportar": editorExportar_en,
     "editorGuiado": editorGuiado_en,
+    "editorHerramientas": editorHerramientas_en,
     "editorImagenes": editorImagenes_en,
     "editorInspector": editorInspector_en,
     "editorListo": editorListo_en,

@@ -620,6 +620,7 @@ const CAMPOS_PUBLICACION = gql`
     publicadaEn
     portadaAplicada
     portadaError
+    esperaVideo
     createdAt
     creadoPor {
       nombre

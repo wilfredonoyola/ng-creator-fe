@@ -14,13 +14,6 @@
     "publicado": "Publicado en {n, plural, one {# red} other {# redes}}",
     "publicadoAyuda": "Podés programarlo en otra red o a otra hora."
   },
-  "procesar": {
-    "reintentar": "Intentar de nuevo",
-    "volver": "Volver a procesar",
-    "procesar": "Procesar video",
-    "conCambios": "Con los cambios que el MP4 todavía no tiene.",
-    "alDia": "Ya está al día: solo si querés rehacerlo."
-  },
   "descargar": {
     "bajando": "Descargando…",
     "anterior": "Descargar el anterior",
@@ -32,11 +25,9 @@
     "saleDeListos": "Sale de “Listos para programar”.",
     "marcar": "Marcar listo",
     "marcarAyuda": "Lo ve el equipo en el calendario, para programarlo.",
-    "primeroProcesa": "Primero procesá el video.",
     "por": "Listo · {nombre}",
     "desde": "Desde {fecha}. Ya está en “Listos para programar”.",
     "pista": "Lo ve todo el equipo en el calendario, para programarlo.",
-    "pistaSinVideo": "Procesá el video para poder marcarlo listo.",
     "listo": "Listo"
   },
   "volverA": "Volver a {episodio}",
@@ -58,12 +49,8 @@
   "procesandoCorto": "Procesando {corto}",
   "masAcciones": "Más acciones",
   "programar": {
-    "alTerminar": "Se puede programar al terminar de procesar",
-    "procesaPrimero": "Procesá el video para programar",
     "elegi": "Elegí redes y hora.",
     "reintentar": "Reintentar",
-    "programar": "Programar",
-    "pistaProcesando": "Se procesa el video: cuando termine, se puede programar.",
-    "pistaSinVideo": "Primero procesá el video, en Exportar. Sin MP4 no hay qué programar."
+    "programar": "Programar"
   }
 }
