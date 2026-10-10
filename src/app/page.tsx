@@ -17,7 +17,7 @@ import {
   PiePublico,
   RAYADO,
   Seccion,
-  enlaceDemo as armarEnlaceDemo,
+  LINK_DEMO,
 } from "@/components/landing/Publica";
 import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
@@ -39,9 +39,6 @@ export async function generateMetadata(): Promise<Metadata> {
  * branding/Clipfine Logo Directions (6)/Clipfine Landing.dc.html. Solo muestra
  * lo que ya funciona; lo que falta va con "Pronto".
  */
-
-/** "Agendá una demo" abre un correo hasta que haya agenda. */
-const CORREO_DEMO = "soporte@ngstudios.co";
 
 /** Dónde se publica desde el calendario. `hoy` es lo que ya funciona (#64). */
 const REDES = [
@@ -228,7 +225,6 @@ function Funcion({
 export default function Landing() {
   const t = useTranslations("landing");
   const locale = useLocale();
-  const enlaceDemo = armarEnlaceDemo(t("demoAsunto"));
 
   /** Para Google: qué es y cuánto cuesta, y las preguntas como FAQ. */
   const datosEstructurados = [
@@ -277,7 +273,7 @@ export default function Landing() {
                 <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] focus-visible:outline-white`}>
                   {t("nav.empezar")}
                 </Link>
-                <a href={enlaceDemo} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
+                <a {...LINK_DEMO} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
               </div>
               <p className={`${ETIQUETA} text-sm font-medium text-[#A3A29C]`}>{t("portada.letraChica")}</p>
               <div className="mt-2.5 flex flex-wrap items-center gap-3.5 border-t border-[#2E2E2B] pt-[18px]">
@@ -484,7 +480,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <Precios enlaceDemo={enlaceDemo} />
+      <Precios />
 
       {/* ---- Preguntas ---- */}
       <section id="preguntas" className="scroll-mt-20 border-t border-[#E9E8E4]">
@@ -520,7 +516,7 @@ export default function Landing() {
               <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-14 px-[30px] text-[17px] shadow-[inset_0_0_0_1.5px_#0A0A0A] focus-visible:outline-[#0A0A0A]`}>
                 {t("nav.empezar")}
               </Link>
-              <a href={enlaceDemo} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
+              <a {...LINK_DEMO} className={`text-[17px] ${LINK_SUBRAYADO}`}>{t("nav.demo")}</a>
             </div>
           </div>
         </div>

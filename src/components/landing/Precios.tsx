@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ENLACE_EMPEZAR } from "@/components/landing/Marco";
+import { LINK_DEMO } from "@/components/landing/Publica";
 import { PLANES, PRUEBA_HORAS } from "@/components/landing/planes";
 
 const INCLUYE = ["momentos", "editor", "brandKit", "calendario", "analisis", "app"] as const;
@@ -25,7 +26,7 @@ function Punto({ texto }: { texto: string }) {
   );
 }
 
-export function Precios({ enlaceDemo }: { enlaceDemo: string }) {
+export function Precios() {
   const t = useTranslations("landing.precios");
   const [anual, setAnual] = useState(true);
 
@@ -108,7 +109,7 @@ export function Precios({ enlaceDemo }: { enlaceDemo: string }) {
             <p className="text-[15px] leading-snug text-[#D9D8D2]">{t("custom.texto")}</p>
           </div>
           <a
-            href={enlaceDemo}
+            {...LINK_DEMO}
             className="flex h-[52px] items-center justify-center rounded-md px-7 font-bold shadow-[inset_0_0_0_2px_#FFFFFF] hover:bg-white hover:text-[#0A0A0A] active:translate-y-px focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-[#FFD400]"
           >
             {t("custom.boton")}
