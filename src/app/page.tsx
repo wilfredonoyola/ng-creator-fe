@@ -23,6 +23,7 @@ import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
 import { RedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
+import { MaquetaMetricas } from "@/components/landing/MaquetaMetricas";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landing");
@@ -53,7 +54,9 @@ const REDES = [
 const TIPOS_AGENCIA = ["clips", "podcast", "b2b", "redes"] as const;
 const USOS = ["podcast", "lives"] as const;
 const PASOS = ["subir", "clips", "publicar"] as const;
-const PREGUNTAS = ["gratis", "horas", "custom", "redes", "clientes", "opus", "sigue", "idioma", "app"] as const;
+/** Lo que hace la analítica (#119), en el orden en que importa a una agencia. */
+const PUNTOS_METRICAS = ["porClip", "retencion", "ia", "programa", "reporte", "solo"] as const;
+const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "sigue", "idioma", "app"] as const;
 
 const CLIPS = ["c1", "c2", "c3", "c4"] as const;
 const CLIENTES = [
@@ -210,7 +213,7 @@ function Funcion({
 }) {
   const t = useTranslations("landing.funciones");
   return (
-    <div className="flex flex-col gap-7 rounded-xl bg-white px-4 pb-9 pt-4 sm:px-5 sm:pt-5">
+    <div className="flex min-w-0 flex-col gap-7 rounded-xl bg-white px-4 pb-9 pt-4 sm:px-5 sm:pt-5">
       <div role="img" aria-label={alt} className={`${MONO} flex h-[280px] flex-col overflow-hidden rounded-md bg-[#0A0A0A] p-[18px] text-[11px] text-[#A3A29C]`}>
         {children}
       </div>
@@ -384,10 +387,10 @@ export default function Landing() {
                   <span className="rounded-full border border-dashed border-[#6B6A64] px-2 py-0.5 text-[10px]">{t("funciones.analisis.ejemplo")}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {(["publicaciones", "reacciones", "comentarios", "mejorHora"] as const).map((k, i) => (
+                  {(["vistas", "interacciones", "seguidores", "mejorHora"] as const).map((k, i) => (
                     <div key={k} className={`flex flex-col gap-1 rounded bg-[#1C1C1A] p-2.5 ${i > 1 ? "max-sm:hidden" : ""}`}>
-                      <span className="truncate text-[10px]">{t(`funciones.analisis.${k}`)}</span>
-                      <span className="font-[family-name:var(--font-archivo)] text-[22px] font-extrabold text-white">{k === "mejorHora" ? "00:00" : "0.0K"}</span>
+                      <span className="truncate text-[10px]">{t(`funciones.analisis.${k}.nombre`)}</span>
+                      <span className="font-[family-name:var(--font-archivo)] text-[22px] font-extrabold text-white">{t(`funciones.analisis.${k}.valor`)}</span>
                     </div>
                   ))}
                 </div>
@@ -403,6 +406,31 @@ export default function Landing() {
           <Link href={ENLACE_FUNCIONES} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}>
             {t("funciones.verTodas")} →
           </Link>
+        </div>
+      </section>
+
+      {/* ---- Métricas ---- */}
+      <section id="metricas" aria-labelledby="metricas-titulo" className="scroll-mt-20 bg-[#0A0A0A] text-white">
+        <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-28`}>
+          <div className="flex flex-col gap-7">
+            <p className={`${ETIQUETA} text-sm font-bold uppercase tracking-[.12em] text-[#FFD400]`}>{t("metricas.etiqueta")}</p>
+            <h2 id="metricas-titulo" className={`${CONDENSADA} text-[44px] leading-[.95] sm:text-[68px]`}>{t("metricas.titulo")}</h2>
+            <p className="text-lg leading-relaxed text-[#D9D8D2] sm:text-[19px]">{t("metricas.texto")}</p>
+            <ul className="flex flex-col gap-4 border-t border-[#2E2E2B] pt-6">
+              {PUNTOS_METRICAS.map((k) => (
+                <li key={k} className="flex gap-3">
+                  <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 bg-[#FFD400]" />
+                  <p className="leading-relaxed text-[#D9D8D2]">
+                    <strong className="font-bold text-white">{t(`metricas.puntos.${k}.titulo`)}</strong> {t(`metricas.puntos.${k}.texto`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-14 self-start px-[30px] text-[17px] focus-visible:outline-white`}>
+              {t("nav.empezar")}
+            </Link>
+          </div>
+          <MaquetaMetricas />
         </div>
       </section>
 

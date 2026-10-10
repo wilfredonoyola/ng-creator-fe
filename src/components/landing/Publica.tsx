@@ -55,6 +55,7 @@ export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boo
   const base = enLanding ? "" : "/";
   const items = [
     { clave: "funciones", href: ENLACE_FUNCIONES },
+    { clave: "metricas", href: `${base}#metricas` },
     { clave: "como", href: `${base}#como` },
     { clave: "precios", href: `${base}#precios` },
     { clave: "preguntas", href: `${base}#preguntas` },
