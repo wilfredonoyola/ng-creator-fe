@@ -11,6 +11,7 @@ import { BarrasGrupos } from "@/components/metricas/BarrasGrupos";
 import { BarrasHora } from "@/components/metricas/BarrasHora";
 import { ExportarMetricas } from "@/components/metricas/ExportarMetricas";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
+import { useSesion } from "@/lib/sesion";
 import { esMotivo } from "@/lib/momentos";
 import { etiquetaHora } from "@/lib/analitica";
 import { REDES } from "@/lib/publicaciones";
@@ -46,12 +47,13 @@ export default function MetricasPage() {
   const tMotivo = useTranslations("episodiosMotivos");
   const locale = useLocale();
   const { activa, cargando: cargandoMarca } = useMarcaActiva();
+  const { veMetricas } = useSesion();
   const [dias, setDias] = useState<number>(PERIODO_INICIAL);
   const zonaHoraria = zonaDelNavegador();
 
   const { data, loading, error } = useQuery(RESUMEN_METRICAS, {
     variables: { marcaId: activa?._id, dias, zonaHoraria },
-    skip: !activa,
+    skip: !activa || !veMetricas(activa._id),
     errorPolicy: "all",
   });
   const r: ResumenMetricas | undefined = data?.resumenMetricas;
@@ -60,6 +62,16 @@ export default function MetricasPage() {
     return (
       <DashboardLayout>
         <Aviso titulo={t("sinMarca.titulo")} detalle={t("sinMarca.detalle")} />
+      </DashboardLayout>
+    );
+  }
+
+  // El proveedor no ve las métricas (el backend tampoco se las da): un aviso
+  // claro en vez del error del permiso.
+  if (activa && !veMetricas(activa._id)) {
+    return (
+      <DashboardLayout>
+        <Aviso titulo={t("sinAcceso.titulo")} detalle={t("sinAcceso.detalle")} />
       </DashboardLayout>
     );
   }
