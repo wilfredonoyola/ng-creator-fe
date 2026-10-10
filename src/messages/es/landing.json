@@ -14,7 +14,8 @@
     "entrar": "Entrar",
     "demo": "Agendá una demo",
     "empezar": "Empezar gratis",
-    "inicio": "Clipfine, inicio"
+    "inicio": "Clipfine, inicio",
+    "metricas": "Métricas"
   },
   "demoAsunto": "Quiero una demo de Clipfine",
   "pronto": "Pronto",
@@ -70,21 +71,97 @@
     },
     "calendario": {
       "titulo": "Publicá desde un calendario",
-      "texto": "Programá los clips de cada cliente desde un calendario y publicalos sin descargar ni volver a subir nada. Hoy en Facebook; Instagram, TikTok y YouTube vienen en camino. Mientras tanto, bajás el MP4 listo para cualquier red.",
+      "texto": "Programá los clips de cada cliente desde un calendario y publicalos sin descargar ni volver a subir nada. TikTok, YouTube, Instagram y Facebook, desde el mismo lugar. También bajás el MP4 listo para cualquier otra red.",
       "alt": "Calendario semanal con clips programados en Facebook, Instagram, TikTok y YouTube",
       "encabezado": "Cliente B · semana 41"
     },
     "analisis": {
       "titulo": "Mirá qué funciona",
-      "texto": "Clipfine lee el historial de la página de cada cliente y te dice a qué hora, qué día y en qué formato le conviene publicar, con sus reacciones y comentarios. Sabés qué funciona y se lo podés mostrar al cliente.",
-      "alt": "Análisis con datos de ejemplo: publicaciones, reacciones, comentarios y rendimiento por hora",
-      "encabezado": "Cliente A · análisis",
+      "texto": "Cada clip publicado trae sus métricas en las cuatro redes, y cada cliente su resumen: qué tipo de momento rinde, a qué hora publicar y cuánto creció. Se lo mostrás en un PDF.",
+      "alt": "Métricas con datos de ejemplo: vistas, interacciones, seguidores ganados y vistas por hora de publicación",
+      "encabezado": "Cliente A · métricas",
       "ejemplo": "Datos de ejemplo",
-      "publicaciones": "Publicaciones",
-      "reacciones": "Reacciones",
-      "comentarios": "Comentarios",
-      "mejorHora": "Mejor hora",
-      "porHora": "Rendimiento por hora"
+      "porHora": "Vistas por hora de publicación",
+      "vistas": {
+        "nombre": "Vistas",
+        "valor": "184K"
+      },
+      "interacciones": {
+        "nombre": "Interacciones",
+        "valor": "11,8K"
+      },
+      "seguidores": {
+        "nombre": "Seguidores",
+        "valor": "+2.310"
+      },
+      "mejorHora": {
+        "nombre": "Mejor hora",
+        "valor": "20:00"
+      }
+    }
+  },
+  "metricas": {
+    "etiqueta": "Métricas",
+    "titulo": "Sabé qué clip funcionó. Y mostráselo al cliente.",
+    "texto": "Clipfine sigue cada clip publicado en TikTok, YouTube, Instagram y Facebook, y te dice qué funcionó, por qué y qué conviene publicar después. Sin planillas y sin entrar red por red.",
+    "puntos": {
+      "porClip": {
+        "titulo": "Cada clip, en cada red.",
+        "texto": "Vistas, likes, comentarios, compartidos, guardados y seguidores ganados, con la curva de cómo creció desde que salió."
+      },
+      "retencion": {
+        "titulo": "Dónde se va la gente.",
+        "texto": "La retención segundo a segundo: cuántos se van en los primeros 3 segundos y cuántos lo ven completo."
+      },
+      "ia": {
+        "titulo": "La IA contra la realidad.",
+        "texto": "La puntuación que la IA le dio a cada momento, al lado de lo que pasó de verdad. Y qué tipo de momento rinde más: humor, polémica, una historia."
+      },
+      "programa": {
+        "titulo": "El programa entero.",
+        "texto": "Totales contra el periodo anterior, los mejores y peores clips, el crecimiento de cada red y la mejor hora para publicar."
+      },
+      "reporte": {
+        "titulo": "Un reporte para el cliente.",
+        "texto": "Exportalo en PDF, CSV o Markdown y mandalo tal cual, en español o en inglés."
+      },
+      "solo": {
+        "titulo": "Se actualiza solo.",
+        "texto": "Las métricas se leen a la hora, a las 6 horas, al día siguiente y durante 90 días. También en la app."
+      }
+    },
+    "maqueta": {
+      "alt": "Métricas con datos de ejemplo: vistas, tasa de interacción, seguidores ganados, retención de un clip en TikTok y puntuación de la IA contra vistas reales",
+      "encabezado": "Cliente A · métricas · 30 días",
+      "ejemplo": "Datos de ejemplo",
+      "kpis": {
+        "vistas": {
+          "nombre": "Vistas",
+          "valor": "184K",
+          "cambio": "+38 %"
+        },
+        "tasa": {
+          "nombre": "Interacción",
+          "valor": "6,4 %",
+          "cambio": "+1,2 pts"
+        },
+        "seguidores": {
+          "nombre": "Seguidores",
+          "valor": "+2.310",
+          "cambio": "+54 %"
+        },
+        "completo": {
+          "nombre": "Lo ven completo",
+          "valor": "35 %",
+          "cambio": "+4 pts"
+        }
+      },
+      "retencion": "Retención del mejor clip",
+      "seVan": "−39 % en los primeros 3 s",
+      "completo": "35 % lo ve completo",
+      "iaVsRealidad": "IA vs realidad",
+      "vistasPromedio": "Vistas promedio según la puntuación de la IA",
+      "mejorClip": "Mejor clip: humor · 10,8K vistas · IA 92"
     }
   },
   "paraQuien": {
@@ -164,7 +241,11 @@
       },
       "redes": {
         "p": "¿En qué redes puedo publicar?",
-        "r": "Hoy publicás en Facebook desde el calendario de Clipfine. Instagram, TikTok y YouTube vienen en camino. Mientras tanto, cada clip se baja como MP4 vertical, listo para cualquier red."
+        "r": "Publicás y programás en TikTok, YouTube, Instagram y Facebook desde el calendario de Clipfine. Cada clip también se baja como MP4 vertical, listo para cualquier otra red."
+      },
+      "metricas": {
+        "p": "¿Puedo ver cómo le fue a cada clip?",
+        "r": "Sí. Clipfine lee las métricas de cada clip publicado en TikTok, YouTube, Instagram y Facebook: vistas, interacción, seguidores ganados y, donde la red lo da, retención y cuánto se vio. Ves el resumen de cada cliente y lo exportás en PDF, CSV o Markdown. Facebook solo comparte vistas, likes y comentarios."
       },
       "clientes": {
         "p": "¿Puedo manejar varios clientes en una cuenta?",

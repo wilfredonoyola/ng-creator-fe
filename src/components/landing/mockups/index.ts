@@ -6,6 +6,7 @@ import { MaquetaIa } from "./MaquetaIa";
 import { MaquetaImagenes } from "./MaquetaImagenes";
 import { MaquetaImportar } from "./MaquetaImportar";
 import { MaquetaMarca } from "./MaquetaMarca";
+import { MaquetaMetricas } from "../MaquetaMetricas";
 import { MaquetaPublicar } from "./MaquetaPublicar";
 import { MaquetaTextos } from "./MaquetaTextos";
 
@@ -19,6 +20,8 @@ export const MAQUETAS = {
   calidad: MaquetaCalidad,
   importar: MaquetaImportar,
   publicar: MaquetaPublicar,
+  // La misma de la landing: lo que se ve en /metricas, con datos de ejemplo.
+  metricas: MaquetaMetricas,
   equipo: MaquetaEquipo,
   app: MaquetaApp,
 } as const;

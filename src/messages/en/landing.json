@@ -14,7 +14,8 @@
     "entrar": "Log in",
     "demo": "Book a demo",
     "empezar": "Sign up for free",
-    "inicio": "Clipfine home"
+    "inicio": "Clipfine home",
+    "metricas": "Analytics"
   },
   "demoAsunto": "I'd like a Clipfine demo",
   "pronto": "Soon",
@@ -70,21 +71,97 @@
     },
     "calendario": {
       "titulo": "Post from one calendar",
-      "texto": "Schedule each client's clips from one calendar and publish them without downloading and re-uploading. Facebook today; Instagram, TikTok and YouTube are on the way. Meanwhile, every clip downloads as an MP4 ready for any platform.",
+      "texto": "Schedule each client's clips from one calendar and publish them without downloading and re-uploading. TikTok, YouTube, Instagram and Facebook, all from the same place. Every clip also downloads as an MP4 ready for any other platform.",
       "alt": "Weekly calendar with clips scheduled to Facebook, Instagram, TikTok and YouTube",
       "encabezado": "Client B · week 41"
     },
     "analisis": {
       "titulo": "See what performs",
-      "texto": "Clipfine reads each client's page history and tells you the best hour, day and format to post, with their reactions and comments. Know what's working and show it to the client.",
-      "alt": "Analytics with sample data: posts, reactions, comments and performance by hour",
+      "texto": "Every published clip gets its analytics across all four platforms, and every client gets a summary: which kind of moment performs, when to post and how much they grew. Show it to them in a PDF.",
+      "alt": "Analytics with sample data: views, interactions, followers gained and views by posting hour",
       "encabezado": "Client A · analytics",
       "ejemplo": "Sample data",
-      "publicaciones": "Posts",
-      "reacciones": "Reactions",
-      "comentarios": "Comments",
-      "mejorHora": "Best hour",
-      "porHora": "Performance by hour"
+      "porHora": "Views by posting hour",
+      "vistas": {
+        "nombre": "Views",
+        "valor": "184K"
+      },
+      "interacciones": {
+        "nombre": "Interactions",
+        "valor": "11.8K"
+      },
+      "seguidores": {
+        "nombre": "Followers",
+        "valor": "+2,310"
+      },
+      "mejorHora": {
+        "nombre": "Best hour",
+        "valor": "8 PM"
+      }
+    }
+  },
+  "metricas": {
+    "etiqueta": "Analytics",
+    "titulo": "Know which clip worked. Then show the client.",
+    "texto": "Clipfine tracks every clip you publish on TikTok, YouTube, Instagram and Facebook, and tells you what worked, why, and what to post next. No spreadsheets, no checking each platform.",
+    "puntos": {
+      "porClip": {
+        "titulo": "Every clip, on every platform.",
+        "texto": "Views, likes, comments, shares, saves and followers gained, with the curve of how it grew since it went out."
+      },
+      "retencion": {
+        "titulo": "Where people drop off.",
+        "texto": "Second-by-second retention: how many leave in the first 3 seconds and how many watch to the end."
+      },
+      "ia": {
+        "titulo": "AI vs reality.",
+        "texto": "The score the AI gave each moment, next to what actually happened. And which kind of moment performs best: humor, hot takes, stories."
+      },
+      "programa": {
+        "titulo": "The whole show.",
+        "texto": "Totals vs the previous period, best and worst clips, growth on each platform and the best time to post."
+      },
+      "reporte": {
+        "titulo": "A report for the client.",
+        "texto": "Export it as PDF, CSV or Markdown and send it as is, in English or Spanish."
+      },
+      "solo": {
+        "titulo": "It updates itself.",
+        "texto": "Analytics are read after an hour, 6 hours, a day, and for 90 days. In the app too."
+      }
+    },
+    "maqueta": {
+      "alt": "Analytics with sample data: views, engagement rate, followers gained, a clip’s TikTok retention and AI score vs real views",
+      "encabezado": "Client A · analytics · 30 days",
+      "ejemplo": "Sample data",
+      "kpis": {
+        "vistas": {
+          "nombre": "Views",
+          "valor": "184K",
+          "cambio": "+38%"
+        },
+        "tasa": {
+          "nombre": "Engagement",
+          "valor": "6.4%",
+          "cambio": "+1.2 pts"
+        },
+        "seguidores": {
+          "nombre": "Followers",
+          "valor": "+2,310",
+          "cambio": "+54%"
+        },
+        "completo": {
+          "nombre": "Watched to end",
+          "valor": "35%",
+          "cambio": "+4 pts"
+        }
+      },
+      "retencion": "Top clip retention",
+      "seVan": "−39% in the first 3 s",
+      "completo": "35% watch to the end",
+      "iaVsRealidad": "AI vs reality",
+      "vistasPromedio": "Average views by AI score",
+      "mejorClip": "Top clip: humor · 10.8K views · AI 92"
     }
   },
   "paraQuien": {
@@ -164,7 +241,11 @@
       },
       "redes": {
         "p": "Which platforms can I post to?",
-        "r": "Today you post to Facebook from Clipfine's calendar. Instagram, TikTok and YouTube are on the way. Meanwhile, every clip downloads as a vertical MP4, ready for any platform."
+        "r": "You publish and schedule to TikTok, YouTube, Instagram and Facebook from Clipfine’s calendar. Every clip also downloads as a vertical MP4, ready for any other platform."
+      },
+      "metricas": {
+        "p": "Can I see how each clip did?",
+        "r": "Yes. Clipfine reads the analytics of every clip published on TikTok, YouTube, Instagram and Facebook: views, engagement, followers gained and, where the platform shares it, retention and watch time. You see each client’s summary and export it as PDF, CSV or Markdown. Facebook only shares views, likes and comments."
       },
       "clientes": {
         "p": "Can I manage several clients in one account?",
