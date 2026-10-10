@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
-import { ENLACE_EMPEZAR } from "@/components/landing/Marco";
+import { ENLACE_EMPEZAR, ENLACE_ENTRAR } from "@/components/landing/Marco";
 
 /**
  * El sistema de las páginas públicas para agencias (la landing y /features):
@@ -81,7 +81,7 @@ export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boo
         </div>
         <div className="flex items-center gap-4 sm:gap-6">
           <SelectorIdiomaCompacto claro className="hidden sm:flex" />
-          <Link href="/login" className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
+          <Link href={ENLACE_ENTRAR} className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
           <a href={enlaceDemo(t("demoAsunto"))} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
           <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
             {t("nav.empezar")}
@@ -107,7 +107,7 @@ export function PiePublico() {
             <Link href="/app" className="underline-offset-[5px] hover:underline">{t("pie.app")}</Link>
             <Link href="/privacidad" className="underline-offset-[5px] hover:underline">{t("pie.privacidad")}</Link>
             <Link href="/terminos" className="underline-offset-[5px] hover:underline">{t("pie.terminos")}</Link>
-            <Link href="/login" className="underline-offset-[5px] hover:underline">{t("nav.entrar")}</Link>
+            <Link href={ENLACE_ENTRAR} className="underline-offset-[5px] hover:underline">{t("nav.entrar")}</Link>
           </nav>
         </div>
         <div className={`${MONO} flex flex-wrap items-center justify-between gap-4 border-t border-[#2E2E2B] pt-6 text-sm text-[#D9D8D2]`}>
