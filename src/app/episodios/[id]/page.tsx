@@ -408,6 +408,14 @@ function TarjetaClip({
             {t("tarjeta.verFinal")}
           </button>
         )}
+        {(clip.publicacion?.publicadas ?? 0) > 0 && (
+          <Link
+            href={`/metricas/clips/${clip._id}`}
+            className="rounded-lg border border-white/15 px-3 py-1.5 text-center text-xs text-white/80 hover:bg-white/5"
+          >
+            {t("tarjeta.metricas")}
+          </Link>
+        )}
         {opera && tieneVideo && (
           <Link
             href={`${editar}/publicar`}

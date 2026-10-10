@@ -57,6 +57,10 @@ import marcoSelloDeAutoria_es from "./es/marcoSelloDeAutoria.json";
 import marcoSidebar_es from "./es/marcoSidebar.json";
 import marcoTopBar_es from "./es/marcoTopBar.json";
 import meta_es from "./es/meta.json";
+import metricas_es from "./es/metricas.json";
+import metricasClip_es from "./es/metricasClip.json";
+import metricasGraficos_es from "./es/metricasGraficos.json";
+import metricasReporte_es from "./es/metricasReporte.json";
 import montaje_es from "./es/montaje.json";
 import montajeColaRenders_es from "./es/montajeColaRenders.json";
 import montajeHistorial_es from "./es/montajeHistorial.json";
@@ -148,6 +152,10 @@ import marcoSelloDeAutoria_en from "./en/marcoSelloDeAutoria.json";
 import marcoSidebar_en from "./en/marcoSidebar.json";
 import marcoTopBar_en from "./en/marcoTopBar.json";
 import meta_en from "./en/meta.json";
+import metricas_en from "./en/metricas.json";
+import metricasClip_en from "./en/metricasClip.json";
+import metricasGraficos_en from "./en/metricasGraficos.json";
+import metricasReporte_en from "./en/metricasReporte.json";
 import montaje_en from "./en/montaje.json";
 import montajeColaRenders_en from "./en/montajeColaRenders.json";
 import montajeHistorial_en from "./en/montajeHistorial.json";
@@ -242,6 +250,10 @@ export const mensajes = {
     "marcoSidebar": marcoSidebar_es,
     "marcoTopBar": marcoTopBar_es,
     "meta": meta_es,
+    "metricas": metricas_es,
+    "metricasClip": metricasClip_es,
+    "metricasGraficos": metricasGraficos_es,
+    "metricasReporte": metricasReporte_es,
     "montaje": montaje_es,
     "montajeColaRenders": montajeColaRenders_es,
     "montajeHistorial": montajeHistorial_es,
@@ -335,6 +347,10 @@ export const mensajes = {
     "marcoSidebar": marcoSidebar_en,
     "marcoTopBar": marcoTopBar_en,
     "meta": meta_en,
+    "metricas": metricas_en,
+    "metricasClip": metricasClip_en,
+    "metricasGraficos": metricasGraficos_en,
+    "metricasReporte": metricasReporte_en,
     "montaje": montaje_en,
     "montajeColaRenders": montajeColaRenders_en,
     "montajeHistorial": montajeHistorial_en,

@@ -1277,6 +1277,194 @@ export const ANALISIS_PAGINA = gql`
   }
 `;
 
+// ---- Métricas de lo publicado (ng-creator-be#119) ----
+
+/**
+ * Lo que una red dice de lo publicado. Todo es opcional: null es "esa red no
+ * lo informa", no cero (Facebook, por ejemplo, solo da vistas, likes y
+ * comentarios).
+ */
+const CAMPOS_TOTALES_METRICAS = gql`
+  fragment CamposTotalesMetricas on TotalesMetricas {
+    publicaciones
+    vistas
+    likes
+    comentarios
+    compartidos
+    guardados
+    alcance
+    seguidoresGanados
+    interacciones
+    tasaInteraccion
+  }
+`;
+
+const CAMPOS_METRICAS_DE_CLIP = gql`
+  ${CAMPOS_TOTALES_METRICAS}
+  fragment CamposMetricasDeClip on MetricasDeClip {
+    clipId
+    actualizadoEn
+    totales {
+      ...CamposTotalesMetricas
+    }
+    publicaciones {
+      _id
+      red
+      cuentaNombre
+      permalink
+      publicadaEn
+      metricasEn
+      metricas {
+        vistas
+        likes
+        comentarios
+        compartidos
+        guardados
+        alcance
+        seguidoresGanados
+        tiempoMedioSeg
+        fraccionVista
+        fraccionCompleta
+        minutosVistos
+        seguidoresCuenta
+        retencion {
+          seg
+          fraccion
+        }
+        origenes {
+          clave
+          fraccion
+        }
+        paises {
+          clave
+          fraccion
+        }
+        publico {
+          clave
+          fraccion
+        }
+      }
+    }
+    curva {
+      publicacionId
+      red
+      horas
+      vistas
+      interacciones
+    }
+  }
+`;
+
+/** Cómo le fue a un clip en cada red donde salió, con la curva de las lecturas. */
+export const METRICAS_DE_CLIP = gql`
+  ${CAMPOS_METRICAS_DE_CLIP}
+  query MetricasDeClip($marcaId: ID!, $clipId: ID!) {
+    metricasDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposMetricasDeClip
+    }
+  }
+`;
+
+/** "Actualizar": relee ya las publicaciones del clip (lo leído hace menos de 10 min no se relee). */
+export const ACTUALIZAR_METRICAS_DE_CLIP = gql`
+  ${CAMPOS_METRICAS_DE_CLIP}
+  mutation ActualizarMetricasDeClip($marcaId: ID!, $clipId: ID!) {
+    actualizarMetricasDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposMetricasDeClip
+    }
+  }
+`;
+
+/** Lo poco del clip que necesita su página de métricas: la cabecera y la puntuación de la IA. */
+export const CLIP_PARA_METRICAS = gql`
+  query ClipParaMetricas($id: ID!, $marcaId: String!) {
+    clipEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      episodioId
+      titulo
+      urlPoster
+      puntuacion
+      motivo
+      origen
+    }
+  }
+`;
+
+// Trae CamposTotalesMetricas: quien use este no lo vuelve a incluir.
+const CAMPOS_CLIP_CON_METRICAS = gql`
+  ${CAMPOS_TOTALES_METRICAS}
+  fragment CamposClipConMetricas on ClipConMetricas {
+    clipId
+    episodioId
+    titulo
+    urlPoster
+    puntuacion
+    motivo
+    origen
+    publicadoEn
+    redes
+    totales {
+      ...CamposTotalesMetricas
+    }
+  }
+`;
+
+/**
+ * El resumen de la marca en los últimos `dias`, con el período anterior del
+ * mismo largo para comparar. La zona horaria, como en el análisis: la "mejor
+ * hora" es la del reloj de quien mira.
+ */
+export const RESUMEN_METRICAS = gql`
+  ${CAMPOS_CLIP_CON_METRICAS}
+  query ResumenMetricas($marcaId: ID!, $dias: Int!, $zonaHoraria: String) {
+    resumenMetricas(marcaId: $marcaId, dias: $dias, zonaHoraria: $zonaHoraria) {
+      dias
+      desde
+      hasta
+      clips
+      actualizadoEn
+      totales {
+        ...CamposTotalesMetricas
+      }
+      anterior {
+        ...CamposTotalesMetricas
+      }
+      porRed {
+        red
+        seguidores
+        seguidoresCambio
+        totales {
+          ...CamposTotalesMetricas
+        }
+      }
+      mejores {
+        ...CamposClipConMetricas
+      }
+      peores {
+        ...CamposClipConMetricas
+      }
+      porMotivo {
+        clave
+        clips
+        vistasPromedio
+        tasaInteraccion
+      }
+      porPuntuacion {
+        clave
+        clips
+        vistasPromedio
+        tasaInteraccion
+      }
+      porHora {
+        clave
+        clips
+        vistasPromedio
+        tasaInteraccion
+      }
+    }
+  }
+`;
+
 // ---- Puente teléfono → computadora ----
 
 /**

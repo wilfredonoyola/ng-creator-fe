@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { ANALISIS_PAGINA } from "@/graphql/operations";
@@ -107,7 +108,7 @@ export default function AnalisisPage() {
       </div>
 
       {/* Los filtros van en una fila, arriba de todo lo que afectan. */}
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         {PERIODOS.map((p) => (
           <button
             key={p}
@@ -121,6 +122,11 @@ export default function AnalisisPage() {
             {t(`periodos.${p}`)}
           </button>
         ))}
+        {/* Esto es la página de Facebook entera; lo que salió de Clipfine, en
+            todas las redes, está en Métricas. */}
+        <Link href="/metricas" className="ml-auto text-xs text-white/40 hover:text-white/70">
+          {t("irMetricas")}
+        </Link>
       </div>
 
       {sinHistorial ? (
