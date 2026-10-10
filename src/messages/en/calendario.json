@@ -9,6 +9,7 @@
     "CANCELADA": "Canceled"
   },
   "titulo": "Calendar",
+  "esperaVideo": "Waiting for the video",
   "subtitulo": "What's scheduled and what's already out.",
   "subtituloEn": "What's scheduled and what's already out on {marca}.",
   "horasDe": "Times in {zona}",

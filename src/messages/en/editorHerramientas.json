@@ -1,0 +1,89 @@
+{
+  "herramientas": "Tools",
+  "nombres": {
+    "editar": "Edit",
+    "texto": "Text",
+    "subtitulos": "Captions",
+    "superposicion": "Overlay",
+    "formato": "Format",
+    "auto": "Auto-frame"
+  },
+  "barra": {
+    "deshacer": "Undo",
+    "deshacerAtajo": "Undo (⌘Z / Ctrl+Z)",
+    "rehacer": "Redo",
+    "rehacerAtajo": "Redo (⇧⌘Z / Ctrl+Y)",
+    "exportando": "Exporting {n}%"
+  },
+  "errores": {
+    "exportar": "Couldn't export the video"
+  },
+  "exportar": {
+    "video": "Video",
+    "exportar": "Export video",
+    "deNuevo": "Export again",
+    "reintentar": "Try again",
+    "alDia": "It already has every change: only if you want to redo it.",
+    "equipo": "For the team",
+    "listoSinVideo": "Export the video to mark it ready.",
+    "seExportaSolo": "It exports on its own before publishing."
+  },
+  "escenario": {
+    "verEnRed": "Preview as TikTok, Reels or Shorts",
+    "verEnRedSoloVertical": "Only in 9:16"
+  },
+  "linea": {
+    "titulo": "Timeline",
+    "recorrer": "Tap or drag to move through the clip",
+    "video": "Video",
+    "textos": "Text",
+    "subtitulos": "Captions",
+    "imagenes": "Images",
+    "textoVacio": "(empty)",
+    "llamada": "Call to action",
+    "logo": "Brand logo",
+    "imagen": "Image {n}",
+    "agregarTexto": "Text",
+    "agregarImagen": "Image",
+    "subtitulosActivos": "Word by word",
+    "subtitulosApagados": "Off"
+  },
+  "editar": {
+    "resumen": "Lasts {dura} · {cortes, plural, =0 {no cuts} one {# cut} other {# cuts}} · starts at {inicio} of the episode",
+    "dividir": "Split",
+    "quitarTramo": "Remove segment",
+    "elegiTramo": "Tap a video segment on the timeline",
+    "empiezaAca": "Start here",
+    "terminaAca": "End here",
+    "cortes": "Cuts · {n}",
+    "ayuda": "Split cuts the video at the playhead. Tap a segment (or drag) on the timeline and remove it. Striped parts don't play; the ✕ brings them back.",
+    "enElEpisodio": "In the episode"
+  },
+  "texto": {
+    "ayuda": "Drag the text on the video to move it. Its edges on the timeline set when it shows."
+  },
+  "subtitulos": {
+    "mostrar": "Show captions",
+    "mostrarAyuda": "They come from the episode transcript",
+    "estilo": "Style",
+    "conEstilo": "They use the {estilo} style.",
+    "sinEstilo": "They highlight the spoken word.",
+    "cambiarEstilo": "Change the style"
+  },
+  "superposicion": {
+    "ayuda": "Drag the image on the video to move it; the corner resizes it. Its edges on the timeline set when it shows."
+  },
+  "formato": {
+    "proporcion": "Aspect ratio",
+    "esteTramo": "This segment · {desde} → {hasta}",
+    "irAuto": "Auto-frame",
+    "fondo": "Background",
+    "nuevoEncuadre": "Framing here"
+  },
+  "auto": {
+    "pedir": "Auto-frame",
+    "deNuevo": "Auto-frame again",
+    "encontro": "Found {n, plural, one {# person} other {# people}}.",
+    "ajustar": "Then move the boxes on the video on the left, or in Format."
+  }
+}

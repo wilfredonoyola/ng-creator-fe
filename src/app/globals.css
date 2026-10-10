@@ -165,83 +165,45 @@ body {
 }
 
 /*
- * El editor de clips de episodio. Las columnas dependen del ancho que tiene el
- * editor (container queries sobre .editor-contenedor), no de la ventana: con
- * el menú de la app colapsado o con zoom, el mismo ancho de ventana deja más o
- * menos lugar.
- *
- * La vista previa mide --alto-vista de alto (su ancho sale de --ratio-vista,
- * que pone el editor según el formato) y el video original, --alto-cuadro.
- * - Angosto (teléfono): todo apilado.
- * - Desde md: video y vista previa apilados a la izquierda, con su scroll, y
- *   el inspector a la derecha.
- * - Con 840px o más de editor: tres columnas. El video se lleva lo que sobra;
- *   la vista previa, el ancho de un lienzo que entra en el alto, con un tope
- *   (24% del editor) para que el video no quede chico; el inspector, el riel
- *   de 52px y un panel de clamp(280px, 22vw, 340px).
+ * El editor de clips de episodio, como CapCut (editor-capcut):
+ * - Teléfono: todo apilado y con scroll de página: la barra, el video, la
+ *   línea de tiempo, las herramientas (una fila que se corre de costado) y el
+ *   panel de la elegida.
+ * - Desde md: la página entera es el editor, sin scroll de página. Arriba la
+ *   barra; en el medio las herramientas, el panel (con su propio scroll) y el
+ *   video; abajo, a todo el ancho, la línea de tiempo.
+ * --alto-escenario es lo más alto que puede ser la vista previa.
  */
-.editor-contenedor {
-  container-type: inline-size;
+.editor-capcut {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "barra" "escenario" "linea" "riel" "panel";
+  --alto-escenario: 58vh;
 }
-.editor-clip {
-  --alto-vista: 56vh;
-  --alto-cuadro: 42vh;
-  --ancho-inspector: calc(52px + clamp(280px, 22vw, 340px) + 2px);
-}
+.editor-barra { grid-area: barra; }
+.editor-riel { grid-area: riel; min-width: 0; }
+.editor-panel { grid-area: panel; min-width: 0; }
+.editor-escenario { grid-area: escenario; min-width: 0; min-height: 0; }
+.editor-linea { grid-area: linea; min-width: 0; }
+.linea-tiempo { --etiqueta-pista: 4rem; }
 @media (min-width: 768px) {
-  .editor-clip {
-    grid-template-columns: minmax(0, 1fr) var(--ancho-inspector);
+  .editor-capcut {
+    /* El alto de la ventana menos los márgenes de DashboardLayout (1rem con margenChico). */
+    height: calc(100dvh - 1rem);
+    grid-template-columns: auto clamp(260px, 26vw, 340px) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "barra barra barra"
+      "riel panel escenario"
+      "linea linea linea";
+    /* La barra, la línea de tiempo y los controles de abajo del video. */
+    --alto-escenario: calc(100dvh - 26rem);
   }
-  .editor-izquierda {
-    min-height: 0;
-    overflow-y: auto;
-  }
+  .editor-panel { overflow-y: auto; }
+  .editor-riel { overflow-y: auto; }
+  .linea-tiempo { --etiqueta-pista: 5.5rem; }
 }
-@media (min-width: 768px) {
-  @container (min-width: 840px) {
-    .editor-clip {
-      /* La barra de arriba, los márgenes y el título de la tarjeta de la vista previa. */
-      --alto-vista: calc(100dvh - 9rem);
-      --alto-cuadro: calc(100dvh - 21rem);
-      grid-template-columns:
-        minmax(0, 1fr)
-        calc(min(var(--alto-vista) * var(--ratio-vista), 26rem, 24cqw) + 1.5rem + 2px)
-        var(--ancho-inspector);
-    }
-    .editor-izquierda {
-      display: contents;
-    }
-    .editor-columna {
-      min-height: 0;
-      max-height: 100%;
-      align-self: start;
-      overflow-y: auto;
-    }
-  }
-}
-/* En una columna de video angosta, el diseño va solo con su dibujito. */
-.editor-video {
-  container-type: inline-size;
-}
-@container (max-width: 520px) {
-  .etiqueta-diseno {
-    display: none;
-  }
+@media (min-width: 768px) and (max-height: 760px) {
+  .editor-capcut { --alto-escenario: calc(100dvh - 22rem); }
 }
 
-/*
- * La barra de arriba del editor: lo que va en línea solo si la barra es ancha
- * (el motivo de Programar apagado, "Programado · vie 3"). Más angosta, queda
- * en la pista del botón.
- */
-.barra-clip {
-  container-type: inline-size;
-}
-.solo-barra-ancha {
-  display: none;
-}
-@container (min-width: 1400px) {
-  .solo-barra-ancha {
-    display: inline;
-  }
-}

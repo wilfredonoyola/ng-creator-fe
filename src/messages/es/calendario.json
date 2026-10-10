@@ -9,6 +9,7 @@
     "CANCELADA": "Cancelada"
   },
   "titulo": "Calendario",
+  "esperaVideo": "Esperando el video",
   "subtitulo": "Qué está programado y qué ya salió.",
   "subtituloEn": "Qué está programado y qué ya salió en {marca}.",
   "horasDe": "Horas de {zona}",
