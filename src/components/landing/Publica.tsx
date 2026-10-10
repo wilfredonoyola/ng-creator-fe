@@ -83,7 +83,7 @@ export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boo
           <SelectorIdiomaCompacto claro className="hidden sm:flex" />
           <Link href={ENLACE_ENTRAR} className="text-[15px] font-medium underline-offset-[6px] hover:underline">{t("nav.entrar")}</Link>
           <a href={enlaceDemo(t("demoAsunto"))} className={`hidden text-[15px] md:inline ${LINK_SUBRAYADO} underline-offset-[5px]`}>{t("nav.demo")}</a>
-          <Link href={ENLACE_EMPEZAR} className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
+          <Link href={ENLACE_EMPEZAR} data-track="start-free" className={`${BOTON_CORAL} h-11 shrink-0 px-4 text-[15px] sm:px-[22px] focus-visible:outline-[#0A0A0A]`}>
             {t("nav.empezar")}
           </Link>
         </div>
