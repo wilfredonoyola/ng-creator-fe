@@ -421,8 +421,8 @@ export const MARCAS_ACTIVAS = gql`
  * una sola de prueba por persona y la crea con su tope de episodios.
  */
 export const CREAR_MARCA = gql`
-  mutation CrearMarca($nombre: String!) {
-    crearMarca(nombre: $nombre) {
+  mutation CrearMarca($nombre: String!, $comoNosConocio: ComoNosConocio, $comoNosConocioDetalle: String) {
+    crearMarca(nombre: $nombre, comoNosConocio: $comoNosConocio, comoNosConocioDetalle: $comoNosConocioDetalle) {
       _id
       nombre
     }

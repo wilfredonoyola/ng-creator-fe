@@ -9,7 +9,23 @@
     "ejemplo": "My podcast",
     "crear": "Create brand",
     "creando": "Creating…",
-    "error": "Couldn't create the brand"
+    "error": "Couldn't create the brand",
+    "comoNosConocio": {
+      "pregunta": "Where did you hear about us?",
+      "opciones": {
+        "CHATGPT": "ChatGPT",
+        "GOOGLE": "Google",
+        "FACEBOOK": "Facebook",
+        "INSTAGRAM": "Instagram",
+        "TIKTOK": "TikTok",
+        "YOUTUBE": "YouTube",
+        "LINKEDIN": "LinkedIn",
+        "RECOMENDACION": "Someone recommended it",
+        "OTRO": "Other"
+      },
+      "otroDetalle": "Where?",
+      "otroEjemplo": "A podcast, an event, another AI…"
+    }
   },
   "kit": {
     "titulo": "Brand Kit",

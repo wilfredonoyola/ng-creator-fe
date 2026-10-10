@@ -105,10 +105,19 @@ const botonPrincipal =
   "rounded-ng-md bg-marca px-5 py-2.5 text-sm font-semibold text-ng-tinta brillo-marca transition hover:brightness-110 disabled:opacity-50";
 const botonSaltar = "text-sm text-white/50 hover:text-white";
 
-/** Paso 1: el nombre de la marca. Obligatorio: es el espacio de trabajo. */
+/** Las respuestas a "¿Dónde escuchaste de nosotros?" (enum ComoNosConocio del backend). */
+const ORIGENES = ["CHATGPT", "GOOGLE", "FACEBOOK", "INSTAGRAM", "TIKTOK", "YOUTUBE", "LINKEDIN", "RECOMENDACION", "OTRO"] as const;
+type Origen = (typeof ORIGENES)[number];
+
+/**
+ * Paso 1: el nombre de la marca, obligatorio porque es el espacio de trabajo,
+ * y dónde escuchó de nosotros. Las dos cosas viajan juntas en crearMarca.
+ */
 function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }) => void }) {
   const t = useTranslations("onboarding");
   const [nombre, setNombre] = useState("");
+  const [origen, setOrigen] = useState<Origen | null>(null);
+  const [detalle, setDetalle] = useState("");
   const [error, setError] = useState<string | null>(null);
   // Se esperan las marcas y los accesos nuevos antes de seguir: con la lista
   // vieja, el panel creería que sigue sin marca y volvería a mandar acá.
@@ -121,7 +130,13 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
     e.preventDefault();
     setError(null);
     try {
-      const r = await crear({ variables: { nombre: nombre.trim() } });
+      const r = await crear({
+        variables: {
+          nombre: nombre.trim(),
+          comoNosConocio: origen,
+          comoNosConocioDetalle: origen === "OTRO" ? detalle.trim() || null : null,
+        },
+      });
       const m = r.data?.crearMarca;
       if (!m) throw new Error(t("marca.error"));
       onCreada({ _id: m._id, nombre: m.nombre });
@@ -144,9 +159,38 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
         required
         className={campo}
       />
+      <fieldset className="mt-6">
+        <legend className="mb-2 block text-xs text-white/50">{t("marca.comoNosConocio.pregunta")}</legend>
+        <div className="flex flex-wrap gap-2">
+          {ORIGENES.map((o) => (
+            <button
+              key={o}
+              type="button"
+              aria-pressed={origen === o}
+              onClick={() => setOrigen(o)}
+              className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                origen === o
+                  ? "border-marca bg-marca/15 text-white"
+                  : "border-white/10 text-ng-secundario hover:border-white/30 hover:text-white"
+              }`}
+            >
+              {t(`marca.comoNosConocio.opciones.${o}`)}
+            </button>
+          ))}
+        </div>
+        {origen === "OTRO" && (
+          <input
+            value={detalle}
+            onChange={(e) => setDetalle(e.target.value.slice(0, 100))}
+            placeholder={t("marca.comoNosConocio.otroEjemplo")}
+            aria-label={t("marca.comoNosConocio.otroDetalle")}
+            className={`${campo} mt-3`}
+          />
+        )}
+      </fieldset>
       {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
       <div className="mt-6 flex justify-end">
-        <button type="submit" disabled={loading || !nombre.trim()} className={botonPrincipal}>
+        <button type="submit" disabled={loading || !nombre.trim() || !origen} className={botonPrincipal}>
           {loading ? t("marca.creando") : t("marca.crear")}
         </button>
       </div>
