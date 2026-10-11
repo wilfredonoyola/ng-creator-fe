@@ -1,0 +1,22 @@
+{
+  "abrir": "Open the support chat",
+  "burbuja": "Questions? Ask us",
+  "titulo": "Clipfine support",
+  "subtitulo": "Our assistant answers using the help center. If needed, it passes you to the team.",
+  "nueva": "Start a new conversation",
+  "cerrar": "Close",
+  "saludo": "Hi! How can I help? Ask me how to use Clipfine: brands, team, clips, review, scheduling or metrics.",
+  "sugerencia1": "How do I invite my client to approve clips?",
+  "sugerencia2": "How do I schedule a clip to social networks?",
+  "sugerencia3": "What does the free trial include?",
+  "pensando": "Typing…",
+  "error": "We couldn't answer. Try again or talk to the team.",
+  "hablarConEquipo": "Talk to the team",
+  "pedirCorreo": "Which email should we reply to? We'll pass this conversation to the team.",
+  "correoEjemplo": "you@email.com",
+  "enviarAlEquipo": "Send to the team",
+  "derivada": "Done: we passed the conversation to the team. We'll reply to {correo}.",
+  "escribir": "Type your question",
+  "enviar": "Send",
+  "alCorreo": "Or email us at <correo></correo>"
+}
