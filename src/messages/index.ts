@@ -46,6 +46,7 @@ import featuresMarca_es from "./es/featuresMarca.json";
 import featuresMetricas_es from "./es/featuresMetricas.json";
 import featuresPublicar_es from "./es/featuresPublicar.json";
 import featuresRevision_es from "./es/featuresRevision.json";
+import featuresSubirClips_es from "./es/featuresSubirClips.json";
 import featuresTextos_es from "./es/featuresTextos.json";
 import grabar_es from "./es/grabar.json";
 import hashtagsChips_es from "./es/hashtagsChips.json";
@@ -161,6 +162,7 @@ import featuresMarca_en from "./en/featuresMarca.json";
 import featuresMetricas_en from "./en/featuresMetricas.json";
 import featuresPublicar_en from "./en/featuresPublicar.json";
 import featuresRevision_en from "./en/featuresRevision.json";
+import featuresSubirClips_en from "./en/featuresSubirClips.json";
 import featuresTextos_en from "./en/featuresTextos.json";
 import grabar_en from "./en/grabar.json";
 import hashtagsChips_en from "./en/hashtagsChips.json";
@@ -279,6 +281,7 @@ export const mensajes = {
     "featuresMetricas": featuresMetricas_es,
     "featuresPublicar": featuresPublicar_es,
     "featuresRevision": featuresRevision_es,
+    "featuresSubirClips": featuresSubirClips_es,
     "featuresTextos": featuresTextos_es,
     "grabar": grabar_es,
     "hashtagsChips": hashtagsChips_es,
@@ -396,6 +399,7 @@ export const mensajes = {
     "featuresMetricas": featuresMetricas_en,
     "featuresPublicar": featuresPublicar_en,
     "featuresRevision": featuresRevision_en,
+    "featuresSubirClips": featuresSubirClips_en,
     "featuresTextos": featuresTextos_en,
     "grabar": grabar_en,
     "hashtagsChips": hashtagsChips_en,
