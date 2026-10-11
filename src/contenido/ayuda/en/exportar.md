@@ -3,6 +3,7 @@ titulo: Export and download a clip
 descripcion: How to export a clip's MP4, download it, mark it ready for the team, and why you don't need to export before scheduling.
 categoria: editor
 orden: 4
+funciones: edicion
 ---
 Exporting builds the clip's final MP4 with all your changes. You need it to download the clip; to schedule it on social networks you don't: it exports on its own.
 

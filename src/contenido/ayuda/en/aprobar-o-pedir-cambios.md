@@ -3,6 +3,7 @@ titulo: Approve a clip or request changes
 descripcion: How a reviewer approves a clip with one tap or requests changes with text or a voice note, and how the editor fixes it and sends it back.
 categoria: revision
 orden: 2
+funciones: revision
 ---
 When a brand has [review turned on](/ayuda/activar-revision), every clip an editor schedules waits for your OK. This is what reviewers do, on the web and in the app.
 

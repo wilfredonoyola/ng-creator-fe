@@ -3,6 +3,7 @@ titulo: Upload your first episode
 descripcion: Upload a full podcast video to Clipfine; it gets transcribed automatically and AI flags the best moments to turn into vertical clips.
 categoria: primeros-pasos
 orden: 3
+funciones: importar, ia
 ---
 Upload the full video of an episode and Clipfine transcribes it automatically and suggests the best moments for clips.
 

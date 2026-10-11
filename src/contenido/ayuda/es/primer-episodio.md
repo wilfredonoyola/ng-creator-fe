@@ -3,6 +3,7 @@ titulo: Subir tu primer episodio
 descripcion: Subí el video completo de un podcast a Clipfine; se transcribe solo y la IA te marca los mejores momentos para hacer clips verticales.
 categoria: primeros-pasos
 orden: 3
+funciones: importar, ia
 ---
 Subí el video completo de un episodio y Clipfine lo transcribe solo y te propone los mejores momentos para clips.
 

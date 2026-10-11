@@ -3,6 +3,7 @@ titulo: El editor de clips
 descripcion: Cómo usar el editor de Clipfine, parecido a CapCut: recortar el tramo, cortar en el medio, quitar silencios, deshacer y guardado automático.
 categoria: editor
 orden: 1
+funciones: edicion
 ---
 El editor es donde dejás cada clip listo para el cliente. Funciona como CapCut, así que si tu equipo ya lo usó no hay nada nuevo que aprender. Está en la web y en la app.
 

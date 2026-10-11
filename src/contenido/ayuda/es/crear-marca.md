@@ -3,6 +3,7 @@ titulo: Crear tu marca
 descripcion: Qué es una marca en Clipfine, cómo crearla al registrarte y cómo cambiarle el nombre después desde el Brand Kit.
 categoria: primeros-pasos
 orden: 2
+funciones: marca
 ---
 La marca es tu espacio de trabajo: sus episodios, sus clips, sus redes y su equipo cuelgan de ella. En una agencia, cada cliente es una marca.
 

@@ -3,6 +3,7 @@ titulo: Métricas por clip
 descripcion: Mirá cómo le fue a cada clip en TikTok, YouTube, Instagram y Facebook: vistas, interacciones, seguidores ganados y qué tipo de momento rinde mejor.
 categoria: metricas
 orden: 1
+funciones: metricas
 ---
 Las métricas te muestran cómo le fue en las redes a cada clip que salió de Clipfine, para cada marca, en la web y en la app.
 

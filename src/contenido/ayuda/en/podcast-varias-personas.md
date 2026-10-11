@@ -3,6 +3,7 @@ titulo: Clips from podcasts with several people
 descripcion: How Clipfine turns a podcast shot in landscape into a vertical clip that follows whoever is talking, with auto-framing and layouts like Split.
 categoria: clips
 orden: 4
+funciones: edicion
 ---
 Podcasts are shot in landscape with several people on camera. To make sure the vertical clip always shows whoever is talking, Clipfine has auto-framing and screen layouts built for interviews.
 

@@ -3,6 +3,7 @@ titulo: Invitar a tu equipo
 descripcion: Cómo sumar editores, revisores y clientes a una marca de Clipfine por correo, cambiarles el rol o quitarles el acceso, en la web y en la app.
 categoria: equipo
 orden: 1
+funciones: equipo
 ---
 Invitá por correo a quien tenga que trabajar en una marca: tu equipo de edición, el cliente que aprueba o alguien que solo mira.
 

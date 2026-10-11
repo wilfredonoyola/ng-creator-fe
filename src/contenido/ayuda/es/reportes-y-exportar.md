@@ -3,6 +3,7 @@ titulo: Reportes y exportar
 descripcion: Armá el reporte de rendimiento de cada cliente en PDF, o exportá sus métricas en CSV para Excel o en Markdown para Notion, Slack o un correo.
 categoria: metricas
 orden: 2
+funciones: metricas
 ---
 Desde **Métricas** sacás los números de una marca en el formato que necesites: un PDF para el cliente, un CSV para planillas o un resumen en Markdown.
 

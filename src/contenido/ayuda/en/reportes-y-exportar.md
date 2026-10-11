@@ -3,6 +3,7 @@ titulo: Reports and exporting
 descripcion: Build each client's performance report as a PDF, or export their metrics as CSV for Excel or as Markdown for Notion, Slack or an email.
 categoria: metricas
 orden: 2
+funciones: metricas
 ---
 From **Metrics** you can get a brand's numbers in the format you need: a PDF for your client, a CSV for spreadsheets or a Markdown summary.
 

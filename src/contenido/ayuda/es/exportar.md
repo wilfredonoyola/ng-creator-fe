@@ -3,6 +3,7 @@ titulo: Exportar y descargar un clip
 descripcion: Cómo exportar el MP4 de un clip, descargarlo, marcarlo listo para el equipo y por qué para programar no hace falta exportar antes.
 categoria: editor
 orden: 4
+funciones: edicion
 ---
 Exportar arma el MP4 final del clip con todos tus cambios. Lo necesitás para descargarlo; para programarlo en redes, no: se exporta solo.
 

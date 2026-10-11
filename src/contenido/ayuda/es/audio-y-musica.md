@@ -3,6 +3,7 @@ titulo: Audio, música y velocidad
 descripcion: Cómo subir o silenciar la voz, poner música de fondo que baja cuando hablan, sumar efectos de sonido y cambiar la velocidad de un clip en Clipfine.
 categoria: editor
 orden: 3
+funciones: audio
 ---
 Con la herramienta **Audio** del editor ajustás la voz del video, le ponés música de fondo y sumás efectos de sonido. Está en la web y en la app.
 

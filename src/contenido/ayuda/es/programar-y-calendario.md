@@ -3,6 +3,7 @@ titulo: Programar clips y usar el calendario
 descripcion: Cómo programar un clip en varias redes a la vez, con descripción, hashtags y portada, y cómo ver y cambiar todo lo programado en el calendario.
 categoria: publicar
 orden: 2
+funciones: publicar
 ---
 Programar es elegir en qué redes sale un clip, con qué texto y a qué hora. El calendario te muestra todo lo programado y lo publicado de cada marca, en la web y en la app.
 

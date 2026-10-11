@@ -3,6 +3,7 @@ titulo: Frequently asked questions
 descripcion: Quick answers for agencies: clients kept separate by brand, who sees what, whether your client needs an account, languages, networks, cancelling and support.
 categoria: app
 orden: 2
+funciones:
 ---
 The most common questions from agencies using Clipfine, with short answers.
 
@@ -56,4 +57,4 @@ Yes, for iPhone and Android, with the same account as the web. See [The iPhone a
 
 ## How do I contact support?
 
-Email us at support@clipfine.io.
+Email us at {{soporte}}.

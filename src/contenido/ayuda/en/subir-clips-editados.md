@@ -3,6 +3,7 @@ titulo: Upload edited clips
 descripcion: Upload clips your team already edited in CapCut, Premiere or on a phone, and schedule, review and measure them like the rest. They don't use plan hours.
 categoria: clips
 orden: 3
+funciones: subir-clips
 ---
 If a clip is already edited (a CapCut reel, a tip shot on a phone, a YouTube cut), you upload it as is and it joins the same flow as clips from episodes: client review, scheduling to social networks and metrics. It skips the AI and episode transcription.
 

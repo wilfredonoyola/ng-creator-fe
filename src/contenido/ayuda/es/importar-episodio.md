@@ -3,6 +3,7 @@ titulo: Importar un episodio
 descripcion: Cómo subir el video de un podcast o traer el live de Restream a la marca de un cliente para que Clipfine lo transcriba y busque los clips.
 categoria: clips
 orden: 1
+funciones: importar
 ---
 Un episodio es el video largo de un cliente (un podcast, una entrevista, un live) del que Clipfine saca los clips. Entra a la marca que tengas elegida, así que antes de importar fijate de qué cliente es.
 

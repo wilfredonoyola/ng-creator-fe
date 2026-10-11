@@ -3,6 +3,7 @@ titulo: Kit de marca (Brand Kit)
 descripcion: Configurá colores, estilo de texto, logo y llamada a la acción de cada cliente en Clipfine para que todos sus clips salgan con su identidad.
 categoria: equipo
 orden: 4
+funciones: marca
 ---
 El Brand Kit es lo que lleva cada clip de una marca: sus colores, el estilo de los textos, el logo en una esquina y, si querés, una llamada a la acción al final. Se arma una vez por cliente y se aplica solo.
 

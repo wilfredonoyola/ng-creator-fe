@@ -3,6 +3,7 @@ titulo: Create your Clipfine account
 descripcion: How to sign up for Clipfine with your email, confirm the code and start the free trial with 2 episodes, no card needed.
 categoria: primeros-pasos
 orden: 1
+funciones:
 ---
 Creating an account lets you try Clipfine for free, no card needed, with 2 episodes.
 
