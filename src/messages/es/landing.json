@@ -100,6 +100,30 @@
       }
     }
   },
+  "aprobacion": {
+    "etiqueta": "Aprobación",
+    "titulo": "Tu cliente aprueba antes de que salga.",
+    "texto": "Activá la revisión por cliente y nada se publica sin el visto bueno. Tu equipo programa como siempre; el revisor aprueba o pide cambios desde la web o el celular, con un comentario o una nota de voz.",
+    "puntos": {
+      "rol": {
+        "titulo": "El cliente, con su rol.",
+        "texto": "Lo invitás como Revisor: ve sus clips y los aprueba, pero no edita."
+      },
+      "voz": {
+        "titulo": "Cambios en voz alta.",
+        "texto": "Una nota de voz con su transcripción, en vez de un correo largo."
+      },
+      "hora": {
+        "titulo": "Nada sale sin aprobar.",
+        "texto": "Si llega la hora sin revisión, no sale, y todos se enteran."
+      },
+      "editar": {
+        "titulo": "Lo aprobado es lo que sale.",
+        "texto": "Si se edita después, vuelve a revisión."
+      }
+    },
+    "verMas": "Cómo funciona la aprobación"
+  },
   "metricas": {
     "etiqueta": "Métricas",
     "titulo": "Sabé qué clip funcionó. Y mostráselo al cliente.",
