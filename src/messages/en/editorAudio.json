@@ -1,0 +1,41 @@
+{
+  "escuchar": "Listen",
+  "pausar": "Pause",
+  "cerrarBiblioteca": "Close the library",
+  "voz": {
+    "titulo": "Video voice",
+    "volumen": "Voice volume",
+    "silenciar": "Mute",
+    "silenciada": "Muted",
+    "activar": "Unmute the voice",
+    "masDe100": "The preview plays at 100%; the video comes out at the volume you chose."
+  },
+  "musica": {
+    "titulo": "Background music",
+    "cambiar": "Change",
+    "quitar": "Remove the music",
+    "volumen": "Music volume",
+    "bajarAlHablar": "Lower when people talk",
+    "bajarAlHablarAyuda": "The music ducks on its own when there's voice",
+    "usar": "Use",
+    "elegida": "Chosen",
+    "vacia": "There's no music in the library yet. You can upload yours below."
+  },
+  "efectos": {
+    "titulo": "Effects · {n}/{max}",
+    "sinEfectos": "This clip has no effects.",
+    "ayuda": "They're added at the playhead (<cabezal></cabezal>). Then you move them on the timeline.",
+    "lleno": "You reached the maximum of {max} effects per clip.",
+    "enElCabezal": "Add",
+    "agregar": "Add “{titulo}” at the playhead",
+    "quitar": "Remove “{titulo}”",
+    "volumen": "Effect volume",
+    "ir": "Go to this effect",
+    "vacia": "There are no effects in the library yet. You can upload yours below."
+  },
+  "subir": {
+    "titulo": "Your sounds",
+    "boton": "Upload sound"
+  },
+  "licencia": "Use royalty-free music or music licensed for social media."
+}

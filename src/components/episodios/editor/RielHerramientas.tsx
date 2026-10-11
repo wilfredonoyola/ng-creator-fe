@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import { Captions, Layers, LoaderCircle, RectangleVertical, ScanFace, Scissors, Type, type LucideIcon } from "lucide-react";
+import { Captions, Layers, LoaderCircle, Music, RectangleVertical, ScanFace, Scissors, Type, type LucideIcon } from "lucide-react";
 import { HERRAMIENTAS, type Herramienta } from "./tipos";
 
 const ICONOS: Record<Herramienta, LucideIcon> = {
@@ -10,6 +10,7 @@ const ICONOS: Record<Herramienta, LucideIcon> = {
   texto: Type,
   subtitulos: Captions,
   superposicion: Layers,
+  audio: Music,
   formato: RectangleVertical,
   auto: ScanFace,
 };

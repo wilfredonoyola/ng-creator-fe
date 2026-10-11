@@ -24,12 +24,15 @@ export function Escenario({
   url,
   conCuadro,
   onCambiarPosiciones,
+  velocidad,
   ...vista
 }: PropsVista & {
   url: string;
   /** Muestra el cuadro entero con los recuadros (Formato, Auto-encuadre). */
   conCuadro: boolean;
   onCambiarPosiciones: ComponentProps<typeof CuadroRecorte>["onCambiarPosiciones"];
+  /** El reloj de abajo cuenta en el tiempo del MP4, ya con la velocidad. */
+  velocidad: number;
 }) {
   const tr = useTranslations("editorHerramientas");
   const tRecorte = useTranslations("editorRecorte");
@@ -84,7 +87,7 @@ export function Escenario({
           {reproductor.sonando ? <Pause size={20} aria-hidden fill="currentColor" /> : <Play size={20} aria-hidden fill="currentColor" />}
         </button>
         <span className="w-24 text-sm tabular-nums text-ng-secundario">
-          <span className="font-semibold text-white">{reloj(ts)}</span> / {reloj(efectiva)}
+          <span className="font-semibold text-white">{reloj(ts / velocidad)}</span> / {reloj(efectiva / velocidad)}
         </span>
       </div>
     </div>

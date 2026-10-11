@@ -1,0 +1,31 @@
+{
+  "buscar": "Buscar",
+  "cargando": "Cargando sonidos…",
+  "sinResultados": "No hay sonidos con esa búsqueda.",
+  "sinCategoria": "Sin categoría",
+  "deTuMarca": "de tu marca",
+  "escuchar": "Escuchar «{titulo}»",
+  "pausar": "Pausar «{titulo}»",
+  "editar": "Editar «{titulo}»",
+  "borrar": "Borrar «{titulo}»",
+  "confirmarBorrar": "¿Borrar «{titulo}»? No se puede deshacer.",
+  "errorGuardar": "No se pudo guardar.",
+  "errorBorrar": "No se pudo borrar.",
+  "errorSubir": "No se pudo subir el sonido.",
+  "titulo": "Título",
+  "categoriaOpcional": "Categoría (opcional), p. ej. Alegre",
+  "fuente": "Fuente y licencia",
+  "fuenteObligatoria": "Fuente y licencia (obligatoria), p. ej. Pixabay Music",
+  "cancelar": "Cancelar",
+  "guardar": "Guardar",
+  "tipo": "Tipo",
+  "tipos": {
+    "MUSICA": "Música",
+    "EFECTO": "Efecto"
+  },
+  "limiteMusica": "MP3, WAV o M4A, hasta {min} minutos y 60 MB.",
+  "limiteEfecto": "MP3, WAV o M4A, hasta {seg} segundos.",
+  "subir": "Subir",
+  "subiendo": "Subiendo {n}%",
+  "procesando": "Preparando el audio…"
+}

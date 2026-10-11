@@ -2,7 +2,8 @@
   "secciones": {
     "clientes": "Clientes",
     "usuarios": "Usuarios",
-    "origenes": "Cómo nos conocieron"
+    "origenes": "Cómo nos conocieron",
+    "sonidos": "Sonidos"
   },
   "irAlPanel": "Ir al panel",
   "salir": "Salir",
@@ -78,5 +79,13 @@
     "lista": {
       "titulo": "Respuestas, las más nuevas primero"
     }
+  },
+  "sonidos": {
+    "titulo": "Sonidos",
+    "subtitulo": "La biblioteca de Clipfine: la música y los efectos que ven todas las marcas en el editor. Cada marca puede subir los suyos aparte.",
+    "ayuda": "Cargá solo música libre de derechos para uso comercial (por ejemplo Pixabay Music o Freesound CC0) y anotá la fuente y la licencia de cada una.",
+    "vacio": "Todavía no hay sonidos de este tipo.",
+    "subir": "Subir a la biblioteca",
+    "subirBoton": "Subir sonido"
   }
 }

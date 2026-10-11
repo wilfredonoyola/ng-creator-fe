@@ -746,6 +746,7 @@ export const PUBLICACIONES_DE_MARCA = gql`
         desdeSeg
         hastaSeg
         duracionEfectivaSeg
+        duracionFinalSeg
         editadoPor {
           nombre
         }
@@ -1840,6 +1841,7 @@ export const CLIPS_DE_EPISODIO = gql`
       desdeSeg
       hastaSeg
       duracionEfectivaSeg
+      duracionFinalSeg
       puntuacion
       motivo
       titulo
@@ -1910,6 +1912,96 @@ const CAMPOS_VERSION_CORTA_CLIP = gql`
   }
 `;
 
+// ---- Audio del clip y biblioteca de sonidos (Tanda 2, be#173) ----
+
+const CAMPOS_MUSICA_CLIP = gql`
+  fragment CamposMusicaClip on MusicaClip {
+    sonidoId
+    url
+    titulo
+    volumen
+    bajarAlHablar
+  }
+`;
+
+const CAMPOS_EFECTO_CLIP = gql`
+  fragment CamposEfectoClip on EfectoClip {
+    id
+    sonidoId
+    url
+    titulo
+    enSeg
+    duracionSeg
+    volumen
+  }
+`;
+
+const CAMPOS_SONIDO = gql`
+  fragment CamposSonido on Sonido {
+    _id
+    tipo
+    titulo
+    categoria
+    url
+    duracionSeg
+    marcaId
+    fuente
+    createdAt
+  }
+`;
+
+/** La biblioteca desde una marca: la de Clipfine más los que subió la marca. */
+export const SONIDOS = gql`
+  ${CAMPOS_SONIDO}
+  query Sonidos($marcaId: String!, $tipo: TipoSonido) {
+    sonidos(marcaId: $marcaId, tipo: $tipo) {
+      ...CamposSonido
+    }
+  }
+`;
+
+/** Renombra un sonido de la marca (los de Clipfine, desde /superadmin). */
+export const ACTUALIZAR_SONIDO = gql`
+  ${CAMPOS_SONIDO}
+  mutation ActualizarSonido($id: ID!, $marcaId: String!, $titulo: String, $categoria: String) {
+    actualizarSonido(id: $id, marcaId: $marcaId, titulo: $titulo, categoria: $categoria) {
+      ...CamposSonido
+    }
+  }
+`;
+
+/** Falla, con el motivo, si algún clip lo usa. */
+export const BORRAR_SONIDO = gql`
+  mutation BorrarSonido($id: ID!, $marcaId: String!) {
+    borrarSonido(id: $id, marcaId: $marcaId)
+  }
+`;
+
+/** La biblioteca de Clipfine. Solo superadmin. */
+export const SONIDOS_GLOBALES = gql`
+  ${CAMPOS_SONIDO}
+  query SonidosGlobales($tipo: TipoSonido) {
+    sonidosGlobales(tipo: $tipo) {
+      ...CamposSonido
+    }
+  }
+`;
+
+export const ACTUALIZAR_SONIDO_GLOBAL = gql`
+  ${CAMPOS_SONIDO}
+  mutation ActualizarSonidoGlobal($id: ID!, $titulo: String, $categoria: String, $fuente: String) {
+    actualizarSonidoGlobal(id: $id, titulo: $titulo, categoria: $categoria, fuente: $fuente) {
+      ...CamposSonido
+    }
+  }
+`;
+
+export const BORRAR_SONIDO_GLOBAL = gql`
+  mutation BorrarSonidoGlobal($id: ID!) {
+    borrarSonidoGlobal(id: $id)
+  }
+`;
+
 const CAMPOS_CLIP_EDITOR = gql`
   fragment CamposClipEditor on ClipEpisodio {
     _id
@@ -1927,6 +2019,7 @@ const CAMPOS_CLIP_EDITOR = gql`
       hastaSeg
     }
     duracionEfectivaSeg
+    duracionFinalSeg
     titulo
     texto
     puntuacion
@@ -1997,6 +2090,14 @@ const CAMPOS_CLIP_EDITOR = gql`
       estadoRecorte
       urlFinal
     }
+    volumenClip
+    velocidad
+    musica {
+      ...CamposMusicaClip
+    }
+    efectos {
+      ...CamposEfectoClip
+    }
     estadoAutoEncuadre
     errorAutoEncuadre
     personasAutoEncuadre
@@ -2052,6 +2153,8 @@ const CAMPOS_CLIP_EDITOR = gql`
   }
   ${RESUMEN_PUBLICACION_CLIP}
   ${CAMPOS_VERSION_CORTA_CLIP}
+  ${CAMPOS_MUSICA_CLIP}
+  ${CAMPOS_EFECTO_CLIP}
 `;
 
 /** Los colores de la marca para los clips, su logo y su plantilla (be#117). */

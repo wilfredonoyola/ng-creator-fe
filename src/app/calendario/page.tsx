@@ -50,6 +50,7 @@ interface PublicacionCalendario extends Publicacion {
     desdeSeg?: number | null;
     hastaSeg?: number | null;
     duracionEfectivaSeg?: number | null;
+    duracionFinalSeg?: number | null;
     editadoPor?: { nombre: string } | null;
     tomadoPor?: { nombre: string } | null;
   } | null;
@@ -630,7 +631,7 @@ function DetalleAgendada({
               <EditarAgendada
                 programadas={programadas}
                 videoUrl={videoUrl}
-                duracionClip={clip ? clip.duracionEfectivaSeg ?? (clip.hastaSeg ?? 0) - (clip.desdeSeg ?? 0) : 0}
+                duracionClip={clip ? clip.duracionFinalSeg ?? clip.duracionEfectivaSeg ?? (clip.hastaSeg ?? 0) - (clip.desdeSeg ?? 0) : 0}
                 enlaceClip={enlaceClip}
                 onMover={onMover}
               />

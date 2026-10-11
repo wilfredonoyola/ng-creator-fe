@@ -6,6 +6,7 @@ import { Plus, X } from "lucide-react";
 import { aTiempoDelEpisodio, pedazosDelClip, siguienteTiempoVisible, type Corte } from "@/lib/cortes";
 import type { plantillaDelClip } from "@/lib/plantilla-clip";
 import type { ImagenClip, PosicionEfectiva, Texto } from "@/lib/clip-encuadre";
+import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
 import { useTiempo, type Reproductor } from "./reproductor";
 import { reloj, relojFino, type Herramienta, type SeleccionCortes } from "./tipos";
 
@@ -24,6 +25,10 @@ interface Barra {
   elegida: boolean;
   /** Del Brand Kit: se ve, pero no se mueve. */
   fija?: boolean;
+  /** La música de fondo: va a lo largo, no se mueve. */
+  musica?: boolean;
+  /** Los efectos: se corren enteros, sin bordes (lo que duran es lo que dura el sonido). */
+  soloMover?: boolean;
   alTocar: () => void;
   /** Sin esto, no se arrastra. */
   alMover?: (desde: number, hasta: number) => void;
@@ -32,13 +37,15 @@ interface Barra {
 /**
  * La línea de tiempo, a todo el ancho y debajo de todo, como en CapCut: una
  * regla, el cabezal y una pista por cosa (video, textos, subtítulos,
- * imágenes), en el tiempo del clip.
+ * imágenes, audio), en el tiempo del clip.
  *
  * - Tocar la regla lleva el video ahí; arrastrar sobre ella lo recorre.
  * - En el video, tocar un pedazo lo elige (para "Quitar tramo") y arrastrar
  *   marca un rango. Lo rayado son los cortes: la ✕ los vuelve a poner.
  * - Tocar una barra la elige y abre su herramienta. Los bordes de un texto o
  *   una imagen cambian cuándo aparece y cuándo se va; el medio la corre.
+ * - En Audio, la música va a lo largo y cada efecto en su segundo: se arrastra
+ *   para cambiarlo de lugar.
  */
 export function LineaDeTiempo({
   reproductor,
@@ -59,6 +66,11 @@ export function LineaDeTiempo({
   onElegirImagen,
   subtitulosActivos,
   plantilla,
+  musica,
+  efectos,
+  onCambiarEfectos,
+  efectoElegido,
+  onElegirEfecto,
   herramienta,
   onAbrir,
   puedeEditar,
@@ -81,6 +93,11 @@ export function LineaDeTiempo({
   onElegirImagen: (i: number) => void;
   subtitulosActivos: boolean;
   plantilla: ReturnType<typeof plantillaDelClip>;
+  musica: MusicaClip | null;
+  efectos: EfectoClip[];
+  onCambiarEfectos: (e: EfectoClip[]) => void;
+  efectoElegido: string | null;
+  onElegirEfecto: (id: string) => void;
   herramienta: Herramienta;
   onAbrir: (h: Herramienta) => void;
   puedeEditar: boolean;
@@ -187,6 +204,35 @@ export function LineaDeTiempo({
   if (plantilla.logo) {
     barrasImagenes.push({ clave: "logo", etiqueta: tr("linea.logo"), desde: 0, hasta: duracion, elegida: false, fija: true, alTocar: () => onAbrir("superposicion") });
   }
+
+  // La música primero: ocupa el primer renglón entero y los efectos van debajo.
+  const barrasAudio: Barra[] = [];
+  if (musica) {
+    barrasAudio.push({
+      clave: "musica",
+      etiqueta: tr("linea.musica", { titulo: musica.titulo }),
+      desde: 0,
+      hasta: duracion,
+      elegida: false,
+      musica: true,
+      alTocar: () => onAbrir("audio"),
+    });
+  }
+  efectos.forEach((ef) => {
+    barrasAudio.push({
+      clave: ef.id,
+      etiqueta: ef.titulo,
+      desde: ef.enSeg,
+      hasta: ef.enSeg + Math.max(MINIMO_SEG, ef.duracionSeg),
+      elegida: efectoElegido === ef.id,
+      soloMover: true,
+      alTocar: () => {
+        onElegirEfecto(ef.id);
+        onAbrir("audio");
+      },
+      alMover: puedeEditar ? (d) => onCambiarEfectos(efectos.map((x) => (x.id === ef.id ? { ...x, enSeg: decimas(d) } : x))) : undefined,
+    });
+  });
 
   return (
     <section
@@ -328,6 +374,22 @@ export function LineaDeTiempo({
           />
         </Fila>
 
+        {/* Audio: la música y los efectos */}
+        <Fila etiqueta={tr("linea.audio")} activa={herramienta === "audio"}>
+          <Pista
+            barras={barrasAudio}
+            duracion={duracion}
+            vacia={
+              puedeEditar ? (
+                <button type="button" onClick={() => onAbrir("audio")} className={AGREGAR}>
+                  <Plus size={12} aria-hidden />
+                  {tr("linea.agregarAudio")}
+                </button>
+              ) : null
+            }
+          />
+        </Fila>
+
         <Cabezal reproductor={reproductor} desde={desde} duracion={duracion} />
       </div>
     </section>
@@ -404,7 +466,8 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
       let h = b.hasta;
       if (modo === "mover") {
         const largo = b.hasta - b.desde;
-        d = Math.min(Math.max(0, b.desde + ds), duracion - largo);
+        // Un efecto puede seguir sonando después del final: solo su inicio tiene que caer en el clip.
+        d = Math.min(Math.max(0, b.desde + ds), b.soloMover ? duracion - 0.1 : duracion - largo);
         h = d + largo;
       } else if (modo === "inicio") {
         d = Math.min(Math.max(0, b.desde + ds), b.hasta - MINIMO_SEG);
@@ -428,7 +491,8 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
       {!barras.some((b) => !b.fija) && vacia}
       {barras.map((b) => {
         const r = renglonDe.get(b.clave) ?? 0;
-        const editable = Boolean(b.alMover) && !b.fija;
+        const editable = Boolean(b.alMover) && !b.fija && !b.musica;
+        const bordes = editable && !b.soloMover;
         return (
           <div
             key={b.clave}
@@ -447,7 +511,9 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
             className={`group absolute flex touch-none items-center overflow-hidden whitespace-nowrap rounded-md text-xs font-semibold ${
               b.fija
                 ? "cursor-pointer border border-dashed border-white/20 bg-transparent text-ng-secundario"
-                : b.elegida
+                : b.musica
+                  ? "cursor-pointer bg-white/10 text-white hover:bg-white/15"
+                  : b.elegida
                   ? "z-10 cursor-grab border-2 border-ng-azul bg-ng-azul/20 text-ng-azul"
                   : "cursor-grab bg-ng-azul/10 text-ng-lila hover:bg-ng-azul/15"
             }`}
@@ -458,7 +524,7 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
               height: ALTO,
             }}
           >
-            {editable && (
+            {bordes && (
               <span
                 onPointerDown={(e) => arrastrar(e, b, "inicio")}
                 className={`h-full w-2 shrink-0 cursor-ew-resize ${b.elegida ? "bg-ng-azul" : "bg-ng-azul/30 opacity-0 group-hover:opacity-100"}`}
@@ -466,7 +532,7 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
               />
             )}
             <span className="min-w-0 flex-1 truncate px-2">{b.etiqueta}</span>
-            {editable && (
+            {bordes && (
               <span
                 onPointerDown={(e) => arrastrar(e, b, "fin")}
                 className={`h-full w-2 shrink-0 cursor-ew-resize ${b.elegida ? "bg-ng-azul" : "bg-ng-azul/30 opacity-0 group-hover:opacity-100"}`}

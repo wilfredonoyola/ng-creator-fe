@@ -171,6 +171,8 @@ function Formulario({
     hastaSeg: number;
     /** Ya sin los cortes del medio. */
     duracionEfectivaSeg?: number | null;
+    /** Lo que dura el MP4: sin los cortes y con la velocidad (be#173). */
+    duracionFinalSeg?: number | null;
     desdeSeg: number;
     editadoEn?: string | null;
     renderizadoEn?: string | null;
@@ -231,8 +233,8 @@ function Formulario({
   const elegidosEnOrden = destinos.filter((d) => elegidos.has(d.clave));
   // Un Reel de Facebook dura hasta 90 s: un clip más largo sale en Facebook con
   // su versión corta, y hasta que esté lista Facebook espera. Las otras redes no.
-  // Ya sin los cortes del medio: es lo que dura el MP4 (y sobre eso se elige la versión para Facebook).
-  const duracionClip: number = clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg;
+  // Lo que dura el MP4, sin los cortes y con la velocidad: sobre eso se elige la versión para Facebook.
+  const duracionClip: number = clip.duracionFinalSeg ?? clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg;
   const necesitaVersion = duracionClip > REEL_FACEBOOK_MAX_SEG;
   const conFacebook = elegidosEnOrden.some((d) => d.red === "FACEBOOK");
   const facebookEspera = necesitaVersion && clip.versionFacebook?.estadoRender !== "LISTO";
