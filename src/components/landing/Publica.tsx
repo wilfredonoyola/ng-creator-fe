@@ -122,7 +122,7 @@ export function PiePublico() {
           </div>
           <nav className="flex flex-col gap-3.5">
             <Link href={ENLACE_FUNCIONES} className="underline-offset-[5px] hover:underline">{t("pie.funciones")}</Link>
-            <Link href="/app" className="underline-offset-[5px] hover:underline">{t("pie.app")}</Link>
+            <Link href="/features/app" className="underline-offset-[5px] hover:underline">{t("pie.app")}</Link>
             <Link href="/privacidad" className="underline-offset-[5px] hover:underline">{t("pie.privacidad")}</Link>
             <Link href="/terminos" className="underline-offset-[5px] hover:underline">{t("pie.terminos")}</Link>
             <Link href={ENLACE_ENTRAR} className="underline-offset-[5px] hover:underline">{t("nav.entrar")}</Link>
