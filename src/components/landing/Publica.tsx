@@ -5,6 +5,7 @@ import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { ENLACE_EMPEZAR, ENLACE_ENTRAR, ENLACE_PANEL } from "@/components/landing/Marco";
 import { SegunSesion } from "@/components/landing/SegunSesion";
+import { ENLACE_AYUDA } from "@/lib/ayuda";
 
 /**
  * El sistema de las páginas públicas para agencias (la landing y /features):
@@ -56,7 +57,7 @@ export function Seccion({ children, titulo = false }: { children: React.ReactNod
  * página; desde /features vuelven a la landing. "Funciones" va siempre a
  * /features, la lista completa.
  */
-export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boolean; actual?: "funciones" }) {
+export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boolean; actual?: "funciones" | "ayuda" }) {
   const t = useTranslations("landing");
   const base = enLanding ? "" : "/";
   const items = [
@@ -65,6 +66,7 @@ export function CabeceraPublica({ enLanding = false, actual }: { enLanding?: boo
     { clave: "como", href: `${base}#como` },
     { clave: "precios", href: `${base}#precios` },
     { clave: "preguntas", href: `${base}#preguntas` },
+    { clave: "ayuda", href: ENLACE_AYUDA },
   ] as const;
   return (
     <header className="sticky top-0 z-30 border-b border-[#E9E8E4] bg-white">
@@ -124,6 +126,7 @@ export function PiePublico() {
             <Link href={ENLACE_FUNCIONES} className="underline-offset-[5px] hover:underline">{t("pie.funciones")}</Link>
             <Link href="/features/app" className="underline-offset-[5px] hover:underline">{t("pie.app")}</Link>
             <Link href="/privacidad" className="underline-offset-[5px] hover:underline">{t("pie.privacidad")}</Link>
+            <Link href={ENLACE_AYUDA} className="underline-offset-[5px] hover:underline">{t("pie.ayuda")}</Link>
             <Link href="/terminos" className="underline-offset-[5px] hover:underline">{t("pie.terminos")}</Link>
             <Link href={ENLACE_ENTRAR} className="underline-offset-[5px] hover:underline">{t("nav.entrar")}</Link>
           </nav>

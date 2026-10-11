@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "titulo": "Ayuda",
+    "descripcion": "Guías para usar Clipfine en tu agencia: marcas y equipo, clips con IA, editor, revisión antes de publicar, programar y métricas."
+  },
+  "etiqueta": "Centro de ayuda",
+  "titulo": "¿En qué te ayudamos?",
+  "texto": "Guías cortas para sacarle el jugo a Clipfine con cada cliente de tu agencia.",
+  "buscar": "Buscar en la ayuda",
+  "buscarEjemplo": "Ej.: invitar a un cliente, programar, métricas",
+  "sinResultados": "No encontramos nada con \"{q}\". Probá con otra palabra o escribinos.",
+  "resultados": "{n, plural, one {# artículo} other {# artículos}}",
+  "articulos": "{n, plural, one {# artículo} other {# artículos}}",
+  "categorias": {
+    "primeros-pasos": "Primeros pasos",
+    "equipo": "Marcas y equipo",
+    "clips": "Episodios y clips",
+    "editor": "Editor",
+    "revision": "Revisión antes de publicar",
+    "publicar": "Publicar y programar",
+    "metricas": "Métricas",
+    "planes": "Planes y cobro",
+    "app": "App y preguntas frecuentes"
+  },
+  "migas": "Ruta",
+  "enEstaCategoria": "En esta categoría",
+  "anterior": "Anterior",
+  "siguiente": "Siguiente",
+  "volver": "Toda la ayuda",
+  "contacto": {
+    "titulo": "¿No encontraste lo que buscabas?",
+    "texto": "Escribinos y te respondemos nosotros.",
+    "boton": "Escribir a soporte"
+  },
+  "conIa": {
+    "titulo": "Preguntale a ChatGPT o Claude",
+    "texto": "Pronto vas a poder conectar Clipfine a ChatGPT o Claude y preguntar cómo usarlo, o cómo rinden los clips de cada cliente."
+  }
+}

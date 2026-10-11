@@ -16,6 +16,7 @@
     "empezar": "Empezar gratis",
     "inicio": "Clipfine, inicio",
     "metricas": "Métricas",
+    "ayuda": "Ayuda",
     "irApp": "Ir a la app"
   },
   "pronto": "Pronto",
@@ -409,6 +410,7 @@
     "texto": "Empezá tus 15 días gratis hoy, o agendá una llamada y armamos Clipfine alrededor de tu forma de trabajar."
   },
   "pie": {
+    "ayuda": "Ayuda",
     "lema": "Software de clips con IA para agencias.",
     "funciones": "Funciones",
     "app": "App",

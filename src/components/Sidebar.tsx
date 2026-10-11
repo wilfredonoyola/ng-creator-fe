@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   CalendarDays,
   ChartColumnIncreasing,
+  CircleHelp,
   Clapperboard,
   House,
   Link2,
@@ -22,6 +23,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cerrarSesion } from "@/lib/auth";
+import { ENLACE_AYUDA } from "@/lib/ayuda";
+import { URL_SITIO } from "@/lib/sitio";
 import { LogoNG } from "./LogoNG";
 import { useSesion } from "@/lib/sesion";
 import { useSoySuperadmin } from "@/lib/superadmin";
@@ -309,6 +312,16 @@ export function Sidebar({
           </div>
           <span className="shrink-0 text-xs text-white/30">{t("perfil")}</span>
         </button>
+        {/* La wiki vive en el sitio público: se abre aparte para no perder lo que se está haciendo. */}
+        <a
+          href={`${URL_SITIO}${ENLACE_AYUDA}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:bg-white/5 hover:text-white"
+        >
+          <CircleHelp size={14} aria-hidden />
+          {t("ayuda")}
+        </a>
         <button
           onClick={handleLogout}
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
@@ -329,6 +342,16 @@ export function Sidebar({
           >
             <UserRound size={18} strokeWidth={1.8} className="text-ng-secundario" aria-hidden />
           </button>
+          <a
+            href={`${URL_SITIO}${ENLACE_AYUDA}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={t("ayuda")}
+            aria-label={t("ayuda")}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-ng-secundario transition hover:bg-white/10"
+          >
+            <CircleHelp size={18} strokeWidth={1.8} aria-hidden />
+          </a>
           <button
             onClick={handleLogout}
             title={t("cerrarSesion")}

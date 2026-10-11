@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "titulo": "Help",
+    "descripcion": "Guides for using Clipfine at your agency: brands and team, AI clips, editor, review before publishing, scheduling and metrics."
+  },
+  "etiqueta": "Help center",
+  "titulo": "How can we help?",
+  "texto": "Short guides to get the most out of Clipfine with every client at your agency.",
+  "buscar": "Search help",
+  "buscarEjemplo": "E.g.: invite a client, schedule, metrics",
+  "sinResultados": "Nothing found for \"{q}\". Try another word or write to us.",
+  "resultados": "{n, plural, one {# article} other {# articles}}",
+  "articulos": "{n, plural, one {# article} other {# articles}}",
+  "categorias": {
+    "primeros-pasos": "Getting started",
+    "equipo": "Brands and team",
+    "clips": "Episodes and clips",
+    "editor": "Editor",
+    "revision": "Review before publishing",
+    "publicar": "Publishing and scheduling",
+    "metricas": "Metrics",
+    "planes": "Plans and billing",
+    "app": "App and FAQ"
+  },
+  "migas": "Breadcrumb",
+  "enEstaCategoria": "In this category",
+  "anterior": "Previous",
+  "siguiente": "Next",
+  "volver": "All help",
+  "contacto": {
+    "titulo": "Didn't find what you were looking for?",
+    "texto": "Write to us and we'll answer personally.",
+    "boton": "Contact support"
+  },
+  "conIa": {
+    "titulo": "Ask ChatGPT or Claude",
+    "texto": "Soon you'll be able to connect Clipfine to ChatGPT or Claude and ask how to use it, or how each client's clips are performing."
+  }
+}

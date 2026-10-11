@@ -16,6 +16,7 @@
     "empezar": "Sign up for free",
     "inicio": "Clipfine home",
     "metricas": "Analytics",
+    "ayuda": "Help",
     "irApp": "Go to app"
   },
   "pronto": "Soon",
@@ -409,6 +410,7 @@
     "texto": "Start your 15-day free trial today, or book a call and we'll set Clipfine up around your workflow."
   },
   "pie": {
+    "ayuda": "Help",
     "lema": "AI clipping software for agencies.",
     "funciones": "Features",
     "app": "App",
