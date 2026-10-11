@@ -16,7 +16,6 @@ import {
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
-import { ClipsSubidos } from "@/components/episodios/ClipsSubidos";
 import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
@@ -344,6 +343,13 @@ export default function EpisodiosPage() {
           <p className="mt-1 max-w-xl text-white/50">
             {t("descripcion")}
           </p>
+          {/* Lo ya editado no es un episodio: va directo a publicar (ng-creator-be#181). */}
+          <p className="mt-2 text-sm text-white/50">
+            {t("yaEditado")}{" "}
+            <Link href="/clips-subidos" className="font-medium text-ng-azul hover:underline">
+              {t("subirClips")}
+            </Link>
+          </p>
         </div>
         {activa && (
           <div
@@ -408,8 +414,6 @@ export default function EpisodiosPage() {
               {!agotada && propietario && <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />}
             </section>
           )}
-
-          <ClipsSubidos marcaId={marcaId} puedeOperar={opera} />
 
           {loading && !data ? (
             <div className="flex justify-center py-16">
