@@ -40,14 +40,38 @@
       "calendario": "Calendar · this week",
       "redes": "4 platforms",
       "clips": {
-        "c1": { "antes": "The hook is in the", "marca": "first", "despues": "three seconds" },
-        "c2": { "antes": "Nobody", "marca": "talks", "despues": "about this part" },
-        "c3": { "antes": "That's when it", "marca": "clicked", "despues": "for us" },
-        "c4": { "antes": "Here's what we'd do", "marca": "differently", "despues": "" }
+        "c1": {
+          "antes": "The hook is in the",
+          "marca": "first",
+          "despues": "three seconds"
+        },
+        "c2": {
+          "antes": "Nobody",
+          "marca": "talks",
+          "despues": "about this part"
+        },
+        "c3": {
+          "antes": "That's when it",
+          "marca": "clicked",
+          "despues": "for us"
+        },
+        "c4": {
+          "antes": "Here's what we'd do",
+          "marca": "differently",
+          "despues": ""
+        }
       }
     }
   },
-  "dias": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri", "sab": "Sat", "dom": "Sun" },
+  "dias": {
+    "lun": "Mon",
+    "mar": "Tue",
+    "mie": "Wed",
+    "jue": "Thu",
+    "vie": "Fri",
+    "sab": "Sat",
+    "dom": "Sun"
+  },
   "problema": {
     "titulo": "Your clients want more clips. Your team is already full.",
     "texto": "Every new client means more videos to watch, more clips to cut and caption, four platforms to post to and another report to send. Clipfine puts all of it in one place for every client: videos in, clips scheduled, results in view. So you can take on more clients without more payroll."
@@ -59,8 +83,19 @@
       "titulo": "Every client in one platform",
       "texto": "Run all your clients from one account. Each one has its own space for episodes, clips, calendar and analytics, plus a Brand Kit with its colors, fonts and logo. Your team works with its role on the clients assigned to it, and nothing gets mixed up.",
       "alt": "List of four clients, each with its own episodes, clips, calendar and analytics",
-      "pestanas": { "episodios": "Episodes", "clips": "Clips", "calendario": "Calendar", "analisis": "Analytics", "brandKit": "Brand Kit" },
-      "estados": { "listo": "Ready", "programado": "Scheduled", "procesando": "Processing", "publicado": "Posted" }
+      "pestanas": {
+        "episodios": "Episodes",
+        "clips": "Clips",
+        "calendario": "Calendar",
+        "analisis": "Analytics",
+        "brandKit": "Brand Kit"
+      },
+      "estados": {
+        "listo": "Ready",
+        "programado": "Scheduled",
+        "procesando": "Processing",
+        "publicado": "Posted"
+      }
     },
     "momentos": {
       "titulo": "The best moments, already cut",
@@ -99,6 +134,30 @@
         "valor": "8 PM"
       }
     }
+  },
+  "subidos": {
+    "etiqueta": "Upload clips",
+    "titulo": "Already edited in CapCut? Upload it and post it.",
+    "texto": "Not everything comes from a long episode. Reels, tips or cuts your team already edited elsewhere come into Clipfine and follow the same path as the rest: scheduled, approved and measured.",
+    "puntos": {
+      "tal": {
+        "titulo": "Goes out as is.",
+        "texto": "No extra recompression: what you exported is what gets posted."
+      },
+      "editor": {
+        "titulo": "Or touch it up.",
+        "texto": "Open it in the editor and add captions, a template or a hook if you want."
+      },
+      "flujo": {
+        "titulo": "Same workflow.",
+        "texto": "Calendar across all four networks, client review and per-clip metrics."
+      },
+      "horas": {
+        "titulo": "Doesn't use hours.",
+        "texto": "Your plan's hours stay for episodes."
+      }
+    },
+    "verMas": "How uploading clips works"
   },
   "aprobacion": {
     "etiqueta": "Approval",
@@ -195,22 +254,49 @@
     "porTipo": "By agency type",
     "porUso": "By use case",
     "tipos": {
-      "clips": { "titulo": "Clipping agencies", "texto": "Run more client channels without adding editors." },
-      "podcast": { "titulo": "Podcast production agencies", "texto": "Add short clips to every episode you produce." },
-      "b2b": { "titulo": "B2B podcast agencies", "texto": "Turn executive interviews into clips that sales and social can use." },
-      "redes": { "titulo": "Social media agencies", "texto": "Keep every client's feed full of video, and prove it's working." }
+      "clips": {
+        "titulo": "Clipping agencies",
+        "texto": "Run more client channels without adding editors."
+      },
+      "podcast": {
+        "titulo": "Podcast production agencies",
+        "texto": "Add short clips to every episode you produce."
+      },
+      "b2b": {
+        "titulo": "B2B podcast agencies",
+        "texto": "Turn executive interviews into clips that sales and social can use."
+      },
+      "redes": {
+        "titulo": "Social media agencies",
+        "texto": "Keep every client's feed full of video, and prove it's working."
+      }
     },
     "usos": {
-      "podcast": { "titulo": "Podcast to Shorts, Reels and TikTok", "texto": "One episode in, its best clips out, scheduled from one calendar." },
-      "lives": { "titulo": "Lives and streams", "texto": "Upload the live or stream recording like any episode and get the clips." }
+      "podcast": {
+        "titulo": "Podcast to Shorts, Reels and TikTok",
+        "texto": "One episode in, its best clips out, scheduled from one calendar."
+      },
+      "lives": {
+        "titulo": "Lives and streams",
+        "texto": "Upload the live or stream recording like any episode and get the clips."
+      }
     }
   },
   "como": {
     "etiqueta": "How it works",
     "pasos": {
-      "subir": { "titulo": "Add a client and upload their video.", "texto": "A podcast, a live or any long video. We can also bring it in from Restream." },
-      "clips": { "titulo": "Get the best clips.", "texto": "Clipfine finds the moments and turns them into captioned, vertical clips. Fine-tune any of them in the editor." },
-      "publicar": { "titulo": "Schedule, post and track.", "texto": "Put clips on the calendar and see in analytics what works for each client." }
+      "subir": {
+        "titulo": "Add a client and upload their video.",
+        "texto": "A podcast, a live or any long video. We can also bring it in from Restream."
+      },
+      "clips": {
+        "titulo": "Get the best clips.",
+        "texto": "Clipfine finds the moments and turns them into captioned, vertical clips. Fine-tune any of them in the editor."
+      },
+      "publicar": {
+        "titulo": "Schedule, post and track.",
+        "texto": "Put clips on the calendar and see in analytics what works for each client."
+      }
     }
   },
   "precios": {
@@ -228,10 +314,23 @@
     "empezarPrueba": "Start free trial",
     "empezar": "Sign up for free",
     "planes": {
-      "prueba": { "nombre": "Free trial", "para": "Try every feature on your first client.", "nota": "15 days · No card required" },
-      "starter": { "nombre": "Starter", "para": "For small agencies and first clients." },
-      "agency": { "nombre": "Agency", "para": "For agencies running several clients." },
-      "agencyPro": { "nombre": "Agency Pro", "para": "For high-volume teams and large rosters." }
+      "prueba": {
+        "nombre": "Free trial",
+        "para": "Try every feature on your first client.",
+        "nota": "15 days · No card required"
+      },
+      "starter": {
+        "nombre": "Starter",
+        "para": "For small agencies and first clients."
+      },
+      "agency": {
+        "nombre": "Agency",
+        "para": "For agencies running several clients."
+      },
+      "agencyPro": {
+        "nombre": "Agency Pro",
+        "para": "For high-volume teams and large rosters."
+      }
     },
     "custom": {
       "nombre": "Custom",

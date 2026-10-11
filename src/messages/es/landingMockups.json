@@ -1,14 +1,32 @@
 {
-  "comun": { "cliente": "Cliente {letra}", "dias": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie" } },
+  "comun": {
+    "cliente": "Cliente {letra}",
+    "dias": {
+      "lun": "Lun",
+      "mar": "Mar",
+      "mie": "Mié",
+      "jue": "Jue",
+      "vie": "Vie"
+    }
+  },
   "ia": {
     "alt": "Vista de Clipfine: un episodio horizontal con los momentos marcados en su línea de tiempo y, debajo, la lista de clips sugeridos con su puntaje de 0 a 100, su título y el motivo por el que funciona.",
     "episodio": "episodio 16:9",
     "sugeridos": "12 clips sugeridos",
     "puntaje": "puntaje",
     "clips": {
-      "c1": { "titulo": "El error que casi nos cuesta el negocio", "porque": "Gancho fuerte" },
-      "c2": { "titulo": "Nadie habla de esta parte", "porque": "Opinión polémica" },
-      "c3": { "titulo": "La frase que repetimos en cada reunión", "porque": "Frase citable" }
+      "c1": {
+        "titulo": "El error que casi nos cuesta el negocio",
+        "porque": "Gancho fuerte"
+      },
+      "c2": {
+        "titulo": "Nadie habla de esta parte",
+        "porque": "Opinión polémica"
+      },
+      "c3": {
+        "titulo": "La frase que repetimos en cada reunión",
+        "porque": "Frase citable"
+      }
     }
   },
   "edicion": {
@@ -17,7 +35,12 @@
     "habla": "habla",
     "formato": "Formato",
     "diseno": "Diseño",
-    "disenos": { "uno": "Uno", "dividido": "Dividido", "horizontal": "Horizontal", "centrado": "Centrado" },
+    "disenos": {
+      "uno": "Uno",
+      "dividido": "Dividido",
+      "horizontal": "Horizontal",
+      "centrado": "Centrado"
+    },
     "tramo": "Tramo",
     "corte": "corte",
     "silencios": "Quitar silencios"
@@ -29,7 +52,13 @@
     "sub2": "entendí",
     "sub3": "todo",
     "estilo": "Estilo de subtítulos",
-    "estilos": { "pop": "Pop", "karaoke": "Karaoke", "bestia": "Bestia", "editorial": "Editorial", "keynote": "Keynote" },
+    "estilos": {
+      "pop": "Pop",
+      "karaoke": "Karaoke",
+      "bestia": "Bestia",
+      "editorial": "Editorial",
+      "keynote": "Keynote"
+    },
     "corregir": "Corregir palabra",
     "cta": "Llamada a la acción",
     "ctaTexto": "Mirá el episodio completo"
@@ -88,6 +117,23 @@
     "trayendo": "Trayendo… 64%",
     "siguiente": "Después: transcripción y momentos"
   },
+  "clipsSubidos": {
+    "alt": "Subir clips: una zona para soltar videos de CapCut y tres clips verticales listos, programados y publicados.",
+    "soltar": "Soltá tus clips de CapCut acá",
+    "acepta": "MP4 o MOV · hasta 3 min · varios a la vez",
+    "etapas": {
+      "listo": "Listo",
+      "programado": "Programado",
+      "publicado": "Publicado"
+    },
+    "clips": {
+      "c1": "reel-promo.mov",
+      "c2": "tip-semana.mp4",
+      "c3": "detras-escena.mp4"
+    },
+    "sale": "Sale en",
+    "programar": "Programar"
+  },
   "publicar": {
     "alt": "Programar un clip: TikTok, YouTube Shorts, Instagram Reels y Facebook encendidos, la descripción con sus hashtags y un calendario de la semana con clips programados y publicados.",
     "redes": "Publicar en",
@@ -115,7 +161,12 @@
   "equipo": {
     "alt": "El equipo de una marca: el selector de marcas, las personas con su rol de propietario, editor, revisor o lector, una invitación por correo y un clip que muestra quién lo editó y quién lo terminó.",
     "equipo": "Equipo",
-    "roles": { "propietario": "Propietario", "editor": "Editor", "revisor": "Revisor", "lector": "Lector" },
+    "roles": {
+      "propietario": "Propietario",
+      "editor": "Editor",
+      "revisor": "Revisor",
+      "lector": "Lector"
+    },
     "invitada": "invitada",
     "invitar": "+ Invitar",
     "clip": "Clip 03 · Nadie habla de esta parte",
@@ -125,9 +176,21 @@
   "app": {
     "alt": "La app de Clipfine en un teléfono, con la lista de clips de una marca y su estado y un aviso del equipo; al lado, la misma cuenta sincronizada con la web, disponible en iPhone y Android.",
     "clips": "Clips",
-    "estados": { "listo": "Listo", "programado": "Programado", "editando": "Editando" },
-    "titulos": { "c1": "El error que casi nos cuesta…", "c2": "Nadie habla de esta parte", "c3": "La frase de cada reunión" },
-    "nav": { "inicio": "Inicio", "clips": "Clips", "calendario": "Calendario" },
+    "estados": {
+      "listo": "Listo",
+      "programado": "Programado",
+      "editando": "Editando"
+    },
+    "titulos": {
+      "c1": "El error que casi nos cuesta…",
+      "c2": "Nadie habla de esta parte",
+      "c3": "La frase de cada reunión"
+    },
+    "nav": {
+      "inicio": "Inicio",
+      "clips": "Clips",
+      "calendario": "Calendario"
+    },
     "aviso": "Leo programó un clip para el jueves",
     "fotos": "Guardar en Fotos",
     "sincro": "Sincronizado con la web",

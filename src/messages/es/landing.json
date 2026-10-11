@@ -40,14 +40,38 @@
       "calendario": "Calendario · esta semana",
       "redes": "4 redes",
       "clips": {
-        "c1": { "antes": "El gancho está en los", "marca": "primeros", "despues": "tres segundos" },
-        "c2": { "antes": "Nadie", "marca": "habla", "despues": "de esta parte" },
-        "c3": { "antes": "Ahí fue cuando nos", "marca": "cayó", "despues": "la ficha" },
-        "c4": { "antes": "Esto lo haríamos", "marca": "distinto", "despues": "" }
+        "c1": {
+          "antes": "El gancho está en los",
+          "marca": "primeros",
+          "despues": "tres segundos"
+        },
+        "c2": {
+          "antes": "Nadie",
+          "marca": "habla",
+          "despues": "de esta parte"
+        },
+        "c3": {
+          "antes": "Ahí fue cuando nos",
+          "marca": "cayó",
+          "despues": "la ficha"
+        },
+        "c4": {
+          "antes": "Esto lo haríamos",
+          "marca": "distinto",
+          "despues": ""
+        }
       }
     }
   },
-  "dias": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie", "sab": "Sáb", "dom": "Dom" },
+  "dias": {
+    "lun": "Lun",
+    "mar": "Mar",
+    "mie": "Mié",
+    "jue": "Jue",
+    "vie": "Vie",
+    "sab": "Sáb",
+    "dom": "Dom"
+  },
   "problema": {
     "titulo": "Tus clientes quieren más clips. Tu equipo ya no da abasto.",
     "texto": "Cada cliente nuevo son más videos para mirar, más clips para cortar y subtitular, cuatro redes donde publicar y otro reporte para mandar. Clipfine junta todo eso en un solo lugar para cada cliente: entran los videos, salen los clips programados y los resultados a la vista. Así sumás clientes sin sumar sueldos."
@@ -59,8 +83,19 @@
       "titulo": "Todos tus clientes en una plataforma",
       "texto": "Manejá todos tus clientes desde una cuenta. Cada uno tiene su espacio con sus episodios, clips, calendario y análisis, y su Brand Kit con sus colores, letras y logo. Tu equipo entra con su rol en los clientes que le tocan, sin mezclar nada.",
       "alt": "Lista de cuatro clientes, cada uno con sus episodios, clips, calendario y análisis",
-      "pestanas": { "episodios": "Episodios", "clips": "Clips", "calendario": "Calendario", "analisis": "Análisis", "brandKit": "Brand Kit" },
-      "estados": { "listo": "Listo", "programado": "Programado", "procesando": "Procesando", "publicado": "Publicado" }
+      "pestanas": {
+        "episodios": "Episodios",
+        "clips": "Clips",
+        "calendario": "Calendario",
+        "analisis": "Análisis",
+        "brandKit": "Brand Kit"
+      },
+      "estados": {
+        "listo": "Listo",
+        "programado": "Programado",
+        "procesando": "Procesando",
+        "publicado": "Publicado"
+      }
     },
     "momentos": {
       "titulo": "Los mejores momentos, ya cortados",
@@ -99,6 +134,30 @@
         "valor": "20:00"
       }
     }
+  },
+  "subidos": {
+    "etiqueta": "Subir clips",
+    "titulo": "¿Ya lo editaste en CapCut? Subilo y publicalo.",
+    "texto": "No todo sale de un episodio largo. Reels, tips o cortes que tu equipo ya editó afuera entran a Clipfine y siguen el mismo camino que los demás: se programan, se aprueban y se miden.",
+    "puntos": {
+      "tal": {
+        "titulo": "Sale tal cual.",
+        "texto": "Sin recomprimir de más: lo que exportaste es lo que se publica."
+      },
+      "editor": {
+        "titulo": "O lo retocás.",
+        "texto": "Si querés, lo abrís en el editor y le sumás subtítulos, plantilla o gancho."
+      },
+      "flujo": {
+        "titulo": "El mismo flujo.",
+        "texto": "Calendario en las cuatro redes, revisión del cliente y métricas por clip."
+      },
+      "horas": {
+        "titulo": "No descuenta horas.",
+        "texto": "Las horas de tu plan quedan para los episodios."
+      }
+    },
+    "verMas": "Cómo funciona subir clips"
   },
   "aprobacion": {
     "etiqueta": "Aprobación",
@@ -195,22 +254,49 @@
     "porTipo": "Por tipo de agencia",
     "porUso": "Por caso de uso",
     "tipos": {
-      "clips": { "titulo": "Agencias de clips", "texto": "Manejá más canales de clientes sin sumar editores." },
-      "podcast": { "titulo": "Productoras de podcast", "texto": "Sumá clips cortos a cada episodio que producís." },
-      "b2b": { "titulo": "Podcasts B2B", "texto": "Convertí entrevistas con ejecutivos en clips que ventas y redes pueden usar." },
-      "redes": { "titulo": "Agencias de redes", "texto": "Mantené el feed de cada cliente lleno de video, y mostrá que funciona." }
+      "clips": {
+        "titulo": "Agencias de clips",
+        "texto": "Manejá más canales de clientes sin sumar editores."
+      },
+      "podcast": {
+        "titulo": "Productoras de podcast",
+        "texto": "Sumá clips cortos a cada episodio que producís."
+      },
+      "b2b": {
+        "titulo": "Podcasts B2B",
+        "texto": "Convertí entrevistas con ejecutivos en clips que ventas y redes pueden usar."
+      },
+      "redes": {
+        "titulo": "Agencias de redes",
+        "texto": "Mantené el feed de cada cliente lleno de video, y mostrá que funciona."
+      }
     },
     "usos": {
-      "podcast": { "titulo": "Del podcast a Shorts, Reels y TikTok", "texto": "Entra un episodio, salen sus mejores clips, programados desde un calendario." },
-      "lives": { "titulo": "Lives y streams", "texto": "Subí la grabación del live o del stream como cualquier episodio y salen los clips." }
+      "podcast": {
+        "titulo": "Del podcast a Shorts, Reels y TikTok",
+        "texto": "Entra un episodio, salen sus mejores clips, programados desde un calendario."
+      },
+      "lives": {
+        "titulo": "Lives y streams",
+        "texto": "Subí la grabación del live o del stream como cualquier episodio y salen los clips."
+      }
     }
   },
   "como": {
     "etiqueta": "Cómo funciona",
     "pasos": {
-      "subir": { "titulo": "Sumá un cliente y subí su video.", "texto": "Un podcast, un live o cualquier video largo. También lo traemos de Restream." },
-      "clips": { "titulo": "Recibí los mejores clips.", "texto": "Clipfine encuentra los momentos y los convierte en clips verticales con subtítulos. Ajustá el que quieras en el editor." },
-      "publicar": { "titulo": "Programá, publicá y medí.", "texto": "Poné los clips en el calendario y mirá en el análisis qué le funciona a cada cliente." }
+      "subir": {
+        "titulo": "Sumá un cliente y subí su video.",
+        "texto": "Un podcast, un live o cualquier video largo. También lo traemos de Restream."
+      },
+      "clips": {
+        "titulo": "Recibí los mejores clips.",
+        "texto": "Clipfine encuentra los momentos y los convierte en clips verticales con subtítulos. Ajustá el que quieras en el editor."
+      },
+      "publicar": {
+        "titulo": "Programá, publicá y medí.",
+        "texto": "Poné los clips en el calendario y mirá en el análisis qué le funciona a cada cliente."
+      }
     }
   },
   "precios": {
@@ -228,10 +314,23 @@
     "empezarPrueba": "Empezar la prueba",
     "empezar": "Empezar gratis",
     "planes": {
-      "prueba": { "nombre": "Prueba gratis", "para": "Probá todo con tu primer cliente.", "nota": "15 días · Sin tarjeta" },
-      "starter": { "nombre": "Starter", "para": "Para agencias chicas y primeros clientes." },
-      "agency": { "nombre": "Agency", "para": "Para agencias con varios clientes." },
-      "agencyPro": { "nombre": "Agency Pro", "para": "Para equipos con mucho volumen y muchos clientes." }
+      "prueba": {
+        "nombre": "Prueba gratis",
+        "para": "Probá todo con tu primer cliente.",
+        "nota": "15 días · Sin tarjeta"
+      },
+      "starter": {
+        "nombre": "Starter",
+        "para": "Para agencias chicas y primeros clientes."
+      },
+      "agency": {
+        "nombre": "Agency",
+        "para": "Para agencias con varios clientes."
+      },
+      "agencyPro": {
+        "nombre": "Agency Pro",
+        "para": "Para equipos con mucho volumen y muchos clientes."
+      }
     },
     "custom": {
       "nombre": "Custom",

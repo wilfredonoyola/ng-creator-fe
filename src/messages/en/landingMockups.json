@@ -1,14 +1,32 @@
 {
-  "comun": { "cliente": "Client {letra}", "dias": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri" } },
+  "comun": {
+    "cliente": "Client {letra}",
+    "dias": {
+      "lun": "Mon",
+      "mar": "Tue",
+      "mie": "Wed",
+      "jue": "Thu",
+      "vie": "Fri"
+    }
+  },
   "ia": {
     "alt": "Clipfine view: a landscape episode with its moments marked on the timeline and, below, the list of suggested clips with their 0–100 score, title and the reason they work.",
     "episodio": "16:9 episode",
     "sugeridos": "12 suggested clips",
     "puntaje": "score",
     "clips": {
-      "c1": { "titulo": "The mistake that almost cost us the business", "porque": "Strong hook" },
-      "c2": { "titulo": "Nobody talks about this part", "porque": "Hot take" },
-      "c3": { "titulo": "The line we repeat in every meeting", "porque": "Quotable line" }
+      "c1": {
+        "titulo": "The mistake that almost cost us the business",
+        "porque": "Strong hook"
+      },
+      "c2": {
+        "titulo": "Nobody talks about this part",
+        "porque": "Hot take"
+      },
+      "c3": {
+        "titulo": "The line we repeat in every meeting",
+        "porque": "Quotable line"
+      }
     }
   },
   "edicion": {
@@ -17,7 +35,12 @@
     "habla": "talking",
     "formato": "Format",
     "diseno": "Layout",
-    "disenos": { "uno": "Single", "dividido": "Split", "horizontal": "Landscape", "centrado": "Centered" },
+    "disenos": {
+      "uno": "Single",
+      "dividido": "Split",
+      "horizontal": "Landscape",
+      "centrado": "Centered"
+    },
     "tramo": "Span",
     "corte": "cut",
     "silencios": "Remove silences"
@@ -29,7 +52,13 @@
     "sub2": "when",
     "sub3": "it clicked",
     "estilo": "Caption style",
-    "estilos": { "pop": "Pop", "karaoke": "Karaoke", "bestia": "Beast", "editorial": "Editorial", "keynote": "Keynote" },
+    "estilos": {
+      "pop": "Pop",
+      "karaoke": "Karaoke",
+      "bestia": "Beast",
+      "editorial": "Editorial",
+      "keynote": "Keynote"
+    },
     "corregir": "Fix word",
     "cta": "Call to action",
     "ctaTexto": "Watch the full episode"
@@ -88,6 +117,23 @@
     "trayendo": "Importing… 64%",
     "siguiente": "Next: transcript and moments"
   },
+  "clipsSubidos": {
+    "alt": "Upload clips: a drop zone for CapCut videos and three vertical clips, ready, scheduled and published.",
+    "soltar": "Drop your CapCut clips here",
+    "acepta": "MP4 or MOV · up to 3 min · several at once",
+    "etapas": {
+      "listo": "Ready",
+      "programado": "Scheduled",
+      "publicado": "Published"
+    },
+    "clips": {
+      "c1": "promo-reel.mov",
+      "c2": "weekly-tip.mp4",
+      "c3": "behind-scenes.mp4"
+    },
+    "sale": "Goes out on",
+    "programar": "Schedule"
+  },
   "publicar": {
     "alt": "Scheduling a clip: TikTok, YouTube Shorts, Instagram Reels and Facebook switched on, the description with its hashtags and a weekly calendar with scheduled and published clips.",
     "redes": "Publish to",
@@ -115,7 +161,12 @@
   "equipo": {
     "alt": "A brand's team: the brand selector, people with their owner, editor, reviewer or viewer role, an email invitation and a clip showing who edited it and who finished it.",
     "equipo": "Team",
-    "roles": { "propietario": "Owner", "editor": "Editor", "revisor": "Reviewer", "lector": "Viewer" },
+    "roles": {
+      "propietario": "Owner",
+      "editor": "Editor",
+      "revisor": "Reviewer",
+      "lector": "Viewer"
+    },
     "invitada": "invited",
     "invitar": "+ Invite",
     "clip": "Clip 03 · Nobody talks about this part",
@@ -125,9 +176,21 @@
   "app": {
     "alt": "The Clipfine app on a phone, with a brand's clip list and their status and a team notification; next to it, the same account in sync with the web, available on iPhone and Android.",
     "clips": "Clips",
-    "estados": { "listo": "Ready", "programado": "Scheduled", "editando": "Editing" },
-    "titulos": { "c1": "The mistake that almost cost…", "c2": "Nobody talks about this part", "c3": "The line from every meeting" },
-    "nav": { "inicio": "Home", "clips": "Clips", "calendario": "Calendar" },
+    "estados": {
+      "listo": "Ready",
+      "programado": "Scheduled",
+      "editando": "Editing"
+    },
+    "titulos": {
+      "c1": "The mistake that almost cost…",
+      "c2": "Nobody talks about this part",
+      "c3": "The line from every meeting"
+    },
+    "nav": {
+      "inicio": "Home",
+      "clips": "Clips",
+      "calendario": "Calendar"
+    },
     "aviso": "Leo scheduled a clip for Thursday",
     "fotos": "Save to Photos",
     "sincro": "In sync with the web",
