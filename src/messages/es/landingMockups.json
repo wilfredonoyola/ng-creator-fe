@@ -65,6 +65,18 @@
     "corta": "versión corta",
     "descargar": "Descargar MP4"
   },
+  "audio": {
+    "alt": "El panel de audio del editor: la voz al 175 %, una pista de música libre de derechos al 25 % con la opción de bajarla cuando hablan, y la línea de tiempo con la voz, la música y tres efectos de sonido.",
+    "voz": "Voz",
+    "musica": "Música",
+    "pista": "Alegre 03",
+    "libre": "Libre de derechos",
+    "bajar": "Bajar cuando hablan",
+    "pistaVoz": "Voz",
+    "pistaMusica": "Música",
+    "pistaEfectos": "Efectos",
+    "vista": "Se escucha en la vista previa, sin exportar"
+  },
   "importar": {
     "alt": "Las dos formas de traer un episodio: una zona para soltar el video desde la computadora y la grabación de un live trayéndose desde Restream con su barra de progreso.",
     "soltar": "Soltá el video del episodio",

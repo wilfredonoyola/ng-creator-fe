@@ -65,6 +65,18 @@
     "corta": "short version",
     "descargar": "Download MP4"
   },
+  "audio": {
+    "alt": "The editor's audio panel: the voice at 175%, a royalty-free music track at 25% with the option to duck it under the voice, and the timeline with the voice, the music and three sound effects.",
+    "voz": "Voice",
+    "musica": "Music",
+    "pista": "Upbeat 03",
+    "libre": "Royalty-free",
+    "bajar": "Duck under voice",
+    "pistaVoz": "Voice",
+    "pistaMusica": "Music",
+    "pistaEfectos": "Effects",
+    "vista": "You hear it in the preview, no export"
+  },
   "importar": {
     "alt": "The two ways to bring in an episode: an area to drop the video from your computer and a live recording coming in from Restream with its progress bar.",
     "soltar": "Drop the episode video",
