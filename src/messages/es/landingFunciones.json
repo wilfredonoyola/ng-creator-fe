@@ -35,6 +35,7 @@
     }
   },
   "agencia": {
+    "guias": "Cómo se usa, paso a paso",
     "etiqueta": "Tu agencia",
     "funciones": "Qué hace, y qué te ahorra",
     "funcionesTexto": "Cada función como se ve en Clipfine, con lo que gana tu agencia.",

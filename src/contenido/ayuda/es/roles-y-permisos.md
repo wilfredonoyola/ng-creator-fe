@@ -3,6 +3,7 @@ titulo: Roles y permisos
 descripcion: Qué puede hacer cada rol en una marca de Clipfine: Propietario, Editor, Revisor, Lector y Proveedor. Ideal para agencias con clientes que aprueban.
 categoria: equipo
 orden: 2
+funciones: equipo, revision
 ---
 Cada persona tiene un rol en cada marca, y ese rol decide qué puede hacer ahí. Alguien puede ser **Editor** en un cliente y **Lector** en otro.
 

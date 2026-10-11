@@ -3,6 +3,7 @@ titulo: Roles and permissions
 descripcion: What each role can do on a Clipfine brand: Owner, Editor, Reviewer, Viewer and Supplier. Built for agencies with clients who approve clips.
 categoria: equipo
 orden: 2
+funciones: equipo, revision
 ---
 Each person has a role on each brand, and that role decides what they can do there. Someone can be an **Editor** on one client and a **Viewer** on another.
 

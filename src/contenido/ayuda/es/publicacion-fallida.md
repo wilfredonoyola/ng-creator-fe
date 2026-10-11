@@ -3,6 +3,7 @@ titulo: Qué hacer si una publicación falla
 descripcion: Por qué una publicación puede quedar como Falló, cómo ver el motivo y cómo volver a programarla en la red que la rechazó, sin duplicar las demás.
 categoria: publicar
 orden: 3
+funciones: publicar
 ---
 A veces una red no acepta un video. Esta guía te ayuda a ver por qué pasó y a volver a mandarlo.
 

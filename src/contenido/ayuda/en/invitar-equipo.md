@@ -3,6 +3,7 @@ titulo: Invite your team
 descripcion: How to add editors, reviewers and clients to a Clipfine brand by email, change their role or remove their access, on the web and in the app.
 categoria: equipo
 orden: 1
+funciones: equipo
 ---
 Invite anyone who needs to work on a brand by email: your editing team, the client who approves clips or someone who only needs to watch.
 

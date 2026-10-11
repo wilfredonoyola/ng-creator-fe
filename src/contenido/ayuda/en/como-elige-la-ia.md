@@ -3,6 +3,7 @@ titulo: How the AI picks clips
 descripcion: What Clipfine's AI looks for when it suggests moments from each episode, what the score and reason mean, and how to create a clip by hand.
 categoria: clips
 orden: 2
+funciones: ia
 ---
 Once an episode is transcribed, the AI reads the transcript and suggests the moments that work as clips on their own. Your team starts by choosing, not by watching 90 minutes of video.
 

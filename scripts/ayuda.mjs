@@ -15,7 +15,18 @@
  *   descripcion: Una línea, para Google y para el buscador.
  *   categoria: equipo
  *   orden: 2
+ *   funciones: equipo, revision
  *   ---
+ *
+ * `funciones` son las secciones de /features que el artículo explica (ids de
+ * SECCIONES en src/components/landing/funciones.ts). Así cada función lleva a
+ * sus guías y cada guía a su función, y el chat y el MCP saben qué va con qué.
+ * Toda sección tiene que tener al menos una guía: si se suma una función sin
+ * explicarla, esto falla.
+ *
+ * Los datos que se repiten (precios, correo de soporte, la prueba) no se
+ * escriben: van como {{clave}} de src/lib/datos-producto.ts. Ver
+ * docs/FUENTE-DE-VERDAD.md.
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -29,6 +40,18 @@ const CATEGORIAS = readFileSync(join(raiz, "..", "..", "lib", "ayuda.ts"), "utf8
   .match(/CATEGORIAS_AYUDA = \[([^\]]*)\]/)[1]
   .match(/"([a-z-]+)"/g)
   .map((c) => c.slice(1, -1));
+
+// Los ids de las secciones de /features, del bloque SECCIONES.
+const textoFunciones = readFileSync(join(raiz, "..", "..", "components", "landing", "funciones.ts"), "utf8");
+const bloqueSecciones = textoFunciones.slice(
+  textoFunciones.indexOf("export const SECCIONES = ["),
+  textoFunciones.indexOf("] as const satisfies", textoFunciones.indexOf("export const SECCIONES = [")),
+);
+const SECCIONES = [...bloqueSecciones.matchAll(/^    id: "([a-z-]+)",$/gm)].map((m) => m[1]);
+if (!SECCIONES.length) {
+  console.error("No se encontraron las secciones en funciones.ts (¿cambió el formato?)");
+  process.exit(1);
+}
 
 const errores = [];
 
@@ -46,6 +69,11 @@ function leer(idioma, archivo) {
     }),
   );
   for (const c of CAMPOS) if (!cabecera[c]) errores.push(`${idioma}/${archivo}: falta "${c}"`);
+  if (!("funciones" in cabecera)) errores.push(`${idioma}/${archivo}: falta "funciones" (puede ir vacío)`);
+  const funciones = (cabecera.funciones ?? "").split(",").map((f) => f.trim()).filter(Boolean);
+  for (const f of funciones) {
+    if (!SECCIONES.includes(f)) errores.push(`${idioma}/${archivo}: la función "${f}" no existe en /features (${SECCIONES.join(", ")})`);
+  }
   if (cabecera.categoria && !CATEGORIAS.includes(cabecera.categoria)) {
     errores.push(`${idioma}/${archivo}: la categoría "${cabecera.categoria}" no existe (${CATEGORIAS.join(", ")})`);
   }
@@ -55,6 +83,7 @@ function leer(idioma, archivo) {
     descripcion: cabecera.descripcion,
     categoria: cabecera.categoria,
     orden: Number(cabecera.orden),
+    funciones,
     cuerpo: m[2].trim(),
   };
 }
@@ -78,7 +107,18 @@ const articulos = Object.fromEntries(
 for (const a of articulos.es) {
   const en = articulos.en.find((b) => b.slug === a.slug);
   if (en && en.categoria !== a.categoria) errores.push(`${a.slug}: la categoría no es la misma en es y en`);
+  if (en && en.funciones.join() !== a.funciones.join()) errores.push(`${a.slug}: las funciones no son las mismas en es y en`);
 }
+for (const id of SECCIONES) {
+  if (!articulos.es.some((a) => a.funciones.includes(id))) {
+    errores.push(`La función "${id}" de /features no tiene ninguna guía: sumá "funciones: ${id}" a un artículo o escribí uno`);
+  }
+}
+const DATOS_USADOS = [
+  ...new Set(
+    IDIOMAS.flatMap((i) => articulos[i].flatMap((a) => [...`${a.titulo} ${a.descripcion} ${a.cuerpo}`.matchAll(/\{\{([\w.]+)\}\}/g)].map((m) => m[1]))),
+  ),
+].sort();
 
 if (errores.length) {
   console.error(`Ayuda con problemas:\n  ${errores.join("\n  ")}`);
@@ -90,8 +130,13 @@ writeFileSync(
   [
     "// Generado por scripts/ayuda.mjs desde los .md de esta carpeta: no se edita a mano.",
     'import type { ArticuloAyuda } from "@/lib/ayuda";',
+    'import type { ClaveDato } from "@/lib/datos-producto";',
     "",
+    "/** Sin resolver: los {{datos}} se reemplazan al leerlos (src/lib/ayuda.ts). */",
     `export const ARTICULOS: Record<"es" | "en", ArticuloAyuda[]> = ${JSON.stringify(articulos, null, 2)};`,
+    "",
+    "/** Los {{datos}} que usan los artículos: si uno no existe en datos-producto.ts, no compila. */",
+    `export const DATOS_USADOS = ${JSON.stringify(DATOS_USADOS)} as const satisfies readonly ClaveDato[];`,
     "",
   ].join("\n"),
 );

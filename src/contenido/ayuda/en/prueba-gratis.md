@@ -3,6 +3,7 @@ titulo: Free trial
 descripcion: How the Clipfine free trial works: no card, every feature and your first client, and what happens when you reach the limit.
 categoria: planes
 orden: 1
+funciones:
 ---
 The free trial lets you try all of Clipfine with your first client before choosing a plan.
 
@@ -11,7 +12,7 @@ The free trial lets you try all of Clipfine with your first client before choosi
 - No card required.
 - Every feature: AI-picked moments, the editor, Brand Kit, review, calendar, metrics and the app.
 - It covers a single brand that you own. Other brands show up when their owner invites you.
-- On the pricing page, the trial is listed as 15 days with up to 3 video hours.
+- On the pricing page, the trial is listed as {{prueba.dias}} days with up to {{prueba.horas}} video hours.
 
 ## How to start
 

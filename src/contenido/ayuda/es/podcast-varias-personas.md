@@ -3,6 +3,7 @@ titulo: Clips de podcasts con varias personas
 descripcion: Cómo Clipfine pasa un podcast grabado en horizontal a un clip vertical que sigue a quien habla, con auto-encuadre y diseños como Dividido.
 categoria: clips
 orden: 4
+funciones: edicion
 ---
 Los podcasts se graban en horizontal y con varias personas en cuadro. Para que el clip vertical muestre siempre a quien está hablando, Clipfine tiene el auto-encuadre y diseños de pantalla pensados para entrevistas.
 

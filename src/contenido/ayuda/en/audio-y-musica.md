@@ -3,6 +3,7 @@ titulo: Audio, music and speed
 descripcion: How to boost or mute the voice, add background music that ducks when people talk, add sound effects and change a clip's speed in Clipfine.
 categoria: editor
 orden: 3
+funciones: audio
 ---
 The editor's **Audio** tool lets you adjust the video's voice, add background music and drop in sound effects. It's available on the web and in the app.
 

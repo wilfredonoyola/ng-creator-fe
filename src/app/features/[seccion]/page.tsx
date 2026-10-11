@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { useMessages, useTranslations } from "next-intl";
+import { useLocale, useMessages, useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ENLACE_EMPEZAR } from "@/components/landing/Marco";
@@ -22,6 +22,7 @@ import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MAQUETAS } from "@/components/landing/mockups";
 import { RELACIONADAS, SECCIONES, esSeccion, namespaceDe, numero, type IdSeccion } from "@/components/landing/funciones";
 import { VISTAS } from "@/components/landing/vistas";
+import { ENLACE_AYUDA, guiasDeFuncion } from "@/lib/ayuda";
 import { URL_SITIO } from "@/lib/sitio";
 
 type Props = { params: { seccion: string } };
@@ -67,6 +68,7 @@ export default function PaginaSeccion({ params }: Props) {
 function Seccion({ id }: { id: IdSeccion }) {
   const t = useTranslations("landingFunciones");
   const tl = useTranslations("landing");
+  const locale = useLocale();
   const ta = useTranslations(namespaceDe(id) as never) as unknown as Texto;
   const mensajes = useMessages() as Record<string, { preguntas?: Record<string, unknown>; datos?: Record<string, unknown> }>;
   const preguntas = Object.keys(mensajes[namespaceDe(id)]?.preguntas ?? {});
@@ -75,6 +77,7 @@ function Seccion({ id }: { id: IdSeccion }) {
   const i = SECCIONES.findIndex((s) => s.id === id);
   const s = SECCIONES[i];
   const Maqueta = MAQUETAS[s.id];
+  const guias = guiasDeFuncion(locale, id);
   const anterior = SECCIONES[i - 1];
   const siguiente = SECCIONES[i + 1];
 
@@ -197,6 +200,25 @@ function Seccion({ id }: { id: IdSeccion }) {
                   }).replace(/</g, "\\u003c"),
                 }}
               />
+              {/* Las guías de la wiki que explican esta sección (su `funciones:`): la misma fuente que el chat y el MCP. */}
+              {guias.length > 0 && (
+                <div className="mt-8 flex flex-col gap-3">
+                  <span className={`${ETIQUETA} text-xs font-bold uppercase tracking-[.12em] text-[#6B6A64]`}>{t("agencia.guias")}</span>
+                  <ul className="flex flex-col">
+                    {guias.map((g) => (
+                      <li key={g.slug} className="border-b border-[#E6E5DF]">
+                        <Link
+                          href={`${ENLACE_AYUDA}/${g.slug}`}
+                          className={`group flex items-center justify-between gap-3 py-3 text-[17px] font-semibold hover:underline hover:underline-offset-4 ${FOCO} focus-visible:outline-[#0A0A0A]`}
+                        >
+                          {g.titulo}
+                          <ArrowRight aria-hidden size={16} className="shrink-0 text-[#6B6A64] group-hover:text-[#0A0A0A]" />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="mt-8 flex flex-col gap-3">
                 <span className={`${ETIQUETA} text-xs font-bold uppercase tracking-[.12em] text-[#6B6A64]`}>{t("agencia.relacionadas")}</span>
                 <div className="grid gap-3 sm:grid-cols-2">

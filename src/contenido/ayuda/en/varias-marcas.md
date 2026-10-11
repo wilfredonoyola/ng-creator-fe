@@ -3,6 +3,7 @@ titulo: Working with several brands
 descripcion: How to switch brands in Clipfine to manage several clients from one account, on the web and in the app, and what stays separate in each.
 categoria: equipo
 orden: 3
+funciones: equipo
 ---
 With one account you can work on several brands, one per client, and switch between them in a click.
 

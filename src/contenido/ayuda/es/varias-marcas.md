@@ -3,6 +3,7 @@ titulo: Trabajar con varias marcas
 descripcion: Cómo cambiar de marca en Clipfine para manejar varios clientes desde una sola cuenta, en la web y en la app, y qué queda separado en cada una.
 categoria: equipo
 orden: 3
+funciones: equipo
 ---
 Con una sola cuenta podés trabajar en varias marcas, una por cliente, y pasar de una a otra en un toque.
 

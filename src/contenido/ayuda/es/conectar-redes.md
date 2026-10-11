@@ -3,6 +3,7 @@ titulo: Conectar las redes de una marca
 descripcion: Cómo conectar TikTok, YouTube, Instagram y Facebook a cada marca en Clipfine para publicar y programar clips en las cuentas de tus clientes.
 categoria: publicar
 orden: 1
+funciones: publicar
 ---
 Antes de programar clips, cada marca necesita sus cuentas conectadas. Cada marca tiene las suyas: lo que conectás para un cliente no se mezcla con otro.
 

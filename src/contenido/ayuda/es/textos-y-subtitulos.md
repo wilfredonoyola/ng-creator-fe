@@ -3,6 +3,7 @@ titulo: Textos y subtítulos
 descripcion: Cómo agregar textos, elegir el estilo de la marca, mostrar y corregir los subtítulos automáticos y sumar imágenes en el editor de Clipfine.
 categoria: editor
 orden: 2
+funciones: textos
 ---
 Los textos y los subtítulos son lo que hace que un clip se entienda sin sonido. En el editor los manejás con las herramientas **Texto**, **Subtítulos** y **Superposición**, en la web y en la app.
 

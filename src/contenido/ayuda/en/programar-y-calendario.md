@@ -3,6 +3,7 @@ titulo: Schedule clips and use the calendar
 descripcion: How to schedule a clip on several networks at once, with description, hashtags and cover, and how to see and change everything scheduled in the calendar.
 categoria: publicar
 orden: 2
+funciones: publicar
 ---
 Scheduling means choosing which networks a clip goes out on, with what text and at what time. The calendar shows everything scheduled and published for each brand, on the web and in the app.
 

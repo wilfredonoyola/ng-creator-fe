@@ -3,6 +3,7 @@ titulo: Create your brand
 descripcion: What a brand is in Clipfine, how to create it when you sign up and how to rename it later from the Brand Kit.
 categoria: primeros-pasos
 orden: 2
+funciones: marca
 ---
 A brand is your workspace: its episodes, clips, social accounts and team all live under it. In an agency, each client is a brand.
 

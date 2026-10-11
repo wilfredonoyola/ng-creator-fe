@@ -3,6 +3,7 @@ titulo: Cómo elige la IA los clips
 descripcion: Qué mira la IA de Clipfine para proponer los momentos de cada episodio, qué significan el puntaje y el motivo, y cómo crear un clip a mano.
 categoria: clips
 orden: 2
+funciones: ia
 ---
 Cuando el episodio termina de transcribirse, la IA lee la transcripción y propone los momentos que funcionan como clip solos. Tu equipo arranca eligiendo, no mirando 90 minutos de video.
 

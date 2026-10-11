@@ -3,6 +3,7 @@ titulo: Qué pasa si nadie revisa a tiempo
 descripcion: Qué hace Clipfine cuando llega la hora de publicar y el clip sigue sin aprobar: avisos previos, clips vencidos y cómo publicarlos después.
 categoria: revision
 orden: 3
+funciones: revision
 ---
 Esta guía explica qué pasa cuando llega la hora programada y el clip todavía espera la revisión del cliente.
 

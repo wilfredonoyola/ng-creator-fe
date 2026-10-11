@@ -3,6 +3,7 @@ titulo: The clip editor
 descripcion: How to use Clipfine's CapCut-style editor: trim the segment, cut out the middle, remove silences, undo, and automatic saving.
 categoria: editor
 orden: 1
+funciones: edicion
 ---
 The editor is where you get each clip ready for the client. It works like CapCut, so if your team has used it before there's nothing new to learn. It's available on the web and in the app.
 

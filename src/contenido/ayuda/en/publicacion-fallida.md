@@ -3,6 +3,7 @@ titulo: What to do if a post fails
 descripcion: Why a post can end up as Failed, how to see the reason and how to schedule it again on the network that rejected it, without duplicating the others.
 categoria: publicar
 orden: 3
+funciones: publicar
 ---
 Sometimes a network doesn't accept a video. This guide helps you see why and send it again.
 

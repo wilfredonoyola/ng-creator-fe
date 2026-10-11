@@ -3,6 +3,7 @@ titulo: Text and captions
 descripcion: How to add text, pick the brand's style, show and fix automatic captions, and add images in Clipfine's editor.
 categoria: editor
 orden: 2
+funciones: textos
 ---
 Text and captions are what make a clip work with the sound off. In the editor you handle them with the **Text**, **Captions** and **Overlay** tools, on the web and in the app.
 

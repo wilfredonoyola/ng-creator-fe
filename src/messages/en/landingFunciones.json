@@ -35,6 +35,7 @@
     }
   },
   "agencia": {
+    "guias": "How to use it, step by step",
     "etiqueta": "Your agency",
     "funciones": "What it does, and what it saves you",
     "funcionesTexto": "Each feature as it looks in Clipfine, with what your agency gets out of it.",

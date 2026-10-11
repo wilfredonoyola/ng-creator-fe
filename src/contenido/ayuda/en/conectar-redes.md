@@ -3,6 +3,7 @@ titulo: Connect a brand's social networks
 descripcion: How to connect TikTok, YouTube, Instagram and Facebook to each brand in Clipfine so you can publish and schedule clips on your clients' accounts.
 categoria: publicar
 orden: 1
+funciones: publicar
 ---
 Before you can schedule clips, each brand needs its accounts connected. Every brand has its own: what you connect for one client never mixes with another.
 

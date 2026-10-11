@@ -3,6 +3,7 @@ titulo: Import an episode
 descripcion: How to upload a podcast video or bring in a Restream live to a client's brand so Clipfine transcribes it and finds the clips.
 categoria: clips
 orden: 1
+funciones: importar
 ---
 An episode is a client's long video (a podcast, an interview, a live stream) that Clipfine turns into clips. It goes into the brand you have selected, so check which client you're working on before you import.
 

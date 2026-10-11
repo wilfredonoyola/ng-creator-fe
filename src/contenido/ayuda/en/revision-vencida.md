@@ -3,6 +3,7 @@ titulo: What happens if nobody reviews in time
 descripcion: What Clipfine does when a clip's publish time arrives and it still isn't approved: early warnings, overdue clips and how to publish them later.
 categoria: revision
 orden: 3
+funciones: revision
 ---
 This guide explains what happens when the scheduled time arrives and the clip is still waiting for the client's review.
 

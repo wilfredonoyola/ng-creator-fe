@@ -3,6 +3,7 @@ titulo: Planes y horas de video
 descripcion: Los planes de Clipfine para agencias, Starter, Agency, Agency Pro y Custom, con precio por horas de video al mes sumando todos tus clientes.
 categoria: planes
 orden: 2
+funciones:
 ---
 Los planes de Clipfine se pagan por horas de video al mes, así crecen con tu cartera de clientes y no por cantidad de clips.
 
@@ -10,12 +11,12 @@ Los planes de Clipfine se pagan por horas de video al mes, así crecen con tu ca
 
 | Plan | Cobro mensual | Cobro anual (por mes) | Horas de video al mes |
 |---|---|---|---|
-| Starter | US$19 | US$15 | 10 |
-| Agency | US$59 | US$49 | 30 |
-| Agency Pro | US$149 | US$119 | 80 |
-| Custom | desde US$399 | contrato anual | más de 200 |
+| Starter | US${{plan.starter.mensual}} | US${{plan.starter.anual}} | {{plan.starter.horas}} |
+| Agency | US${{plan.agency.mensual}} | US${{plan.agency.anual}} | {{plan.agency.horas}} |
+| Agency Pro | US${{plan.agencyPro.mensual}} | US${{plan.agencyPro.anual}} | {{plan.agencyPro.horas}} |
+| Custom | desde US${{custom.desde}} | contrato anual | más de {{custom.horas}} |
 
-Starter es para agencias chicas y primeros clientes, Agency para agencias con varios clientes y Agency Pro para equipos con mucho volumen. Custom suma configuración a medida y onboarding guiado, con contrato anual. Con el cobro anual ahorrás hasta 21%.
+Starter es para agencias chicas y primeros clientes, Agency para agencias con varios clientes y Agency Pro para equipos con mucho volumen. Custom suma configuración a medida y onboarding guiado, con contrato anual. Con el cobro anual ahorrás hasta {{ahorroAnual}}%.
 
 Todos los planes incluyen momentos elegidos con IA (en vertical y con subtítulos), el editor con auto-encuadre, Brand Kit por cliente, calendario de publicaciones, análisis por cliente y la app para iPhone y Android.
 
@@ -29,8 +30,8 @@ Todos los planes incluyen momentos elegidos con IA (en vertical y con subtítulo
 ## Cómo elegir
 
 1. Sumá cuántas horas de episodios suben tus clientes por mes.
-2. Elegí el plan que las cubra. Si pasás de 200 horas, tocá **Hablar con ventas** en la página de precios para ver Custom.
-3. Si tenés dudas sobre el cobro o querés cambiar de plan, escribinos a support@clipfine.io.
+2. Elegí el plan que las cubra. Si pasás de {{custom.horas}} horas, tocá **Hablar con ventas** en la página de precios para ver Custom.
+3. Si tenés dudas sobre el cobro o querés cambiar de plan, escribinos a {{soporte}}.
 
 Según los Términos, podés cancelar cuando quieras, sin penalidad, y el plan sigue activo hasta el final del período ya pagado.
 

@@ -3,6 +3,7 @@ titulo: Plans and video hours
 descripcion: Clipfine plans for agencies, Starter, Agency, Agency Pro and Custom, priced by video hours per month across all your clients.
 categoria: planes
 orden: 2
+funciones:
 ---
 Clipfine plans are priced by video hours per month, so they grow with your client roster instead of charging per clip.
 
@@ -10,12 +11,12 @@ Clipfine plans are priced by video hours per month, so they grow with your clien
 
 | Plan | Billed monthly | Billed annually (per month) | Video hours per month |
 |---|---|---|---|
-| Starter | US$19 | US$15 | 10 |
-| Agency | US$59 | US$49 | 30 |
-| Agency Pro | US$149 | US$119 | 80 |
-| Custom | from US$399 | annual contract | 200+ |
+| Starter | US${{plan.starter.mensual}} | US${{plan.starter.anual}} | {{plan.starter.horas}} |
+| Agency | US${{plan.agency.mensual}} | US${{plan.agency.anual}} | {{plan.agency.horas}} |
+| Agency Pro | US${{plan.agencyPro.mensual}} | US${{plan.agencyPro.anual}} | {{plan.agencyPro.horas}} |
+| Custom | from US${{custom.desde}} | annual contract | {{custom.horas}}+ |
 
-Starter is for small agencies and first clients, Agency for agencies running several clients and Agency Pro for high-volume teams. Custom adds a custom setup and guided onboarding on an annual contract. Annual billing saves up to 21%.
+Starter is for small agencies and first clients, Agency for agencies running several clients and Agency Pro for high-volume teams. Custom adds a custom setup and guided onboarding on an annual contract. Annual billing saves up to {{ahorroAnual}}%.
 
 Every plan includes AI-picked moments (vertical and captioned), the editor with auto-reframe, a Brand Kit per client, the posting calendar, analytics per client and the iPhone and Android app.
 
@@ -29,8 +30,8 @@ Every plan includes AI-picked moments (vertical and captioned), the editor with 
 ## How to choose
 
 1. Add up how many hours of episodes your clients upload each month.
-2. Pick the plan that covers them. If you go over 200 hours, click **Talk to sales** on the pricing page to look at Custom.
-3. If you have billing questions or want to switch plans, email support@clipfine.io.
+2. Pick the plan that covers them. If you go over {{custom.horas}} hours, click **Talk to sales** on the pricing page to look at Custom.
+3. If you have billing questions or want to switch plans, email {{soporte}}.
 
 Under the Terms, you can cancel at any time with no penalty, and your plan stays active until the end of the period you've already paid for.
 

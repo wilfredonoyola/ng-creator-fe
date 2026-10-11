@@ -3,6 +3,7 @@ titulo: Subir clips ya editados
 descripcion: Subí los clips que tu equipo ya editó en CapCut, Premiere o el celular y programalos, revisalos y medilos como los demás. No descuentan horas.
 categoria: clips
 orden: 3
+funciones: subir-clips
 ---
 Si el clip ya está editado (un reel de CapCut, un tip grabado con el celular, un recorte de YouTube), lo subís tal cual y entra al mismo flujo que los clips de los episodios: revisión del cliente, programación en las redes y métricas. No pasa por la IA ni por la transcripción de un episodio.
 

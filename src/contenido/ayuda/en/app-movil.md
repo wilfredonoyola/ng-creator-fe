@@ -3,6 +3,7 @@ titulo: The iPhone and Android app
 descripcion: Use Clipfine on your phone with the same account as the web: edit, schedule and approve clips, check metrics and get alerts for all your clients.
 categoria: app
 orden: 1
+funciones: app
 ---
 The Clipfine app for iPhone and Android lets you keep up with your clients' work from your phone, with the same account and everything in sync with the web.
 

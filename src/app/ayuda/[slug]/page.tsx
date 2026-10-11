@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { ANCHO, CONDENSADA, CabeceraPublica, ETIQUETA, FOCO, PiePublico } from "@/components/landing/Publica";
+import { ANCHO, CONDENSADA, CabeceraPublica, ENLACE_FUNCIONES, ETIQUETA, FOCO, PiePublico } from "@/components/landing/Publica";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { ContactoAyuda } from "@/components/ayuda/Contacto";
 import { Markdown } from "@/components/ayuda/Markdown";
@@ -45,6 +45,7 @@ export default function PaginaArticulo({ params }: Props) {
 
 function Articulo({ slug }: { slug: string }) {
   const t = useTranslations("ayuda");
+  const tf = useTranslations("landingFunciones");
   const locale = useLocale();
   const todos = articulosAyuda(locale);
   const i = todos.findIndex((x) => x.slug === slug);
@@ -74,6 +75,21 @@ function Articulo({ slug }: { slug: string }) {
             </nav>
             <h1 className={`${CONDENSADA} max-w-[20ch] break-words text-[40px] leading-[.95] sm:text-[64px]`}>{a.titulo}</h1>
             <p className="max-w-[640px] text-lg leading-relaxed text-[#D9D8D2]">{a.descripcion}</p>
+            {/* La función que explica, en /features: el otro lado de la misma fuente. */}
+            {a.funciones.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={`${ETIQUETA} text-xs font-bold uppercase tracking-[.12em] text-[#A3A29C]`}>{t("funcion")}</span>
+                {a.funciones.map((f) => (
+                  <Link
+                    key={f}
+                    href={`${ENLACE_FUNCIONES}/${f}`}
+                    className={`rounded-full border border-[#3A3935] px-3 py-1 text-sm font-semibold text-white hover:border-[#FFD400] hover:text-[#FFD400] ${FOCO} focus-visible:outline-white`}
+                  >
+                    {tf(`secciones.${f}.titulo`)} →
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 

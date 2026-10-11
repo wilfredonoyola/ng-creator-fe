@@ -3,6 +3,7 @@ titulo: Prueba gratis
 descripcion: Cómo funciona la prueba gratis de Clipfine: sin tarjeta, con todas las funciones y tu primer cliente, y qué pasa cuando llegás al tope.
 categoria: planes
 orden: 1
+funciones:
 ---
 La prueba gratis sirve para probar Clipfine completo con tu primer cliente antes de elegir un plan.
 
@@ -11,7 +12,7 @@ La prueba gratis sirve para probar Clipfine completo con tu primer cliente antes
 - No pide tarjeta.
 - Tenés todas las funciones: momentos elegidos con IA, editor, Brand Kit, revisión, calendario, métricas y la app.
 - Es para una sola marca propia. Las marcas de otros aparecen cuando su propietario te invita.
-- En la página de precios, la prueba figura con 15 días y hasta 3 horas de video.
+- En la página de precios, la prueba figura con {{prueba.dias}} días y hasta {{prueba.horas}} horas de video.
 
 ## Cómo empezar
 

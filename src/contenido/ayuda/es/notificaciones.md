@@ -3,6 +3,7 @@ titulo: Notificaciones
 descripcion: Qué avisos manda Clipfine a tu equipo (clips listos, programados, publicados, revisiones) y cómo elegir recibirlos en la app, en el teléfono o por correo.
 categoria: equipo
 orden: 5
+funciones: equipo
 ---
 Clipfine le avisa al equipo de cada marca lo que pasa con sus clips, para que nadie tenga que entrar a revisar a cada rato.
 

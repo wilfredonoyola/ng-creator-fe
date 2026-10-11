@@ -3,6 +3,7 @@ titulo: Activar la revisión antes de publicar
 descripcion: Hacé que cada clip que programa tu equipo espere la aprobación del cliente o de un revisor antes de salir en redes. Se activa por marca.
 categoria: revision
 orden: 1
+funciones: revision
 ---
 La revisión sirve para que nada salga en las redes de un cliente sin que alguien lo apruebe antes. Se activa por marca: podés tenerla prendida para un cliente y apagada para otro.
 

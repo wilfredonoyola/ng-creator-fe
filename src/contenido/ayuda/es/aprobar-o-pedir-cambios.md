@@ -3,6 +3,7 @@ titulo: Aprobar un clip o pedir cambios
 descripcion: Cómo un revisor aprueba un clip con un toque o pide cambios con texto o nota de voz, y cómo el editor lo corrige y lo vuelve a mandar.
 categoria: revision
 orden: 2
+funciones: revision
 ---
 Cuando la marca tiene la [revisión activa](/ayuda/activar-revision), cada clip que programa un editor espera tu visto bueno. Esto es lo que hace el revisor, en la web y en la app.
 

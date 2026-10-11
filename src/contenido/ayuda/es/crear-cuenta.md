@@ -3,6 +3,7 @@ titulo: Crear tu cuenta en Clipfine
 descripcion: Cómo registrarte en Clipfine con tu correo, confirmar el código y empezar la prueba gratis de 2 episodios, sin tarjeta.
 categoria: primeros-pasos
 orden: 1
+funciones:
 ---
 Crear la cuenta te deja probar Clipfine gratis, sin tarjeta, con 2 episodios.
 

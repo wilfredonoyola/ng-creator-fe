@@ -3,6 +3,7 @@ titulo: Notifications
 descripcion: Which notifications Clipfine sends your team (clips ready, scheduled, published, reviews) and how to get them in the app, on your phone or by email.
 categoria: equipo
 orden: 5
+funciones: equipo
 ---
 Clipfine tells each brand's team what's happening with its clips, so nobody has to keep checking.
 

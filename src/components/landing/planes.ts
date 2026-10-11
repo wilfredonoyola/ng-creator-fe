@@ -14,3 +14,9 @@ export const PLANES = [
 
 /** Lo que trae la prueba: sin tarjeta, con todas las funciones. */
 export const PRUEBA_HORAS = 3;
+
+/** Los días de la prueba gratis. Los textos de la landing todavía lo dicen escrito ("15 días"). */
+export const PRUEBA_DIAS = 15;
+
+/** Custom: a medida, con contrato anual. El texto de la tarjeta está en landing.json (precios.custom). */
+export const CUSTOM = { desde: 399, horas: 200 } as const;

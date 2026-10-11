@@ -3,6 +3,7 @@ titulo: Metrics per clip
 descripcion: See how each clip did on TikTok, YouTube, Instagram and Facebook: views, interactions, followers gained and which kind of moment performs best.
 categoria: metricas
 orden: 1
+funciones: metricas
 ---
 Metrics show how every clip published from Clipfine did on social, brand by brand, on the web and in the app.
 

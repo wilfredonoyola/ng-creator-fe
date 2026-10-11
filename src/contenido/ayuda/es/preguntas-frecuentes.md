@@ -3,6 +3,7 @@ titulo: Preguntas frecuentes
 descripcion: Respuestas rápidas para agencias: clientes separados por marca, quién ve qué, si el cliente necesita cuenta, idiomas, redes, cancelación y soporte.
 categoria: app
 orden: 2
+funciones:
 ---
 Las dudas más comunes de las agencias que trabajan con Clipfine, con respuestas cortas.
 
@@ -56,4 +57,4 @@ Sí, para iPhone y Android, con la misma cuenta de la web. Mirá [La app para iP
 
 ## ¿Cómo hablo con soporte?
 
-Escribinos a support@clipfine.io.
+Escribinos a {{soporte}}.

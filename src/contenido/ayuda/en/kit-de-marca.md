@@ -3,6 +3,7 @@ titulo: Brand Kit
 descripcion: Set up each client's colors, text style, logo and call to action in Clipfine so every clip comes out with their brand identity.
 categoria: equipo
 orden: 4
+funciones: marca
 ---
 The Brand Kit is what every clip of a brand carries: its colors, the text style, the logo in a corner and, if you want, a call to action at the end. You set it up once per client and it's applied automatically.
 

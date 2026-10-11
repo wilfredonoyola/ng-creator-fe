@@ -3,6 +3,7 @@ titulo: Turn on review before publishing
 descripcion: Make every clip your team schedules wait for approval from the client or a reviewer before it goes out on social networks. Set per brand.
 categoria: revision
 orden: 1
+funciones: revision
 ---
 Review makes sure nothing goes out on a client's networks until someone approves it. It's set per brand, so you can have it on for one client and off for another.
 
