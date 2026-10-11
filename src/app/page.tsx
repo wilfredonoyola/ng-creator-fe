@@ -423,7 +423,7 @@ export default function Landing() {
               ))}
             </ul>
             <Link
-              href={`${ENLACE_FUNCIONES}#revision`}
+              href={`${ENLACE_FUNCIONES}/revision`}
               className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}
             >
               {t("aprobacion.verMas")} →

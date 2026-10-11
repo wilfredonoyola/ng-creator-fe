@@ -9,7 +9,13 @@
     "texto": "Del episodio largo a los clips publicados en cuatro redes, para cada cliente de tu agencia. Esto es lo que ya podés usar hoy.",
     "cta": "Probar gratis"
   },
-  "indice": "En esta página",
+  "indice": "Secciones",
+  "ver": "Ver la sección",
+  "migas": "Ruta",
+  "otras": "Otras funciones",
+  "anterior": "Anterior",
+  "siguiente": "Siguiente",
+  "verTodas": "Ver todas las funciones",
   "secciones": {
     "ia": { "titulo": "Clips con IA", "texto": "Subís el episodio y recibís sus mejores momentos, cada uno con su porqué." },
     "edicion": { "titulo": "Edición", "texto": "Ajustá el tramo, sacá lo que sobra y encuadrá a quien habla, sin saber editar video." },

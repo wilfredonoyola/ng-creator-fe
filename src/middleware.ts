@@ -22,17 +22,19 @@ const esImagenOG = (p: string) => p.startsWith("/opengraph-image");
  * que usan la cabecera de la landing con links relativos ("/" es el panel acá).
  */
 const DE_LA_LANDING = ["/features", "/app", "/privacidad", "/terminos"];
+/** Cada sección de /features tiene su página: /features/revision, /features/audio… */
+const esSeccionDeFunciones = (p: string) => p.startsWith("/features/");
 
 export function middleware(req: NextRequest) {
   const host = req.headers.get("host")?.split(":")[0] ?? "";
   const { pathname, search } = req.nextUrl;
 
-  if (HOSTS_LANDING.has(host) && !PUBLICAS.includes(pathname) && !esImagenOG(pathname)) {
+  if (HOSTS_LANDING.has(host) && !PUBLICAS.includes(pathname) && !esImagenOG(pathname) && !esSeccionDeFunciones(pathname)) {
     return NextResponse.redirect(`${URL_APP}${pathname}${search}`, 308);
   }
   if (host === HOST_APP) {
     if (pathname === "/") return NextResponse.redirect(new URL(`/panel${search}`, req.url));
-    if (DE_LA_LANDING.includes(pathname)) return NextResponse.redirect(`${URL_SITIO}${pathname}${search}`, 308);
+    if (DE_LA_LANDING.includes(pathname) || esSeccionDeFunciones(pathname)) return NextResponse.redirect(`${URL_SITIO}${pathname}${search}`, 308);
   }
   return NextResponse.next();
 }

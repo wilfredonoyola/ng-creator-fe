@@ -9,7 +9,13 @@
     "texto": "From the long episode to clips published on four networks, for every client your agency runs. This is what you can use today.",
     "cta": "Try it free"
   },
-  "indice": "On this page",
+  "indice": "Sections",
+  "ver": "See the section",
+  "migas": "Breadcrumb",
+  "otras": "More features",
+  "anterior": "Previous",
+  "siguiente": "Next",
+  "verTodas": "See all features",
   "secciones": {
     "ia": { "titulo": "AI clips", "texto": "Upload the episode and get its best moments, each one with the reason why." },
     "edicion": { "titulo": "Editing", "texto": "Adjust the span, cut what's extra and frame whoever is talking, no video skills needed." },
