@@ -228,3 +228,38 @@ export const esSeccion = (id: string): id is IdSeccion => SECCIONES.some((s) => 
 
 /** Dos dígitos, como los pasos de la landing: 01, 02… */
 export const numero = (i: number) => String(i + 1).padStart(2, "0");
+
+/**
+ * El namespace con lo que cada sección le dice a una agencia (titular,
+ * datos, "Tu agencia" de cada tarjeta, vistas previas, preguntas y SEO):
+ * src/messages/{es,en}/features<Seccion>.json.
+ */
+export const namespaceDe = (id: IdSeccion) => `features${id[0].toUpperCase()}${id.slice(1)}`;
+
+/** Las secciones que se recomiendan al final de cada una. */
+export const RELACIONADAS: Record<IdSeccion, readonly IdSeccion[]> = {
+  ia: ["edicion", "textos"],
+  edicion: ["audio", "ia"],
+  audio: ["edicion", "textos"],
+  textos: ["marca", "imagenes"],
+  imagenes: ["textos", "marca"],
+  marca: ["textos", "equipo"],
+  calidad: ["edicion", "publicar"],
+  importar: ["ia", "edicion"],
+  publicar: ["revision", "metricas"],
+  revision: ["publicar", "equipo"],
+  metricas: ["publicar", "revision"],
+  equipo: ["revision", "marca"],
+  app: ["revision", "publicar"],
+};
+
+/**
+ * El índice de /features agrupado por lo que busca un dueño de agencia, en
+ * vez de por pantallas. Cada sección está en un solo grupo.
+ */
+export const GRUPOS = [
+  { id: "producir", secciones: ["importar", "ia", "edicion", "audio", "textos", "imagenes", "calidad"] },
+  { id: "entregar", secciones: ["publicar", "revision"] },
+  { id: "demostrar", secciones: ["metricas"] },
+  { id: "operar", secciones: ["marca", "equipo", "app"] },
+] as const satisfies readonly { id: string; secciones: readonly IdSeccion[] }[];

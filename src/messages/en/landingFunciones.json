@@ -16,6 +16,8 @@
   "anterior": "Previous",
   "siguiente": "Next",
   "verTodas": "See all features",
+  "grupos": { "producir": { "titulo": "Produce more with the same team", "texto": "From the long episode to finished clips, without an editor starting from scratch." }, "entregar": { "titulo": "Deliver on time, with the client's OK", "texto": "Every client's week scheduled on four networks, and nothing goes out without approval." }, "demostrar": { "titulo": "Prove results", "texto": "The numbers your client wants to see before renewing." }, "operar": { "titulo": "Many clients, never mixed up", "texto": "Each client's brand, your team with their roles, and all of it on your phone too." } },
+  "agencia": { "etiqueta": "Your agency", "funciones": "What it does, and what it saves you", "funcionesTexto": "Each feature as it looks in Clipfine, with what your agency gets out of it.", "datos": "What your agency gets", "preguntas": "Agency questions", "relacionadas": "Keep going" },
   "secciones": {
     "ia": { "titulo": "AI clips", "texto": "Upload the episode and get its best moments, each one with the reason why." },
     "edicion": { "titulo": "Editing", "texto": "Adjust the span, cut what's extra and frame whoever is talking, no video skills needed." },

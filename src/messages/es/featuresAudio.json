@@ -1,0 +1,31 @@
+{
+  "seo": {
+    "titulo": "Música y efectos de sonido para clips de tus clientes | Clipfine",
+    "descripcion": "Sumá música libre de derechos, efectos de sonido y el volumen justo a los clips de tus clientes, escuchándolo en la vista previa. Sin otro programa. Para agencias."
+  },
+  "titulo": "Clips que suenan a producción,",
+  "destacado": "sin pasar por un editor de audio",
+  "bajada": "Música libre de derechos o la del cliente, efectos de sonido en el segundo justo y la voz al volumen que haga falta. Todo en el mismo editor, y lo escuchás antes de exportar.",
+  "datos": {
+    "d1": { "cifra": "400 %", "que": "de volumen para una voz que se grabó baja" },
+    "d2": { "cifra": "20 efectos", "que": "de sonido por clip, cada uno en su segundo" },
+    "d3": { "cifra": "2 bibliotecas", "que": "la de Clipfine y la de cada cliente" }
+  },
+  "agencia": {
+    "volumenVoz": "Un episodio mal grabado se salva en el clip, sin devolvérselo al cliente.",
+    "musica": "La música del cliente queda en su marca, y tu equipo no la busca cada vez.",
+    "bajarAlHablar": "La voz siempre se entiende. Nadie ajusta el volumen de la música a mano tramo por tramo.",
+    "efectos": "El remate que antes pedía un editor de audio ahora es un toque en la línea de tiempo."
+  },
+  "vistas": {
+    "volumenVoz": { "voz": "Voz", "pie": "Se escucha en la vista previa" },
+    "musica": { "pista1": "Alegre 03", "libre": "Libre de derechos", "pista2": "Cortina del cliente", "tuya": "Subida por vos", "volumen": "Volumen" },
+    "bajarAlHablar": { "voz": "Voz", "musica": "Música", "opcion": "Bajar cuando hablan" },
+    "efectos": { "tambor": "Tambor", "whoosh": "Whoosh", "aplauso": "Aplauso", "pie": "Cada efecto en su segundo" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Cada cliente puede tener su propia música?", "r": "Sí. Lo que subís a la marca de un cliente lo ve solo esa marca. La biblioteca de Clipfine está disponible para todas." },
+    "p2": { "p": "¿Puedo escuchar cómo queda antes de exportar?", "r": "Sí. En la vista previa del editor suenan la voz, la música y los efectos como van a salir. En la web también se escucha la voz por encima de 100 %; en la app, eso se nota en el video final." },
+    "p3": { "p": "¿Qué audio puedo subir?", "r": "MP3, WAV, M4A u OGG. Una canción de hasta 15 minutos o un efecto de hasta 30 segundos. Clipfine lo prepara solo para que suene bien en cualquier red." }
+  }
+}

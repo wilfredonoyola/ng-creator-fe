@@ -1,0 +1,37 @@
+{
+  "seo": {
+    "titulo": "Métricas y reportes de redes para tus clientes | Clipfine",
+    "descripcion": "Las métricas de cada clip en TikTok, Reels, Shorts y Facebook, el resumen de cada cliente y el reporte en PDF para mandarle. Hecho para agencias."
+  },
+  "titulo": "El reporte de fin de mes",
+  "destacado": "que salva la reunión de renovación",
+  "bajada": "Clipfine lee las métricas de cada clip publicado, red por red, y arma el resumen de cada cliente. Lo exportás en PDF y llegás a la reunión con números.",
+  "datos": {
+    "d1": { "cifra": "4 redes", "que": "leídas solas en cada clip publicado" },
+    "d2": { "cifra": "90 días", "que": "de seguimiento después de publicar" },
+    "d3": { "cifra": "PDF · CSV · MD", "que": "el reporte listo para el cliente" }
+  },
+  "agencia": {
+    "metricasClip": "Dejás de juntar números red por red en una planilla. Están todos en el clip.",
+    "crecimiento": "Le mostrás al cliente que un clip sigue sumando vistas semanas después.",
+    "retencion": "Sabés qué ganchos retienen y los repetís con cada cliente.",
+    "iaVsRealidad": "Tu equipo aprende qué tipo de momento rinde para cada cliente y elige mejor el próximo.",
+    "resumenPrograma": "El resumen del mes de cada cliente, armado. Comparado con el mes anterior y con la mejor hora para publicar.",
+    "exportar": "El reporte para el cliente sale en un clic. Nadie pierde una tarde armando slides.",
+    "seActualiza": "Nadie tiene que acordarse de entrar a cada red a mirar cómo le fue al clip."
+  },
+  "vistas": {
+    "metricasClip": { "vistas": "Vistas", "likes": "Likes", "compartidos": "Compartidos", "seguidores": "Seguidores" },
+    "crecimiento": { "dias": "d" },
+    "retencion": { "seVan": "Se van en 3 s:", "completo": "Lo ven completo:" },
+    "iaVsRealidad": { "ia": "Puntaje IA", "vistas": "Vistas reales", "gancho": "Gancho", "humor": "Humor", "opinion": "Opinión" },
+    "resumenPrograma": { "cliente": "Cliente A · últimos 30 días", "contraAnterior": "vs. anterior", "mejorHora": "Mejor hora: jue", "mejorClip": "Mejor clip" },
+    "exportar": { "titulo": "Reporte de Cliente A · octubre", "pie": "Para el cliente, para Excel o para Notion" },
+    "seActualiza": { "pie": "A la hora, a las 6 h, al día… hasta 90 días" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Puedo mandarle un reporte a mi cliente?", "r": "Sí. El resumen de cada cliente se exporta en PDF para mandárselo, en CSV para Excel o Sheets, o en Markdown para Notion, Slack o un correo." },
+    "p2": { "p": "¿Qué métricas trae cada red?", "r": "Vistas, likes, comentarios, compartidos, guardados, alcance y seguidores ganados donde la red los da, y retención donde la comparte. Facebook solo comparte vistas, likes y comentarios." },
+    "p3": { "p": "¿Tengo que cargar los números a mano?", "r": "No. Clipfine lee las métricas solo a la hora de publicar, a las 6 horas, al día y así hasta 90 días después." }
+  }
+}

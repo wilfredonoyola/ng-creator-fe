@@ -1,0 +1,35 @@
+{
+  "seo": {
+    "titulo": "App para iPhone y Android: los clips de tus clientes | Clipfine",
+    "descripcion": "Editá, programá y aprobá los clips de tus clientes desde el celular, con la misma cuenta de la web. App para iPhone y Android, pensada para agencias."
+  },
+  "titulo": "Tu agencia sigue andando",
+  "destacado": "aunque no estés en la compu",
+  "bajada": "La app es parte de Clipfine, en iPhone y Android: la misma cuenta, los mismos clientes y todo sincronizado con la web. Aprobás, editás o programás desde donde estés.",
+  "datos": {
+    "d1": { "cifra": "2 plataformas", "que": "iPhone y Android" },
+    "d2": { "cifra": "1 cuenta", "que": "la misma de la web, con todos tus clientes" },
+    "d3": { "cifra": "4 redes", "que": "para programar desde el celular" }
+  },
+  "agencia": {
+    "app": "Nadie tiene que configurar nada de nuevo para trabajar desde el teléfono.",
+    "sincronizado": "Lo que un editor deja en la web lo seguís vos en el celular, sin pasarse archivos.",
+    "editarCelular": "Un retoque de último momento no espera a que alguien vuelva a la oficina.",
+    "aprobarCelular": "El cliente aprueba desde el teléfono y el clip sale a tiempo.",
+    "push": "Te enterás de lo que necesita tu atención sin tener Clipfine abierto.",
+    "fotos": "El clip terminado queda en el teléfono, listo para mandarlo o subirlo donde haga falta."
+  },
+  "vistas": {
+    "app": { "cliente": "Cliente A", "clips": "Clips" },
+    "sincronizado": { "pie": "Lo mismo en la web y en el celular" },
+    "editarCelular": { "recortar": "Recortar", "audio": "Audio", "texto": "Texto" },
+    "aprobarCelular": { "aprobar": "Aprobar", "cambios": "Pedir cambios" },
+    "push": { "aviso": "Leo programó un clip para el jueves", "pie": "Elegís qué avisos te llegan" },
+    "fotos": { "guardar": "Guardar en Fotos", "guardando": "Guardando el MP4" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Necesito otra cuenta para la app?", "r": "No. Entrás con la misma cuenta de la web y ya ves tus clientes, episodios y clips." },
+    "p2": { "p": "¿Puedo editar un clip completo desde el celular?", "r": "Sí. Recortás, sacás lo que sobra, cambiás subtítulos y textos, sumás música y efectos, ajustás la velocidad y programás en las cuatro redes." },
+    "p3": { "p": "¿Mi cliente puede aprobar desde el celular?", "r": "Sí. Con el rol Revisor, ve el clip en la app y lo aprueba o pide cambios, con texto o con una nota de voz." }
+  }
+}

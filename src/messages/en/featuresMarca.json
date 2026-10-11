@@ -1,0 +1,31 @@
+{
+  "seo": {
+    "titulo": "A Brand Kit for every client's clips | Clipfine",
+    "descripcion": "Each client's logo, colors and style saved in their Brand Kit and applied to every clip automatically. For agencies that handle many brands at once."
+  },
+  "titulo": "Every client on brand,",
+  "destacado": "in every clip, without thinking",
+  "bajada": "Each client's logo, colors and style are saved in their Brand Kit. Their clips come out with all of it applied, no matter who edits them.",
+  "datos": {
+    "d1": { "cifra": "1 Brand Kit", "que": "per client, kept apart from the rest" },
+    "d2": { "cifra": "4 colors", "que": "per brand, taken from the logo or picked by hand" },
+    "d3": { "cifra": "4 corners", "que": "for the logo, with size and opacity" }
+  },
+  "agencia": {
+    "logo": "The client's logo always shows up in the same spot, without anyone having to remember it.",
+    "colores": "Onboarding a new client takes a minute: upload the logo and their colors come out on their own.",
+    "estiloMarca": "An editor picking up a new client doesn't have to learn their look. It's already saved.",
+    "aplicaSolo": "No way to send a clip with another client's logo. Each brand only uses its own Brand Kit."
+  },
+  "vistas": {
+    "logo": { "opacidad": "Opacity" },
+    "colores": { "usar": "Use logo colors" },
+    "estiloMarca": { "cliente": "Client {letra}" },
+    "aplicaSolo": { "clip1": "Clip 1 · Brand Kit", "clip2": "Clip 2 · Brand Kit", "logo": "Logo on this clip", "pie": "Turned off for this clip only" }
+  },
+  "preguntas": {
+    "p1": { "p": "Can I keep each client's brand separate?", "r": "Yes. Each client is a brand with its own logo, colors and style. One brand's clips never use another brand's Brand Kit." },
+    "p2": { "p": "Who can change a client's colors?", "r": "Only the brand's owner. The rest of the team edits clips with those colors but can't change the client's identity." },
+    "p3": { "p": "What if a clip shouldn't carry the logo?", "r": "Turn off the logo or change the style on that clip. The client's Brand Kit stays the same for every other clip." }
+  }
+}

@@ -18,7 +18,7 @@ import {
   LINK_DEMO,
 } from "@/components/landing/Publica";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
-import { SECCIONES, numero } from "@/components/landing/funciones";
+import { GRUPOS, SECCIONES } from "@/components/landing/funciones";
 import { HashAPagina } from "@/components/landing/HashAPagina";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -74,30 +74,42 @@ export default function PaginaFunciones() {
         {/* ---- Las secciones: cada una tiene su página ---- */}
         <section aria-label={t("indice")} className="bg-[#F4F3EE]">
           <HashAPagina ids={SECCIONES.map((s) => s.id)} />
-          <ol className={`${ANCHO} grid gap-4 py-16 sm:grid-cols-2 lg:grid-cols-3 lg:py-24`}>
-            {SECCIONES.map((s, i) => (
-              <li key={s.id} className="flex">
-                <Link
-                  href={`${ENLACE_FUNCIONES}/${s.id}`}
-                  className={`group flex w-full flex-col gap-4 rounded-xl bg-white p-6 transition hover:shadow-[inset_0_0_0_2px_#0A0A0A] ${FOCO} focus-visible:outline-[#0A0A0A]`}
-                >
-                  <span className={`${MONO} text-xs font-medium text-[#6B6A64]`}>{numero(i)}</span>
-                  <h2 className={`${CONDENSADA} break-words text-[32px] leading-[.95] sm:text-[40px]`}>{t(`secciones.${s.id}.titulo`)}</h2>
-                  <p className="leading-relaxed text-[#3A3935]">{t(`secciones.${s.id}.texto`)}</p>
-                  <ul className="flex flex-wrap gap-1.5">
-                    {s.items.map(({ clave }) => (
-                      <li key={clave} className="rounded-full bg-[#F4F3EE] px-2.5 py-1 text-[13px] text-[#3A3935]">
-                        {t(`items.${clave}.titulo`)}
+          <div className={`${ANCHO} flex flex-col gap-16 py-16 lg:gap-20 lg:py-24`}>
+            {GRUPOS.map((g) => (
+              <div key={g.id} className="flex flex-col gap-6">
+                <div className="flex flex-col gap-2">
+                  <h2 className={`${CONDENSADA} break-words text-[34px] leading-[.95] sm:text-[48px]`}>{t(`grupos.${g.id}.titulo`)}</h2>
+                  <p className="max-w-[60ch] text-lg leading-relaxed text-[#3A3935]">{t(`grupos.${g.id}.texto`)}</p>
+                </div>
+                <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {g.secciones.map((id) => {
+                    const s = SECCIONES.find((x) => x.id === id)!;
+                    return (
+                      <li key={s.id} className="flex">
+                        <Link
+                          href={`${ENLACE_FUNCIONES}/${s.id}`}
+                          className={`group flex w-full flex-col gap-4 rounded-xl bg-white p-6 transition hover:shadow-[inset_0_0_0_2px_#0A0A0A] ${FOCO} focus-visible:outline-[#0A0A0A]`}
+                        >
+                          <h3 className={`${CONDENSADA} break-words text-[30px] leading-[.95] sm:text-[36px]`}>{t(`secciones.${s.id}.titulo`)}</h3>
+                          <p className="leading-relaxed text-[#3A3935]">{t(`secciones.${s.id}.texto`)}</p>
+                          <ul className="flex flex-wrap gap-1.5">
+                            {s.items.map(({ clave }) => (
+                              <li key={clave} className="rounded-full bg-[#F4F3EE] px-2.5 py-1 text-[13px] text-[#3A3935]">
+                                {t(`items.${clave}.titulo`)}
+                              </li>
+                            ))}
+                          </ul>
+                          <span className="mt-auto flex items-center gap-2 pt-2 font-semibold underline decoration-[1.5px] underline-offset-[6px] group-hover:decoration-[3px]">
+                            {t("ver")} <ArrowRight size={16} />
+                          </span>
+                        </Link>
                       </li>
-                    ))}
-                  </ul>
-                  <span className="mt-auto flex items-center gap-2 pt-2 font-semibold underline decoration-[1.5px] underline-offset-[6px] group-hover:decoration-[3px]">
-                    {t("ver")} <ArrowRight size={16} />
-                  </span>
-                </Link>
-              </li>
+                    );
+                  })}
+                </ol>
+              </div>
             ))}
-          </ol>
+          </div>
         </section>
 
         {/* ---- Cierre ---- */}
