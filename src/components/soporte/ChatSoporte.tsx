@@ -37,7 +37,10 @@ export function ChatSoporte() {
   const [derivada, setDerivada] = useState<string | null>(null);
   const [cargada, setCargada] = useState(false);
   const fin = useRef<HTMLDivElement>(null);
+  const ultimaRespuesta = useRef<HTMLDivElement>(null);
   const campo = useRef<HTMLTextAreaElement>(null);
+  /** En el teléfono: el alto que deja el teclado (visualViewport), para que el campo no quede tapado. */
+  const [visible, setVisible] = useState<{ alto: number; arriba: number } | null>(null);
 
   // La conversación de antes, la primera vez que se abre.
   useEffect(() => {
@@ -50,12 +53,44 @@ export function ChatSoporte() {
     });
   }, [abierto, cargada]);
 
+  // Una respuesta nueva se muestra desde su principio: en el teléfono una
+  // larga no entra, y saltar al final obligaba a subir para leerla.
   useEffect(() => {
-    fin.current?.scrollIntoView({ block: "end" });
-  }, [mensajes, pensando, pidiendoCorreo, derivada]);
+    const ultimo = mensajes[mensajes.length - 1];
+    if (ultimo?.rol === "ASISTENTE") ultimaRespuesta.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+    else fin.current?.scrollIntoView({ block: "end" });
+  }, [mensajes]);
 
   useEffect(() => {
-    if (abierto) campo.current?.focus();
+    if (pensando || pidiendoCorreo || derivada) fin.current?.scrollIntoView({ block: "end", behavior: "smooth" });
+  }, [pensando, pidiendoCorreo, derivada]);
+
+  // En la compu se escribe directo; en el teléfono abrir el teclado de entrada
+  // tapa la mitad del chat antes de leer nada.
+  useEffect(() => {
+    if (abierto && window.matchMedia("(min-width: 640px)").matches) campo.current?.focus();
+  }, [abierto]);
+
+  // En el teléfono el chat ocupa la pantalla: la página de atrás no se mueve,
+  // y el alto sigue al teclado.
+  useEffect(() => {
+    if (!abierto || window.matchMedia("(min-width: 640px)").matches) return;
+    const cuerpo = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const vv = window.visualViewport;
+    const ajustar = () => vv && setVisible({ alto: vv.height, arriba: vv.offsetTop });
+    ajustar();
+    vv?.addEventListener("resize", ajustar);
+    vv?.addEventListener("scroll", ajustar);
+    const conEsc = (e: KeyboardEvent) => e.key === "Escape" && setAbierto(false);
+    window.addEventListener("keydown", conEsc);
+    return () => {
+      document.body.style.overflow = cuerpo;
+      vv?.removeEventListener("resize", ajustar);
+      vv?.removeEventListener("scroll", ajustar);
+      window.removeEventListener("keydown", conEsc);
+      setVisible(null);
+    };
   }, [abierto]);
 
   if (SIN_BURBUJA.some((r) => r.test(pathname))) return null;
@@ -116,6 +151,8 @@ export function ChatSoporte() {
   const abajo = publica
     ? "bottom-[max(1rem,env(safe-area-inset-bottom))]"
     : "bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-5";
+  // El panel abierto: en el teléfono, pantalla completa; desde sm, la tarjeta flotante.
+  const abajoTarjeta = publica ? "sm:bottom-5" : "sm:bottom-[calc(4.5rem+env(safe-area-inset-bottom))] lg:bottom-5";
 
   return (
     <>
@@ -136,15 +173,22 @@ export function ChatSoporte() {
         <section
           role="dialog"
           aria-label={t("titulo")}
-          className={`fixed inset-x-2 z-50 flex max-h-[min(640px,calc(100dvh-6rem))] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141413] font-sans text-white shadow-[0_16px_48px_rgba(0,0,0,0.5)] sm:inset-x-auto sm:right-5 sm:w-[380px] ${abajo}`}
+          aria-modal="true"
+          style={visible ? { height: visible.alto, top: visible.arriba } : undefined}
+          className={`fixed inset-x-0 top-0 z-50 flex h-[100dvh] flex-col overflow-hidden bg-[#141413] font-sans text-white sm:inset-x-auto sm:top-auto sm:right-5 sm:h-auto sm:max-h-[min(640px,calc(100dvh-6rem))] sm:w-[380px] sm:rounded-2xl sm:border sm:border-white/10 sm:shadow-[0_16px_48px_rgba(0,0,0,0.5)] ${abajoTarjeta}`}
         >
-          <header className="flex items-start gap-3 border-b border-white/10 bg-[#0A0A0A] px-4 py-3">
-            <span aria-hidden className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFD400]">
+          <header className="flex items-center gap-3 border-b border-white/10 bg-[#0A0A0A] px-3 pb-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] sm:items-start sm:px-4 sm:py-3">
+            <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFD400] sm:mt-0.5">
               <MessageCircle size={18} color="#0A0A0A" />
             </span>
             <div className="min-w-0 flex-1">
-              <h2 className="text-[15px] font-bold">{t("titulo")}</h2>
-              <p className="text-xs leading-snug text-white/55">{t("subtitulo")}</p>
+              <h2 className="text-base font-bold sm:text-[15px]">{t("titulo")}</h2>
+              {/* En el teléfono, una línea: quién contesta y que es al instante. */}
+              <p className="flex items-center gap-1.5 text-xs text-white/55 sm:hidden">
+                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-[#3DDC97]" />
+                {t("alInstante")}
+              </p>
+              <p className="hidden text-xs leading-snug text-white/55 sm:block">{t("subtitulo")}</p>
             </div>
             {mensajes.length > 0 && (
               <button
@@ -152,7 +196,7 @@ export function ChatSoporte() {
                 onClick={empezarDeNuevo}
                 aria-label={t("nueva")}
                 title={t("nueva")}
-                className="rounded-md p-1.5 text-white/50 hover:bg-white/10 hover:text-white"
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white sm:h-auto sm:w-auto sm:p-1.5"
               >
                 <RotateCcw size={16} aria-hidden />
               </button>
@@ -161,22 +205,22 @@ export function ChatSoporte() {
               type="button"
               onClick={() => setAbierto(false)}
               aria-label={t("cerrar")}
-              className="rounded-md p-1.5 text-white/50 hover:bg-white/10 hover:text-white"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-white/60 hover:bg-white/10 hover:text-white sm:h-auto sm:w-auto sm:p-1.5"
             >
-              <X size={18} aria-hidden />
+              <X size={22} aria-hidden className="sm:h-[18px] sm:w-[18px]" />
             </button>
           </header>
 
-          <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
+          <div className="flex-1 space-y-3 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4" aria-live="polite">
             <Burbuja rol="ASISTENTE" texto={t("saludo")} />
             {mensajes.length === 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                 {(["sugerencia1", "sugerencia2", "sugerencia3"] as const).map((k) => (
                   <button
                     key={k}
                     type="button"
                     onClick={() => void mandar(t(k))}
-                    className="rounded-full border border-white/15 px-3 py-1.5 text-left text-xs text-white/80 hover:border-[#FFD400] hover:text-white"
+                    className="rounded-xl border border-white/15 px-3.5 py-3 text-left text-[15px] text-white/85 hover:border-[#FFD400] hover:text-white active:bg-white/5 sm:rounded-full sm:px-3 sm:py-1.5 sm:text-xs"
                   >
                     {t(k)}
                   </button>
@@ -184,7 +228,9 @@ export function ChatSoporte() {
               </div>
             )}
             {mensajes.map((m, i) => (
-              <Burbuja key={i} rol={m.rol} texto={m.texto} />
+              <div key={i} ref={i === mensajes.length - 1 ? ultimaRespuesta : undefined} className="scroll-mt-3">
+                <Burbuja rol={m.rol} texto={m.texto} />
+              </div>
             ))}
             {pensando && (
               <p className="flex items-center gap-2 text-xs text-white/50">
@@ -208,12 +254,12 @@ export function ChatSoporte() {
                   onChange={(e) => setCorreo(e.target.value)}
                   placeholder={t("correoEjemplo")}
                   autoComplete="email"
-                  className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm outline-none focus:border-[#FFD400]"
+                  className="w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-base outline-none focus:border-[#FFD400] sm:py-2 sm:text-sm"
                 />
                 <button
                   type="submit"
                   disabled={pensando}
-                  className="w-full rounded-md bg-[#FFD400] py-2 text-sm font-semibold text-[#0A0A0A] disabled:opacity-50"
+                  className="w-full rounded-md bg-[#FFD400] py-3 text-[15px] font-semibold text-[#0A0A0A] disabled:opacity-50 sm:py-2 sm:text-sm"
                 >
                   {t("enviarAlEquipo")}
                 </button>
@@ -225,7 +271,7 @@ export function ChatSoporte() {
                   type="button"
                   onClick={() => void pasarAlEquipo()}
                   disabled={pensando}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#FFD400]/60 py-2 text-sm font-semibold text-[#FFD400] hover:bg-[#FFD400]/10 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#FFD400]/60 py-3 text-[15px] font-semibold text-[#FFD400] hover:bg-[#FFD400]/10 disabled:opacity-50 sm:py-2 sm:text-sm"
                 >
                   <UserRound size={16} aria-hidden /> {t("hablarConEquipo")}
                 </button>
@@ -239,13 +285,18 @@ export function ChatSoporte() {
               e.preventDefault();
               void mandar(texto);
             }}
-            className="border-t border-white/10 bg-[#0A0A0A] p-3"
+            className="border-t border-white/10 bg-[#0A0A0A] px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-3"
           >
             <div className="flex items-end gap-2">
               <textarea
                 ref={campo}
                 value={texto}
-                onChange={(e) => setTexto(e.target.value.slice(0, 1000))}
+                onChange={(e) => {
+                  setTexto(e.target.value.slice(0, 1000));
+                  // Crece con lo que se escribe, hasta el tope de max-h.
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -255,13 +306,13 @@ export function ChatSoporte() {
                 rows={1}
                 placeholder={t("escribir")}
                 aria-label={t("escribir")}
-                className="max-h-32 min-h-[42px] flex-1 resize-none rounded-lg border border-white/15 bg-black/40 px-3 py-2.5 text-sm outline-none focus:border-[#FFD400]"
+                className="max-h-32 min-h-[46px] flex-1 resize-none rounded-xl border border-white/15 bg-black/40 px-3.5 py-3 text-base outline-none focus:border-[#FFD400] sm:min-h-[42px] sm:rounded-lg sm:px-3 sm:py-2.5 sm:text-sm"
               />
               <button
                 type="submit"
                 disabled={!texto.trim() || pensando}
                 aria-label={t("enviar")}
-                className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg bg-[#FFD400] text-[#0A0A0A] disabled:opacity-40"
+                className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-[#FFD400] text-[#0A0A0A] disabled:opacity-40 sm:h-[42px] sm:w-[42px] sm:rounded-lg"
               >
                 <Send size={18} aria-hidden />
               </button>
@@ -287,7 +338,7 @@ function Burbuja({ rol, texto }: MensajeChat) {
   return (
     <div className={`flex ${persona ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+        className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-[15px] leading-relaxed sm:max-w-[88%] sm:text-sm ${
           persona ? "rounded-br-md bg-[#FFD400] text-[#0A0A0A]" : "rounded-bl-md bg-white/[0.07] text-white/90"
         }`}
       >
