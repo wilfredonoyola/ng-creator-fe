@@ -207,10 +207,13 @@ export default function EquipoPage() {
         </section>
       )}
 
-      <AjustesRevisionMarca />
+      <AjustesRevisionMarca
+        miembros={cargandoMiembros ? null : miembros}
+        verEquipo={() => document.getElementById("equipo-con-acceso")?.scrollIntoView({ behavior: "smooth" })}
+      />
 
       {/* Quienes ya tienen acceso */}
-      <section>
+      <section id="equipo-con-acceso" className="scroll-mt-6">
         <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
           {t("conAcceso", { n: miembros.length })}
         </h2>

@@ -20,7 +20,13 @@
     "errorGuardar": "Couldn't save",
     "soloPropietario": "Only the brand owner can change this.",
     "revisores": "Who reviews",
-    "revisoresAyuda": "The owner always reviews. Mark the editors or viewers who also approve: a viewer who reviews can approve or request changes, but can't edit."
+    "revisoresAyuda": "The owner always reviews. Mark the editors or viewers who also approve: a viewer who reviews can approve or request changes, but can't edit.",
+    "chequeo": {
+      "revisan": "{n, plural, one {Reviewer: {nombres}} other {Reviewers ({n}): {nombres}}}",
+      "soloPropietario": "Right now only the owner reviews: everything the team schedules will land on that person, and if it isn't approved in time it won't go out. To share the load, mark another editor or viewer with “Reviews”.",
+      "sinEditores": "Everyone who schedules clips is a reviewer, and what a reviewer schedules is approved automatically: review won't hold anything back until there's an editor who doesn't review.",
+      "marcarRevisores": "Mark reviewers on the team ↓"
+    }
   },
   "equipo": {
     "revisa": "Reviews",

@@ -10,6 +10,32 @@ import { useRevisionMarca, type AlVencerRevision } from "@/lib/revision";
 
 const OPCIONES: AlVencerRevision[] = ["NO_PUBLICAR", "PUBLICAR_IGUAL"];
 
+/** Lo que hace falta del equipo para saber quién revisa y quién programa. */
+export interface MiembroRevision {
+  usuarioId: string;
+  rol: string;
+  revisor?: boolean | null;
+  nombre?: string | null;
+  email: string;
+}
+
+/**
+ * Quién revisa y si la revisión sirve de algo con el equipo de hoy:
+ * - `sinEditores`: no hay editores que no sean revisores, y lo que programa un
+ *   revisor queda aprobado solo. La revisión no frena nada todavía.
+ * - `soloPropietario`: hay editores, pero todo le llega al propietario.
+ */
+export function estadoRevisores(miembros: MiembroRevision[]) {
+  const nombre = (m: MiembroRevision) => m.nombre?.trim() || m.email.split("@")[0];
+  const revisores = miembros.filter((m) => m.rol === "PROPIETARIO" || m.revisor);
+  const programan = miembros.filter((m) => m.rol === "EDITOR" && !m.revisor);
+  return {
+    nombres: revisores.map(nombre),
+    sinEditores: programan.length === 0,
+    soloPropietario: revisores.every((m) => m.rol === "PROPIETARIO"),
+  };
+}
+
 /**
  * "Revisión antes de publicar" (ng-creator-be#175): si los clips de la marca se
  * aprueban antes de salir y qué pasa si llega la hora sin revisión. Quiénes
@@ -18,7 +44,14 @@ const OPCIONES: AlVencerRevision[] = ["NO_PUBLICAR", "PUBLICAR_IGUAL"];
  * Lo cambia el propietario o un ADMIN (el backend lo impone igual); el resto lo
  * ve en solo lectura.
  */
-export function AjustesRevisionMarca() {
+export function AjustesRevisionMarca({
+  miembros,
+  verEquipo,
+}: {
+  /** null mientras carga: no se avisa nada hasta saber quién está. */
+  miembros: MiembroRevision[] | null;
+  verEquipo: () => void;
+}) {
   const t = useTranslations("revisionClip.ajustes");
   const { activa: marca } = useMarcaActiva();
   const { esAdmin, esPropietario } = useSesion();
@@ -128,6 +161,7 @@ export function AjustesRevisionMarca() {
           </div>
           <h3 className="mb-1 mt-5 text-xs font-semibold uppercase tracking-wide text-white/45">{t("revisores")}</h3>
           <p className="text-xs text-white/45">{t("revisoresAyuda")}</p>
+          {miembros && <ChequeoRevisores miembros={miembros} verEquipo={verEquipo} />}
         </>
       )}
 
@@ -149,5 +183,33 @@ export function AjustesRevisionMarca() {
         <p className="mt-3 text-xs text-white/40">{t("soloPropietario")}</p>
       )}
     </section>
+  );
+}
+
+/**
+ * Antes de guardar: quién va a revisar, y un aviso si con el equipo de hoy la
+ * revisión no frena nada o todo cae en una sola persona.
+ */
+function ChequeoRevisores({ miembros, verEquipo }: { miembros: MiembroRevision[]; verEquipo: () => void }) {
+  const t = useTranslations("revisionClip.ajustes.chequeo");
+  const { nombres, sinEditores, soloPropietario } = estadoRevisores(miembros);
+  const aviso = sinEditores ? "sinEditores" : soloPropietario ? "soloPropietario" : null;
+  return (
+    <div
+      className={`mt-3 rounded-xl border p-3 text-sm ${
+        aviso ? "border-amber-400/30 bg-amber-400/[0.06]" : "border-ng-teal/30 bg-ng-teal/[0.06]"
+      }`}
+    >
+      <p className="font-medium">
+        {aviso ? "⚠️ " : "✓ "}
+        {t("revisan", { n: nombres.length, nombres: nombres.join(", ") })}
+      </p>
+      {aviso && <p className="mt-1 text-xs text-white/60">{t(aviso)}</p>}
+      {aviso === "soloPropietario" && (
+        <button type="button" onClick={verEquipo} className="mt-2 text-xs font-medium text-marca hover:underline">
+          {t("marcarRevisores")}
+        </button>
+      )}
+    </div>
   );
 }
