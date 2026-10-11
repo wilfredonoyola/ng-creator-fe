@@ -1,5 +1,6 @@
 import { MaquetaApp } from "./MaquetaApp";
 import { MaquetaAudio } from "./MaquetaAudio";
+import { MaquetaClipsSubidos } from "./MaquetaClipsSubidos";
 import { MaquetaCalidad } from "./MaquetaCalidad";
 import { MaquetaEdicion } from "./MaquetaEdicion";
 import { MaquetaEquipo } from "./MaquetaEquipo";
@@ -22,6 +23,7 @@ export const MAQUETAS = {
   marca: MaquetaMarca,
   calidad: MaquetaCalidad,
   importar: MaquetaImportar,
+  "subir-clips": MaquetaClipsSubidos,
   publicar: MaquetaPublicar,
   revision: MaquetaRevision,
   // La misma de la landing: lo que se ve en /metricas, con datos de ejemplo.

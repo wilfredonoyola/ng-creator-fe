@@ -427,7 +427,7 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Link href={`${ENLACE_FUNCIONES}/importar`} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-white`}>
+            <Link href={`${ENLACE_FUNCIONES}/subir-clips`} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-white`}>
               {t("subidos.verMas")} →
             </Link>
           </div>

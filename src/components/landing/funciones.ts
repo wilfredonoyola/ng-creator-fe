@@ -161,6 +161,19 @@ export const SECCIONES = [
     ],
   },
   {
+    id: "subir-clips",
+    items: [
+      { clave: "soltarVarios", icono: UploadCloud },
+      { clave: "talCual", icono: BadgeCheck },
+      { clave: "retocar", icono: PanelsTopLeft },
+      { clave: "programarSubido", icono: CalendarDays },
+      { clave: "revisarSubido", icono: ClipboardCheck },
+      { clave: "medirSubido", icono: ChartColumn },
+      { clave: "sinHoras", icono: Timer },
+      { clave: "desdeCelular", icono: Smartphone },
+    ],
+  },
+  {
     id: "publicar",
     items: [
       { clave: "cuatroRedes", icono: Send },
@@ -236,7 +249,8 @@ export const numero = (i: number) => String(i + 1).padStart(2, "0");
  * datos, "Tu agencia" de cada tarjeta, vistas previas, preguntas y SEO):
  * src/messages/{es,en}/features<Seccion>.json.
  */
-export const namespaceDe = (id: IdSeccion) => `features${id[0].toUpperCase()}${id.slice(1)}`;
+export const namespaceDe = (id: IdSeccion) =>
+  `features${id.replace(/(^|-)(\w)/g, (_, _guion: string, letra: string) => letra.toUpperCase())}`;
 
 /** Las secciones que se recomiendan al final de cada una. */
 export const RELACIONADAS: Record<IdSeccion, readonly IdSeccion[]> = {
@@ -247,7 +261,8 @@ export const RELACIONADAS: Record<IdSeccion, readonly IdSeccion[]> = {
   imagenes: ["textos", "marca"],
   marca: ["textos", "equipo"],
   calidad: ["edicion", "publicar"],
-  importar: ["ia", "edicion"],
+  importar: ["subir-clips", "ia"],
+  "subir-clips": ["publicar", "revision"],
   publicar: ["revision", "metricas"],
   revision: ["publicar", "equipo"],
   metricas: ["publicar", "revision"],
@@ -260,7 +275,7 @@ export const RELACIONADAS: Record<IdSeccion, readonly IdSeccion[]> = {
  * vez de por pantallas. Cada sección está en un solo grupo.
  */
 export const GRUPOS = [
-  { id: "producir", secciones: ["importar", "ia", "edicion", "audio", "textos", "imagenes", "calidad"] },
+  { id: "producir", secciones: ["importar", "subir-clips", "ia", "edicion", "audio", "textos", "imagenes", "calidad"] },
   { id: "entregar", secciones: ["publicar", "revision"] },
   { id: "demostrar", secciones: ["metricas"] },
   { id: "operar", secciones: ["marca", "equipo", "app"] },
@@ -269,6 +284,7 @@ export const GRUPOS = [
 /** La función cuya vista previa adelanta cada sección en el índice de /features. */
 export const DESTACADA: Record<IdSeccion, string> = {
   importar: "restream",
+  "subir-clips": "soltarVarios",
   ia: "puntaje",
   edicion: "editor",
   audio: "efectos",

@@ -7,6 +7,7 @@ import { VISTAS_IMAGENES } from "./imagenes";
 import { VISTAS_MARCA } from "./marca";
 import { VISTAS_CALIDAD } from "./calidad";
 import { VISTAS_IMPORTAR } from "./importar";
+import { VISTAS_SUBIR_CLIPS } from "./subirClips";
 import { VISTAS_PUBLICAR } from "./publicar";
 import { VISTAS_REVISION } from "./revision";
 import { VISTAS_METRICAS } from "./metricas";
@@ -26,6 +27,7 @@ export const VISTAS: Partial<Record<IdSeccion, Record<string, () => JSX.Element>
   marca: VISTAS_MARCA,
   calidad: VISTAS_CALIDAD,
   importar: VISTAS_IMPORTAR,
+  "subir-clips": VISTAS_SUBIR_CLIPS,
   publicar: VISTAS_PUBLICAR,
   revision: VISTAS_REVISION,
   metricas: VISTAS_METRICAS,
