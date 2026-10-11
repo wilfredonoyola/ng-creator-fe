@@ -26,7 +26,7 @@ export function Cabecera() {
         <nav className="flex items-center gap-5 text-sm">
           <Link href="/#como" className="hidden text-ng-secundario hover:text-white sm:inline">{t("comoFunciona")}</Link>
           <Link href="/features" className="hidden text-ng-secundario hover:text-white md:inline">{t("funciones")}</Link>
-          <Link href="/app" className="hidden text-ng-secundario hover:text-white sm:inline">{t("app")}</Link>
+          <Link href="/features/app" className="hidden text-ng-secundario hover:text-white sm:inline">{t("app")}</Link>
           <Link href="/#precios" className="hidden text-ng-secundario hover:text-white sm:inline">{t("precios")}</Link>
           <SelectorIdiomaCompacto />
           <SegunSesion
@@ -58,7 +58,7 @@ export function Pie() {
         <LogoNG tamano={22} />
         <div className="flex gap-5">
           <Link href="/features" className="hover:text-white">{t("funciones")}</Link>
-          <Link href="/app" className="hover:text-white">{t("app")}</Link>
+          <Link href="/features/app" className="hover:text-white">{t("app")}</Link>
           <Link href="/privacidad" className="hover:text-white">{t("privacidad")}</Link>
           <Link href="/terminos" className="hover:text-white">{t("terminos")}</Link>
           <Link href={ENLACE_ENTRAR} className="hover:text-white">{t("entrar")}</Link>

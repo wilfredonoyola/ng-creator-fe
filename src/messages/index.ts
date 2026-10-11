@@ -50,7 +50,6 @@ import grabar_es from "./es/grabar.json";
 import hashtagsChips_es from "./es/hashtagsChips.json";
 import idioma_es from "./es/idioma.json";
 import landing_es from "./es/landing.json";
-import landingApp_es from "./es/landingApp.json";
 import landingFunciones_es from "./es/landingFunciones.json";
 import landingImagen_es from "./es/landingImagen.json";
 import landingMaquetaTelefono_es from "./es/landingMaquetaTelefono.json";
@@ -165,7 +164,6 @@ import grabar_en from "./en/grabar.json";
 import hashtagsChips_en from "./en/hashtagsChips.json";
 import idioma_en from "./en/idioma.json";
 import landing_en from "./en/landing.json";
-import landingApp_en from "./en/landingApp.json";
 import landingFunciones_en from "./en/landingFunciones.json";
 import landingImagen_en from "./en/landingImagen.json";
 import landingMaquetaTelefono_en from "./en/landingMaquetaTelefono.json";
@@ -283,7 +281,6 @@ export const mensajes = {
     "hashtagsChips": hashtagsChips_es,
     "idioma": idioma_es,
     "landing": landing_es,
-    "landingApp": landingApp_es,
     "landingFunciones": landingFunciones_es,
     "landingImagen": landingImagen_es,
     "landingMaquetaTelefono": landingMaquetaTelefono_es,
@@ -400,7 +397,6 @@ export const mensajes = {
     "hashtagsChips": hashtagsChips_en,
     "idioma": idioma_en,
     "landing": landing_en,
-    "landingApp": landingApp_en,
     "landingFunciones": landingFunciones_en,
     "landingImagen": landingImagen_en,
     "landingMaquetaTelefono": landingMaquetaTelefono_en,
