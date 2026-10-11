@@ -1,6 +1,7 @@
 import type { DisenoClip, Encuadre, FondoClip, FormatoClip, ImagenClip, ImagenClipServidor, Region, SubtituloClip, Texto } from "@/lib/clip-encuadre";
 import type { EstiloTexto } from "@/lib/estilos-texto";
 import { normalizarCortes, type Corte } from "@/lib/cortes";
+import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
 import { disenosDeTexto, textoNuevo } from "@/components/episodios/PanelTextos";
 
 /** Lo que se edita de un clip: lo que se guarda solo y se deshace. */
@@ -30,6 +31,14 @@ export interface Borrador {
   estiloTexto: EstiloTexto | null;
   /** Lo que se quita del medio del clip, en segundos del episodio (normalizado). */
   cortes: Corte[];
+  /** El volumen de la voz (Tanda 2): 0 la silencia, hasta 2. */
+  volumenClip: number;
+  /** 0.5 a 2: se aplica al final, sobre el clip armado. */
+  velocidad: number;
+  /** La música de fondo, o null. La url y el título los pone el servidor; acá sirven para escucharla. */
+  musica: MusicaClip | null;
+  /** Los efectos de sonido, en el tiempo original del clip. */
+  efectos: EfectoClip[];
 }
 
 /** El clip como llega de Apollo (las operaciones no tienen tipos generados). */
@@ -114,6 +123,26 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
     plantillaActiva: clip.plantillaActiva ?? true,
     estiloTexto: clip.estiloTexto ?? null,
     cortes: normalizarCortes(clip.cortes ?? [], clip.desdeSeg, clip.hastaSeg),
+    volumenClip: clip.volumenClip ?? 1,
+    velocidad: clip.velocidad ?? 1,
+    musica: clip.musica
+      ? {
+          sonidoId: clip.musica.sonidoId,
+          url: clip.musica.url,
+          titulo: clip.musica.titulo,
+          volumen: clip.musica.volumen,
+          bajarAlHablar: clip.musica.bajarAlHablar,
+        }
+      : null,
+    efectos: (clip.efectos ?? []).map((ef: EfectoClip) => ({
+      id: ef.id,
+      sonidoId: ef.sonidoId,
+      url: ef.url,
+      titulo: ef.titulo,
+      enSeg: ef.enSeg,
+      duracionSeg: ef.duracionSeg,
+      volumen: ef.volumen,
+    })),
   };
 }
 
@@ -154,5 +183,10 @@ export function inputDelBorrador(b: Borrador) {
     estiloTexto: b.estiloTexto,
     // La lista entera: reemplaza la guardada.
     cortes: b.cortes,
+    volumenClip: b.volumenClip,
+    velocidad: b.velocidad,
+    // null la saca. La url y el título los copia el servidor del Sonido.
+    musica: b.musica ? { sonidoId: b.musica.sonidoId, volumen: b.musica.volumen, bajarAlHablar: b.musica.bajarAlHablar } : null,
+    efectos: b.efectos.map(({ id, sonidoId, enSeg, volumen }) => ({ id, sonidoId, enSeg, volumen })),
   };
 }

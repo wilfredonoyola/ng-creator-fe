@@ -13,6 +13,7 @@ const SECCIONES = [
   { href: "/superadmin/clientes", clave: "clientes" },
   { href: "/superadmin/usuarios", clave: "usuarios" },
   { href: "/superadmin/origenes", clave: "origenes" },
+  { href: "/superadmin/sonidos", clave: "sonidos" },
 ] as const;
 
 /**

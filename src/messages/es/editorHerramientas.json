@@ -5,6 +5,7 @@
     "texto": "Texto",
     "subtitulos": "Subtítulos",
     "superposicion": "Superposición",
+    "audio": "Audio",
     "formato": "Formato",
     "auto": "Auto-encuadre"
   },
@@ -49,7 +50,10 @@
     "agregarTexto": "Texto",
     "agregarImagen": "Imagen",
     "subtitulosActivos": "Palabra por palabra",
-    "subtitulosApagados": "Apagados"
+    "subtitulosApagados": "Apagados",
+    "audio": "Audio",
+    "musica": "Música · {titulo}",
+    "agregarAudio": "Audio"
   },
   "editar": {
     "resumen": "Dura {dura} · {cortes, plural, =0 {sin cortes} one {# corte} other {# cortes}} · arranca en {inicio} del episodio",
@@ -60,7 +64,11 @@
     "terminaAca": "Termina acá",
     "cortes": "Cortes · {n}",
     "ayuda": "Dividir parte el video en el cabezal. Tocá un tramo (o arrastrá) en la línea de tiempo y quitalo. Lo rayado no sale; la ✕ lo devuelve.",
-    "enElEpisodio": "En el episodio"
+    "enElEpisodio": "En el episodio",
+    "velocidad": "Velocidad",
+    "duraFinal": "Dura {antes} → {despues} a {velocidad}",
+    "duraIgual": "Dura {dura} a velocidad normal",
+    "velocidadAyuda": "Textos, cortes y subtítulos se editan igual; la música no se acelera."
   },
   "texto": {
     "ayuda": "Arrastrá el texto en el video para moverlo. Sus bordes en la línea de tiempo marcan cuándo aparece."

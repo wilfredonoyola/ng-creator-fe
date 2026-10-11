@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { AlignEndHorizontal, AlignStartHorizontal, AudioLines, LoaderCircle, Scissors, Trash2, X } from "lucide-react";
 import { agregarCorte, duracionEfectiva, estaCortado, unirCortes, type Corte } from "@/lib/cortes";
 import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
+import { duracionFinal, textoVelocidad, VELOCIDADES } from "@/lib/sonidos";
 import { AjusteFino, BarraDelTramo } from "./BarraDelTramo";
 import { Transcripcion, type ModoTranscripcion } from "./Transcripcion";
 import { BotonAccion, Seccion } from "./ui";
@@ -19,6 +20,7 @@ import { reloj, relojFino, type Palabra, type SeleccionCortes } from "./tipos";
  * - Quitar tramo saca el pedazo elegido en la línea de tiempo: pasa a ser un
  *   corte, y se guarda como el resto.
  * - Empieza acá / Termina acá mueven el inicio o el fin al cabezal.
+ * - Velocidad: se aplica al final, sobre el clip armado (Tanda 2).
  * - Abajo, el tramo dentro del episodio (para alargarlo) y la transcripción.
  */
 export function PanelEditar({
@@ -37,6 +39,8 @@ export function PanelEditar({
   onCambiarCorrecciones,
   modo,
   onModo,
+  velocidad,
+  onVelocidad,
   puedeEditar,
 }: {
   reproductor: Reproductor;
@@ -54,6 +58,8 @@ export function PanelEditar({
   onCambiarCorrecciones: (c: { desde: number; texto: string }[]) => void;
   modo: ModoTranscripcion;
   onModo: (m: ModoTranscripcion) => void;
+  velocidad: number;
+  onVelocidad: (v: number) => void;
   puedeEditar: boolean;
 }) {
   const tr = useTranslations("editorHerramientas");
@@ -64,6 +70,8 @@ export function PanelEditar({
   const [silencios, setSilencios] = useState<{ n: number; seg: number; antes: Corte[] } | null>(null);
   const [buscando, setBuscando] = useState(false);
   const efectiva = duracionEfectiva(desde, hasta, cortes);
+  // Lo que dura el MP4: con los cortes y la velocidad.
+  const final = duracionFinal(efectiva, velocidad);
   const dentro = t > desde + 0.1 && t < hasta - 0.1;
   const enCorte = Boolean(estaCortado(t, cortes));
 
@@ -110,7 +118,7 @@ export function PanelEditar({
   return (
     <div className="space-y-5">
       <p className="text-xs text-ng-secundario">
-        {tr("editar.resumen", { dura: reloj(efectiva), cortes: cortes.length, inicio: reloj(desde) })}
+        {tr("editar.resumen", { dura: reloj(final), cortes: cortes.length, inicio: reloj(desde) })}
       </p>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-2 xl:grid-cols-4">
@@ -201,14 +209,40 @@ export function PanelEditar({
 
       <p className="text-xs text-ng-tenue">{tr("editar.ayuda")}</p>
 
+      <Seccion titulo={tr("editar.velocidad")}>
+        <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={tr("editar.velocidad")}>
+          {VELOCIDADES.map((v) => (
+            <button
+              key={v}
+              type="button"
+              role="radio"
+              aria-checked={velocidad === v}
+              onClick={() => onVelocidad(v)}
+              disabled={!puedeEditar}
+              className={`rounded-full px-3 py-1 text-xs font-semibold tabular-nums transition disabled:opacity-40 ${
+                velocidad === v ? "bg-ng-azul text-ng-tinta" : "bg-ng-superficie text-white hover:bg-ng-elevada"
+              }`}
+            >
+              {textoVelocidad(v)}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-ng-secundario">
+          {velocidad === 1
+            ? tr("editar.duraIgual", { dura: reloj(efectiva) })
+            : tr("editar.duraFinal", { antes: reloj(efectiva), despues: reloj(final), velocidad: textoVelocidad(velocidad) })}
+        </p>
+        {velocidad !== 1 && <p className="text-xs text-ng-tenue">{tr("editar.velocidadAyuda")}</p>}
+      </Seccion>
+
       <Seccion titulo={tr("editar.enElEpisodio")}>
         <BarraDelTramo desde={desde} hasta={hasta} t={t} duracionEpisodio={duracionEpisodio} onCambiar={onCambiarTramo} deshabilitado={!puedeEditar} />
         <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
           <AjusteFino etiqueta={tClip("empieza")} valor={desde} onCambio={(v) => onCambiarTramo(Math.min(v, hasta - 1), hasta)} disabled={!puedeEditar} />
           <AjusteFino etiqueta={tClip("termina")} valor={hasta} onCambio={(v) => onCambiarTramo(desde, Math.max(v, desde + 1))} disabled={!puedeEditar} />
         </div>
-        {/* Facebook recibe el clip ya cortado. */}
-        <AvisoVersionFacebook duracion={efectiva} />
+        {/* Facebook recibe el clip ya cortado y con la velocidad. */}
+        <AvisoVersionFacebook duracion={final} />
       </Seccion>
 
       <Seccion titulo={tClip("pestanas.transcripcion.titulo")}>

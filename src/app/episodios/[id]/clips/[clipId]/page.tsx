@@ -51,6 +51,8 @@ import { PanelSubtitulos } from "@/components/episodios/editor/PanelSubtitulos";
 import { PanelSuperposicion } from "@/components/episodios/editor/PanelSuperposicion";
 import { PanelFormato } from "@/components/episodios/editor/PanelFormato";
 import { PanelAuto } from "@/components/episodios/editor/PanelAuto";
+import { PanelAudio } from "@/components/episodios/editor/PanelAudio";
+import { useAudioDeVista } from "@/components/episodios/editor/audioVista";
 import type { ModoTranscripcion } from "@/components/episodios/editor/Transcripcion";
 import { HERRAMIENTAS, type EstiloClip, type Herramienta, type LineaSubtitulo, type Palabra, type SeleccionCortes } from "@/components/episodios/editor/tipos";
 
@@ -124,6 +126,7 @@ export default function EditorClipPage({
   const [modo, setModo] = useState<ModoTranscripcion>("inicio");
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
   const [imagenElegida, setImagenElegida] = useState<number | null>(null);
+  const [efectoElegido, setEfectoElegido] = useState<string | null>(null);
   const [seleccion, setSeleccion] = useState<SeleccionCortes>(SIN_SELECCION);
 
   useEffect(() => {
@@ -178,7 +181,20 @@ export default function EditorClipPage({
     variables: { id: episodioId, marcaId: marcaId ?? "", desdeSeg: ventana?.desde, hastaSeg: ventana?.hasta },
     skip: !marcaId || !ventana,
   });
-  const palabras: Palabra[] = transcripcionQ.data?.transcripcionEpisodio ?? [];
+  const palabras: Palabra[] = transcripcionQ.data?.transcripcionEpisodio ?? SIN_PALABRAS;
+
+  // ---- Lo que se escucha en la vista previa: velocidad, volumen, música y efectos ----
+  useAudioDeVista({
+    reproductor,
+    desde: b?.desdeSeg ?? 0,
+    hasta: b?.hastaSeg ?? 0,
+    cortes: b?.cortes ?? SIN_CORTES,
+    volumenClip: b?.volumenClip ?? 1,
+    velocidad: b?.velocidad ?? 1,
+    musica: b?.musica ?? null,
+    efectos: b?.efectos ?? SIN_EFECTOS,
+    palabras,
+  });
 
   // ---- Lo que se procesa en el servidor: render, auto-encuadre, recortes ----
   const estadoRender = clip?.estadoRender as string | null | undefined;
@@ -378,6 +394,8 @@ export default function EditorClipPage({
         onCambiarCorrecciones={(correcciones) => cambiar({ correcciones })}
         modo={modo}
         onModo={setModo}
+        velocidad={b.velocidad}
+        onVelocidad={(velocidad) => cambiar({ velocidad })}
         puedeEditar={opera}
       />
     ),
@@ -430,6 +448,23 @@ export default function EditorClipPage({
         estilo={estilo}
         plantillaActiva={b.plantillaActiva}
         onPlantillaActiva={(plantillaActiva) => cambiar({ plantillaActiva })}
+        puedeEditar={opera}
+      />
+    ),
+    audio: (
+      <PanelAudio
+        reproductor={reproductor}
+        desde={b.desdeSeg}
+        hasta={b.hastaSeg}
+        marcaId={marcaId}
+        volumenClip={b.volumenClip}
+        onVolumenClip={(volumenClip) => cambiar({ volumenClip })}
+        musica={b.musica}
+        onMusica={(musica) => cambiar({ musica })}
+        efectos={b.efectos}
+        onEfectos={(efectos) => cambiar({ efectos })}
+        efectoElegido={efectoElegido}
+        onElegirEfecto={setEfectoElegido}
         puedeEditar={opera}
       />
     ),
@@ -561,6 +596,7 @@ export default function EditorClipPage({
               desde={b.desdeSeg}
               hasta={b.hastaSeg}
               efectiva={efectiva}
+              velocidad={b.velocidad}
               cortes={b.cortes}
               formato={b.formato}
               diseno={b.diseno}
@@ -622,6 +658,11 @@ export default function EditorClipPage({
             onElegirImagen={elegirImagen}
             subtitulosActivos={b.subtitulosActivos}
             plantilla={plantilla}
+            musica={b.musica}
+            efectos={b.efectos}
+            onCambiarEfectos={(efectos) => cambiar({ efectos })}
+            efectoElegido={efectoElegido}
+            onElegirEfecto={setEfectoElegido}
             herramienta={herramienta}
             onAbrir={elegirHerramienta}
             puedeEditar={opera}
@@ -635,3 +676,5 @@ export default function EditorClipPage({
 /** Fijos, para que el valor por defecto no cambie en cada render. */
 const SIN_CORTES: Corte[] = [];
 const SIN_IMAGENES: never[] = [];
+const SIN_EFECTOS: never[] = [];
+const SIN_PALABRAS: Palabra[] = [];

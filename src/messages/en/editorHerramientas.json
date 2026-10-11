@@ -5,6 +5,7 @@
     "texto": "Text",
     "subtitulos": "Captions",
     "superposicion": "Overlay",
+    "audio": "Audio",
     "formato": "Format",
     "auto": "Auto-frame"
   },
@@ -49,7 +50,10 @@
     "agregarTexto": "Text",
     "agregarImagen": "Image",
     "subtitulosActivos": "Word by word",
-    "subtitulosApagados": "Off"
+    "subtitulosApagados": "Off",
+    "audio": "Audio",
+    "musica": "Music · {titulo}",
+    "agregarAudio": "Audio"
   },
   "editar": {
     "resumen": "Lasts {dura} · {cortes, plural, =0 {no cuts} one {# cut} other {# cuts}} · starts at {inicio} of the episode",
@@ -60,7 +64,11 @@
     "terminaAca": "End here",
     "cortes": "Cuts · {n}",
     "ayuda": "Split cuts the video at the playhead. Tap a segment (or drag) on the timeline and remove it. Striped parts don't play; the ✕ brings them back.",
-    "enElEpisodio": "In the episode"
+    "enElEpisodio": "In the episode",
+    "velocidad": "Speed",
+    "duraFinal": "Lasts {antes} → {despues} at {velocidad}",
+    "duraIgual": "Lasts {dura} at normal speed",
+    "velocidadAyuda": "Text, cuts and captions are edited the same; the music isn't sped up."
   },
   "texto": {
     "ayuda": "Drag the text on the video to move it. Its edges on the timeline set when it shows."

@@ -1,0 +1,31 @@
+{
+  "buscar": "Search",
+  "cargando": "Loading sounds…",
+  "sinResultados": "No sounds match that search.",
+  "sinCategoria": "No category",
+  "deTuMarca": "from your brand",
+  "escuchar": "Listen to “{titulo}”",
+  "pausar": "Pause “{titulo}”",
+  "editar": "Edit “{titulo}”",
+  "borrar": "Delete “{titulo}”",
+  "confirmarBorrar": "Delete “{titulo}”? This can't be undone.",
+  "errorGuardar": "Couldn't save.",
+  "errorBorrar": "Couldn't delete.",
+  "errorSubir": "The sound couldn't be uploaded.",
+  "titulo": "Title",
+  "categoriaOpcional": "Category (optional), e.g. Upbeat",
+  "fuente": "Source and license",
+  "fuenteObligatoria": "Source and license (required), e.g. Pixabay Music",
+  "cancelar": "Cancel",
+  "guardar": "Save",
+  "tipo": "Type",
+  "tipos": {
+    "MUSICA": "Music",
+    "EFECTO": "Effect"
+  },
+  "limiteMusica": "MP3, WAV or M4A, up to {min} minutes and 60 MB.",
+  "limiteEfecto": "MP3, WAV or M4A, up to {seg} seconds.",
+  "subir": "Upload",
+  "subiendo": "Uploading {n}%",
+  "procesando": "Preparing the audio…"
+}

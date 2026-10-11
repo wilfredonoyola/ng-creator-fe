@@ -37,5 +37,10 @@
   "logoMuyPesado": "El logo debe pesar menos de 10 MB",
   "errorLogo": "No se pudo subir el logo ({status})",
   "imagenClipFormato": "La imagen tiene que ser JPG, PNG o WebP",
-  "imagenClipMuyPesada": "La imagen debe pesar menos de 15 MB"
+  "imagenClipMuyPesada": "La imagen debe pesar menos de 15 MB",
+  "sesionSonido": "Iniciá sesión para subir sonidos",
+  "sonidoNoAudio": "El archivo tiene que ser de audio (MP3, WAV o M4A)",
+  "sonidoMuyPesado": "El sonido debe pesar menos de 60 MB",
+  "errorSonido": "No se pudo subir el sonido ({status})",
+  "seCortoSonido": "Se cortó la conexión mientras se subía el sonido"
 }

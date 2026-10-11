@@ -22,7 +22,7 @@ export interface EstiloClip {
 }
 
 /** Las herramientas del editor, en el orden de la barra. */
-export const HERRAMIENTAS = ["editar", "texto", "subtitulos", "superposicion", "formato", "auto"] as const;
+export const HERRAMIENTAS = ["editar", "texto", "subtitulos", "superposicion", "audio", "formato", "auto"] as const;
 export type Herramienta = (typeof HERRAMIENTAS)[number];
 
 /** Una palabra de la transcripción, en segundos del episodio. */

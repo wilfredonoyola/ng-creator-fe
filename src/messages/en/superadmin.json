@@ -2,7 +2,8 @@
   "secciones": {
     "clientes": "Clients",
     "usuarios": "Users",
-    "origenes": "How people found us"
+    "origenes": "How people found us",
+    "sonidos": "Sounds"
   },
   "irAlPanel": "Go to dashboard",
   "salir": "Sign out",
@@ -78,5 +79,13 @@
     "lista": {
       "titulo": "Answers, newest first"
     }
+  },
+  "sonidos": {
+    "titulo": "Sounds",
+    "subtitulo": "Clipfine's library: the music and effects every brand sees in the editor. Each brand can upload its own separately.",
+    "ayuda": "Only upload royalty-free music cleared for commercial use (for example Pixabay Music or Freesound CC0) and note the source and license of each one.",
+    "vacio": "There are no sounds of this type yet.",
+    "subir": "Upload to the library",
+    "subirBoton": "Upload sound"
   }
 }

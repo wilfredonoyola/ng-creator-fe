@@ -3,10 +3,12 @@ import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
 import avisoFuente_es from "./es/avisoFuente.json";
+import bibliotecaSonidos_es from "./es/bibliotecaSonidos.json";
 import brandKit_es from "./es/brandKit.json";
 import calendario_es from "./es/calendario.json";
 import calidadClip_es from "./es/calidadClip.json";
 import creators_es from "./es/creators.json";
+import editorAudio_es from "./es/editorAudio.json";
 import editorAutoEncuadre_es from "./es/editorAutoEncuadre.json";
 import editorBarra_es from "./es/editorBarra.json";
 import editorClip_es from "./es/editorClip.json";
@@ -102,10 +104,12 @@ import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import avisoFuente_en from "./en/avisoFuente.json";
+import bibliotecaSonidos_en from "./en/bibliotecaSonidos.json";
 import brandKit_en from "./en/brandKit.json";
 import calendario_en from "./en/calendario.json";
 import calidadClip_en from "./en/calidadClip.json";
 import creators_en from "./en/creators.json";
+import editorAudio_en from "./en/editorAudio.json";
 import editorAutoEncuadre_en from "./en/editorAutoEncuadre.json";
 import editorBarra_en from "./en/editorBarra.json";
 import editorClip_en from "./en/editorClip.json";
@@ -204,10 +208,12 @@ export const mensajes = {
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
     "avisoFuente": avisoFuente_es,
+    "bibliotecaSonidos": bibliotecaSonidos_es,
     "brandKit": brandKit_es,
     "calendario": calendario_es,
     "calidadClip": calidadClip_es,
     "creators": creators_es,
+    "editorAudio": editorAudio_es,
     "editorAutoEncuadre": editorAutoEncuadre_es,
     "editorBarra": editorBarra_es,
     "editorClip": editorClip_es,
@@ -305,10 +311,12 @@ export const mensajes = {
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
     "avisoFuente": avisoFuente_en,
+    "bibliotecaSonidos": bibliotecaSonidos_en,
     "brandKit": brandKit_en,
     "calendario": calendario_en,
     "calidadClip": calidadClip_en,
     "creators": creators_en,
+    "editorAudio": editorAudio_en,
     "editorAutoEncuadre": editorAutoEncuadre_en,
     "editorBarra": editorBarra_en,
     "editorClip": editorClip_en,
