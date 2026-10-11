@@ -206,15 +206,18 @@ export const SECCIONES = [
       { clave: "listos", icono: ListChecks },
       { clave: "autoria", icono: UserCheck },
       { clave: "avisos", icono: Bell },
+      { clave: "idiomas", icono: Languages },
     ],
   },
   {
     id: "app",
     items: [
       { clave: "app", icono: Smartphone },
+      { clave: "sincronizado", icono: RefreshCw },
+      { clave: "editarCelular", icono: Scissors },
+      { clave: "aprobarCelular", icono: ClipboardCheck },
       { clave: "push", icono: BellRing },
       { clave: "fotos", icono: Images },
-      { clave: "idiomas", icono: Languages },
     ],
   },
 ] as const satisfies readonly { id: string; items: readonly { clave: string; icono: LucideIcon }[] }[];

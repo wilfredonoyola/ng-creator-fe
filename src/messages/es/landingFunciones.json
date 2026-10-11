@@ -29,7 +29,7 @@
     "publicar": { "titulo": "Publicar y programar", "texto": "Programá cada clip en las cuatro redes y seguí su estado desde un calendario." },
     "metricas": { "titulo": "Métricas", "texto": "Qué clip funcionó, en qué red y por qué, para decidir el próximo y mostrárselo al cliente." },
     "equipo": { "titulo": "Equipo y marcas", "texto": "Muchos clientes y mucha gente trabajando, sin pisarse." },
-    "app": { "titulo": "App e idiomas", "texto": "Lo mismo de la web, en el celular, en español o en inglés." }
+    "app": { "titulo": "La app de Clipfine", "texto": "Clipfine también vive en tu celular, en iPhone y Android: la misma cuenta, los mismos clientes y todo sincronizado con la web. Empezás en la compu y terminás donde estés." }
   },
   "items": {
     "momentos": { "titulo": "Los mejores momentos, solos", "texto": "Clipfine transcribe el episodio y la IA elige los tramos que se entienden solos. Arrancás con una tanda de clips, no con 90 minutos de video." },
@@ -101,10 +101,13 @@
     "notaVoz": { "titulo": "Comentarios de voz", "texto": "¿No querés escribir? Grabá una nota de voz. Clipfine la transcribe, así el editor la escucha o la lee." },
     "autoria": { "titulo": "Quién hizo cada cosa", "texto": "Cada clip muestra quién lo editó, quién lo terminó y quién lo programó." },
     "avisos": { "titulo": "Avisos", "texto": "Te enterás cuando hay clips listos, cuando alguien toma o programa uno y cuando se publica." },
-    "app": { "titulo": "App para iPhone y Android", "texto": "La misma cuenta y las mismas marcas: editá, programá y mirá el calendario desde el celular." },
+    "idiomas": { "titulo": "Español e inglés", "texto": "Cada persona del equipo usa Clipfine en su idioma, en la web y en la app. Por ahora, los episodios se transcriben en español." },
+    "app": { "titulo": "App para iPhone y Android", "texto": "Entrás con tu cuenta de siempre y tus clientes, episodios y clips ya están ahí. No hay nada que configurar de nuevo." },
+    "sincronizado": { "titulo": "Todo sincronizado con la web", "texto": "Lo que editás en la compu aparece en el teléfono y al revés, sin exportar ni pasar archivos." },
+    "editarCelular": { "titulo": "El editor en el bolsillo", "texto": "Recortá, subtitulá, sumá música y efectos y programá en las cuatro redes desde el celular." },
+    "aprobarCelular": { "titulo": "Aprobá desde donde estés", "texto": "Mirá el clip, aprobalo o pedí cambios con una nota de voz, sin abrir la compu." },
     "push": { "titulo": "Notificaciones en el celular", "texto": "Los avisos del equipo te llegan al teléfono, y elegís cuáles querés recibir." },
-    "fotos": { "titulo": "Guardá el clip en Fotos", "texto": "Exportá el clip terminado a la galería del teléfono." },
-    "idiomas": { "titulo": "Español e inglés", "texto": "La web y la app están en español y en inglés. Por ahora, los episodios se transcriben en español." }
+    "fotos": { "titulo": "Guardá el clip en Fotos", "texto": "Exportá el clip terminado a la galería del teléfono." }
   },
   "cierre": {
     "titulo": "Probalo con un cliente",

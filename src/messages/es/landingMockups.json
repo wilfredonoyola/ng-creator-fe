@@ -123,13 +123,14 @@
     "autoria": "Editado por Ana · terminado por Leo"
   },
   "app": {
-    "alt": "La app de Clipfine en un teléfono, con la lista de clips de una marca y su estado, un aviso del equipo y el selector de idioma en español e inglés.",
+    "alt": "La app de Clipfine en un teléfono, con la lista de clips de una marca y su estado y un aviso del equipo; al lado, la misma cuenta sincronizada con la web, disponible en iPhone y Android.",
     "clips": "Clips",
     "estados": { "listo": "Listo", "programado": "Programado", "editando": "Editando" },
     "titulos": { "c1": "El error que casi nos cuesta…", "c2": "Nadie habla de esta parte", "c3": "La frase de cada reunión" },
     "nav": { "inicio": "Inicio", "clips": "Clips", "calendario": "Calendario" },
     "aviso": "Leo programó un clip para el jueves",
-    "idioma": "Idioma",
-    "fotos": "Guardar en Fotos"
+    "fotos": "Guardar en Fotos",
+    "sincro": "Sincronizado con la web",
+    "plataformas": "Disponible en"
   }
 }
