@@ -36,7 +36,8 @@
     "verFinal": "Ver video final",
     "programar": "Programar",
     "reproducirTramo": "Reproducir este tramo",
-    "escuchar": "▶ Escuchar"
+    "escuchar": "▶ Escuchar",
+    "revisar": "Revisar"
   },
   "modal": {
     "etiqueta": "Video final: {titulo}",

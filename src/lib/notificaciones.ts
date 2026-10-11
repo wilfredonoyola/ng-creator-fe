@@ -2,7 +2,18 @@
 
 import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { CalendarClock, Hand, Send, Sparkles, type LucideIcon } from "lucide-react";
+import {
+  AlarmClock,
+  CalendarClock,
+  CalendarX,
+  CheckCircle2,
+  Eye,
+  Hand,
+  MessageSquareWarning,
+  Send,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
 import { NOTIFICACIONES_SIN_LEER } from "@/graphql/operations";
 import { useMarcaActiva } from "@/lib/marca-activa";
 
@@ -11,7 +22,17 @@ import { useMarcaActiva } from "@/lib/marca-activa";
  * que tienen acceso a la marca menos a quien hizo la acción: la campanita los
  * junta acá, y cada uno elige en Perfil por dónde quiere cada tipo.
  */
-export type TipoNotificacion = "CLIPS_LISTOS" | "CLIP_TOMADO" | "CLIP_PROGRAMADO" | "CLIP_PUBLICADO";
+export type TipoNotificacion =
+  | "CLIPS_LISTOS"
+  | "CLIP_TOMADO"
+  | "CLIP_PROGRAMADO"
+  | "CLIP_PUBLICADO"
+  // Revisión antes de publicar (ng-creator-be#175): solo a revisores o a quien la pidió.
+  | "REVISION_PEDIDA"
+  | "CLIP_APROBADO"
+  | "CAMBIOS_PEDIDOS"
+  | "REVISION_POR_VENCER"
+  | "REVISION_VENCIDA";
 
 export interface Notificacion {
   _id: string;
@@ -38,7 +59,26 @@ export interface PreferenciaNotificacion {
 }
 
 /** El orden en que se muestran, que es el del trabajo: del episodio a la red. */
-export const TIPOS_NOTIFICACION: TipoNotificacion[] = ["CLIPS_LISTOS", "CLIP_TOMADO", "CLIP_PROGRAMADO", "CLIP_PUBLICADO"];
+export const TIPOS_NOTIFICACION: TipoNotificacion[] = [
+  "CLIPS_LISTOS",
+  "CLIP_TOMADO",
+  "REVISION_PEDIDA",
+  "CAMBIOS_PEDIDOS",
+  "CLIP_APROBADO",
+  "CLIP_PROGRAMADO",
+  "REVISION_POR_VENCER",
+  "REVISION_VENCIDA",
+  "CLIP_PUBLICADO",
+];
+
+/** Las de la revisión llevan al panel de revisión del clip, no al editor. */
+const DE_REVISION: TipoNotificacion[] = [
+  "REVISION_PEDIDA",
+  "CLIP_APROBADO",
+  "CAMBIOS_PEDIDOS",
+  "REVISION_POR_VENCER",
+  "REVISION_VENCIDA",
+];
 
 /**
  * Con qué ícono y color sale cada tipo en la lista. Cómo se llama cada uno (en
@@ -49,11 +89,17 @@ export const ESTILO_NOTIFICACION: Record<TipoNotificacion, { icono: LucideIcon; 
   CLIP_TOMADO: { icono: Hand, clase: "bg-amber-400/15 text-amber-300" },
   CLIP_PROGRAMADO: { icono: CalendarClock, clase: "bg-indigo-400/15 text-indigo-300" },
   CLIP_PUBLICADO: { icono: Send, clase: "bg-ng-teal/15 text-ng-teal" },
+  REVISION_PEDIDA: { icono: Eye, clase: "bg-amber-400/15 text-amber-300" },
+  CLIP_APROBADO: { icono: CheckCircle2, clase: "bg-ng-teal/15 text-ng-teal" },
+  CAMBIOS_PEDIDOS: { icono: MessageSquareWarning, clase: "bg-orange-400/15 text-orange-300" },
+  REVISION_POR_VENCER: { icono: AlarmClock, clase: "bg-amber-400/15 text-amber-300" },
+  REVISION_VENCIDA: { icono: CalendarX, clase: "bg-red-500/15 text-red-300" },
 };
 
 /** Adónde lleva un aviso: al editor del clip si hay uno, si no al episodio. */
 export function rutaDeNotificacion(n: Notificacion): string {
   const { episodioId, clipId } = n.enlace;
+  if (clipId && DE_REVISION.includes(n.tipo)) return `/episodios/${episodioId}/clips/${clipId}/publicar#revision`;
   return clipId ? `/episodios/${episodioId}/clips/${clipId}` : `/episodios/${episodioId}`;
 }
 

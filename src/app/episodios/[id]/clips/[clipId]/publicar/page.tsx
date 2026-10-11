@@ -44,6 +44,9 @@ import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 import { CuadroPortada, ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { MetricasClip } from "@/components/metricas/MetricasClip";
+import { PanelRevision } from "@/components/revision/PanelRevision";
+import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
+import { etiquetaRevision, useRevisionMarca, type EstadoRevision } from "@/lib/revision";
 
 /** Lo que todavía va a salir: esa cuenta no se vuelve a marcar para este clip. */
 const PENDIENTES: string[] = ["PROGRAMADA", "SUBIENDO", "PROCESANDO", "AGENDADA_EN_RED"];
@@ -125,6 +128,16 @@ export default function ProgramarClipPage({
       {volver}
       <h1 className="mb-5 mt-2 text-2xl font-bold">{t("titulo")}</h1>
       <div className="mx-auto max-w-2xl">
+        {/* La revisión antes de publicar (ng-creator-be#175): arriba, que es lo que se busca al llegar por un aviso. */}
+        <div className="mb-6">
+          <PanelRevision
+            marcaId={marcaId}
+            clipId={clip._id}
+            urlVideo={clip.urlVideo}
+            opera={opera}
+            publicaciones={pubsQ.data?.publicacionesDeClip ?? []}
+          />
+        </div>
         <Formulario
           clip={clip}
           marcaId={marcaId}
@@ -180,6 +193,7 @@ function Formulario({
     urlVideo?: string | null;
     versionFacebook?: VersionCortaClip | null;
     calidad?: CalidadClip | null;
+    estadoRevision?: EstadoRevision | null;
   };
   marcaId: string;
   opera: boolean;
@@ -200,7 +214,9 @@ function Formulario({
   const t = useTranslations("publicarClip");
   const tv = useTranslations("versionFacebook");
   const tc = useTranslations("calidadClip");
+  const tr = useTranslations("revisionClip.programar");
   const locale = useLocale();
+  const revision = useRevisionMarca(marcaId || undefined);
   // De entrada sale marcado todo destino usable que la marca no apagó en
   // Redes conectadas. Se guarda solo lo que la persona cambia (no la lista
   // entera), así las cuentas y los ajustes que llegan después de montar
@@ -364,6 +380,11 @@ function Formulario({
               {conFacebook && facebookEspera ? (
                 <p className="text-xs text-amber-300">
                   {aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}
+                </p>
+              ) : null}
+              {revision.activa ? (
+                <p className={`text-xs ${revision.soyRevisor ? "text-white/45" : "text-amber-300"}`}>
+                  {revision.soyRevisor ? tr("avisoRevisor") : tr("aviso")}
                 </p>
               ) : null}
             </div>
@@ -573,7 +594,14 @@ function Formulario({
       {publicaciones.length > 0 && (
         <Seccion titulo={t("secciones.publicaciones")}>
           {publicaciones.map((p) => (
-            <FilaPublicacionClip key={p._id} p={p} marcaId={marcaId} opera={opera} onCambio={refrescar} />
+            <FilaPublicacionClip
+              key={p._id}
+              p={p}
+              marcaId={marcaId}
+              opera={opera}
+              estadoRevision={clip.estadoRevision}
+              onCambio={refrescar}
+            />
           ))}
         </Seccion>
       )}
@@ -585,11 +613,13 @@ function FilaPublicacionClip({
   p,
   marcaId,
   opera,
+  estadoRevision,
   onCambio,
 }: {
   p: Publicacion;
   marcaId: string;
   opera: boolean;
+  estadoRevision?: EstadoRevision | null;
   onCambio: () => void;
 }) {
   const t = useTranslations("publicarClip");
@@ -626,6 +656,7 @@ function FilaPublicacionClip({
         {p.esperaVideo && p.estado === "PROGRAMADA" ? (
           <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">{t("esperaVideo")}</span>
         ) : null}
+        <EtiquetaRevision etiqueta={etiquetaRevision([p], estadoRevision, Date.now())} />
         <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.clase}`}>{e.texto}</span>
       </div>
       {fecha ? (

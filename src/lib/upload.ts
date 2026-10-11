@@ -32,7 +32,8 @@ export type ClaveErrorSubida =
   | "sesionImagenes" | "noEsImagen" | "imagenMuyPesada" | "errorImagen" | "sesionPortada"
   | "errorPortada" | "sesionVideo" | "errorVideo" | "seCorto" | "seCancelo" | "sesionLogo"
   | "logoNoImagen" | "logoMuyPesado" | "errorLogo" | "imagenClipFormato" | "imagenClipMuyPesada"
-  | "sesionSonido" | "sonidoNoAudio" | "sonidoMuyPesado" | "errorSonido" | "seCortoSonido";
+  | "sesionSonido" | "sonidoNoAudio" | "sonidoMuyPesado" | "errorSonido" | "seCortoSonido"
+  | "sesionVozRevision" | "vozRevisionMuyPesada" | "errorVozRevision";
 
 export class ErrorDeSubida extends Error {
   constructor(
@@ -622,4 +623,44 @@ export function uploadSonido<T = unknown>(
     xhr.onabort = () => reject(new ErrorDeSubida("seCancelo", "Se canceló la subida"));
     xhr.send(formData);
   });
+}
+
+/** Lo que devuelve `/uploads/revision-voz`. */
+export interface VozRevisionSubida {
+  url: string;
+  duracionSeg: number;
+  /** Null si Whisper no pudo: la nota se guarda igual. */
+  transcripcion: string | null;
+}
+
+/**
+ * Sube una nota de voz para la revisión de un clip (ng-creator-be#175). El
+ * backend la pasa a AAC (suena en la web y en el teléfono) y la transcribe
+ * en el idioma de quien graba.
+ */
+export async function uploadVozRevision(audio: Blob, marcaId: string): Promise<VozRevisionSubida> {
+  const token = getAuthToken();
+  if (!token) throw new ErrorDeSubida("sesionVozRevision", "Sesión requerida para subir la nota de voz");
+  if (audio.size > 25 * 1024 * 1024) {
+    throw new ErrorDeSubida("vozRevisionMuyPesada", "La nota de voz debe pesar menos de 25 MB");
+  }
+  const ext = audio.type.includes("mp4") ? "m4a" : audio.type.includes("ogg") ? "ogg" : "webm";
+  const formData = new FormData();
+  formData.append("file", audio, `nota.${ext}`);
+  formData.append("marcaId", marcaId);
+  const response = await fetch(`${API_BASE_URL}/uploads/revision-voz`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    body: formData,
+  });
+  if (!response.ok) {
+    let backend: string | undefined;
+    try {
+      backend = (await response.json()).message;
+    } catch {
+      // el backend no siempre responde JSON
+    }
+    throw fallo(backend, "errorVozRevision", `No se pudo subir la nota de voz (${response.status})`, response.status);
+  }
+  return (await response.json()) as VozRevisionSubida;
 }
