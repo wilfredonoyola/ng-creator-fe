@@ -28,6 +28,7 @@
   "siguiente": "Siguiente",
   "volver": "Toda la ayuda",
   "contacto": {
+    "correo": "O escribinos directo a <correo></correo>",
     "titulo": "¿No encontraste lo que buscabas?",
     "texto": "Escribinos y te respondemos nosotros.",
     "boton": "Escribir a soporte"

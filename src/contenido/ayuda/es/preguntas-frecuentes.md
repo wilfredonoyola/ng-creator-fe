@@ -56,4 +56,4 @@ Sí, para iPhone y Android, con la misma cuenta de la web. Mirá [La app para iP
 
 ## ¿Cómo hablo con soporte?
 
-Escribinos a soporte@ngstudios.co.
+Escribinos a support@clipfine.io.

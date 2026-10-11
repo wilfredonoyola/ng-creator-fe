@@ -30,7 +30,7 @@ Every plan includes AI-picked moments (vertical and captioned), the editor with 
 
 1. Add up how many hours of episodes your clients upload each month.
 2. Pick the plan that covers them. If you go over 200 hours, click **Talk to sales** on the pricing page to look at Custom.
-3. If you have billing questions or want to switch plans, email soporte@ngstudios.co.
+3. If you have billing questions or want to switch plans, email support@clipfine.io.
 
 Under the Terms, you can cancel at any time with no penalty, and your plan stays active until the end of the period you've already paid for.
 

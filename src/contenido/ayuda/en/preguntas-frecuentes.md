@@ -56,4 +56,4 @@ Yes, for iPhone and Android, with the same account as the web. See [The iPhone a
 
 ## How do I contact support?
 
-Email us at soporte@ngstudios.co.
+Email us at support@clipfine.io.

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { cerrarSesion } from "@/lib/auth";
 import { ENLACE_AYUDA } from "@/lib/ayuda";
+import { CONTACTO } from "@/lib/legal";
 import { URL_SITIO } from "@/lib/sitio";
 import { LogoNG } from "./LogoNG";
 import { useSesion } from "@/lib/sesion";
@@ -321,6 +322,13 @@ export function Sidebar({
         >
           <CircleHelp size={14} aria-hidden />
           {t("ayuda")}
+        </a>
+        <a
+          href={`mailto:${CONTACTO}`}
+          title={t("soporte")}
+          className="mb-3 block truncate text-center text-[11px] text-white/40 transition hover:text-white"
+        >
+          {t("soporte")}: <span className="text-ng-celeste">{CONTACTO}</span>
         </a>
         <button
           onClick={handleLogout}

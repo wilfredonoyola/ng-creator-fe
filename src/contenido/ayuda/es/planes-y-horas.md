@@ -30,7 +30,7 @@ Todos los planes incluyen momentos elegidos con IA (en vertical y con subtítulo
 
 1. Sumá cuántas horas de episodios suben tus clientes por mes.
 2. Elegí el plan que las cubra. Si pasás de 200 horas, tocá **Hablar con ventas** en la página de precios para ver Custom.
-3. Si tenés dudas sobre el cobro o querés cambiar de plan, escribinos a soporte@ngstudios.co.
+3. Si tenés dudas sobre el cobro o querés cambiar de plan, escribinos a support@clipfine.io.
 
 Según los Términos, podés cancelar cuando quieras, sin penalidad, y el plan sigue activo hasta el final del período ya pagado.
 
