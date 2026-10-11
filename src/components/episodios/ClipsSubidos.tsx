@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useTranslations } from "next-intl";
-import { CalendarClock, Film, Pencil, Trash2, Upload } from "lucide-react";
+import { CalendarClock, ChartColumn, CircleCheck, Film, Pencil, Send, Trash2, UploadCloud } from "lucide-react";
 import {
   BORRAR_EPISODIO,
   CLIPS_SUBIDOS,
@@ -31,6 +31,7 @@ interface ClipSubido {
   clip: {
     _id: string;
     titulo: string;
+    formato?: "VERTICAL" | "CUADRADO" | "HORIZONTAL" | null;
     estadoRender?: "EN_COLA" | "RENDERIZANDO" | "LISTO" | "FALLIDO" | null;
     progresoRender?: number | null;
     urlPoster?: string | null;
@@ -45,6 +46,19 @@ interface Subiendo {
   nombre: string;
   episodioId: string | null;
   pct: number;
+}
+
+/** En qué anda cada clip, para el filtro y la etiqueta de la tarjeta. */
+type Etapa = "preparando" | "listo" | "programado" | "publicado" | "fallo";
+type Filtro = "todos" | Exclude<Etapa, "fallo">;
+const FILTROS: Filtro[] = ["todos", "preparando", "listo", "programado", "publicado"];
+
+function etapaDe(c: ClipSubido): Etapa {
+  if (c.episodio.estado === "FALLIDO" || c.clip?.estadoRender === "FALLIDO") return "fallo";
+  if (c.clip?.estadoRender !== "LISTO") return "preparando";
+  if (c.clip.publicacion?.publicadas) return "publicado";
+  if (c.clip.publicacion?.programadas) return "programado";
+  return "listo";
 }
 
 /**
@@ -68,11 +82,13 @@ function duracionDe(archivo: File): Promise<number | null> {
   });
 }
 
+const esVideo = (f: File) => f.type.startsWith("video/") || /\.(mp4|mov|m4v|webm)$/i.test(f.name);
+
 /**
  * Clips ya editados afuera (CapCut, un recorte de YouTube) que entran al flujo
  * de siempre: revisión, programar en las cuatro redes, calendario y métricas
- * (ng-creator-be#181). Se suben de a varios; cada uno sale tal cual o se puede
- * abrir en el editor. No cuentan para las horas del plan.
+ * (ng-creator-be#181). Se sueltan o se eligen de a varios; cada uno sale tal
+ * cual o se puede abrir en el editor. No cuentan para las horas del plan.
  */
 export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeOperar: boolean }) {
   const t = useTranslations("clipsSubidos");
@@ -81,8 +97,10 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
   const [cola, setCola] = useState<File[]>([]);
   const [subiendo, setSubiendo] = useState<Subiendo | null>(null);
   const [avisos, setAvisos] = useState<string[]>([]);
+  const [arrastrando, setArrastrando] = useState(false);
+  const [filtro, setFiltro] = useState<Filtro>("todos");
 
-  const { data, refetch, startPolling, stopPolling } = useQuery(CLIPS_SUBIDOS, {
+  const { data, loading, refetch, startPolling, stopPolling } = useQuery(CLIPS_SUBIDOS, {
     variables: { marcaId },
     notifyOnNetworkStatusChange: false,
   });
@@ -95,7 +113,7 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
 
   // Consultar es lo que hace que el backend le pregunte a Bunny: seguido solo
   // mientras algo no esté listo.
-  const hayPendientes = lista.some((c) => c.episodio.estado !== "FALLIDO" && (!c.clip || c.clip.estadoRender !== "LISTO"));
+  const hayPendientes = lista.some((c) => etapaDe(c) === "preparando");
   useEffect(() => {
     if (hayPendientes || subiendo) startPolling(8000);
     else stopPolling();
@@ -112,6 +130,13 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
     void subir(archivo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cola, subiendo]);
+
+  function encolar(archivos: File[]) {
+    const videos = archivos.filter(esVideo);
+    const otros = archivos.length - videos.length;
+    setAvisos(otros ? [t("noEsVideo", { n: otros })] : []);
+    if (videos.length) setCola((c) => [...c, ...videos]);
+  }
 
   async function subir(archivo: File) {
     const dura = await duracionDe(archivo);
@@ -177,15 +202,58 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
     }
   }
 
+  const cuenta = (f: Filtro) => (f === "todos" ? lista.length : lista.filter((c) => etapaDe(c) === f).length);
+  const visibles = filtro === "todos" ? lista : lista.filter((c) => etapaDe(c) === filtro);
+
   return (
-    <section className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="text-lg font-semibold">{t("titulo")}</h2>
-          <p className="mt-1 max-w-xl text-sm text-white/50">{t("descripcion")}</p>
+    <div className="flex flex-col gap-8">
+      {/* ---- Portada: qué es, cómo funciona y dónde se suelta ---- */}
+      <section className="grid gap-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-7 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-center">
+        <div className="flex min-w-0 flex-col gap-4">
+          <span className="w-fit rounded-full bg-ng-azul/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-ng-azul">
+            {t("etiqueta")}
+          </span>
+          <h1 className="text-3xl font-extrabold leading-tight sm:text-4xl">{t("titulo")}</h1>
+          <p className="max-w-xl text-white/60">{t("descripcion")}</p>
+          <ol className="mt-1 grid gap-3 sm:grid-cols-3">
+            {(
+              [
+                { icono: UploadCloud, clave: "subi" },
+                { icono: Send, clave: "programa" },
+                { icono: ChartColumn, clave: "medi" },
+              ] as const
+            ).map(({ icono: Icono, clave }, i) => (
+              <li key={clave} className="flex items-start gap-2.5 rounded-xl bg-black/25 p-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ng-azul text-ng-tinta">
+                  <Icono size={15} aria-hidden />
+                </span>
+                <span className="min-w-0 text-sm">
+                  <span className="block font-semibold">
+                    {i + 1}. {t(`pasos.${clave}.titulo`)}
+                  </span>
+                  <span className="block text-xs text-white/50">{t(`pasos.${clave}.texto`)}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
         </div>
-        {puedeOperar && (
-          <>
+
+        {puedeOperar ? (
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setArrastrando(true);
+            }}
+            onDragLeave={() => setArrastrando(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setArrastrando(false);
+              encolar(Array.from(e.dataTransfer.files));
+            }}
+            className={`relative flex min-h-[260px] flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-6 text-center transition ${
+              arrastrando ? "border-ng-azul bg-ng-azul/10" : "border-white/20 bg-black/20"
+            }`}
+          >
             <input
               ref={input}
               type="file"
@@ -195,107 +263,199 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
               onChange={(e) => {
                 const archivos = Array.from(e.target.files ?? []);
                 e.target.value = "";
-                if (archivos.length) {
-                  setAvisos([]);
-                  setCola((c) => [...c, ...archivos]);
-                }
+                encolar(archivos);
               }}
             />
-            <button
-              type="button"
-              onClick={() => input.current?.click()}
-              className="flex items-center gap-2 rounded-lg bg-ng-azul px-4 py-2 text-sm font-semibold text-ng-tinta hover:brightness-110"
-            >
-              <Upload size={16} aria-hidden />
-              {t("subir")}
-            </button>
-          </>
+            {subiendo ? (
+              <div className="w-full max-w-sm">
+                <UploadCloud size={36} className="mx-auto text-ng-azul" aria-hidden />
+                <p className="mt-3 truncate font-semibold">{t("subiendo", { nombre: subiendo.nombre })}</p>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-ng-azul transition-[width]" style={{ width: `${subiendo.pct}%` }} />
+                </div>
+                <p className="mt-2 text-sm tabular-nums text-white/60">{Math.round(subiendo.pct)}%</p>
+                {cola.length > 0 && <p className="mt-1 text-xs text-white/40">{t("enCola", { n: cola.length })}</p>}
+              </div>
+            ) : (
+              <>
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-ng-azul text-ng-tinta">
+                  <UploadCloud size={28} aria-hidden />
+                </span>
+                <p className="text-lg font-bold">{t("soltar")}</p>
+                <button
+                  type="button"
+                  onClick={() => input.current?.click()}
+                  className="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-ng-tinta hover:bg-white/90"
+                >
+                  {t("elegir")}
+                </button>
+                <ul className="mt-1 flex flex-wrap justify-center gap-1.5 text-xs text-white/60">
+                  {(["formatos", "duracion", "horas"] as const).map((k) => (
+                    <li key={k} className="rounded-full border border-white/10 px-2.5 py-1">
+                      {t(`chips.${k}`, { maximo: MAXIMO_SEG / 60 })}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-white/50">{t("soloVer")}</p>
         )}
-      </div>
+      </section>
 
-      {subiendo && (
-        <div className="mt-4 rounded-lg border border-white/10 bg-black/20 p-3 text-sm">
-          <div className="flex justify-between gap-3">
-            <span className="truncate">{t("subiendo", { nombre: subiendo.nombre })}</span>
-            <span className="shrink-0 tabular-nums text-white/60">{Math.round(subiendo.pct)}%</span>
-          </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-ng-azul transition-[width]" style={{ width: `${subiendo.pct}%` }} />
-          </div>
-          {cola.length > 0 && <p className="mt-2 text-xs text-white/40">{t("enCola", { n: cola.length })}</p>}
+      {avisos.length > 0 && (
+        <div className="flex flex-col gap-1 rounded-xl border border-red-500/30 bg-red-500/10 p-3">
+          {avisos.map((a) => (
+            <p key={a} className="text-sm text-red-300">
+              {a}
+            </p>
+          ))}
         </div>
       )}
-      {avisos.map((a) => (
-        <p key={a} className="mt-3 text-sm text-red-400">
-          {a}
-        </p>
-      ))}
 
-      {lista.length > 0 ? (
-        <ul className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {lista.map((c) => (
-            <FilaClipSubido key={c.episodio._id} c={c} puedeOperar={puedeOperar} onBorrar={() => void quitar(c)} />
-          ))}
-        </ul>
-      ) : (
-        !subiendo && <p className="mt-4 text-sm text-white/40">{t("vacio")}</p>
-      )}
-    </section>
+      {/* ---- Los clips subidos ---- */}
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">{t("tusClips")}</h2>
+          {lista.length > 0 && (
+            <div role="tablist" className="flex flex-wrap gap-1.5">
+              {FILTROS.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  role="tab"
+                  aria-selected={filtro === f}
+                  onClick={() => setFiltro(f)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                    filtro === f ? "bg-ng-azul text-ng-tinta" : "bg-white/5 text-white/70 hover:bg-white/10"
+                  }`}
+                >
+                  {t(`filtros.${f}`)} <span className="tabular-nums opacity-60">{cuenta(f)}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {loading && !data ? (
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {[0, 1, 2, 3].map((i) => (
+              <li key={i} className="aspect-[9/16] animate-pulse rounded-xl bg-white/5" />
+            ))}
+          </ul>
+        ) : visibles.length > 0 ? (
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {visibles.map((c) => (
+              <TarjetaClipSubido
+                key={c.episodio._id}
+                c={c}
+                subiendoPct={subiendo?.episodioId === c.episodio._id ? subiendo.pct : null}
+                puedeOperar={puedeOperar}
+                onBorrar={() => void quitar(c)}
+              />
+            ))}
+          </ul>
+        ) : (
+          <div className="flex flex-col items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-12 text-center">
+            <Film size={28} className="text-white/30" aria-hidden />
+            <p className="font-medium">{lista.length ? t("sinEnFiltro") : t("vacio")}</p>
+            {!lista.length && <p className="max-w-sm text-sm text-white/50">{t("vacioDetalle")}</p>}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
-function FilaClipSubido({ c, puedeOperar, onBorrar }: { c: ClipSubido; puedeOperar: boolean; onBorrar: () => void }) {
+const ETIQUETA: Record<Etapa, string> = {
+  preparando: "bg-sky-400/90 text-ng-tinta",
+  listo: "bg-ng-azul text-ng-tinta",
+  programado: "bg-white text-ng-tinta",
+  publicado: "bg-ng-teal text-ng-tinta",
+  fallo: "bg-red-500 text-white",
+};
+
+function TarjetaClipSubido({
+  c,
+  subiendoPct,
+  puedeOperar,
+  onBorrar,
+}: {
+  c: ClipSubido;
+  subiendoPct: number | null;
+  puedeOperar: boolean;
+  onBorrar: () => void;
+}) {
   const t = useTranslations("clipsSubidos");
   const { episodio: ep, clip } = c;
-  const listo = clip?.estadoRender === "LISTO";
-  const poster = clip?.urlPoster ?? null;
-  const estado = (() => {
-    if (ep.estado === "FALLIDO") return { texto: ep.error || t("estados.fallo"), clase: "text-red-400" };
-    if (clip?.estadoRender === "FALLIDO") return { texto: t("estados.falloCopia"), clase: "text-red-400" };
-    if (ep.estado === "SUBIENDO") return { texto: t("estados.subiendo"), clase: "text-white/50" };
-    if (!listo) {
-      const pct = clip?.progresoRender ? ` ${clip.progresoRender}%` : "";
-      return { texto: `${t("estados.preparando")}${pct}`, clase: "text-sky-300" };
-    }
-    if (clip?.publicacion?.publicadas) return { texto: t("estados.publicado"), clase: "text-ng-teal" };
-    if (clip?.publicacion?.programadas) return { texto: t("estados.programado"), clase: "text-ng-teal" };
-    return { texto: t("estados.listo"), clase: "text-ng-teal" };
-  })();
+  const etapa = etapaDe(c);
   const base = clip ? `/episodios/${ep._id}/clips/${clip._id}` : null;
+  const listo = etapa !== "preparando" && etapa !== "fallo";
+  const pct = subiendoPct ?? (clip?.estadoRender === "RENDERIZANDO" ? clip.progresoRender ?? null : null);
+  const etiqueta =
+    subiendoPct !== null ? t("estados.subiendo") : etapa === "fallo" ? t("estados.fallo") : t(`estados.${etapa}`);
 
   return (
-    <li className="flex min-w-0 gap-3 rounded-xl border border-white/10 bg-black/20 p-3">
-      <div className="flex h-24 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white/5">
-        {poster ? (
+    <li className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition hover:border-ng-azul/40">
+      <div className="relative aspect-[9/16] bg-black">
+        {clip?.urlPoster ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={poster} alt="" className="h-full w-full object-cover" />
+          <img
+            src={clip.urlPoster}
+            alt=""
+            className={`h-full w-full ${clip.formato === "VERTICAL" ? "object-cover" : "object-contain"}`}
+          />
         ) : (
-          <Film size={20} className="text-white/30" aria-hidden />
+          <div className="flex h-full w-full items-center justify-center">
+            <Film size={26} className="text-white/20" aria-hidden />
+          </div>
+        )}
+        <span className={`absolute left-2 top-2 flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold ${ETIQUETA[etapa]}`}>
+          {etapa === "publicado" && <CircleCheck size={11} aria-hidden />}
+          {etiqueta}
+        </span>
+        {ep.duracionSeg ? (
+          <span className="absolute bottom-2 right-2 rounded bg-black/70 px-1.5 py-0.5 text-[11px] tabular-nums">{reloj(ep.duracionSeg)}</span>
+        ) : null}
+        {pct !== null && (
+          <div className="absolute inset-x-2 bottom-9 h-1.5 overflow-hidden rounded-full bg-black/60">
+            <div className="h-full rounded-full bg-ng-azul transition-[width]" style={{ width: `${pct}%` }} />
+          </div>
+        )}
+        {etapa === "fallo" && (
+          <p className="absolute inset-x-2 bottom-9 rounded bg-black/80 p-1.5 text-[11px] leading-snug text-red-300">
+            {ep.error || t("estados.falloCopia")}
+          </p>
         )}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="truncate font-medium">{clip?.titulo ?? ep.titulo}</p>
-        <p className={`text-xs ${estado.clase}`}>{estado.texto}</p>
-        <p className="text-xs text-white/40">
-          {ep.duracionSeg ? reloj(ep.duracionSeg) : ""}
-          {ep.subidoPor?.nombre ? ` · ${t("subidoPor", { nombre: ep.subidoPor.nombre })}` : ""}
-          {clip && !clip.usarOriginal ? ` · ${t("editado")}` : ""}
+      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3">
+        <p className="truncate text-sm font-semibold">{clip?.titulo ?? ep.titulo}</p>
+        <p className="truncate text-[11px] text-white/40">
+          {clip && !clip.usarOriginal ? t("editado") : ep.subidoPor?.nombre ? t("subidoPor", { nombre: ep.subidoPor.nombre }) : ""}
         </p>
-        <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+        <div className="mt-auto flex items-center gap-1.5">
           {listo && base && puedeOperar && (
-            <Link href={`${base}/publicar`} className="flex items-center gap-1 rounded-md bg-ng-azul px-2.5 py-1 text-xs font-semibold text-ng-tinta hover:brightness-110">
+            <Link
+              href={`${base}/publicar`}
+              className="flex flex-1 items-center justify-center gap-1 rounded-md bg-ng-azul px-2 py-1.5 text-xs font-semibold text-ng-tinta hover:brightness-110"
+            >
               <CalendarClock size={13} aria-hidden />
               {t("programar")}
             </Link>
           )}
           {base && ep.estado === "LISTO" && (
-            <Link href={base} className="flex items-center gap-1 rounded-md border border-white/15 px-2.5 py-1 text-xs hover:bg-white/10">
+            <Link
+              href={base}
+              aria-label={t("editar")}
+              title={t("editar")}
+              className="flex items-center justify-center rounded-md border border-white/15 p-1.5 hover:bg-white/10"
+            >
               <Pencil size={13} aria-hidden />
-              {t("editar")}
             </Link>
           )}
           {puedeOperar && (
-            <button type="button" onClick={onBorrar} aria-label={t("borrar")} title={t("borrar")} className="ml-auto p-1 text-white/40 hover:text-red-400">
+            <button type="button" onClick={onBorrar} aria-label={t("borrar")} title={t("borrar")} className="ml-auto p-1.5 text-white/40 hover:text-red-400">
               <Trash2 size={14} aria-hidden />
             </button>
           )}
