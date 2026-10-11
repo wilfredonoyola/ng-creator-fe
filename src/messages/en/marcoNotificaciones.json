@@ -2,5 +2,10 @@
   "CLIPS_LISTOS": "Clips ready to edit",
   "CLIP_TOMADO": "Someone took a clip",
   "CLIP_PROGRAMADO": "Someone scheduled a clip",
-  "CLIP_PUBLICADO": "A clip was published"
+  "CLIP_PUBLICADO": "A clip was published",
+  "REVISION_PEDIDA": "A clip is waiting for review",
+  "CLIP_APROBADO": "A clip you sent was approved",
+  "CAMBIOS_PEDIDOS": "Changes were requested on a clip you sent",
+  "REVISION_POR_VENCER": "A review is due soon",
+  "REVISION_VENCIDA": "A review is overdue"
 }

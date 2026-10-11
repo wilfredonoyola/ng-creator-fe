@@ -36,7 +36,8 @@
     "verFinal": "View final video",
     "programar": "Schedule",
     "reproducirTramo": "Play this segment",
-    "escuchar": "▶ Listen"
+    "escuchar": "▶ Listen",
+    "revisar": "Review"
   },
   "modal": {
     "etiqueta": "Final video: {titulo}",

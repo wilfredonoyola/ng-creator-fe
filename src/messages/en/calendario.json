@@ -79,5 +79,6 @@
     "sinCambios": "There are no changes to save.",
     "errorRed": "{red}: {mensaje}",
     "noSePudo": "couldn't save"
-  }
+  },
+  "porRevisar": "To review"
 }

@@ -2,5 +2,10 @@
   "CLIPS_LISTOS": "Clips listos para editar",
   "CLIP_TOMADO": "Alguien tomó un clip",
   "CLIP_PROGRAMADO": "Alguien programó un clip",
-  "CLIP_PUBLICADO": "Un clip se publicó"
+  "CLIP_PUBLICADO": "Un clip se publicó",
+  "REVISION_PEDIDA": "Un clip espera revisión",
+  "CLIP_APROBADO": "Aprobaron un clip que mandaste",
+  "CAMBIOS_PEDIDOS": "Pidieron cambios en un clip que mandaste",
+  "REVISION_POR_VENCER": "Una revisión está por vencer",
+  "REVISION_VENCIDA": "Una revisión se venció"
 }

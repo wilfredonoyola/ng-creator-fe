@@ -26,6 +26,8 @@ import {
   type ResumenPublicacionClip,
 } from "@/components/episodios/ListoClip";
 import { useSesion } from "@/lib/sesion";
+import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
+import { etiquetaDeClip, type EstadoRevision } from "@/lib/revision";
 
 type EstadoMomentos = "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO";
 
@@ -51,6 +53,8 @@ interface Clip {
   /** Quién lo dio por terminado (#70); null = en trabajo. */
   listoPor?: Autoria | null;
   publicacion?: ResumenPublicacionClip | null;
+  /** La revisión antes de publicar (ng-creator-be#175); null = nunca se mandó. */
+  estadoRevision?: EstadoRevision | null;
 }
 
 
@@ -359,6 +363,7 @@ function TarjetaClip({
               <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">{t("tarjeta.renderizando")}</span>
             )}
             <EstadoPublicacionClip publicacion={clip.publicacion} />
+            <EtiquetaRevision etiqueta={etiquetaDeClip(clip.estadoRevision)} />
           </div>
           <p className="mt-0.5 text-xs tabular-nums text-white/45">
             {t("tarjeta.tramo", {
@@ -425,6 +430,15 @@ function TarjetaClip({
             className="rounded-lg border border-indigo-400/40 px-3 py-1.5 text-center text-xs text-indigo-200 hover:bg-indigo-400/10"
           >
             {t("tarjeta.programar")}
+          </Link>
+        )}
+        {/* Un revisor que no opera (el cliente de la agencia) llega a la revisión por acá. */}
+        {!opera && clip.estadoRevision && (
+          <Link
+            href={`${editar}/publicar#revision`}
+            className="rounded-lg border border-amber-400/40 px-3 py-1.5 text-center text-xs text-amber-200 hover:bg-amber-400/10"
+          >
+            {t("tarjeta.revisar")}
           </Link>
         )}
         {puedeReproducir && (

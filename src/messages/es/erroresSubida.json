@@ -42,5 +42,8 @@
   "sonidoNoAudio": "El archivo tiene que ser de audio (MP3, WAV o M4A)",
   "sonidoMuyPesado": "El sonido debe pesar menos de 60 MB",
   "errorSonido": "No se pudo subir el sonido ({status})",
-  "seCortoSonido": "Se cortó la conexión mientras se subía el sonido"
+  "seCortoSonido": "Se cortó la conexión mientras se subía el sonido",
+  "sesionVozRevision": "Iniciá sesión de nuevo para mandar la nota de voz",
+  "vozRevisionMuyPesada": "La nota de voz debe pesar menos de 25 MB",
+  "errorVozRevision": "No se pudo subir la nota de voz ({status})"
 }

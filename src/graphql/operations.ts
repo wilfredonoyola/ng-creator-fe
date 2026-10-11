@@ -621,6 +621,8 @@ const CAMPOS_PUBLICACION = gql`
     portadaAplicada
     portadaError
     esperaVideo
+    esperaAprobacion
+    sinRevisar
     createdAt
     creadoPor {
       nombre
@@ -747,6 +749,7 @@ export const PUBLICACIONES_DE_MARCA = gql`
         hastaSeg
         duracionEfectivaSeg
         duracionFinalSeg
+        estadoRevision
         editadoPor {
           nombre
         }
@@ -1017,6 +1020,7 @@ export const MIEMBROS_DE_PAGINA = gql`
       usuarioId
       marcaId
       rol
+      revisor
       email
       nombre
       activo
@@ -1866,6 +1870,7 @@ export const CLIPS_DE_EPISODIO = gql`
       publicacion {
         ...ResumenPublicacionClip
       }
+      estadoRevision
     }
   }
   ${RESUMEN_PUBLICACION_CLIP}
@@ -2007,6 +2012,7 @@ const CAMPOS_CLIP_EDITOR = gql`
     _id
     episodioId
     marcaId
+    estadoRevision
     origen
     desdeSeg
     hastaSeg
@@ -2697,6 +2703,140 @@ export const GUARDAR_AJUSTES_PUBLICACION = gql`
     guardarAjustesPublicacion(marcaId: $marcaId, hashtags: $hashtags, destinosApagados: $destinosApagados) {
       hashtags
       destinosApagados
+    }
+  }
+`;
+
+// ---- Revisión antes de publicar (ng-creator-be#175) ----
+
+export const AJUSTES_REVISION = gql`
+  query AjustesRevision($marcaId: ID!) {
+    ajustesRevision(marcaId: $marcaId) {
+      activa
+      alVencer
+    }
+    soyRevisor(marcaId: $marcaId)
+  }
+`;
+
+export const GUARDAR_AJUSTES_REVISION = gql`
+  mutation GuardarAjustesRevision($marcaId: ID!, $activa: Boolean!, $alVencer: AlVencerRevision!) {
+    guardarAjustesRevision(marcaId: $marcaId, activa: $activa, alVencer: $alVencer) {
+      activa
+      alVencer
+    }
+  }
+`;
+
+export const MARCAR_REVISOR = gql`
+  mutation MarcarRevisor($marcaId: ID!, $usuarioId: ID!, $revisor: Boolean!) {
+    marcarRevisor(marcaId: $marcaId, usuarioId: $usuarioId, revisor: $revisor) {
+      _id
+      revisor
+    }
+  }
+`;
+
+const CAMPOS_REVISION = gql`
+  fragment CamposRevision on Revision {
+    _id
+    clipId
+    estado
+    updatedAt
+    pedidaPor {
+      usuarioId
+      nombre
+      en
+    }
+    resueltaPor {
+      usuarioId
+      nombre
+      en
+    }
+    comentarios {
+      _id
+      accion
+      texto
+      audioUrl
+      audioDuracionSeg
+      transcripcion
+      autor {
+        usuarioId
+        nombre
+        en
+      }
+    }
+  }
+`;
+
+export const REVISION_DE_CLIP = gql`
+  ${CAMPOS_REVISION}
+  query RevisionDeClip($marcaId: ID!, $clipId: ID!) {
+    revisionDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposRevision
+    }
+  }
+`;
+
+/** Sin estado: las que esperan algo (pendientes y con cambios pedidos). */
+export const REVISIONES_DE_MARCA = gql`
+  query RevisionesDeMarca($marcaId: ID!) {
+    revisionesDeMarca(marcaId: $marcaId) {
+      _id
+      clipId
+      estado
+      updatedAt
+      pedidaPor {
+        nombre
+      }
+    }
+  }
+`;
+
+/** Lo mínimo de un clip para la lista "Por revisar": la revisión trae solo el id. */
+export const CLIP_PARA_REVISION = gql`
+  query ClipParaRevision($id: ID!, $marcaId: String!) {
+    clipEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      episodioId
+      titulo
+      urlPoster
+    }
+  }
+`;
+
+export const PEDIR_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation PedirRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput) {
+    pedirRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario) {
+      ...CamposRevision
+    }
+  }
+`;
+
+export const APROBAR_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation AprobarRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput, $nuevaHora: DateTime) {
+    aprobarRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario, nuevaHora: $nuevaHora) {
+      ...CamposRevision
+    }
+  }
+`;
+
+export const PEDIR_CAMBIOS_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation PedirCambiosRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput!) {
+    pedirCambiosRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario) {
+      ...CamposRevision
+    }
+  }
+`;
+
+export const COMENTAR_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation ComentarRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput!) {
+    comentarRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario) {
+      ...CamposRevision
     }
   }
 `;

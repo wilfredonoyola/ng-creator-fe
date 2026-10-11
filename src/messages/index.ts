@@ -96,6 +96,7 @@ import registro_es from "./es/registro.json";
 import renombrarMarca_es from "./es/renombrarMarca.json";
 import requisitosPassword_es from "./es/requisitosPassword.json";
 import revision_es from "./es/revision.json";
+import revisionClip_es from "./es/revisionClip.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import superadmin_es from "./es/superadmin.json";
@@ -197,6 +198,7 @@ import registro_en from "./en/registro.json";
 import renombrarMarca_en from "./en/renombrarMarca.json";
 import requisitosPassword_en from "./en/requisitosPassword.json";
 import revision_en from "./en/revision.json";
+import revisionClip_en from "./en/revisionClip.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
 import revisionVideoCard_en from "./en/revisionVideoCard.json";
 import superadmin_en from "./en/superadmin.json";
@@ -301,6 +303,7 @@ export const mensajes = {
     "renombrarMarca": renombrarMarca_es,
     "requisitosPassword": requisitosPassword_es,
     "revision": revision_es,
+    "revisionClip": revisionClip_es,
     "revisionTarjeta": revisionTarjeta_es,
     "revisionVideoCard": revisionVideoCard_es,
     "superadmin": superadmin_es,
@@ -404,6 +407,7 @@ export const mensajes = {
     "renombrarMarca": renombrarMarca_en,
     "requisitosPassword": requisitosPassword_en,
     "revision": revision_en,
+    "revisionClip": revisionClip_en,
     "revisionTarjeta": revisionTarjeta_en,
     "revisionVideoCard": revisionVideoCard_en,
     "superadmin": superadmin_en,

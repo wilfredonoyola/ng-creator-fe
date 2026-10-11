@@ -32,6 +32,9 @@ import type { Autoria } from "@/components/episodios/TomarClip";
 import { ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { DESCRIPCION_MAX, TITULO_YOUTUBE_MAX, comoSaleEnCadaRed } from "@/lib/destinos";
+import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
+import { PorRevisar } from "@/components/revision/PorRevisar";
+import { etiquetaRevision, useRevisionMarca, type EstadoRevision } from "@/lib/revision";
 
 interface PublicacionCalendario extends Publicacion {
   /** El MP4 que sale en esta red (en Facebook puede ser la versión corta). */
@@ -51,6 +54,7 @@ interface PublicacionCalendario extends Publicacion {
     hastaSeg?: number | null;
     duracionEfectivaSeg?: number | null;
     duracionFinalSeg?: number | null;
+    estadoRevision?: EstadoRevision | null;
     editadoPor?: { nombre: string } | null;
     tomadoPor?: { nombre: string } | null;
   } | null;
@@ -67,6 +71,8 @@ interface ClipListo {
 }
 
 const FILTROS = ["FACEBOOK", "INSTAGRAM", "YOUTUBE", "TIKTOK"] as const;
+/** El filtro de lo que espera revisión (ng-creator-be#175), junto a los de red. */
+const POR_REVISAR = "POR_REVISAR";
 const MARGEN_MS = 60_000;
 const REFETCH = ["PublicacionesDeMarca", "ClipsListosSinProgramar", "ClipsDeEpisodio", "ClipEpisodio"];
 
@@ -142,7 +148,16 @@ export default function CalendarioPage() {
 
   const todas: PublicacionCalendario[] = useMemo(() => pubsQ.data?.publicacionesDeMarca ?? [], [pubsQ.data]);
   const listos: ClipListo[] = listosQ.data?.clipsListosSinProgramar ?? [];
-  const visibles = useMemo(() => (filtro ? todas.filter((p) => p.red === filtro) : todas), [todas, filtro]);
+  const revision = useRevisionMarca(marcaId || undefined);
+  const visibles = useMemo(
+    () =>
+      filtro === POR_REVISAR
+        ? todas.filter((p) => p.esperaAprobacion && p.estado === "PROGRAMADA")
+        : filtro
+          ? todas.filter((p) => p.red === filtro)
+          : todas,
+    [todas, filtro],
+  );
 
   const dias = useMemo(() => {
     if (!inicio) return [];
@@ -186,6 +201,8 @@ export default function CalendarioPage() {
         </div>
         {zona && <p className="text-xs text-white/40">{t("horasDe", { zona })}</p>}
       </div>
+
+      {revision.activa && <PorRevisar marcaId={marcaId} />}
 
       <ListosParaProgramar listos={listos} opera={opera} cargando={listosQ.loading && !listosQ.data} />
 
@@ -232,6 +249,11 @@ export default function CalendarioPage() {
             {REDES[r].nombre}
           </Chip>
         ))}
+        {revision.activa && (
+          <Chip activo={filtro === POR_REVISAR} onClick={() => setFiltro(filtro === POR_REVISAR ? null : POR_REVISAR)}>
+            {t("porRevisar")}
+          </Chip>
+        )}
       </div>
 
       {pubsQ.error && !pubsQ.data && (
@@ -399,6 +421,9 @@ function TarjetaGrupo({
           {pubs.some((x) => x.esperaVideo && x.estado === "PROGRAMADA") && (
             <p className="truncate text-[11px] text-ng-azul">{t("esperaVideo")}</p>
           )}
+          <div className="mt-0.5">
+            <EtiquetaRevision etiqueta={etiquetaRevision(pubs, p.clip?.estadoRevision, Date.now())} chica />
+          </div>
         </div>
       </div>
       <LogosDeRedes pubs={pubs} opera={opera} />
@@ -676,6 +701,9 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
                   className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] ${ESTADOS_PUBLICACION[x.estado]?.clase ?? "bg-white/10 text-white/70"}`}
                 >
                   {estado(x.estado)}
+                </span>
+                <span className="ml-1.5 inline-block">
+                  <EtiquetaRevision etiqueta={etiquetaRevision([x], x.clip?.estadoRevision, Date.now())} chica />
                 </span>
               </p>
               {x.estado === "PUBLICADA" && x.permalink && (

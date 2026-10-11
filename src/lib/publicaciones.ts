@@ -33,6 +33,13 @@ export interface Publicacion {
    * espera a que termine (ng-creator-be#172). Si el render falla, queda FALLIDA.
    */
   esperaVideo?: boolean | null;
+  /**
+   * Frenada por la revisión de la marca (ng-creator-be#175): no sale hasta que
+   * un revisor apruebe el clip, aunque pase la hora.
+   */
+  esperaAprobacion?: boolean | null;
+  /** Salió sin revisar: la marca eligió publicar igual al vencer. */
+  sinRevisar?: boolean | null;
   createdAt: string;
   creadoPor?: { nombre: string } | null;
   canceladoPor?: { nombre: string } | null;

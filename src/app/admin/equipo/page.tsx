@@ -14,14 +14,19 @@ import {
   CANCELAR_INVITACION,
   INVITACIONES_DE_PAGINA,
   INVITAR_MIEMBRO,
+  MARCAR_REVISOR,
   MIEMBROS_DE_PAGINA,
   REVOCAR_ACCESO,
 } from "@/graphql/operations";
+import { AjustesRevisionMarca } from "@/components/revision/AjustesRevisionMarca";
+import { useRevisionMarca } from "@/lib/revision";
 
 interface Miembro {
   usuarioId: string;
   marcaId: string;
   rol: RolPagina;
+  /** Revisa los clips antes de que salgan (ng-creator-be#175). El propietario, siempre. */
+  revisor?: boolean | null;
   email: string;
   nombre?: string | null;
   activo: boolean;
@@ -91,6 +96,9 @@ export default function EquipoPage() {
   const [cancelar] = useMutation(CANCELAR_INVITACION, {
     refetchQueries: refrescar,
   });
+  const [marcarRevisor] = useMutation(MARCAR_REVISOR, { refetchQueries: refrescar });
+  // Quién revisa se ve solo si la marca revisa: si no, sería un dato sin efecto.
+  const revision = useRevisionMarca(marcaId);
 
   const miembros: Miembro[] = miembrosData?.miembrosDePagina ?? [];
   const invitaciones: Invitacion[] =
@@ -199,6 +207,8 @@ export default function EquipoPage() {
         </section>
       )}
 
+      <AjustesRevisionMarca />
+
       {/* Quienes ya tienen acceso */}
       <section>
         <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
@@ -229,6 +239,11 @@ export default function EquipoPage() {
                 soyYo={m.usuarioId === usuario?._id}
                 editable={mando}
                 editaNombre={editaNombres && m.usuarioId !== usuario?._id}
+                conRevision={revision.activa}
+                marcaRevisor={mando || esAdmin}
+                onRevisor={(revisor) =>
+                  accion(() => marcarRevisor({ variables: { marcaId, usuarioId: m.usuarioId, revisor } }))
+                }
                 onRenombrar={async (nombre) => {
                   try {
                     await renombrar({
@@ -407,6 +422,9 @@ function FilaMiembro({
   soyYo,
   editable,
   editaNombre,
+  conRevision,
+  marcaRevisor,
+  onRevisor,
   onRenombrar,
   onCambiarRol,
   onRevocar,
@@ -415,6 +433,11 @@ function FilaMiembro({
   soyYo: boolean;
   editable: boolean;
   editaNombre: boolean;
+  /** Si la marca revisa los clips: recién ahí importa quién es revisor. */
+  conRevision: boolean;
+  /** Si quien mira puede marcar revisores (propietario o ADMIN). */
+  marcaRevisor: boolean;
+  onRevisor: (revisor: boolean) => void;
   /** Devuelve null si se guardó, o el error (traducido por el backend). */
   onRenombrar: (nombre: string) => Promise<string | null>;
   onCambiarRol: (rol: RolPagina) => void;
@@ -481,6 +504,8 @@ function FilaMiembro({
         </p>
       </div>
 
+      {conRevision && <ChipRevisor miembro={miembro} puede={marcaRevisor} onRevisor={onRevisor} />}
+
       {puedeEditarse ? (
         <select
           value={miembro.rol}
@@ -524,6 +549,55 @@ function FilaMiembro({
           </button>
         ))}
     </div>
+  );
+}
+
+/**
+ * Si la persona revisa los clips (ng-creator-be#175). El propietario revisa
+ * siempre; un editor o un lector, si se lo marca. Un proveedor no puede.
+ */
+function ChipRevisor({
+  miembro,
+  puede,
+  onRevisor,
+}: {
+  miembro: Miembro;
+  puede: boolean;
+  onRevisor: (revisor: boolean) => void;
+}) {
+  const t = useTranslations("revisionClip.equipo");
+  if (miembro.rol === "PROPIETARIO") {
+    return (
+      <span className="shrink-0 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs text-amber-300">
+        {t("revisaSiempre")}
+      </span>
+    );
+  }
+  if (miembro.rol !== "EDITOR" && miembro.rol !== "LECTOR") return null;
+  const on = !!miembro.revisor;
+  if (!puede) {
+    return on ? (
+      <span className="shrink-0 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs text-amber-300">{t("revisa")}</span>
+    ) : null;
+  }
+  return (
+    <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs">
+      <span className="text-white/60">{t("revisa")}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={t("revisorDe", { nombre: miembro.nombre || miembro.email })}
+        onClick={() => onRevisor(!on)}
+        className={`relative h-5 w-9 rounded-full transition ${on ? "bg-marca" : "bg-white/15"}`}
+      >
+        <span
+          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${
+            on ? "left-[18px] bg-ng-tinta" : "left-0.5"
+          }`}
+        />
+      </button>
+    </label>
   );
 }
 
