@@ -29,7 +29,7 @@
     "publicar": { "titulo": "Publish and schedule", "texto": "Schedule each clip on all four networks and follow its status from a calendar." },
     "metricas": { "titulo": "Analytics", "texto": "Which clip worked, on which platform and why, so you can decide the next one and show the client." },
     "equipo": { "titulo": "Team and brands", "texto": "Many clients and many people working, without stepping on each other." },
-    "app": { "titulo": "App and languages", "texto": "The same as the web, on your phone, in English or Spanish." }
+    "app": { "titulo": "The Clipfine app", "texto": "Clipfine lives on your phone too, on iPhone and Android: same account, same clients, everything in sync with the web. Start on your computer and finish wherever you are." }
   },
   "items": {
     "momentos": { "titulo": "The best moments, found for you", "texto": "Clipfine transcribes the episode and AI picks the parts that stand on their own. You start with a batch of clips, not 90 minutes of video." },
@@ -101,10 +101,13 @@
     "notaVoz": { "titulo": "Voice comments", "texto": "Don't feel like typing? Record a voice note. Clipfine transcribes it, so the editor can listen or read." },
     "autoria": { "titulo": "Who did what", "texto": "Every clip shows who edited it, who finished it and who scheduled it." },
     "avisos": { "titulo": "Notifications", "texto": "Know when clips are ready, when someone takes or schedules one and when it's published." },
-    "app": { "titulo": "iPhone and Android app", "texto": "Same account, same brands: edit, schedule and check the calendar from your phone." },
+    "idiomas": { "titulo": "English and Spanish", "texto": "Everyone on the team uses Clipfine in their language, on the web and in the app. For now, episodes are transcribed in Spanish." },
+    "app": { "titulo": "App for iPhone and Android", "texto": "Sign in with your usual account and your clients, episodes and clips are already there. Nothing to set up again." },
+    "sincronizado": { "titulo": "Everything in sync with the web", "texto": "What you edit on your computer shows up on your phone and the other way around, no exporting or moving files." },
+    "editarCelular": { "titulo": "The editor in your pocket", "texto": "Trim, caption, add music and sound effects, and schedule on all four networks from your phone." },
+    "aprobarCelular": { "titulo": "Approve from anywhere", "texto": "Watch the clip, approve it or ask for changes with a voice note, without opening your computer." },
     "push": { "titulo": "Phone notifications", "texto": "Team notifications reach your phone, and you choose which ones you want." },
-    "fotos": { "titulo": "Save the clip to Photos", "texto": "Export the finished clip to your phone's gallery." },
-    "idiomas": { "titulo": "English and Spanish", "texto": "The web and the app are in English and Spanish. For now, episodes are transcribed in Spanish." }
+    "fotos": { "titulo": "Save the clip to Photos", "texto": "Export the finished clip to your phone's gallery." }
   },
   "cierre": {
     "titulo": "Try it with one client",
