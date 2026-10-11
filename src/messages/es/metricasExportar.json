@@ -1,0 +1,25 @@
+{
+  "exportar": "Exportar",
+  "generando": "Generando…",
+  "csv": {
+    "titulo": "CSV",
+    "detalle": "Para Excel o Google Sheets"
+  },
+  "markdown": {
+    "titulo": "Markdown",
+    "detalle": "Para Notion, Slack o un correo"
+  },
+  "copiar": {
+    "titulo": "Copiar resumen (Markdown)",
+    "detalle": "Para pegarlo directo en un mensaje"
+  },
+  "pdf": {
+    "titulo": "PDF",
+    "detalle": "El reporte para el cliente, listo para imprimir"
+  },
+  "descargarCsv": "CSV",
+  "descargarMarkdown": "Markdown",
+  "copiado": "Resumen copiado. Pegalo donde quieras.",
+  "error": "No se pudo generar el archivo. Probá de nuevo en un rato.",
+  "errorCopiar": "No se pudo copiar. Descargá el Markdown y abrilo."
+}

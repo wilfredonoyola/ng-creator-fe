@@ -2,6 +2,7 @@
 
 import { apolloClient } from "./apollo";
 import { cabeceraIdioma } from "@/i18n/cliente";
+import { desmarcarSesion, marcarSesion } from "./marca-sesion";
 
 /**
  * Autenticacion via backend GraphQL.
@@ -281,6 +282,7 @@ function guardarTokens(idToken: string, accessToken: string, refreshToken: strin
   localStorage.setItem("accessToken", accessToken);
   localStorage.setItem("refreshToken", refreshToken);
   localStorage.setItem("tokenExpiresAt", expiresAt.toString());
+  marcarSesion();
 }
 
 /**
@@ -359,6 +361,7 @@ export async function cerrarSesion(): Promise<void> {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("tokenExpiresAt");
+  desmarcarSesion();
   // Que quien entre después en este navegador no vea, ni por un instante, las
   // marcas y datos de la cuenta anterior.
   await apolloClient.clearStore().catch(() => {});
@@ -386,6 +389,8 @@ export function inicializarAutoRefresh() {
 
   const expiresAt = localStorage.getItem("tokenExpiresAt");
   if (!expiresAt) return;
+  // Las sesiones de antes de la marca la reciben al abrir el panel.
+  marcarSesion();
 
   const expiresAtMs = parseInt(expiresAt, 10);
   const ahora = Date.now();

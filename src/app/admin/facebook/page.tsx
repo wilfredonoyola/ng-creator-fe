@@ -17,6 +17,7 @@ import {
   QUERIES_UPLOAD_POST,
   REDES_UPLOAD_POST,
   type Red,
+  metaPropiaApagada,
   useCuentasUploadPost,
   useProveedores,
   useUploadPost,
@@ -67,6 +68,8 @@ export default function AdminFacebookPage() {
   const redesUploadPost = REDES_UPLOAD_POST.filter((r) => proveedores[r] === "upload-post");
   const metaPorUploadPost =
     proveedores.FACEBOOK === "upload-post" || proveedores.INSTAGRAM === "upload-post";
+  // Pasos 1-3 de Meta fuera mientras todo sale por Upload-Post.
+  const sinMetaPropia = metaPropiaApagada(proveedores);
 
   const { data: estado, loading: cargandoEstado } = useQuery(FACEBOOK_ESTADO, {
     errorPolicy: "all",
@@ -170,6 +173,10 @@ export default function AdminFacebookPage() {
       <AjustesPublicacionMarca />
       {redesUploadPost.length > 0 && <SeccionUploadPost redes={redesUploadPost} />}
 
+      {sinMetaPropia ? (
+        <p className="mb-3 text-xs text-white/40">{tUp("propiaMetaApagada")}</p>
+      ) : (
+        <>
       {metaPorUploadPost && (
         <p className="mb-3 text-xs text-white/40">{tUp("propiaMeta")}</p>
       )}
@@ -362,6 +369,8 @@ FACEBOOK_TOKEN_KEY=`}
           </p>
         </div>
       )}
+        </>
+      )}
 
       {proveedores.YOUTUBE === "propio" && <CanalesYoutube />}
       {proveedores.TIKTOK === "propio" && <CuentasTiktok />}
@@ -372,8 +381,7 @@ FACEBOOK_TOKEN_KEY=`}
 /**
  * Publicar por Upload-Post (las redes que el backend tiene en 'upload-post'):
  * cada marca tiene su perfil allá, y en él se conectan sus cuentas, red por
- * red. La conexión propia de Facebook sigue más abajo para el revival y las
- * estadísticas.
+ * red. La conexión propia de Facebook sigue más abajo para las estadísticas.
  */
 function SeccionUploadPost({ redes }: { redes: Red[] }) {
   const t = useTranslations("redesUploadPost");
@@ -472,7 +480,7 @@ function SeccionUploadPost({ redes }: { redes: Red[] }) {
                 key={red}
                 red={red}
                 marcaId={marcaId}
-                cuentas={cuentas.filter((c) => c.red === red)}
+                cuentas={cuentas.filter((c) => c.red === red && c.activa)}
                 mando={mando}
               />
             ))}

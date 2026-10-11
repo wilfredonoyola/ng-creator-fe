@@ -1,0 +1,39 @@
+{
+  "volver": "Métricas",
+  "periodo": "{n} días",
+  "descargar": "Descargar PDF",
+  "sinMarca": "Elegí una marca para ver su reporte.",
+  "error": "No se pudo cargar el reporte. Probá de nuevo en un rato.",
+  "titulo": "Reporte de rendimiento",
+  "tituloDocumento": "Reporte {marca} · {dias} días",
+  "rango": "Del {desde} al {hasta} · últimos {dias} días",
+  "vacio": "No salió ningún clip en los últimos {dias} días.",
+  "cifras": {
+    "vistas": "Vistas",
+    "interacciones": "Interacciones",
+    "tasa": "Tasa de interacción",
+    "seguidores": "Seguidores ganados",
+    "clips": "Clips publicados"
+  },
+  "vsAnterior": "La variación es contra los {dias} días anteriores.",
+  "cambio": "{flecha} {valor}%",
+  "redes": {
+    "titulo": "En cada red",
+    "red": "Red",
+    "publicaciones": "Publicaciones",
+    "vistas": "Vistas",
+    "interacciones": "Interacciones",
+    "tasa": "Interacción",
+    "seguidores": "Seguidores"
+  },
+  "mejores": "Los clips que más rindieron",
+  "clipDetalle": "{interacciones} interacciones · {tasa}",
+  "queFunciona": {
+    "titulo": "Qué funciona",
+    "motivo": "Los clips de <b>{motivo}</b> son los que más rinden: {vistas} vistas en promedio ({n, plural, one {# clip} other {# clips}}).",
+    "hora": "La mejor hora para publicar es a las <b>{hora}</b> ({n, plural, one {# clip} other {# clips}}).",
+    "porMotivo": "Vistas promedio por tipo de momento"
+  },
+  "nota": "Números que informa cada red. «—» es un dato que esa red no da (Facebook, por ejemplo, solo informa vistas, likes y comentarios).",
+  "pie": "Datos al {fecha} · Hecho con Clipfine"
+}

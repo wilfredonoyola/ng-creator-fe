@@ -31,7 +31,8 @@ export type ClaveErrorSubida =
   | "soloImagenesEvidencia" | "evidenciaMuyPesada" | "errorScreenshot" | "sinUrlScreenshot"
   | "sesionImagenes" | "noEsImagen" | "imagenMuyPesada" | "errorImagen" | "sesionPortada"
   | "errorPortada" | "sesionVideo" | "errorVideo" | "seCorto" | "seCancelo" | "sesionLogo"
-  | "logoNoImagen" | "logoMuyPesado" | "errorLogo";
+  | "logoNoImagen" | "logoMuyPesado" | "errorLogo" | "imagenClipFormato" | "imagenClipMuyPesada"
+  | "sesionSonido" | "sonidoNoAudio" | "sonidoMuyPesado" | "errorSonido" | "seCortoSonido";
 
 export class ErrorDeSubida extends Error {
   constructor(
@@ -355,19 +356,6 @@ export async function uploadLogoPagina(
   return subirImagen("page-logo", file, { pageId });
 }
 
-/**
- * Sube la imagen nueva de un revival. El backend le aplica la marca de agua de
- * la página antes de guardarla: no se confía en que venga puesta, porque es un
- * requisito del producto y desde el cliente se saltearía.
- */
-export async function uploadImagenRevival(
-  file: File,
-  pageId: string,
-  postId: string,
-): Promise<UploadResult> {
-  return subirImagen("revival-imagen", file, { pageId, postId });
-}
-
 async function subirImagen(
   endpoint: string,
   file: File,
@@ -525,4 +513,113 @@ export async function uploadMarcaLogo(file: File, marcaId: string): Promise<stri
     throw fallo(backend, "errorLogo", `No se pudo subir el logo (${response.status})`, response.status);
   }
   return (await response.json()).url as string;
+}
+
+/** Los formatos que acepta `/uploads/clip-imagen`. */
+export const FORMATOS_IMAGEN_CLIP = ["image/jpeg", "image/png", "image/webp"];
+
+/**
+ * Sube una imagen para poner sobre un clip (una foto, una persona para
+ * recortar). Solo la guarda y devuelve su URL: va al clip con
+ * `actualizarClipEpisodio`, y quitarle el fondo lo hace el servidor al guardar.
+ */
+export async function uploadImagenClip(file: File, marcaId: string): Promise<string> {
+  const token = getAuthToken();
+  if (!token) throw new ErrorDeSubida("sesionImagenes", "Sesión requerida para subir imágenes");
+  if (!FORMATOS_IMAGEN_CLIP.includes(file.type)) {
+    throw new ErrorDeSubida("imagenClipFormato", "La imagen tiene que ser JPG, PNG o WebP");
+  }
+  if (file.size > 15 * 1024 * 1024) {
+    throw new ErrorDeSubida("imagenClipMuyPesada", "La imagen debe pesar menos de 15 MB");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("marcaId", marcaId);
+  const response = await fetch(`${API_BASE_URL}/uploads/clip-imagen`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    body: formData,
+  });
+  if (!response.ok) {
+    let backend: string | undefined;
+    try {
+      backend = (await response.json()).message;
+    } catch {
+      // el backend no siempre responde JSON
+    }
+    throw fallo(backend, "errorImagen", `Error al subir la imagen (${response.status})`, response.status);
+  }
+  const url = (await response.json()).url as string | undefined;
+  if (!url) throw new ErrorDeSubida("errorImagen", "Error al subir la imagen", { status: response.status });
+  return url;
+}
+
+/** Los campos de POST /uploads/sonido, además del archivo. */
+export interface CamposSonido {
+  tipo: "MUSICA" | "EFECTO";
+  titulo: string;
+  categoria?: string;
+  fuente?: string;
+  /** A la biblioteca de esta marca... */
+  marcaId?: string;
+  /** ...o a la de Clipfine (solo superadmin). */
+  global?: boolean;
+}
+
+/**
+ * Sube un sonido a la biblioteca del editor (Tanda 2, be#173). El backend lo
+ * pasa a AAC, lo mide y devuelve el Sonido creado (JSON). Con XHR, como la
+ * cámara, para mostrar el avance: una canción en WAV son decenas de megas.
+ */
+export function uploadSonido<T = unknown>(
+  file: File,
+  campos: CamposSonido,
+  onAvance?: (porcentaje: number) => void,
+): Promise<T> {
+  const token = getAuthToken();
+  if (!token) return Promise.reject(new ErrorDeSubida("sesionSonido", "Sesión requerida para subir sonidos"));
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const esAudio = file.type.startsWith("audio/") || ["mp3", "wav", "m4a", "aac", "ogg", "flac", "opus", "webm"].includes(ext);
+  if (!esAudio) return Promise.reject(new ErrorDeSubida("sonidoNoAudio", "El archivo tiene que ser de audio (MP3, WAV o M4A)"));
+  if (file.size > 60 * 1024 * 1024) {
+    return Promise.reject(new ErrorDeSubida("sonidoMuyPesado", "El sonido debe pesar menos de 60 MB"));
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("tipo", campos.tipo);
+  formData.append("titulo", campos.titulo);
+  if (campos.categoria) formData.append("categoria", campos.categoria);
+  if (campos.fuente) formData.append("fuente", campos.fuente);
+  if (campos.global) formData.append("global", "true");
+  else if (campos.marcaId) formData.append("marcaId", campos.marcaId);
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE_URL}/uploads/sonido`);
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader(CABECERA_IDIOMA, idiomaActual());
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onAvance?.(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => {
+      let json: any = {};
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch {
+        // Sin JSON: decide el status.
+      }
+      if (xhr.status < 200 || xhr.status >= 300 || !json._id) {
+        // Nest manda `message` como texto o como lista (validaciones).
+        const mensaje = Array.isArray(json.message) ? json.message.join(". ") : json.message;
+        reject(fallo(mensaje, "errorSonido", `No se pudo subir el sonido (${xhr.status})`, xhr.status));
+        return;
+      }
+      resolve(json as T);
+    };
+    xhr.onerror = () => reject(new ErrorDeSubida("seCortoSonido", "Se cortó la conexión mientras se subía el sonido"));
+    xhr.onabort = () => reject(new ErrorDeSubida("seCancelo", "Se canceló la subida"));
+    xhr.send(formData);
+  });
 }

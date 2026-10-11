@@ -14,13 +14,6 @@
     "publicado": "Published on {n, plural, one {# network} other {# networks}}",
     "publicadoAyuda": "You can schedule it on another network or at another time."
   },
-  "procesar": {
-    "reintentar": "Try again",
-    "volver": "Process again",
-    "procesar": "Process video",
-    "conCambios": "With the changes the MP4 doesn't have yet.",
-    "alDia": "It's up to date: only if you want to redo it."
-  },
   "descargar": {
     "bajando": "Downloading…",
     "anterior": "Download the previous one",
@@ -32,11 +25,9 @@
     "saleDeListos": "Leaves “Ready to schedule”.",
     "marcar": "Mark ready",
     "marcarAyuda": "The team sees it on the calendar, to schedule it.",
-    "primeroProcesa": "Process the video first.",
     "por": "Ready · {nombre}",
     "desde": "Since {fecha}. It's in “Ready to schedule”.",
     "pista": "The whole team sees it on the calendar, to schedule it.",
-    "pistaSinVideo": "Process the video to mark it ready.",
     "listo": "Ready"
   },
   "volverA": "Back to {episodio}",
@@ -58,12 +49,8 @@
   "procesandoCorto": "Processing {corto}",
   "masAcciones": "More actions",
   "programar": {
-    "alTerminar": "You can schedule it once processing finishes",
-    "procesaPrimero": "Process the video to schedule it",
     "elegi": "Choose networks and time.",
     "reintentar": "Retry",
-    "programar": "Schedule",
-    "pistaProcesando": "The video is processing: when it's done, you can schedule it.",
-    "pistaSinVideo": "Process the video first, in Export. Without an MP4 there's nothing to schedule."
+    "programar": "Schedule"
   }
 }

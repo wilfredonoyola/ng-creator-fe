@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import "./globals.css";
@@ -35,6 +36,10 @@ export async function generateMetadata(): Promise<Metadata> {
 /** La letra de la marca. Servida por next/font: sin pedidos a Google en el navegador. */
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
+/** Google Tag Manager. Solo en producción, para no ensuciar los datos con el desarrollo local. */
+const GTM_ID = "GTM-WVH7H299";
+const conGTM = process.env.NODE_ENV === "production";
+
 export const viewport: Viewport = {
   themeColor: "#0A0A0A",
   // `viewportFit: cover` es lo que permite pintar bajo el notch; el padding
@@ -57,10 +62,29 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={inter.variable}>
       <body className="font-sans">
+        {conGTM && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+            />
+          </noscript>
+        )}
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
         <RegistrarSW />
+        {conGTM && (
+          <Script id="gtm" strategy="afterInteractive">
+            {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','${GTM_ID}');`}
+          </Script>
+        )}
       </body>
     </html>
   );

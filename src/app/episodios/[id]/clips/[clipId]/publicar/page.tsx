@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -22,7 +22,13 @@ import {
   type Publicacion,
 } from "@/lib/publicaciones";
 import type { Red } from "@/lib/upload-post";
-import { type Destino, useDestinosMarca } from "@/lib/destinos";
+import {
+  DESCRIPCION_MAX,
+  TITULO_YOUTUBE_MAX,
+  comoSaleEnCadaRed,
+  type Destino,
+  useDestinosMarca,
+} from "@/lib/destinos";
 import { conHashtags, useAjustesPublicacion } from "@/lib/ajustes-publicacion";
 import { HashtagsChips } from "@/components/HashtagsChips";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
@@ -34,15 +40,23 @@ import {
   versionEnCurso,
   type VersionCortaClip,
 } from "@/components/episodios/VersionFacebook";
+import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
+import { CuadroPortada, ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
+import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
+import { MetricasClip } from "@/components/metricas/MetricasClip";
 
-/** Lo mismo que el backend: lo que va abajo del video y el título de YouTube. */
-const DESCRIPCION_MAX = 2200;
-const TITULO_YOUTUBE_MAX = 100;
+/** Lo que todavía va a salir: esa cuenta no se vuelve a marcar para este clip. */
+const PENDIENTES: string[] = ["PROGRAMADA", "SUBIENDO", "PROCESANDO", "AGENDADA_EN_RED"];
+
 /** Con menos margen, la hora ya pasó cuando llega al servidor. */
 const MARGEN_MS = 60_000;
 
 /**
- * Programar un clip ya procesado en las redes de la marca (#70, ng-creator-be#71).
+ * Programar un clip en las redes de la marca (#70, ng-creator-be#71).
+ *
+ * No hace falta exportarlo antes: si el MP4 falta o quedó viejo, el backend lo
+ * manda a exportar y la publicación espera el video (`esperaVideo`); a la
+ * hora sale siempre el MP4 de la última edición.
  *
  * La misma pantalla que la de la app (ng-creator-app, episodio/[id]/publicar),
  * menos "Publicar ahora": por ahora los clips solo se programan, y quedan en el
@@ -106,17 +120,6 @@ export default function ProgramarClipPage({
     );
   }
 
-  if (clip.estadoRender !== "LISTO" || !clip.urlVideo) {
-    return (
-      <DashboardLayout>
-        {volver}
-        <div className="mt-4">
-          <Vacio titulo={t("primeroProcesa")} detalle={t("primeroProcesaDetalle")} />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
     <DashboardLayout>
       {volver}
@@ -135,6 +138,14 @@ export default function ProgramarClipPage({
           publicaciones={pubsQ.data?.publicacionesDeClip ?? []}
           refrescar={() => void pubsQ.refetch()}
         />
+        {/* Cómo le fue a lo que ya salió. Sin publicaciones no se dibuja. */}
+        <div className="mt-6">
+          <MetricasClip
+            marcaId={marcaId}
+            clipId={clip._id}
+            puntuacion={clip.origen === "MANUAL" ? null : clip.puntuacion}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );
@@ -160,10 +171,13 @@ function Formulario({
     hastaSeg: number;
     /** Ya sin los cortes del medio. */
     duracionEfectivaSeg?: number | null;
+    /** Lo que dura el MP4: sin los cortes y con la velocidad (be#173). */
+    duracionFinalSeg?: number | null;
     desdeSeg: number;
     editadoEn?: string | null;
     renderizadoEn?: string | null;
-    urlVideo: string;
+    estadoRender?: string | null;
+    urlVideo?: string | null;
     versionFacebook?: VersionCortaClip | null;
     calidad?: CalidadClip | null;
   };
@@ -193,16 +207,25 @@ function Formulario({
   // también cuentan.
   const [cambios, setCambios] = useState<Map<string, boolean>>(() => new Map());
   const apagados = new Set(destinosApagados);
-  const marcadoDeEntrada = (d: Destino) => !d.motivo && !apagados.has(d.cuentaId);
+  // Una cuenta donde este clip ya está por salir no se vuelve a marcar: si no,
+  // reintentar después de un fallo parcial lo programaba dos veces.
+  const yaVa = new Set(
+    publicaciones.filter((p) => PENDIENTES.includes(p.estado)).map((p) => `${p.red}:${p.cuentaId}`),
+  );
+  const marcadoDeEntrada = (d: Destino) =>
+    !d.motivo && !apagados.has(d.cuentaId) && !yaVa.has(`${d.red}:${d.cuentaId}`);
   const elegidos = new Set(
     destinos.filter((d) => !d.motivo && (cambios.get(d.clave) ?? marcadoDeEntrada(d))).map((d) => d.clave),
   );
   // Null = los de la marca tal cual; al tocar uno, quedan los de este clip.
   const [hashtagsClip, setHashtagsClip] = useState<string[] | null>(null);
   const hashtags = hashtagsClip ?? hashtagsMarca;
-  const [descripcion, setDescripcion] = useState("");
+  // Arranca con el título del clip (nunca con el gancho): se revisa y se programa.
+  const [descripcion, setDescripcion] = useState(clip.titulo);
   const [tituloYoutube, setTituloYoutube] = useState(clip.titulo.slice(0, TITULO_YOUTUBE_MAX));
   const [fecha, setFecha] = useState(() => aInputLocal(sugerida()));
+  /** El segundo del MP4 final que va de portada; null = la automática de cada red. */
+  const [portadaSeg, setPortadaSeg] = useState<number | null>(null);
   const [programar] = useMutation(PROGRAMAR_PUBLICACION);
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; texto: string } | null>(null);
@@ -210,23 +233,28 @@ function Formulario({
   const elegidosEnOrden = destinos.filter((d) => elegidos.has(d.clave));
   // Un Reel de Facebook dura hasta 90 s: un clip más largo sale en Facebook con
   // su versión corta, y hasta que esté lista Facebook espera. Las otras redes no.
-  // Ya sin los cortes del medio: es lo que dura el MP4 (y sobre eso se elige la versión para Facebook).
-  const duracionClip: number = clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg;
+  // Lo que dura el MP4, sin los cortes y con la velocidad: sobre eso se elige la versión para Facebook.
+  const duracionClip: number = clip.duracionFinalSeg ?? clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg;
   const necesitaVersion = duracionClip > REEL_FACEBOOK_MAX_SEG;
   const conFacebook = elegidosEnOrden.some((d) => d.red === "FACEBOOK");
   const facebookEspera = necesitaVersion && clip.versionFacebook?.estadoRender !== "LISTO";
   const esperaVersion = (d: Destino) => d.red === "FACEBOOK" && facebookEspera;
   const aProgramar = elegidosEnOrden.filter((d) => !esperaVersion(d));
   const conYoutube = destinos.some((d) => d.red === "YOUTUBE" && elegidos.has(d.clave));
+  const conVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
   const editadoSinProcesar =
     clip.editadoEn &&
     clip.renderizadoEn &&
     new Date(clip.editadoEn).getTime() > new Date(clip.renderizadoEn).getTime() + 1000;
+  // La portada es un cuadro del MP4 final: solo se elige si el que hay ya es ese.
+  const portadaElegible = conVideo && !editadoSinProcesar ? clip.urlVideo ?? null : null;
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
   const descripcionFinal = conHashtags(descripcion, hashtags);
   const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX;
+  const comoSale = comoSaleEnCadaRed(elegidosEnOrden, descripcionFinal, tituloYoutube.trim() || clip.titulo);
+  const sePasan = comoSale.filter((c) => c.largo);
 
   function alternar(d: Destino) {
     if (d.motivo || !opera) return;
@@ -268,12 +296,15 @@ function Formulario({
               formato: d.formato,
               descripcion: descripcionFinal || undefined,
               ajustes: d.red === "YOUTUBE" ? { titulo: tituloYoutube.trim() || clip.titulo } : undefined,
+              ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
               publicarEn: cuando.toISOString(),
             },
           },
           // El clip sale de "Listos para programar" y su tarjeta pasa a "Programado".
           refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
         });
+        // Ya programada: se desmarca, así reintentar manda solo las que fallaron.
+        setCambios((m) => new Map(m).set(d.clave, false));
       } catch (e) {
         fallas.push(`${REDES[d.red]?.nombre ?? d.red}: ${e instanceof Error ? e.message : t("noSePudo")}`);
       }
@@ -310,9 +341,9 @@ function Formulario({
           ) : null}
         </div>
       </div>
-      {editadoSinProcesar ? (
-        <p className="rounded-lg border border-amber-400/30 bg-amber-400/[0.06] p-3 text-sm text-amber-300">
-          {t("cambiosSinProcesar")}
+      {!conVideo || editadoSinProcesar ? (
+        <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/60">
+          {conVideo ? t("cambiosSinProcesar") : t("sinVideo")}
         </p>
       ) : null}
 
@@ -321,30 +352,15 @@ function Formulario({
           {/* Dónde y cuándo sale, al día con lo que se marca abajo, y el botón
               arriba: no hace falta bajar hasta el final para programar. */}
           <div className="sticky top-2 z-10 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-ng-fondo/95 p-3 backdrop-blur">
+            {portadaSeg != null && portadaElegible ? (
+              <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
+            ) : null}
             <div className="min-w-0 flex-1 space-y-1.5">
               <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/55"}`}>
                 {!fecha ? t("elegiDiaHora") : yaPaso ? t("yaPaso") : t("sale", { cuando: diaYHora(cuando!, locale) })}
+                {elegidosEnOrden.length ? ` · ${t("nRedes", { n: elegidosEnOrden.length })}` : ""}
               </p>
-              {elegidosEnOrden.length ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {elegidosEnOrden.map((d) => (
-                    <span
-                      key={d.clave}
-                      className={`flex max-w-full items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2 text-xs ${
-                        esperaVersion(d) ? "border-amber-300/50 bg-amber-300/10" : "border-ng-azul/60 bg-ng-azul/10"
-                      }`}
-                    >
-                      <IconoRed url={d.foto} red={d.red} chico />
-                      <span className="truncate">
-                        {REDES[d.red]?.nombre ?? d.red} · {d.nombre}
-                        {esperaVersion(d) ? ` · ${tv("faltaVersionCorto")}` : ""}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p>
-              )}
+              {elegidosEnOrden.length === 0 ? <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p> : null}
               {conFacebook && facebookEspera ? (
                 <p className="text-xs text-amber-300">
                   {aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}
@@ -377,37 +393,49 @@ function Formulario({
                 })}
               </p>
             ) : (
-              destinos.map((d) => {
-                const on = elegidos.has(d.clave);
-                return (
-                  <button
-                    key={d.clave}
-                    type="button"
-                    onClick={() => alternar(d)}
-                    disabled={Boolean(d.motivo)}
-                    className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
-                      on ? "border-ng-azul bg-ng-azul/10" : "border-white/10 bg-white/[0.03] hover:bg-white/[0.05]"
-                    } ${d.motivo ? "cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    <IconoRed url={d.foto} red={d.red} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium">{d.nombre}</span>
-                      <span className={`block text-xs ${d.motivo ? "text-amber-300" : "text-white/45"}`}>
-                        {d.motivo
+              <div className="flex flex-wrap gap-1.5">
+                {destinos.map((d) => {
+                  const on = elegidos.has(d.clave);
+                  const red = REDES[d.red]?.nombre ?? d.red;
+                  return (
+                    <button
+                      key={d.clave}
+                      type="button"
+                      onClick={() => alternar(d)}
+                      disabled={Boolean(d.motivo)}
+                      aria-pressed={on}
+                      title={
+                        d.motivo
                           ? t(`motivos.${d.motivo}`)
-                          : `${REDES[d.red].nombre} · ${d.etiqueta}${d.red === "YOUTUBE" ? ` · ${t("youtubeTituloAparte")}` : ""}`}
-                      </span>
-                    </span>
-                    <span
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] text-xs font-bold ${
-                        on ? "border-ng-azul bg-ng-azul text-ng-tinta" : "border-white/30"
-                      }`}
+                          : esperaVersion(d) && on
+                            ? tv("faltaVersionCorto")
+                            : `${red} · ${d.etiqueta}`
+                      }
+                      className={`flex max-w-full items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-xs transition ${
+                        on
+                          ? "border-white/15 bg-white/10 text-white"
+                          : "border-white/10 text-white/45 hover:border-white/20 hover:text-white/70"
+                      } ${d.motivo ? "cursor-not-allowed opacity-40" : ""}`}
                     >
-                      {on ? "✓" : ""}
-                    </span>
-                  </button>
-                );
-              })
+                      <IconoRed url={d.foto} red={d.red} chico />
+                      <span className="truncate">
+                        <span className={on ? "text-white/55" : ""}>{red}</span> {d.nombre}
+                      </span>
+                      {esperaVersion(d) && on ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" /> : null}
+                      {on ? <span className="text-[10px] text-white/70">✓</span> : null}
+                    </button>
+                  );
+                })}
+                {tiktokPronto && (
+                  <span
+                    title={t("pronto")}
+                    className="flex items-center gap-1.5 rounded-full border border-white/10 py-0.5 pl-0.5 pr-2.5 text-xs text-white/30"
+                  >
+                    <IconoRed red="TIKTOK" chico />
+                    TikTok · {t("pronto")}
+                  </span>
+                )}
+              </div>
             )}
             {faltaInstagram ? (
               <p className="text-xs text-white/40">
@@ -427,18 +455,9 @@ function Formulario({
                   })}
                 </p>
               ))}
-            {tiktokPronto && (
-              <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 opacity-45">
-                <IconoRed red="TIKTOK" />
-                <span>
-                  <span className="block text-sm font-medium">TikTok</span>
-                  <span className="block text-xs text-white/45">{t("pronto")}</span>
-                </span>
-              </div>
-            )}
           </Seccion>
 
-          {conFacebook && necesitaVersion ? (
+          {conFacebook && necesitaVersion && conVideo && clip.urlVideo ? (
             <SeccionVersionFacebook
               clipId={clip._id}
               marcaId={marcaId}
@@ -468,6 +487,7 @@ function Formulario({
                     : t("hashtagsVacio")}
               </p>
             </div>
+            <ComoSaleEnCadaRed comoSale={comoSale} />
             {conYoutube && (
               <label className="block">
                 <span className="mb-1 block text-xs text-white/45">{t("tituloYoutube")}</span>
@@ -480,6 +500,14 @@ function Formulario({
                   className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
                 />
               </label>
+            )}
+          </Seccion>
+
+          <Seccion titulo={t("portada.titulo")}>
+            {portadaElegible ? (
+              <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
+            ) : (
+              <p className="text-xs text-white/45">{t("portadaSinVideo")}</p>
             )}
           </Seccion>
 
@@ -594,6 +622,10 @@ function FilaPublicacionClip({
           {REDES[p.red]?.nombre ?? p.red}
           {p.cuentaNombre ? ` · ${p.cuentaNombre}` : ""}
         </p>
+        <EtiquetaProveedor proveedor={p.proveedor} />
+        {p.esperaVideo && p.estado === "PROGRAMADA" ? (
+          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">{t("esperaVideo")}</span>
+        ) : null}
         <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.clase}`}>{e.texto}</span>
       </div>
       {fecha ? (

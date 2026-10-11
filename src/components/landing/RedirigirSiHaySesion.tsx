@@ -30,12 +30,3 @@ export function useRedirigirSiHaySesion(): boolean {
   }, [router]);
   return sinSesion;
 }
-
-/**
- * Quien ya tiene sesión y entra a la página de producto va directo a su
- * panel: la landing es para quien todavía no la tiene.
- */
-export function RedirigirSiHaySesion() {
-  useRedirigirSiHaySesion();
-  return null;
-}

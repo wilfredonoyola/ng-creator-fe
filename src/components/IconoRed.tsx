@@ -4,8 +4,19 @@ import { REDES } from "@/lib/publicaciones";
  * La red de una publicación de un vistazo: la foto de la cuenta o, si no hay,
  * la sigla de la red con su color. Lucide ya no trae los logos de las redes.
  */
-export function IconoRed({ url, red, chico = false }: { url?: string | null; red: string; chico?: boolean }) {
-  const tam = chico ? "h-5 w-5 text-[9px]" : "h-9 w-9 text-xs";
+export function IconoRed({
+  url,
+  red,
+  chico = false,
+  tamano,
+}: {
+  url?: string | null;
+  red: string;
+  chico?: boolean;
+  /** Clases de tamaño propias (alto, ancho y letra), para lo que no es chico ni grande. */
+  tamano?: string;
+}) {
+  const tam = tamano ?? (chico ? "h-5 w-5 text-[9px]" : "h-9 w-9 text-xs");
   const r = REDES[red];
   if (url) {
     return (

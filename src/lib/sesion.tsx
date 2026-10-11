@@ -42,6 +42,12 @@ interface Sesion {
   puedeOperar: (marcaId?: string | null) => boolean;
   /** Puede configurar las cuentas de la marca y repartir accesos. */
   esPropietario: (marcaId?: string | null) => boolean;
+  /**
+   * Ve las métricas de la marca (ng-creator-be#119). Todos menos el proveedor,
+   * como en el backend (ROLES_QUE_VEN). Mientras los accesos cargan, sí: así
+   * la entrada no parpadea para el resto.
+   */
+  veMetricas: (marcaId?: string | null) => boolean;
   cargando: boolean;
 }
 
@@ -52,6 +58,7 @@ const VACIO: Sesion = {
   rolEn: () => null,
   puedeOperar: () => false,
   esPropietario: () => false,
+  veMetricas: () => true,
   cargando: true,
 };
 
@@ -93,6 +100,8 @@ export function SesionProvider({ children }: { children: React.ReactNode }) {
         return rol === "PROPIETARIO" || rol === "EDITOR";
       },
       esPropietario: (marcaId) => rolEn(marcaId) === "PROPIETARIO",
+      veMetricas: (marcaId) =>
+        !!usuario?.roles?.includes("ADMIN") || rolEn(marcaId) !== "PROVEEDOR",
       cargando: loading || cargandoAccesos,
     };
   }, [usuario, accesos, loading, cargandoAccesos]);

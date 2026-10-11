@@ -11,28 +11,31 @@ export type EstadoRender = "EN_COLA" | "RENDERIZANDO" | "LISTO" | "FALLIDO";
  * una nube con "Guardado", "Guardando…" o "Sin guardar". Se guarda solo; esto
  * es para que se sepa, no para que haya que hacerlo.
  *
- * "Sin guardar" es el medio segundo antes de guardar, o un tramo que espera
- * el "Guardar igual" del aviso de cruces.
+ * "Sin guardar" es el segundo antes de guardar, o un tramo que espera el
+ * "Guardar igual" del aviso de cruces. Si falla, se reintenta solo.
  */
 export function EstadoGuardado({
   guardando,
   sinGuardar,
   error,
+  detalle,
 }: {
   guardando: boolean;
   sinGuardar: boolean;
   error: boolean;
+  /** El motivo del error, para la pista. */
+  detalle?: string | null;
 }) {
   const t = useTranslations("editorExportar");
   const { icono, texto, clase, ayuda } = error
-    ? { icono: <CloudAlert size={16} aria-hidden />, texto: t("guardado.error"), clase: "text-red-400", ayuda: t("guardado.errorAyuda") }
+    ? { icono: <CloudAlert size={16} aria-hidden />, texto: t("guardado.error"), clase: "text-red-400", ayuda: detalle ? `${detalle}. ${t("guardado.errorAyuda")}` : t("guardado.errorAyuda") }
     : guardando
       ? { icono: <CloudUpload size={16} aria-hidden className="animate-pulse" />, texto: t("guardado.guardando"), clase: "text-white/60", ayuda: t("guardado.guardandoAyuda") }
       : sinGuardar
         ? { icono: <CloudUpload size={16} aria-hidden />, texto: t("guardado.sinGuardar"), clase: "text-white/60", ayuda: t("guardado.sinGuardarAyuda") }
         : { icono: <CloudCheck size={16} aria-hidden />, texto: t("guardado.guardado"), clase: "text-ng-secundario", ayuda: t("guardado.guardadoAyuda") };
   return (
-    <span role="status" title={ayuda} className={`inline-flex h-9 shrink-0 items-center gap-1.5 px-1 text-xs ${clase}`}>
+    <span role="status" aria-label={`${texto}. ${ayuda}`} title={ayuda} className={`inline-flex h-9 shrink-0 items-center gap-1.5 px-1 text-xs ${clase}`}>
       {icono}
       <span className="hidden sm:inline">{texto}</span>
     </span>

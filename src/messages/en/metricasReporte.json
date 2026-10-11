@@ -1,0 +1,39 @@
+{
+  "volver": "Metrics",
+  "periodo": "{n} days",
+  "descargar": "Download PDF",
+  "sinMarca": "Pick a brand to see its report.",
+  "error": "Couldn't load the report. Try again in a bit.",
+  "titulo": "Performance report",
+  "tituloDocumento": "{marca} report · {dias} days",
+  "rango": "{desde} to {hasta} · last {dias} days",
+  "vacio": "No clips went out in the last {dias} days.",
+  "cifras": {
+    "vistas": "Views",
+    "interacciones": "Interactions",
+    "tasa": "Engagement rate",
+    "seguidores": "Followers gained",
+    "clips": "Clips posted"
+  },
+  "vsAnterior": "Change is against the previous {dias} days.",
+  "cambio": "{flecha} {valor}%",
+  "redes": {
+    "titulo": "By network",
+    "red": "Network",
+    "publicaciones": "Posts",
+    "vistas": "Views",
+    "interacciones": "Interactions",
+    "tasa": "Engagement",
+    "seguidores": "Followers"
+  },
+  "mejores": "Top-performing clips",
+  "clipDetalle": "{interacciones} interactions · {tasa}",
+  "queFunciona": {
+    "titulo": "What works",
+    "motivo": "<b>{motivo}</b> clips perform best: {vistas} views on average ({n, plural, one {# clip} other {# clips}}).",
+    "hora": "The best time to post is <b>{hora}</b> ({n, plural, one {# clip} other {# clips}}).",
+    "porMotivo": "Average views by type of moment"
+  },
+  "nota": "Numbers as reported by each network. “—” means that network doesn't provide it (Facebook, for example, only reports views, likes and comments).",
+  "pie": "Data as of {fecha} · Made with Clipfine"
+}

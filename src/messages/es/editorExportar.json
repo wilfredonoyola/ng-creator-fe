@@ -1,7 +1,7 @@
 {
   "guardado": {
     "error": "No se pudo guardar",
-    "errorAyuda": "Revisá el aviso de abajo",
+    "errorAyuda": "Se reintenta solo",
     "guardando": "Guardando…",
     "guardandoAyuda": "Se guarda solo",
     "sinGuardar": "Sin guardar",
@@ -13,22 +13,22 @@
   "errorDescargar": "No se pudo descargar",
   "mp4": {
     "enEspera": "En espera",
-    "procesandoEtiqueta": "Procesando · {progreso}%",
-    "enEsperaEtiqueta": "En espera para procesar",
-    "procesandoTexto": "Procesando el video · {progreso}%",
-    "enEsperaTexto": "En espera para procesar…",
-    "procesandoDetalle": "Tarda uno o dos minutos. Podés seguir en otra pantalla: se procesa igual.",
+    "procesandoEtiqueta": "Exportando · {progreso}%",
+    "enEsperaEtiqueta": "En espera para exportar",
+    "procesandoTexto": "Exportando el video · {progreso}%",
+    "enEsperaTexto": "En espera para exportar…",
+    "procesandoDetalle": "Tarda uno o dos minutos. Podés seguir en otra pantalla: se exporta igual.",
     "fallo": "Falló",
-    "noSePudo": "No se pudo procesar",
+    "noSePudo": "No se pudo exportar",
     "errorDesconocido": "Error desconocido",
     "conCambios": "Con cambios",
-    "conCambiosSinProcesar": "Con cambios sin procesar",
-    "conCambiosDetalle": "Hiciste cambios después de procesar: el MP4 no los tiene.",
+    "conCambiosSinProcesar": "Con cambios sin exportar",
+    "conCambiosDetalle": "Hiciste cambios después de exportar: el MP4 no los tiene.",
     "listo": "Listo",
     "mp4Listo": "MP4 listo",
     "listoDetalle": "Tiene todos los cambios.",
-    "sinProcesar": "Sin procesar",
-    "videoSinProcesar": "Video sin procesar",
-    "sinProcesarDetalle": "Procesalo para descargarlo o programarlo."
+    "sinProcesar": "Sin exportar",
+    "videoSinProcesar": "Video sin exportar",
+    "sinProcesarDetalle": "Exportalo para descargarlo. Para programar no hace falta: se exporta solo."
   }
 }

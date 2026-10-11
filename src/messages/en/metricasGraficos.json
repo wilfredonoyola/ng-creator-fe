@@ -1,0 +1,22 @@
+{
+  "sinDatos": "No clips with metrics for this yet.",
+  "vistasPromedio": "{vistas} avg. views",
+  "muestra": "{n, plural, one {# clip} other {# clips}}",
+  "tasa": "{tasa} engagement",
+  "pocaMuestra": "small sample",
+  "leyendaMuestra": "Gray: fewer than {n} clips. That average isn't enough to draw conclusions yet.",
+  "tocaUnaHora": "Hover or tap a bar to see the details.",
+  "nadaEnEsaHora": "no clips went out at this hour",
+  "curvaVacia": "The first reading comes in about an hour after posting.",
+  "curvaTitulo": "Views since posting",
+  "unidad": {
+    "h": "{n}h",
+    "d": "{n}d"
+  },
+  "vistas": "{n} views",
+  "seFueEnTres": "<b>{pct}</b> left in the first 3 seconds",
+  "vioEntero": "<b>{pct}</b> watched to the end",
+  "retencionTitulo": "Share of people still watching at each second",
+  "gancho": "Hook",
+  "segundos": "{n}s"
+}

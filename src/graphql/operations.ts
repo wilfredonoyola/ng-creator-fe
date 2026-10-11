@@ -392,6 +392,104 @@ export const FACEBOOK_PAGINAS = gql`
  * Facebook (historial, análisis, publicar) trabajan sobre ella, y porque su
  * foto es la que se ve en el selector desde antes de que existieran las marcas.
  */
+/** Cambia el nombre de la marca. Solo el propietario (be#170). */
+export const RENOMBRAR_MARCA = gql`
+  mutation RenombrarMarca($marcaId: ID!, $nombre: String!) {
+    renombrarMarca(marcaId: $marcaId, nombre: $nombre) {
+      _id
+      nombre
+    }
+  }
+`;
+
+/** Si la sesión actual es de un superadmin (lista fija en el backend). */
+export const SOY_SUPERADMIN = gql`
+  query SoySuperadmin {
+    soySuperadmin
+  }
+`;
+
+/** Los clientes (marcas) con propietarios, miembros y episodios. Solo superadmin. */
+export const CLIENTES_SUPERADMIN = gql`
+  query ClientesSuperadmin {
+    clientesSuperadmin {
+      propietarios
+      miembros
+      episodios
+      marca {
+        _id
+        nombre
+        archivadaEn
+        demo
+        createdAt
+        prueba {
+          topeEpisodios
+          episodiosUsados
+        }
+      }
+    }
+  }
+`;
+
+/** Apaga (archiva) o vuelve a prender un cliente. Solo superadmin. */
+export const ARCHIVAR_CLIENTE_SUPERADMIN = gql`
+  mutation ArchivarClienteSuperadmin($marcaId: ID!, $archivada: Boolean!) {
+    archivarClienteSuperadmin(marcaId: $marcaId, archivada: $archivada) {
+      _id
+      archivadaEn
+    }
+  }
+`;
+
+/** Las personas con sus marcas. Solo superadmin. */
+export const USUARIOS_SUPERADMIN = gql`
+  query UsuariosSuperadmin {
+    usuariosSuperadmin {
+      esSuperadmin
+      usuario {
+        _id
+        email
+        nombre
+        activo
+        ultimoAccesoEn
+        createdAt
+        comoNosConocio
+        comoNosConocioDetalle
+      }
+      accesos {
+        marcaId
+        marcaNombre
+        rol
+      }
+    }
+  }
+`;
+
+/** Corta o devuelve el acceso de una persona. Solo superadmin. */
+export const SET_USUARIO_ACTIVO_SUPERADMIN = gql`
+  mutation SetUsuarioActivoSuperadmin($usuarioId: ID!, $activo: Boolean!) {
+    setUsuarioActivoSuperadmin(usuarioId: $usuarioId, activo: $activo) {
+      _id
+      activo
+    }
+  }
+`;
+
+/** Lo que solo un superadmin cambia de una marca: nombre, demo y cupo (o sin tope). */
+export const AJUSTAR_MARCA_ADMIN = gql`
+  mutation AjustarMarcaAdmin($marcaId: ID!, $nombre: String, $demo: Boolean, $topeEpisodios: Int, $sinTope: Boolean) {
+    ajustarMarcaAdmin(marcaId: $marcaId, nombre: $nombre, demo: $demo, topeEpisodios: $topeEpisodios, sinTope: $sinTope) {
+      _id
+      nombre
+      demo
+      prueba {
+        topeEpisodios
+        episodiosUsados
+      }
+    }
+  }
+`;
+
 export const MARCAS_ACTIVAS = gql`
   query MarcasActivas {
     marcasActivas {
@@ -421,8 +519,8 @@ export const MARCAS_ACTIVAS = gql`
  * una sola de prueba por persona y la crea con su tope de episodios.
  */
 export const CREAR_MARCA = gql`
-  mutation CrearMarca($nombre: String!) {
-    crearMarca(nombre: $nombre) {
+  mutation CrearMarca($nombre: String!, $comoNosConocio: ComoNosConocio, $comoNosConocioDetalle: String) {
+    crearMarca(nombre: $nombre, comoNosConocio: $comoNosConocio, comoNosConocioDetalle: $comoNosConocioDetalle) {
       _id
       nombre
     }
@@ -513,6 +611,7 @@ const CAMPOS_PUBLICACION = gql`
     expedienteId
     formato
     estado
+    proveedor
     publicarEn
     intentos
     error
@@ -521,6 +620,7 @@ const CAMPOS_PUBLICACION = gql`
     publicadaEn
     portadaAplicada
     portadaError
+    esperaVideo
     createdAt
     creadoPor {
       nombre
@@ -573,6 +673,37 @@ export const REPROGRAMAR_PUBLICACION = gql`
   ${CAMPOS_PUBLICACION}
 `;
 
+/**
+ * Cambia el texto, el título de YouTube o la portada de una PROGRAMADA. Lo
+ * que no se manda (o va null) no se toca; `quitarPortada` vuelve a la
+ * automática de cada red.
+ */
+export const EDITAR_PUBLICACION = gql`
+  mutation EditarPublicacion(
+    $marcaId: ID!
+    $id: ID!
+    $descripcion: String
+    $tituloYoutube: String
+    $portadaSeg: Float
+    $quitarPortada: Boolean
+  ) {
+    editarPublicacion(
+      marcaId: $marcaId
+      id: $id
+      descripcion: $descripcion
+      tituloYoutube: $tituloYoutube
+      portadaSeg: $portadaSeg
+      quitarPortada: $quitarPortada
+    ) {
+      ...CamposPublicacion
+      descripcion
+      portadaSeg
+      ajustes
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
 /** Las de un expediente, de la cola y de antes, las más nuevas primero. */
 export const PUBLICACIONES_DE_EXPEDIENTE = gql`
   query PublicacionesDeExpediente($marcaId: ID!, $expedienteId: ID!) {
@@ -603,11 +734,19 @@ export const PUBLICACIONES_DE_MARCA = gql`
       ...CamposPublicacion
       descripcion
       portadaUrl
+      mediaUrl
+      portadaSeg
+      ajustes
       clip {
         _id
         episodioId
         titulo
         urlPoster
+        urlVideo
+        desdeSeg
+        hastaSeg
+        duracionEfectivaSeg
+        duracionFinalSeg
         editadoPor {
           nombre
         }
@@ -840,172 +979,9 @@ export const DESCONECTAR_DE_UPLOAD_POST = gql`
   }
 `;
 
-// ---- Revival: historial de la fan page ----
+// ---- Logo de la página ----
 
-/**
- * El historial guardado, rankeado. Lee de nuestra base: para refrescar contra
- * Meta hay que sincronizar, y eso se hace un año por vez.
- */
-export const HISTORIAL_DE_PAGINA = gql`
-  query HistorialDePagina(
-    $pageId: String!
-    $orden: OrdenHistorial!
-    $limite: Int!
-    $anio: Int
-    $estado: EstadoRevival
-    $sinHistoria: Boolean
-  ) {
-    historialDePagina(
-      pageId: $pageId
-      orden: $orden
-      limite: $limite
-      anio: $anio
-      estado: $estado
-      sinHistoria: $sinHistoria
-    ) {
-      _id
-      postId
-      mensaje
-      tipo
-      permalink
-      imagenUrl
-      publicadoEn
-      reacciones
-      comentarios
-      compartidos
-      reproducciones
-      clics
-      score
-      estado
-      imagenGuardadaUrl
-      analisisIa
-      promptImagen
-      imagenNuevaUrl
-      mensajeNuevo
-      publicadoPermalink
-      programadaPara
-      historiaUrl
-      historiaPublicadaEn
-      imagenSubidaPor {
-        nombre
-        en
-      }
-      publicadoPor {
-        nombre
-        en
-      }
-      historiaPublicadaPor {
-        nombre
-        en
-      }
-    }
-  }
-`;
-
-export const RESUMEN_HISTORIAL = gql`
-  query ResumenHistorial($pageId: String!) {
-    resumenHistorial(pageId: $pageId) {
-      total
-      conMetricas
-      sinHistoria
-      sincronizadoEn
-    }
-  }
-`;
-
-/** Un renglón por año: qué se trajo, cuándo, y si quedó algo afuera. */
-export const ESTADO_POR_ANIO = gql`
-  query EstadoPorAnio($pageId: String!) {
-    estadoPorAnio(pageId: $pageId) {
-      anio
-      posts
-      sincronizadoEn
-      completo
-    }
-  }
-`;
-
-export const SINCRONIZAR_ANIO = gql`
-  mutation SincronizarAnio($pageId: String!, $anio: Int!) {
-    sincronizarAnio(pageId: $pageId, anio: $anio) {
-      anio
-      posts
-      sincronizadoEn
-      completo
-    }
-  }
-`;
-
-/** Cuántos posts hay en cada etapa del flujo. Arma las pestañas. */
-export const CONTEO_POR_ESTADO = gql`
-  query ConteoPorEstado($pageId: String!) {
-    conteoPorEstado(pageId: $pageId) {
-      estado
-      total
-    }
-  }
-`;
-
-export const CAMBIAR_ESTADO_POST = gql`
-  mutation CambiarEstadoPost($postId: String!, $estado: EstadoRevival!) {
-    cambiarEstadoPost(postId: $postId, estado: $estado) {
-      _id
-      postId
-      estado
-      imagenGuardadaUrl
-    }
-  }
-`;
-
-// ---- Revival: flujo de reciclaje ----
-
-/** Analiza el post y devuelve el prompt para ChatGPT. Una llamada al LLM. */
-export const GENERAR_PROMPT_REVIVAL = gql`
-  mutation GenerarPromptRevival($postId: String!) {
-    generarPromptRevival(postId: $postId) {
-      _id
-      postId
-      analisisIa
-      promptImagen
-      promptGeneradoEn
-    }
-  }
-`;
-
-export const ADJUNTAR_IMAGEN_NUEVA = gql`
-  mutation AdjuntarImagenNueva(
-    $postId: String!
-    $imagenNuevaUrl: String!
-    $mensajeNuevo: String
-  ) {
-    adjuntarImagenNueva(
-      postId: $postId
-      imagenNuevaUrl: $imagenNuevaUrl
-      mensajeNuevo: $mensajeNuevo
-    ) {
-      _id
-      postId
-      estado
-      imagenNuevaUrl
-      mensajeNuevo
-    }
-  }
-`;
-
-export const PUBLICAR_REVIVAL = gql`
-  mutation PublicarRevival($postId: String!, $programarPara: DateTime) {
-    publicarRevival(postId: $postId, programarPara: $programarPara) {
-      _id
-      postId
-      estado
-      publicadoPostId
-      publicadoPermalink
-      publicadoEnNuevo
-      programadaPara
-    }
-  }
-`;
-
+/** Guarda el logo (ya recortado por POST /uploads/page-logo) en la marca de la página. */
 export const FACEBOOK_SET_LOGO_PAGINA = gql`
   mutation FacebookSetLogoPagina($pageId: String!, $logoUrl: String!) {
     facebookSetLogoPagina(pageId: $pageId, logoUrl: $logoUrl) {
@@ -1014,41 +990,6 @@ export const FACEBOOK_SET_LOGO_PAGINA = gql`
       nombre
       logoUrl
     }
-  }
-`;
-
-/** Sube la versión nueva a historias. Publicación aparte de la del feed. */
-export const PUBLICAR_HISTORIA_REVIVAL = gql`
-  mutation PublicarHistoriaRevival($postId: String!) {
-    publicarHistoriaRevival(postId: $postId) {
-      _id
-      postId
-      historiaUrl
-      historiaPublicadaEn
-    }
-  }
-`;
-
-/** Arma la historia 9:16 con el texto encima, sin publicarla. */
-export const PREVISUALIZAR_HISTORIA = gql`
-  mutation PrevisualizarHistoria($postId: String!) {
-    previsualizarHistoria(postId: $postId) {
-      _id
-      postId
-      historiaUrl
-    }
-  }
-`;
-
-/**
- * Pregunta a Meta si lo agendado ya salió y actualiza el estado.
- *
- * Meta no avisa cuando publica algo programado, así que sin esto un post
- * agendado se queda en "Programado" para siempre.
- */
-export const REFRESCAR_PROGRAMADAS = gql`
-  mutation RefrescarProgramadas($pageId: String!) {
-    refrescarProgramadas(pageId: $pageId)
   }
 `;
 
@@ -1422,6 +1363,209 @@ export const ANALISIS_PAGINA = gql`
   }
 `;
 
+// ---- Métricas de lo publicado (ng-creator-be#119) ----
+
+/**
+ * Lo que una red dice de lo publicado. Todo es opcional: null es "esa red no
+ * lo informa", no cero (Facebook, por ejemplo, solo da vistas, likes y
+ * comentarios).
+ */
+const CAMPOS_TOTALES_METRICAS = gql`
+  fragment CamposTotalesMetricas on TotalesMetricas {
+    publicaciones
+    vistas
+    likes
+    comentarios
+    compartidos
+    guardados
+    alcance
+    seguidoresGanados
+    interacciones
+    tasaInteraccion
+  }
+`;
+
+const CAMPOS_METRICAS_DE_CLIP = gql`
+  ${CAMPOS_TOTALES_METRICAS}
+  fragment CamposMetricasDeClip on MetricasDeClip {
+    clipId
+    actualizadoEn
+    totales {
+      ...CamposTotalesMetricas
+    }
+    publicaciones {
+      _id
+      red
+      cuentaNombre
+      permalink
+      publicadaEn
+      metricasEn
+      metricas {
+        vistas
+        likes
+        comentarios
+        compartidos
+        guardados
+        alcance
+        seguidoresGanados
+        tiempoMedioSeg
+        fraccionVista
+        fraccionCompleta
+        minutosVistos
+        seguidoresCuenta
+        retencion {
+          seg
+          fraccion
+        }
+        origenes {
+          clave
+          fraccion
+        }
+        paises {
+          clave
+          fraccion
+        }
+        publico {
+          clave
+          fraccion
+        }
+      }
+    }
+    curva {
+      publicacionId
+      red
+      horas
+      vistas
+      interacciones
+    }
+  }
+`;
+
+/** Cómo le fue a un clip en cada red donde salió, con la curva de las lecturas. */
+export const METRICAS_DE_CLIP = gql`
+  ${CAMPOS_METRICAS_DE_CLIP}
+  query MetricasDeClip($marcaId: ID!, $clipId: ID!) {
+    metricasDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposMetricasDeClip
+    }
+  }
+`;
+
+/** "Actualizar": relee ya las publicaciones del clip (lo leído hace menos de 10 min no se relee). */
+export const ACTUALIZAR_METRICAS_DE_CLIP = gql`
+  ${CAMPOS_METRICAS_DE_CLIP}
+  mutation ActualizarMetricasDeClip($marcaId: ID!, $clipId: ID!) {
+    actualizarMetricasDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposMetricasDeClip
+    }
+  }
+`;
+
+/** Lo poco del clip que necesita su página de métricas: la cabecera y la puntuación de la IA. */
+export const CLIP_PARA_METRICAS = gql`
+  query ClipParaMetricas($id: ID!, $marcaId: String!) {
+    clipEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      episodioId
+      titulo
+      urlPoster
+      puntuacion
+      motivo
+      origen
+    }
+  }
+`;
+
+// Trae CamposTotalesMetricas: quien use este no lo vuelve a incluir.
+const CAMPOS_CLIP_CON_METRICAS = gql`
+  ${CAMPOS_TOTALES_METRICAS}
+  fragment CamposClipConMetricas on ClipConMetricas {
+    clipId
+    episodioId
+    titulo
+    urlPoster
+    puntuacion
+    motivo
+    origen
+    publicadoEn
+    redes
+    totales {
+      ...CamposTotalesMetricas
+    }
+  }
+`;
+
+/**
+ * El resumen de la marca en los últimos `dias`, con el período anterior del
+ * mismo largo para comparar. La zona horaria, como en el análisis: la "mejor
+ * hora" es la del reloj de quien mira.
+ */
+export const RESUMEN_METRICAS = gql`
+  ${CAMPOS_CLIP_CON_METRICAS}
+  query ResumenMetricas($marcaId: ID!, $dias: Int!, $zonaHoraria: String) {
+    resumenMetricas(marcaId: $marcaId, dias: $dias, zonaHoraria: $zonaHoraria) {
+      dias
+      desde
+      hasta
+      clips
+      actualizadoEn
+      totales {
+        ...CamposTotalesMetricas
+      }
+      anterior {
+        ...CamposTotalesMetricas
+      }
+      porRed {
+        red
+        seguidores
+        seguidoresCambio
+        totales {
+          ...CamposTotalesMetricas
+        }
+      }
+      mejores {
+        ...CamposClipConMetricas
+      }
+      peores {
+        ...CamposClipConMetricas
+      }
+      porMotivo {
+        clave
+        clips
+        vistasPromedio
+        tasaInteraccion
+      }
+      porPuntuacion {
+        clave
+        clips
+        vistasPromedio
+        tasaInteraccion
+      }
+      porHora {
+        clave
+        clips
+        vistasPromedio
+        tasaInteraccion
+      }
+    }
+  }
+`;
+
+/**
+ * Las métricas como archivo (CSV o Markdown), armado por el backend en el
+ * idioma de quien lo pide (el header `x-idioma`). Es un archivo, no estado:
+ * se pide con `fetchPolicy: "no-cache"`.
+ */
+export const EXPORTAR_METRICAS = gql`
+  query ExportarMetricas($marcaId: ID!, $formato: FormatoExportacion!, $dias: Int!, $zonaHoraria: String) {
+    exportarMetricas(marcaId: $marcaId, formato: $formato, dias: $dias, zonaHoraria: $zonaHoraria) {
+      nombre
+      tipo
+      contenido
+    }
+  }
+`;
+
 // ---- Puente teléfono → computadora ----
 
 /**
@@ -1523,6 +1667,33 @@ export const EPISODIOS = gql`
       resolucionOriginal {
         ancho
         alto
+      }
+    }
+  }
+`;
+
+/**
+ * Lo que la marca tiene en marcha, para el aviso global (EnCurso): solo lo
+ * necesario para decir qué paso va, cuánto falta y quién lo empezó.
+ */
+export const EPISODIOS_EN_CURSO = gql`
+  query EpisodiosEnCurso($marcaId: String!) {
+    episodiosEnCurso(marcaId: $marcaId) {
+      _id
+      titulo
+      estado
+      progresoBunny
+      estadoImportacion
+      progresoImportacion
+      estadoTranscripcion
+      progresoTranscripcion
+      estadoMomentos
+      reimportacion {
+        estado
+        progreso
+      }
+      subidoPor {
+        nombre
       }
     }
   }
@@ -1670,6 +1841,7 @@ export const CLIPS_DE_EPISODIO = gql`
       desdeSeg
       hastaSeg
       duracionEfectivaSeg
+      duracionFinalSeg
       puntuacion
       motivo
       titulo
@@ -1740,6 +1912,96 @@ const CAMPOS_VERSION_CORTA_CLIP = gql`
   }
 `;
 
+// ---- Audio del clip y biblioteca de sonidos (Tanda 2, be#173) ----
+
+const CAMPOS_MUSICA_CLIP = gql`
+  fragment CamposMusicaClip on MusicaClip {
+    sonidoId
+    url
+    titulo
+    volumen
+    bajarAlHablar
+  }
+`;
+
+const CAMPOS_EFECTO_CLIP = gql`
+  fragment CamposEfectoClip on EfectoClip {
+    id
+    sonidoId
+    url
+    titulo
+    enSeg
+    duracionSeg
+    volumen
+  }
+`;
+
+const CAMPOS_SONIDO = gql`
+  fragment CamposSonido on Sonido {
+    _id
+    tipo
+    titulo
+    categoria
+    url
+    duracionSeg
+    marcaId
+    fuente
+    createdAt
+  }
+`;
+
+/** La biblioteca desde una marca: la de Clipfine más los que subió la marca. */
+export const SONIDOS = gql`
+  ${CAMPOS_SONIDO}
+  query Sonidos($marcaId: String!, $tipo: TipoSonido) {
+    sonidos(marcaId: $marcaId, tipo: $tipo) {
+      ...CamposSonido
+    }
+  }
+`;
+
+/** Renombra un sonido de la marca (los de Clipfine, desde /superadmin). */
+export const ACTUALIZAR_SONIDO = gql`
+  ${CAMPOS_SONIDO}
+  mutation ActualizarSonido($id: ID!, $marcaId: String!, $titulo: String, $categoria: String) {
+    actualizarSonido(id: $id, marcaId: $marcaId, titulo: $titulo, categoria: $categoria) {
+      ...CamposSonido
+    }
+  }
+`;
+
+/** Falla, con el motivo, si algún clip lo usa. */
+export const BORRAR_SONIDO = gql`
+  mutation BorrarSonido($id: ID!, $marcaId: String!) {
+    borrarSonido(id: $id, marcaId: $marcaId)
+  }
+`;
+
+/** La biblioteca de Clipfine. Solo superadmin. */
+export const SONIDOS_GLOBALES = gql`
+  ${CAMPOS_SONIDO}
+  query SonidosGlobales($tipo: TipoSonido) {
+    sonidosGlobales(tipo: $tipo) {
+      ...CamposSonido
+    }
+  }
+`;
+
+export const ACTUALIZAR_SONIDO_GLOBAL = gql`
+  ${CAMPOS_SONIDO}
+  mutation ActualizarSonidoGlobal($id: ID!, $titulo: String, $categoria: String, $fuente: String) {
+    actualizarSonidoGlobal(id: $id, titulo: $titulo, categoria: $categoria, fuente: $fuente) {
+      ...CamposSonido
+    }
+  }
+`;
+
+export const BORRAR_SONIDO_GLOBAL = gql`
+  mutation BorrarSonidoGlobal($id: ID!) {
+    borrarSonidoGlobal(id: $id)
+  }
+`;
+
 const CAMPOS_CLIP_EDITOR = gql`
   fragment CamposClipEditor on ClipEpisodio {
     _id
@@ -1757,6 +2019,7 @@ const CAMPOS_CLIP_EDITOR = gql`
       hastaSeg
     }
     duracionEfectivaSeg
+    duracionFinalSeg
     titulo
     texto
     puntuacion
@@ -1814,6 +2077,27 @@ const CAMPOS_CLIP_EDITOR = gql`
       desdeSeg
       hastaSeg
     }
+    imagenes {
+      id
+      url
+      sinFondo
+      contorno
+      centroX
+      centroY
+      ancho
+      desdeSeg
+      hastaSeg
+      estadoRecorte
+      urlFinal
+    }
+    volumenClip
+    velocidad
+    musica {
+      ...CamposMusicaClip
+    }
+    efectos {
+      ...CamposEfectoClip
+    }
     estadoAutoEncuadre
     errorAutoEncuadre
     personasAutoEncuadre
@@ -1869,6 +2153,8 @@ const CAMPOS_CLIP_EDITOR = gql`
   }
   ${RESUMEN_PUBLICACION_CLIP}
   ${CAMPOS_VERSION_CORTA_CLIP}
+  ${CAMPOS_MUSICA_CLIP}
+  ${CAMPOS_EFECTO_CLIP}
 `;
 
 /** Los colores de la marca para los clips, su logo y su plantilla (be#117). */
@@ -2033,6 +2319,30 @@ export const CREAR_CLIP_EPISODIO = gql`
   mutation CrearClipEpisodio($input: CrearClipEpisodioInput!) {
     crearClipEpisodio(input: $input) {
       ...CamposClipEditor
+    }
+  }
+`;
+
+/**
+ * La vista previa de una imagen antes de guardar el clip: encola su recorte
+ * (quitar fondo, contorno) si hace falta y devuelve como está. Idempotente;
+ * uno FALLIDO se reintenta. Es el mismo trabajo que usa el guardado.
+ */
+export const PREPARAR_RECORTE_IMAGEN = gql`
+  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
+    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+      estadoRecorte
+      urlFinal
+    }
+  }
+`;
+
+/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. */
+export const RECORTE_IMAGEN = gql`
+  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
+    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+      estadoRecorte
+      urlFinal
     }
   }
 `;

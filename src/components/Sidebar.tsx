@@ -4,11 +4,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   CalendarDays,
+  ChartColumnIncreasing,
   Clapperboard,
   House,
   CreditCard,
   Link2,
-  Receipt,
+  ShieldCheck,
   ListChecks,
   LogOut,
   PanelLeftClose,
@@ -24,6 +25,7 @@ import {
 import { cerrarSesion } from "@/lib/auth";
 import { LogoNG } from "./LogoNG";
 import { useSesion } from "@/lib/sesion";
+import { useSoySuperadmin } from "@/lib/superadmin";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
@@ -36,6 +38,7 @@ type ClaveNav =
   | "episodios"
   | "calendario"
   | "publicaciones"
+  | "metricas"
   | "crearVideo"
   | "montaje"
   | "revision"
@@ -44,7 +47,7 @@ type ClaveNav =
   | "brandKit"
   | "plan"
   | "redesConectadas"
-  | "suscripciones";
+  | "superadmin";
 
 interface ItemNav {
   href: string;
@@ -64,6 +67,9 @@ export const NAV_PRINCIPAL: ItemNav[] = [
   { href: "/episodios", icon: Mic, clave: "episodios" },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
   { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
+  // Cómo le fue a lo publicado, en todas las redes (ng-creator-be#119): es lo
+  // que la agencia le muestra al cliente, así que va a la vista y no adentro.
+  { href: "/metricas", icon: ChartColumnIncreasing, clave: "metricas" },
 ];
 
 /**
@@ -72,8 +78,6 @@ export const NAV_PRINCIPAL: ItemNav[] = [
  * ve el admin; con los planes (ng-creator-be#89) pasa a verse en las marcas
  * del plan Interno. Revisión está acá porque hoy revisa estos videos; cuando
  * exista la revisión de clips (#70) sube a la principal.
- *
- * Revival salió del menú: no se usa. La ruta sigue, por si vuelve.
  */
 export const NAV_REACCION: ItemNav[] = [
   { href: "/crear", icon: Clapperboard, clave: "crearVideo" },
@@ -92,9 +96,10 @@ const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo"
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
 /** Mi plan: solo el propietario (el titular paga); quien edita no ve precios ni cobro. */
 const navPlan: ItemNav = { href: "/plan", icon: CreditCard, clave: "plan" };
+/** El panel de quienes administran Clipfine: aparte, con su propio login. */
+const navSuperadmin: ItemNav = { href: "/superadmin", icon: ShieldCheck, clave: "superadmin" };
 const navAdmin: ItemNav[] = [
   { href: "/admin/facebook", icon: Link2, clave: "redesConectadas" },
-  { href: "/admin/suscripciones", icon: Receipt, clave: "suscripciones" },
 ];
 
 export function esActivo(item: ItemNav, pathname: string): boolean {
@@ -137,7 +142,8 @@ export function Sidebar({
   const tRol = useTranslations("marcoRoles");
   const pathname = usePathname();
   const router = useRouter();
-  const { usuario, esAdmin, rolEn } = useSesion();
+  const { usuario, esAdmin, rolEn, veMetricas } = useSesion();
+  const { soy: soySuperadmin } = useSoySuperadmin();
   const { activa } = useMarcaActiva();
   const rolAqui = rolEn(activa?._id);
 
@@ -210,7 +216,7 @@ export function Sidebar({
 
       {/* Navegacion. Scrollea sola si no entra, sin arrastrar el resto. */}
       <nav className={`flex-1 space-y-1 overflow-y-auto px-3 pb-4 ${c ? "md:px-2" : ""}`}>
-        {NAV_PRINCIPAL.map((item) => (
+        {NAV_PRINCIPAL.filter((item) => item.clave !== "metricas" || veMetricas(activa?._id)).map((item) => (
           <BotonNav key={item.href} {...item} label={t(`nav.${item.clave}`)} colapsado={c} activo={esActivo(item, pathname)} onClick={() => ir(item.href)} />
         ))}
         {/* Una fila más del menú, que abre la lista al costado: así entra igual
@@ -272,6 +278,16 @@ export function Sidebar({
                 />
               ))}
           </>
+        )}
+
+        {soySuperadmin && (
+          <BotonNav
+            {...navSuperadmin}
+            label={t(`nav.${navSuperadmin.clave}`)}
+            colapsado={c}
+            activo={false}
+            onClick={() => ir(navSuperadmin.href)}
+          />
         )}
       </nav>
 

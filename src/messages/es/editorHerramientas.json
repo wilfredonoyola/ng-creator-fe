@@ -1,0 +1,100 @@
+{
+  "herramientas": "Herramientas",
+  "nombres": {
+    "editar": "Editar",
+    "texto": "Texto",
+    "subtitulos": "Subtítulos",
+    "superposicion": "Superposición",
+    "audio": "Audio",
+    "formato": "Formato",
+    "auto": "Auto-encuadre"
+  },
+  "barra": {
+    "deshacer": "Deshacer",
+    "deshacerAtajo": "Deshacer (⌘Z / Ctrl+Z)",
+    "rehacer": "Rehacer",
+    "rehacerAtajo": "Rehacer (⇧⌘Z / Ctrl+Y)",
+    "exportando": "Exportando {n}%",
+    "descargar": "Descargar",
+    "opcionesVideo": "Opciones del video"
+  },
+  "errores": {
+    "exportar": "No se pudo exportar el video"
+  },
+  "exportar": {
+    "video": "Video",
+    "exportar": "Exportar video",
+    "deNuevo": "Volver a exportar",
+    "reintentar": "Intentar de nuevo",
+    "alDia": "Ya tiene todos los cambios: solo si querés rehacerlo.",
+    "equipo": "Para el equipo",
+    "listoSinVideo": "Exportá el video para marcarlo listo.",
+    "seExportaSolo": "Se exporta solo antes de publicar.",
+    "bajaAlTerminar": "Se descarga solo cuando termine de exportarse."
+  },
+  "escenario": {
+    "verEnRed": "Ver como en TikTok, Reels o Shorts",
+    "verEnRedSoloVertical": "Solo en 9:16"
+  },
+  "linea": {
+    "titulo": "Línea de tiempo",
+    "recorrer": "Tocá o arrastrá para moverte en el clip",
+    "video": "Video",
+    "textos": "Textos",
+    "subtitulos": "Subtítulos",
+    "imagenes": "Imágenes",
+    "textoVacio": "(vacío)",
+    "llamada": "Llamada a la acción",
+    "logo": "Logo de la marca",
+    "imagen": "Imagen {n}",
+    "agregarTexto": "Texto",
+    "agregarImagen": "Imagen",
+    "subtitulosActivos": "Palabra por palabra",
+    "subtitulosApagados": "Apagados",
+    "audio": "Audio",
+    "musica": "Música · {titulo}",
+    "agregarAudio": "Audio"
+  },
+  "editar": {
+    "resumen": "Dura {dura} · {cortes, plural, =0 {sin cortes} one {# corte} other {# cortes}} · arranca en {inicio} del episodio",
+    "dividir": "Dividir",
+    "quitarTramo": "Quitar tramo",
+    "elegiTramo": "Tocá un tramo del video en la línea de tiempo",
+    "empiezaAca": "Empieza acá",
+    "terminaAca": "Termina acá",
+    "cortes": "Cortes · {n}",
+    "ayuda": "Dividir parte el video en el cabezal. Tocá un tramo (o arrastrá) en la línea de tiempo y quitalo. Lo rayado no sale; la ✕ lo devuelve.",
+    "enElEpisodio": "En el episodio",
+    "velocidad": "Velocidad",
+    "duraFinal": "Dura {antes} → {despues} a {velocidad}",
+    "duraIgual": "Dura {dura} a velocidad normal",
+    "velocidadAyuda": "Textos, cortes y subtítulos se editan igual; la música no se acelera."
+  },
+  "texto": {
+    "ayuda": "Arrastrá el texto en el video para moverlo. Sus bordes en la línea de tiempo marcan cuándo aparece."
+  },
+  "subtitulos": {
+    "mostrar": "Mostrar subtítulos",
+    "mostrarAyuda": "Salen de la transcripción del episodio",
+    "estilo": "Estilo",
+    "conEstilo": "Salen con el estilo {estilo}.",
+    "sinEstilo": "Salen con la palabra resaltada.",
+    "cambiarEstilo": "Cambiar el estilo"
+  },
+  "superposicion": {
+    "ayuda": "Arrastrá la imagen en el video para moverla; la esquina la agranda. Sus bordes en la línea de tiempo marcan cuándo aparece."
+  },
+  "formato": {
+    "proporcion": "Proporción",
+    "esteTramo": "Este tramo · {desde} → {hasta}",
+    "irAuto": "Auto-encuadre",
+    "fondo": "Fondo",
+    "nuevoEncuadre": "Encuadre acá"
+  },
+  "auto": {
+    "pedir": "Auto-encuadrar",
+    "deNuevo": "Volver a auto-encuadrar",
+    "encontro": "Encontró {n, plural, one {# persona} other {# personas}}.",
+    "ajustar": "Después movés los recuadros en el video de la izquierda, o en Formato."
+  }
+}

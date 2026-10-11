@@ -12,6 +12,7 @@ import { ElegirPortada } from "@/components/ElegirPortada";
 import { EstadoEnFacebook } from "@/components/EstadoEnFacebook";
 import { SelloDeAutoria } from "@/components/SelloDeAutoria";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
+import { metaPropiaApagada, useProveedores } from "@/lib/upload-post";
 
 /**
  * Un video y todo lo que hay que decidir antes de sacarlo.
@@ -35,6 +36,7 @@ export default function DetalleVideoPage({
   const t = useTranslations("publicadosDetalle");
   const { id } = params;
   const { activa, marcas } = useMarcaActiva();
+  const sinMetaPropia = metaPropiaApagada(useProveedores());
 
   const { data, loading } = useQuery(EXPEDIENTE, {
     variables: { id },
@@ -174,9 +176,11 @@ export default function DetalleVideoPage({
           <Seccion
             titulo={t("facebook.titulo")}
             detalle={
-              activa
-                ? t("facebook.destino", { pagina: activa.nombre })
-                : t("facebook.elegi")
+              sinMetaPropia
+                ? undefined
+                : activa
+                  ? t("facebook.destino", { pagina: activa.nombre })
+                  : t("facebook.elegi")
             }
           >
             <PublicarEnFacebook

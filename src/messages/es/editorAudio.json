@@ -1,0 +1,41 @@
+{
+  "escuchar": "Escuchar",
+  "pausar": "Pausar",
+  "cerrarBiblioteca": "Cerrar la biblioteca",
+  "voz": {
+    "titulo": "Voz del video",
+    "volumen": "Volumen de la voz",
+    "silenciar": "Silenciar",
+    "silenciada": "Silenciada",
+    "activar": "Volver a escuchar la voz",
+    "masDe100": "En la vista previa suena al 100%; el video sale con el volumen que elegiste."
+  },
+  "musica": {
+    "titulo": "Música de fondo",
+    "cambiar": "Cambiar",
+    "quitar": "Quitar la música",
+    "volumen": "Volumen de la música",
+    "bajarAlHablar": "Bajar cuando hablan",
+    "bajarAlHablarAyuda": "La música baja sola cuando hay voz",
+    "usar": "Usar",
+    "elegida": "Elegida",
+    "vacia": "Todavía no hay música en la biblioteca. Podés subir la tuya abajo."
+  },
+  "efectos": {
+    "titulo": "Efectos · {n}/{max}",
+    "sinEfectos": "Este clip no tiene efectos.",
+    "ayuda": "Se agregan en el cabezal (<cabezal></cabezal>). Después los movés en la línea de tiempo.",
+    "lleno": "Llegaste al máximo de {max} efectos por clip.",
+    "enElCabezal": "Agregar",
+    "agregar": "Agregar «{titulo}» en el cabezal",
+    "quitar": "Quitar «{titulo}»",
+    "volumen": "Volumen del efecto",
+    "ir": "Ir a este efecto",
+    "vacia": "Todavía no hay efectos en la biblioteca. Podés subir los tuyos abajo."
+  },
+  "subir": {
+    "titulo": "Tus sonidos",
+    "boton": "Subir sonido"
+  },
+  "licencia": "Usá música libre de derechos o con licencia para redes."
+}

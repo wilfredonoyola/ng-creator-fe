@@ -11,6 +11,7 @@ import { useSesion } from "@/lib/sesion";
 import { Campanita } from "./Campanita";
 import { Sidebar } from "./Sidebar";
 import { NavInferior } from "./NavInferior";
+import { EnCurso } from "./EnCurso";
 
 /**
  * Estructura del dashboard, pensada primero para el teléfono.
@@ -151,6 +152,9 @@ export function DashboardLayout({
       </main>
 
       <NavInferior onMas={() => setAbierto(true)} ocultarDesdeMd={Boolean(menuColapsable)} />
+
+      {/* Lo que la marca tiene en proceso, a la vista desde cualquier pantalla. */}
+      <EnCurso sobreNavInferior={menuColapsable ? "hastaMd" : "hastaLg"} />
     </div>
   );
 }

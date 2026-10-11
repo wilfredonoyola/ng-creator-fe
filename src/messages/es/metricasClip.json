@@ -1,0 +1,66 @@
+{
+  "titulo": "Cómo le fue en las redes",
+  "actualizado": "Actualizado {cuando}",
+  "sinLecturas": "Las métricas aparecen más o menos una hora después de publicar.",
+  "actualizar": "Actualizar",
+  "actualizando": "Actualizando…",
+  "actualizarAyuda": "Vuelve a leer las métricas de las redes. Lo leído hace menos de 10 minutos no se relee.",
+  "errorActualizar": "No se pudieron actualizar las métricas. Probá de nuevo en un rato.",
+  "totales": {
+    "vistas": "Vistas",
+    "interacciones": "Interacciones",
+    "tasa": "Interacción",
+    "seguidores": "Seguidores ganados",
+    "likes": "Likes",
+    "comentarios": "Comentarios",
+    "compartidos": "Compartidos",
+    "guardados": "Guardados"
+  },
+  "detalleTotales": "{likes} likes · {comentarios} comentarios · {compartidos} compartidos · {guardados} guardados. «—» es un dato que esa red no informa.",
+  "porRed": "En cada red",
+  "crecimiento": "Cómo crecieron las vistas",
+  "retencion": "Retención en TikTok",
+  "youtubeVisto": "En YouTube se vio en promedio <b>{pct}</b> del video.",
+  "tiempoMedio": "Unos {seg} segundos por vista.",
+  "origenesTitulo": "De dónde llegó la gente",
+  "paisesTitulo": "Países",
+  "nuevosTitulo": "Público nuevo o que vuelve",
+  "seguidoresTitulo": "Seguidores o no",
+  "origenes": {
+    "paraTi": "Para ti",
+    "siguiendo": "Siguiendo",
+    "perfil": "Perfil",
+    "busqueda": "Búsqueda",
+    "sonido": "Sonido",
+    "mensajes": "Mensajes directos",
+    "otros": "Otros"
+  },
+  "publico": {
+    "NEW_VIEWER": "Nuevos",
+    "RETURN_VIEWER": "Vuelven",
+    "FOLLOWER_PERCENT": "Seguidores",
+    "NON_FOLLOWER_PERCENT": "No seguidores"
+  },
+  "ia": {
+    "puntuacion": "La IA le dio <b>{n}/100</b>",
+    "resultado": "Logró <b>{vistas}</b> vistas",
+    "veces": "{veces}× el promedio de la marca (90 días)",
+    "acerto": "La IA acertó: esperaba mucho y rindió más que el promedio.",
+    "sorpresa": "Sorpresa: la IA no esperaba tanto y rindió más que el promedio.",
+    "esperabaMas": "La IA esperaba más: rindió menos que el promedio de la marca.",
+    "acertoBajo": "La IA no esperaba mucho, y rindió menos que el promedio."
+  },
+  "verPublicacion": "Ver publicación ↗",
+  "todaviaNoLeida": "Todavía sin lectura: llega más o menos una hora después de publicar.",
+  "leida": "Leída {cuando}",
+  "volver": "Métricas",
+  "noEncontrado": "No encontramos este clip",
+  "otraMarca": "Puede ser de otra marca: cambiá de marca en el menú.",
+  "hechoAMano": "Hecho a mano",
+  "verEpisodio": "Ver el episodio",
+  "verPublicaciones": "Ver dónde salió",
+  "sinPublicar": {
+    "titulo": "Este clip todavía no salió",
+    "detalle": "Cuando se publique, sus métricas aparecen acá más o menos una hora después."
+  }
+}

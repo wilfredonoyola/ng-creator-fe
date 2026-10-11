@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { ANALISIS_PAGINA } from "@/graphql/operations";
@@ -8,6 +9,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
 import { BarrasRendimiento } from "@/components/analisis/BarrasRendimiento";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
+import { useSesion } from "@/lib/sesion";
 import {
   etiquetaHora,
   mejorTramo,
@@ -32,7 +34,7 @@ const esDia = (d: string): d is DiaSemana => (DIAS_SEMANA as readonly string[]).
 /**
  * Qué y cuándo conviene publicar, según el historial de la página.
  *
- * Trabaja sobre el historial que Revival ya sincronizó, no sobre la API de
+ * Trabaja sobre el historial de Facebook ya sincronizado, no sobre la API de
  * Meta: además de ser inmediato, en junio de 2026 Meta dio de baja buena parte
  * de las métricas de Page Insights, así que apoyarse en ellas sería construir
  * sobre algo que ya se rompió una vez.
@@ -44,6 +46,7 @@ export default function AnalisisPage() {
   const nombreDia = (d: number) => (esDia(String(d)) ? t(`dias.${String(d) as DiaSemana}`) : String(d));
   const diaCorto = (d: number) => (esDia(String(d)) ? t(`diasCortos.${String(d) as DiaSemana}`) : String(d));
   const { activa, cargando: cargandoPagina } = useMarcaActiva();
+  const { veMetricas } = useSesion();
   // El análisis es del historial de la página de Facebook de la marca.
   const pageId = activa?.paginaFacebook?.pageId;
   const [dias, setDias] = useState(0);
@@ -107,7 +110,7 @@ export default function AnalisisPage() {
       </div>
 
       {/* Los filtros van en una fila, arriba de todo lo que afectan. */}
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         {PERIODOS.map((p) => (
           <button
             key={p}
@@ -121,6 +124,13 @@ export default function AnalisisPage() {
             {t(`periodos.${p}`)}
           </button>
         ))}
+        {/* Esto es la página de Facebook entera; lo que salió de Clipfine, en
+            todas las redes, está en Métricas. */}
+        {veMetricas(activa?._id) && (
+          <Link href="/metricas" className="ml-auto text-xs text-white/40 hover:text-white/70">
+            {t("irMetricas")}
+          </Link>
+        )}
       </div>
 
       {sinHistorial ? (

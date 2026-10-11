@@ -44,6 +44,16 @@ export function useProveedores(): Record<Red, Proveedor> {
   };
 }
 
+/**
+ * Si la conexión propia de Meta está apagada: Facebook e Instagram publican
+ * por Upload-Post, así que no se ofrece conectar ni publicar por la propia (y
+ * no aparecen dos "Facebook" en las publicaciones). Con PROVEEDOR_FACEBOOK o
+ * PROVEEDOR_INSTAGRAM en 'propio' en el backend, vuelve todo.
+ */
+export function metaPropiaApagada(p: Record<Red, Proveedor>): boolean {
+  return p.FACEBOOK === "upload-post" && p.INSTAGRAM === "upload-post";
+}
+
 /** Las cuentas de Upload-Post de la marca (vacío si no hay red que las use). */
 export function useCuentasUploadPost(marcaId: string | undefined, skip = false) {
   const q = useQuery(CUENTAS_UPLOAD_POST, {

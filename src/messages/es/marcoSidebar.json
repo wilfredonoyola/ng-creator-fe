@@ -4,15 +4,16 @@
     "episodios": "Episodios",
     "calendario": "Calendario",
     "publicaciones": "Publicaciones",
+    "metricas": "Métricas",
     "crearVideo": "Crear video",
     "montaje": "Montaje",
     "revision": "Revisión",
     "creators": "Creators",
     "equipo": "Equipo",
     "brandKit": "Brand Kit",
+    "superadmin": "Superadmin",
     "redesConectadas": "Redes conectadas",
-    "plan": "Mi plan",
-    "suscripciones": "Suscripciones"
+    "plan": "Mi plan"
   },
   "cerrarMenu": "Cerrar menú",
   "trabajandoEnTitulo": "Trabajando en {marca}. Expandí el menú para cambiarla.",

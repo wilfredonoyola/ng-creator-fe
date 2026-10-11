@@ -35,6 +35,8 @@ interface Clip {
   hastaSeg: number;
   /** Ya sin los cortes del medio. */
   duracionEfectivaSeg?: number | null;
+  /** Lo que dura el MP4: sin los cortes y con la velocidad (be#173). */
+  duracionFinalSeg?: number | null;
   puntuacion: number;
   motivo: string;
   titulo: string;
@@ -362,7 +364,7 @@ function TarjetaClip({
             {t("tarjeta.tramo", {
               desde: reloj(clip.desdeSeg),
               hasta: reloj(clip.hastaSeg),
-              seg: Math.round(clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg),
+              seg: Math.round(clip.duracionFinalSeg ?? clip.duracionEfectivaSeg ?? clip.hastaSeg - clip.desdeSeg),
             })}
             {clip.origen !== "MANUAL" && t("tarjeta.puntuacion", { n: clip.puntuacion })}
           </p>
@@ -408,7 +410,16 @@ function TarjetaClip({
             {t("tarjeta.verFinal")}
           </button>
         )}
-        {opera && tieneVideo && (
+        {(clip.publicacion?.publicadas ?? 0) > 0 && (
+          <Link
+            href={`/metricas/clips/${clip._id}`}
+            className="rounded-lg border border-white/15 px-3 py-1.5 text-center text-xs text-white/80 hover:bg-white/5"
+          >
+            {t("tarjeta.metricas")}
+          </Link>
+        )}
+        {/* Programar no pide el MP4: si falta o quedó viejo, se exporta solo antes de publicar. */}
+        {opera && (
           <Link
             href={`${editar}/publicar`}
             className="rounded-lg border border-indigo-400/40 px-3 py-1.5 text-center text-xs text-indigo-200 hover:bg-indigo-400/10"

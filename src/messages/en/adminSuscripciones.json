@@ -1,7 +1,6 @@
 {
   "titulo": "Subscriptions",
   "subtitulo": "Each paying account's plan, its usage and manual adjustments.",
-  "soloAdmin": "Only Clipfine administrators can see subscriptions.",
   "cargando": "Loading…",
   "vacio": "No accounts in this filter.",
   "filtros": {
