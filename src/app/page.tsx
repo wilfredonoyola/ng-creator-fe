@@ -54,7 +54,7 @@ const PASOS = ["subir", "clips", "publicar"] as const;
 /** Lo que hace la analítica (#119), en el orden en que importa a una agencia. */
 const PUNTOS_METRICAS = ["porClip", "retencion", "ia", "programa", "reporte", "solo"] as const;
 const PUNTOS_APROBACION = ["rol", "voz", "hora", "editar"] as const;
-const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "editar", "revision", "sigue", "idioma", "app"] as const;
+const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "editar", "capcut", "revision", "sigue", "idioma", "app"] as const;
 
 const CLIPS = ["c1", "c2", "c3", "c4"] as const;
 const CLIENTES = [

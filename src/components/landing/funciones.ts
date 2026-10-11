@@ -58,6 +58,7 @@ import {
   TrendingUp,
   Type,
   Upload,
+  UploadCloud,
   UserCheck,
   Volume2,
   VolumeX,
@@ -156,6 +157,7 @@ export const SECCIONES = [
     items: [
       { clave: "subir", icono: Upload },
       { clave: "restream", icono: Radio },
+      { clave: "clipsEditados", icono: UploadCloud },
     ],
   },
   {

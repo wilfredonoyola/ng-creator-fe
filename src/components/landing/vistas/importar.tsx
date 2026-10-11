@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Barra, Chip, Cuadro, Fila, Vista } from "./base";
 
-/** Traer episodios: las vistas previas de cada tarjeta. */
+/** Traer contenido: las vistas previas de cada tarjeta. */
 
 function Subir() {
   const t = useTranslations("featuresImportar.vistas.subir");
@@ -45,7 +45,28 @@ function Restream() {
   );
 }
 
+function ClipsEditados() {
+  const t = useTranslations("featuresImportar.vistas.clipsEditados");
+  return (
+    <Vista>
+      <div className="flex flex-col items-center gap-1 rounded-lg border-2 border-dashed border-[#4A4A45] px-3 py-2.5 text-center">
+        <span className="font-[family-name:var(--font-archivo)] text-[13px] font-bold text-white">{t("soltar")}</span>
+        <span>MP4 · MOV · CapCut</span>
+      </div>
+      <Fila>
+        <Cuadro className="!h-[44px] !w-[26px]" />
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate text-white">{t("archivo")}</span>
+          <span>0:42</span>
+        </span>
+        <Chip tono="amarillo">{t("listo")}</Chip>
+      </Fila>
+    </Vista>
+  );
+}
+
 export const VISTAS_IMPORTAR = {
   subir: Subir,
   restream: Restream,
+  clipsEditados: ClipsEditados,
 };
