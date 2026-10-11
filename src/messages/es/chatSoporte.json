@@ -1,0 +1,22 @@
+{
+  "abrir": "Abrir el chat de soporte",
+  "burbuja": "¿Dudas? Preguntanos",
+  "titulo": "Soporte Clipfine",
+  "subtitulo": "Te responde nuestro asistente con la ayuda. Si hace falta, te pasa con el equipo.",
+  "nueva": "Empezar una conversación nueva",
+  "cerrar": "Cerrar",
+  "saludo": "¡Hola! ¿En qué te ayudo? Preguntame cómo usar Clipfine: marcas, equipo, clips, revisión, programar o métricas.",
+  "sugerencia1": "¿Cómo invito a mi cliente para que apruebe los clips?",
+  "sugerencia2": "¿Cómo programo un clip en redes?",
+  "sugerencia3": "¿Qué incluye la prueba gratis?",
+  "pensando": "Escribiendo…",
+  "error": "No pudimos contestar. Probá de nuevo o hablá con el equipo.",
+  "hablarConEquipo": "Hablar con el equipo",
+  "pedirCorreo": "¿A qué correo te respondemos? Le pasamos esta conversación al equipo.",
+  "correoEjemplo": "tu@correo.com",
+  "enviarAlEquipo": "Mandar al equipo",
+  "derivada": "Listo: le pasamos la conversación al equipo. Te respondemos a {correo}.",
+  "escribir": "Escribí tu pregunta",
+  "enviar": "Enviar",
+  "alCorreo": "O escribinos a <correo></correo>"
+}
