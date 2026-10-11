@@ -18,8 +18,9 @@ import {
   LINK_DEMO,
 } from "@/components/landing/Publica";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
-import { GRUPOS, SECCIONES } from "@/components/landing/funciones";
+import { DESTACADA, GRUPOS, SECCIONES } from "@/components/landing/funciones";
 import { HashAPagina } from "@/components/landing/HashAPagina";
+import { VISTAS } from "@/components/landing/vistas";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landingFunciones");
@@ -84,12 +85,16 @@ export default function PaginaFunciones() {
                 <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {g.secciones.map((id) => {
                     const s = SECCIONES.find((x) => x.id === id)!;
+                    const Vista = VISTAS[s.id]?.[DESTACADA[s.id]];
                     return (
                       <li key={s.id} className="flex">
                         <Link
                           href={`${ENLACE_FUNCIONES}/${s.id}`}
-                          className={`group flex w-full flex-col gap-4 rounded-xl bg-white p-6 transition hover:shadow-[inset_0_0_0_2px_#0A0A0A] ${FOCO} focus-visible:outline-[#0A0A0A]`}
+                          className={`group flex w-full flex-col overflow-hidden rounded-xl bg-white transition hover:shadow-[inset_0_0_0_2px_#0A0A0A] ${FOCO} focus-visible:outline-[#0A0A0A]`}
                         >
+                          {/* Un adelanto: la vista previa de la función que mejor muestra la sección. */}
+                          {Vista && <Vista />}
+                          <div className="flex flex-1 flex-col gap-4 p-6">
                           <h3 className={`${CONDENSADA} break-words text-[30px] leading-[.95] sm:text-[36px]`}>{t(`secciones.${s.id}.titulo`)}</h3>
                           <p className="leading-relaxed text-[#3A3935]">{t(`secciones.${s.id}.texto`)}</p>
                           <ul className="flex flex-wrap gap-1.5">
@@ -102,6 +107,7 @@ export default function PaginaFunciones() {
                           <span className="mt-auto flex items-center gap-2 pt-2 font-semibold underline decoration-[1.5px] underline-offset-[6px] group-hover:decoration-[3px]">
                             {t("ver")} <ArrowRight size={16} />
                           </span>
+                          </div>
                         </Link>
                       </li>
                     );
