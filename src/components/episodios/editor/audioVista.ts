@@ -13,7 +13,8 @@ const SALTO_SEG = 0.5;
 
 /**
  * El `<video>` pasado por Web Audio, para que la voz suene a más de 100 %
- * como en el render (el `volume` del navegador no pasa de 1).
+ * como en el render (el `volume` del navegador no pasa de 1), con un
+ * limitador al final como el del render.
  */
 interface Amplificador {
   ctx: AudioContext;
@@ -33,7 +34,14 @@ function amplificar(v: HTMLVideoElement): Amplificador | null {
   try {
     const ctx = new AudioContext();
     const ganancia = ctx.createGain();
-    ctx.createMediaElementSource(v).connect(ganancia).connect(ctx.destination);
+    // Un limitador después, como el `alimiter` del render: sube sin saturar.
+    const limitador = ctx.createDynamicsCompressor();
+    limitador.threshold.value = -1;
+    limitador.knee.value = 0;
+    limitador.ratio.value = 20;
+    limitador.attack.value = 0.003;
+    limitador.release.value = 0.05;
+    ctx.createMediaElementSource(v).connect(ganancia).connect(limitador).connect(ctx.destination);
     return { ctx, ganancia };
   } catch {
     return null;

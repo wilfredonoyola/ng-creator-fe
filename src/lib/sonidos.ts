@@ -46,7 +46,7 @@ export interface EfectoClip {
 }
 
 /** Lo mismo que valida el backend. */
-export const VOLUMEN_VOZ_MAX = 2;
+export const VOLUMEN_VOZ_MAX = 4;
 export const VOLUMEN_EFECTO_MAX = 2;
 export const VOLUMEN_MUSICA_POR_DEFECTO = 0.25;
 export const MAXIMO_EFECTOS = 20;
