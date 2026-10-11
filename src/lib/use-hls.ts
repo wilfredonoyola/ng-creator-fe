@@ -24,6 +24,11 @@ export function useHls(video: RefObject<HTMLVideoElement>, url: string | null | 
 
     // Un MP4 suelto (el de un clip ya renderizado) no necesita hls.js.
     if (!/\.m3u8(\?|$)/.test(url) || el.canPlayType("application/vnd.apple.mpegurl")) {
+      // El HLS de Bunny Stream manda CORS: pedido así, el editor lo puede
+      // pasar por Web Audio para subir la voz a más de 100 % (ver audioVista).
+      // Un MP4 de otro lado puede no mandarlo, y con CORS no cargaría.
+      if (/\.m3u8(\?|$)/.test(url)) el.crossOrigin = "anonymous";
+      else el.removeAttribute("crossorigin");
       el.src = url;
     } else {
       void import("hls.js").then(({ default: HlsJs }) => {

@@ -152,7 +152,6 @@ export function PanelAudio({
             deshabilitado={!puedeEditar}
           />
         </div>
-        {volumenClip > 1 && <p className="text-xs text-ng-tenue">{t("voz.masDe100")}</p>}
       </Seccion>
 
       {/* La música de fondo */}

@@ -7,8 +7,7 @@
     "volumen": "Voice volume",
     "silenciar": "Mute",
     "silenciada": "Muted",
-    "activar": "Unmute the voice",
-    "masDe100": "The preview plays at 100%; the video comes out at the volume you chose."
+    "activar": "Unmute the voice"
   },
   "musica": {
     "titulo": "Background music",

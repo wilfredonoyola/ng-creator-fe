@@ -7,8 +7,7 @@
     "volumen": "Volumen de la voz",
     "silenciar": "Silenciar",
     "silenciada": "Silenciada",
-    "activar": "Volver a escuchar la voz",
-    "masDe100": "En la vista previa suena al 100%; el video sale con el volumen que elegiste."
+    "activar": "Volver a escuchar la voz"
   },
   "musica": {
     "titulo": "Música de fondo",
