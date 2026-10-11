@@ -20,7 +20,7 @@ type Fila = {
     comoNosConocio?: Origen | null;
     comoNosConocioDetalle?: string | null;
   };
-  accesos: { marcaId: string; marcaNombre: string; rol: "PROPIETARIO" | "EDITOR" | "LECTOR" | "PROVEEDOR" }[];
+  accesos: { marcaId: string; marcaNombre: string; rol: "PROPIETARIO" | "EDITOR" | "REVISOR" | "LECTOR" | "PROVEEDOR" }[];
 };
 
 /**

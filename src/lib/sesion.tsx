@@ -16,7 +16,7 @@ export type Rol = "ADMIN" | "MIEMBRO";
  * de trabajo, solo sube lo suyo y sigue su estado. Su flujo todavía no está
  * construido, así que hoy no habilita ninguna pantalla.
  */
-export type RolPagina = "PROPIETARIO" | "EDITOR" | "LECTOR" | "PROVEEDOR";
+export type RolPagina = "PROPIETARIO" | "EDITOR" | "REVISOR" | "LECTOR" | "PROVEEDOR";
 
 export interface Usuario {
   _id: string;
@@ -137,6 +137,11 @@ export const ESTILO_ROL: Record<
     clase: "border-[#5FA3F5]/40 bg-[#1877F2]/10 text-[#5FA3F5]",
     ayuda:
       "Crea, revisa, aprueba y publica. No necesita cuenta de Facebook.",
+  },
+  REVISOR: {
+    etiqueta: "Revisor",
+    clase: "border-amber-400/40 bg-amber-400/10 text-amber-300",
+    ayuda: "Aprueba o pide cambios antes de publicar. No edita.",
   },
   LECTOR: {
     etiqueta: "Lector",

@@ -71,7 +71,7 @@
     "exportar": { "titulo": "Export as PDF, CSV or Markdown", "texto": "A client-ready report, a sheet for Excel or Google Sheets, or a summary for Notion, Slack or email." },
     "seActualiza": { "titulo": "It updates itself", "texto": "Analytics are read automatically for 90 days after publishing, and you see them in the app too." },
     "marcas": { "titulo": "Many brands in one account", "texto": "Each client has its own space: episodes, clips, calendar, Brand Kit and networks, never mixed." },
-    "roles": { "titulo": "Roles", "texto": "Owner, editor or viewer: everyone gets in with their role on the brands they work on." },
+    "roles": { "titulo": "Roles", "texto": "Owner, editor, reviewer or viewer: everyone gets in with their role on the brands they work on." },
     "invitaciones": { "titulo": "Email invitations", "texto": "Add someone with their email and name, and they go straight into the brand." },
     "tomar": { "titulo": "Who's editing what", "texto": "Whoever takes a clip has it under their name and everyone sees it. If a part is already in another clip, Clipfine warns you." },
     "listos": { "titulo": "Ready to schedule", "texto": "When a clip is marked done, it shows up in the calendar for someone to schedule it." },

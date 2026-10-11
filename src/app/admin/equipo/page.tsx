@@ -42,7 +42,7 @@ interface Invitacion {
   createdAt: string;
 }
 
-const ROLES: RolPagina[] = ["PROPIETARIO", "EDITOR", "LECTOR", "PROVEEDOR"];
+const ROLES: RolPagina[] = ["PROPIETARIO", "EDITOR", "REVISOR", "LECTOR", "PROVEEDOR"];
 
 /**
  * Quién trabaja en esta marca y con qué rol.
@@ -569,7 +569,7 @@ function ChipRevisor({
   onRevisor: (revisor: boolean) => void;
 }) {
   const t = useTranslations("revisionClip.equipo");
-  if (miembro.rol === "PROPIETARIO") {
+  if (miembro.rol === "PROPIETARIO" || miembro.rol === "REVISOR") {
     return (
       <span className="shrink-0 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs text-amber-300">
         {t("revisaSiempre")}
@@ -578,7 +578,8 @@ function ChipRevisor({
   }
   if (miembro.rol !== "EDITOR" && miembro.rol !== "LECTOR") return null;
   const on = !!miembro.revisor;
-  if (!puede) {
+  // Al lector no se lo marca (para eso está el rol Revisor); el marcado antes sigue contando.
+  if (!puede || miembro.rol === "LECTOR") {
     return on ? (
       <span className="shrink-0 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs text-amber-300">{t("revisa")}</span>
     ) : null;
