@@ -1,0 +1,50 @@
+{
+  "titulo": "My plan",
+  "subtitulo": "Your plan, the video hours you've used this month, and billing.",
+  "cargando": "Loading your plan…",
+  "sinPlan": "Your account has no billing plan: your brands have no limits. To add a new brand with a free trial, create it from the brand selector.",
+  "tuPlan": "Your plan",
+  "planes": {
+    "PRUEBA": "Free trial",
+    "STARTER": "Starter",
+    "AGENCY": "Agency",
+    "AGENCY_PRO": "Agency Pro",
+    "CUSTOM": "Custom",
+    "INTERNO": "Internal"
+  },
+  "periodo": "Billing period",
+  "periodos": {
+    "MENSUAL": "Monthly",
+    "ANUAL": "Annual"
+  },
+  "ahorro": "save up to 21%",
+  "estados": {
+    "prueba": "The trial ends on {fecha} ({dias, plural, one {# day left} other {# days left}}).",
+    "pruebaTermino": "The free trial has ended. Choose a plan to keep uploading videos; everything you made is still available.",
+    "activa": "Active.",
+    "renueva": "Renews on {fecha}.",
+    "cancelada": "Cancelled: stays active until {fecha}. You can resume it from Manage billing.",
+    "pagoPendiente": "We couldn't charge the last renewal and we're retrying. Check your card in Manage billing.",
+    "vencida": "Your plan isn't active: new videos can't be uploaded. Choose a plan to come back; everything you made is still available."
+  },
+  "administrarPago": "Manage billing",
+  "uso": "{usadas} of {tope} video hours used",
+  "vuelveACero": "Resets on {fecha}",
+  "sinLimite": "No hour limit.",
+  "elegiUnPlan": "Choose a plan",
+  "cambiarPlan": "Change plan",
+  "horasSuman": "Video hours add up across all your brands. Clips and exports are unlimited.",
+  "horasMes": "{n} video hours a month",
+  "porMes": "/mo",
+  "cobroMensual": "Billed monthly",
+  "cobroAnual": "Billed annually: US${total}",
+  "planActual": "Your current plan",
+  "elegir": "Choose",
+  "cambiarAEste": "Switch to this",
+  "abriendo": "Opening…",
+  "cambiado": "Done: we changed your plan. The difference is charged now, prorated.",
+  "procesandoPago": "We're confirming your payment. Your plan will update in a few seconds.",
+  "cobroNoListo": "Payments aren't enabled yet. If you want a plan now, write to {correo}.",
+  "custom": "Need more than 80 hours a month? <correo>Write to us</correo> and we'll set up a Custom plan.",
+  "lemon": "Payments are processed by Lemon Squeezy, which issues the invoice. You can cancel anytime."
+}

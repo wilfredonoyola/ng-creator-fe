@@ -16,7 +16,8 @@ import {
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
-import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
+import { AvisoPlan, usePlanDeMarca } from "@/components/prueba/AvisoPlan";
+import { duracionDeArchivo } from "@/lib/duracion-video";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
@@ -139,8 +140,8 @@ function estiloDe(t: T, ep: Episodio): { etiqueta: string; clase: string } {
 export default function EpisodiosPage() {
   const t = useTranslations("episodios");
   const { activa } = useMarcaActiva();
-  // En prueba, al llegar al tope no se sube ni se importa más.
-  const { agotada } = usePrueba();
+  // Sin plan vigente o sin horas no se sube ni se importa más.
+  const { bloqueado: agotada, refetch: refrescarPlan } = usePlanDeMarca();
   const { puedeOperar, esPropietario } = useSesion();
   // Los episodios son de la marca, no de una cuenta: uno largo se recorta
   // después para cualquier red (ng-creator-be#58).
@@ -214,6 +215,10 @@ export default function EpisodiosPage() {
     setError(null);
     control.current?.detener();
 
+    // La duración se cobra de las horas del plan al empezar; si el navegador
+    // no la sabe leer, el backend la estima por el peso.
+    const duracion = await duracionDeArchivo(archivo);
+
     let cred: CredencialesTus & { retomada: boolean; episodio: Episodio };
     try {
       const r = await preparar({
@@ -223,14 +228,17 @@ export default function EpisodiosPage() {
             nombreArchivo: archivo.name,
             tamanoBytes: archivo.size,
             tipoArchivo: archivo.type || null,
+            duracionEstimadaSeg: duracion && duracion >= 1 ? Math.round(duracion) : null,
           },
         },
       });
       cred = r.data.prepararSubidaEpisodio;
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errores.preparar"));
+      refrescarPlan();
       return;
     }
+    refrescarPlan();
 
     const episodioId = cred.episodio._id;
     setSubida({
@@ -363,7 +371,7 @@ export default function EpisodiosPage() {
         <>
           {opera && (
             <section className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
-              <AvisoPrueba className="mb-4" />
+              <AvisoPlan className="mb-4" />
               <input
                 ref={input}
                 type="file"

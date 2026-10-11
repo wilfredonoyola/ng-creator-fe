@@ -1,4 +1,5 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
+import adminSuscripciones_es from "./es/adminSuscripciones.json";
 import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
@@ -77,6 +78,7 @@ import onboarding_es from "./es/onboarding.json";
 import panel_es from "./es/panel.json";
 import panelSubirClip_es from "./es/panelSubirClip.json";
 import perfil_es from "./es/perfil.json";
+import plan_es from "./es/plan.json";
 import proveedorPublicacion_es from "./es/proveedorPublicacion.json";
 import prueba_es from "./es/prueba.json";
 import publicados_es from "./es/publicados.json";
@@ -100,6 +102,7 @@ import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import superadmin_es from "./es/superadmin.json";
 import versionFacebook_es from "./es/versionFacebook.json";
+import adminSuscripciones_en from "./en/adminSuscripciones.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
@@ -178,6 +181,7 @@ import onboarding_en from "./en/onboarding.json";
 import panel_en from "./en/panel.json";
 import panelSubirClip_en from "./en/panelSubirClip.json";
 import perfil_en from "./en/perfil.json";
+import plan_en from "./en/plan.json";
 import proveedorPublicacion_en from "./en/proveedorPublicacion.json";
 import prueba_en from "./en/prueba.json";
 import publicados_en from "./en/publicados.json";
@@ -204,6 +208,7 @@ import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
+    "adminSuscripciones": adminSuscripciones_es,
     "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
@@ -282,6 +287,7 @@ export const mensajes = {
     "panel": panel_es,
     "panelSubirClip": panelSubirClip_es,
     "perfil": perfil_es,
+    "plan": plan_es,
     "proveedorPublicacion": proveedorPublicacion_es,
     "prueba": prueba_es,
     "publicados": publicados_es,
@@ -307,6 +313,7 @@ export const mensajes = {
     "versionFacebook": versionFacebook_es,
   },
   en: {
+    "adminSuscripciones": adminSuscripciones_en,
     "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
@@ -385,6 +392,7 @@ export const mensajes = {
     "panel": panel_en,
     "panelSubirClip": panelSubirClip_en,
     "perfil": perfil_en,
+    "plan": plan_en,
     "proveedorPublicacion": proveedorPublicacion_en,
     "prueba": prueba_en,
     "publicados": publicados_en,

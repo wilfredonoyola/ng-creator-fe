@@ -14,6 +14,7 @@ const SECCIONES = [
   { href: "/superadmin/usuarios", clave: "usuarios" },
   { href: "/superadmin/origenes", clave: "origenes" },
   { href: "/superadmin/sonidos", clave: "sonidos" },
+  { href: "/superadmin/suscripciones", clave: "suscripciones" },
 ] as const;
 
 /**

@@ -7,6 +7,7 @@ import {
   ChartColumnIncreasing,
   Clapperboard,
   House,
+  CreditCard,
   Link2,
   ShieldCheck,
   ListChecks,
@@ -44,6 +45,7 @@ type ClaveNav =
   | "creators"
   | "equipo"
   | "brandKit"
+  | "plan"
   | "redesConectadas"
   | "superadmin";
 
@@ -92,6 +94,8 @@ export const NAV_REACCION: ItemNav[] = [
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
+/** Mi plan: solo el propietario (el titular paga); quien edita no ve precios ni cobro. */
+const navPlan: ItemNav = { href: "/plan", icon: CreditCard, clave: "plan" };
 /** El panel de quienes administran Clipfine: aparte, con su propio login. */
 const navSuperadmin: ItemNav = { href: "/superadmin", icon: ShieldCheck, clave: "superadmin" };
 const navAdmin: ItemNav[] = [
@@ -251,6 +255,15 @@ export function Sidebar({
                 colapsado={c}
                 activo={pathname.startsWith(navPlantilla.href)}
                 onClick={() => ir(navPlantilla.href)}
+              />
+            )}
+            {rolAqui === "PROPIETARIO" && (
+              <BotonNav
+                {...navPlan}
+                label={t(`nav.${navPlan.clave}`)}
+                colapsado={c}
+                activo={pathname.startsWith(navPlan.href)}
+                onClick={() => ir(navPlan.href)}
               />
             )}
             {esAdmin &&

@@ -12,7 +12,8 @@
     "equipo": "Equipo",
     "brandKit": "Brand Kit",
     "superadmin": "Superadmin",
-    "redesConectadas": "Redes conectadas"
+    "redesConectadas": "Redes conectadas",
+    "plan": "Mi plan"
   },
   "cerrarMenu": "Cerrar menú",
   "trabajandoEnTitulo": "Trabajando en {marca}. Expandí el menú para cambiarla.",
