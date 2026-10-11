@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
@@ -116,6 +117,18 @@ export default function PerfilPage() {
         </section>
 
         <PreferenciasDeAvisos />
+
+        {/* El conector MCP: ChatGPT o Claude con los datos de la cuenta (ng-creator-be#182). */}
+        <Link
+          href="/conectar"
+          className="mt-8 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:bg-white/[0.08]"
+        >
+          <div>
+            <h2 className="font-semibold">{t("conectarIa.titulo")}</h2>
+            <p className="mt-1 text-sm text-white/60">{t("conectarIa.detalle")}</p>
+          </div>
+          <span aria-hidden className="text-white/40">→</span>
+        </Link>
 
         {/* Zona de peligro: separada y al final, para que no se toque por error. */}
         <section className="mt-8 rounded-2xl border border-red-500/30 bg-red-500/5 p-5">

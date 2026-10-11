@@ -20,7 +20,7 @@
     "publicar": "Publishing and scheduling",
     "metricas": "Metrics",
     "planes": "Plans and billing",
-    "app": "App and FAQ"
+    "app": "App, AI and FAQ"
   },
   "funcion": "Feature",
   "migas": "Breadcrumb",
@@ -35,7 +35,8 @@
     "boton": "Contact support"
   },
   "conIa": {
+    "boton": "How to connect it",
     "titulo": "Ask ChatGPT or Claude",
-    "texto": "Soon you'll be able to connect Clipfine to ChatGPT or Claude and ask how to use it, or how each client's clips are performing."
+    "texto": "Connect Clipfine to ChatGPT or Claude and ask how to use it, or how each client's clips are performing."
   }
 }

@@ -1,0 +1,43 @@
+{
+  "titulo": "Connect to ChatGPT or Claude",
+  "bajada": "Ask ChatGPT or Claude how each client's clips are performing, what's scheduled or how to use Clipfine, with your data and your permissions.",
+  "cargando": "Loading…",
+  "error": "Couldn't finish. Connect again from ChatGPT or Claude.",
+  "url": {
+    "titulo": "The connector URL",
+    "texto": "Paste it once in ChatGPT or Claude when you add a custom connector.",
+    "copiar": "Copy",
+    "copiada": "Copied"
+  },
+  "pasos": {
+    "p1": "In ChatGPT or Claude, add a custom connector and paste the URL.",
+    "p2": "It asks you to sign in to Clipfine: sign in with your account and click Allow.",
+    "p3": "Done: ask, for example, \"which Café Luna clips did best this month?\"."
+  },
+  "guia": "Detailed steps for each app",
+  "conectadas": {
+    "titulo": "Connected apps",
+    "ninguna": "You haven't connected any yet.",
+    "desde": "Connected on {fecha}",
+    "uso": "last used {cuando}",
+    "desconectar": "Disconnect"
+  },
+  "soloLectura": "Connected apps can only read: they don't schedule, approve or change anything.",
+  "volverPerfil": "Back to Profile",
+  "aprobar": {
+    "titulo": "{app} wants to connect to your Clipfine",
+    "texto": "If you allow it, {app} will be able to look up, with your permissions:",
+    "puede": {
+      "marcas": "The brands you work on.",
+      "metricas": "Their metrics and what they have scheduled.",
+      "ayuda": "Clipfine's help center and features."
+    },
+    "noPuede": "Read only: it can't schedule, approve, edit or delete anything.",
+    "vuelveA": "You'll then go back to {host}.",
+    "cancelar": "Cancel",
+    "cancelando": "Cancelling…",
+    "permitir": "Allow",
+    "permitiendo": "Connecting…",
+    "revocar": "You can disconnect it anytime from Profile → Connect to ChatGPT or Claude."
+  }
+}

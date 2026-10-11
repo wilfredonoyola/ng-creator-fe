@@ -20,7 +20,7 @@
     "publicar": "Publicar y programar",
     "metricas": "Métricas",
     "planes": "Planes y cobro",
-    "app": "App y preguntas frecuentes"
+    "app": "App, IA y preguntas frecuentes"
   },
   "funcion": "Función",
   "migas": "Ruta",
@@ -35,7 +35,8 @@
     "boton": "Escribir a soporte"
   },
   "conIa": {
+    "boton": "Cómo conectarlo",
     "titulo": "Preguntale a ChatGPT o Claude",
-    "texto": "Pronto vas a poder conectar Clipfine a ChatGPT o Claude y preguntar cómo usarlo, o cómo rinden los clips de cada cliente."
+    "texto": "Conectá Clipfine a ChatGPT o Claude y preguntá cómo usarlo, o cómo rinden los clips de cada cliente."
   }
 }

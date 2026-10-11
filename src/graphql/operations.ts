@@ -2900,3 +2900,22 @@ export const COMENTAR_REVISION = gql`
     }
   }
 `;
+
+/** Las apps (ChatGPT, Claude…) conectadas a la cuenta por el MCP (ng-creator-be#182). */
+export const MIS_CONEXIONES_MCP = gql`
+  query MisConexionesMcp {
+    misConexionesMcp {
+      _id
+      nombreApp
+      ultimoUso
+      createdAt
+    }
+    urlConectorMcp
+  }
+`;
+
+export const REVOCAR_CONEXION_MCP = gql`
+  mutation RevocarConexionMcp($id: ID!) {
+    revocarConexionMcp(id: $id)
+  }
+`;

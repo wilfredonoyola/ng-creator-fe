@@ -1,4 +1,8 @@
 {
+  "conectarIa": {
+    "titulo": "Conectar con ChatGPT o Claude",
+    "detalle": "Preguntales por las métricas de tus clientes o cómo usar Clipfine."
+  },
   "titulo": "Perfil",
   "subtitulo": "Tu cuenta en Clipfine.",
   "marca": "Marca",
