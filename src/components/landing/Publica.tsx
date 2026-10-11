@@ -6,6 +6,7 @@ import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { ENLACE_EMPEZAR, ENLACE_ENTRAR, ENLACE_PANEL } from "@/components/landing/Marco";
 import { SegunSesion } from "@/components/landing/SegunSesion";
 import { ENLACE_AYUDA } from "@/lib/ayuda";
+import { CONTACTO } from "@/lib/legal";
 
 /**
  * El sistema de las páginas públicas para agencias (la landing y /features):
@@ -121,6 +122,16 @@ export function PiePublico() {
           <div className="flex flex-col gap-[18px]">
             <LogoNG tamano={56} />
             <p className="text-[#D9D8D2]">{t("pie.lema")}</p>
+            {/* Soporte a la vista en todas las páginas públicas, no solo en /ayuda. */}
+            <p className="max-w-[44ch] text-[#D9D8D2]">
+              {t.rich("pie.soporte", {
+                correo: () => (
+                  <a href={`mailto:${CONTACTO}`} className="font-semibold text-[#FFD400] underline-offset-4 hover:underline">
+                    {CONTACTO}
+                  </a>
+                ),
+              })}
+            </p>
           </div>
           <nav className="flex flex-col gap-3.5">
             <Link href={ENLACE_FUNCIONES} className="underline-offset-[5px] hover:underline">{t("pie.funciones")}</Link>

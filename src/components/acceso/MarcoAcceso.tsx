@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { LogoNG } from "@/components/LogoNG";
 import { SelectorIdiomaCompacto } from "@/components/SelectorIdiomaCompacto";
 import { useRedirigirSiHaySesion } from "@/components/landing/RedirigirSiHaySesion";
+import { CONTACTO } from "@/lib/legal";
 import { PREFIJO_SITIO } from "@/lib/sitio";
 
 /**
@@ -72,8 +73,19 @@ export function MarcoAcceso({
 
           {children}
 
+          {/* Quien no puede entrar es quien más necesita el correo de soporte. */}
+          <p className="mt-6 text-center text-xs text-white/40">
+            {t.rich("soporte", {
+              correo: () => (
+                <a href={`mailto:${CONTACTO}`} className="text-ng-celeste hover:underline">
+                  {CONTACTO}
+                </a>
+              ),
+            })}
+          </p>
+
           {/* Enlaces públicos: Meta espera encontrarlos accesibles sin sesión. */}
-          <div className="mt-6 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs">
+          <div className="mt-4 flex items-center justify-center gap-4 border-t border-white/10 pt-4 text-xs">
             <a href={`${PREFIJO_SITIO}/privacidad`} className="text-white/40 hover:text-ng-celeste">
               {t("privacidad")}
             </a>

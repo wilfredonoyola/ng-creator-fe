@@ -28,6 +28,7 @@
   "siguiente": "Next",
   "volver": "All help",
   "contacto": {
+    "correo": "Or email us directly at <correo></correo>",
     "titulo": "Didn't find what you were looking for?",
     "texto": "Write to us and we'll answer personally.",
     "boton": "Contact support"

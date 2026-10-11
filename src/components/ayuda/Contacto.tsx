@@ -17,6 +17,15 @@ export function ContactoAyuda() {
         >
           <Mail size={18} aria-hidden /> {t("contacto.boton")}
         </a>
+        <p className="text-[15px]">
+          {t.rich("contacto.correo", {
+            correo: () => (
+              <a href={`mailto:${CONTACTO}`} className="font-bold underline underline-offset-4">
+                {CONTACTO}
+              </a>
+            ),
+          })}
+        </p>
       </div>
       <div className="flex flex-col gap-4 rounded-xl bg-[#0A0A0A] p-6 text-white sm:p-8">
         <span aria-hidden className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFD400]">
