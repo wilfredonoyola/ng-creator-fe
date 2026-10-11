@@ -1725,6 +1725,28 @@ export const PREPARAR_SUBIDA_EPISODIO = gql`
   }
 `;
 
+/**
+ * Lo mismo para un clip ya editado (CapCut, un recorte de YouTube): no cuenta
+ * para el cupo y sigue solo hasta quedar listo para programar
+ * (ng-creator-be#181). Renovar y confirmar son las del episodio.
+ */
+export const PREPARAR_SUBIDA_CLIP = gql`
+  ${CAMPOS_EPISODIO}
+  mutation PrepararSubidaClip($input: PrepararSubidaEpisodioInput!) {
+    prepararSubidaClip(input: $input) {
+      endpoint
+      libraryId
+      videoId
+      expiracion
+      firma
+      retomada
+      episodio {
+        ...CamposEpisodio
+      }
+    }
+  }
+`;
+
 /** Firma nueva para el mismo video, cuando la anterior está por vencer. */
 export const RENOVAR_SUBIDA_EPISODIO = gql`
   mutation RenovarSubidaEpisodio($id: ID!, $marcaId: String!) {
@@ -1834,6 +1856,44 @@ const RESUMEN_PUBLICACION_CLIP = gql`
     proximaEn
     ultimaPublicadaEn
   }
+`;
+
+/** Los clips subidos de la marca: su episodio (cómo va) y su clip cuando ya está armado. */
+export const CLIPS_SUBIDOS = gql`
+  query ClipsSubidos($marcaId: String!) {
+    clipsSubidos(marcaId: $marcaId) {
+      episodio {
+        _id
+        titulo
+        estado
+        error
+        duracionSeg
+        miniaturaUrl
+        createdAt
+        subidoPor {
+          nombre
+        }
+      }
+      clip {
+        _id
+        titulo
+        formato
+        estadoRender
+        progresoRender
+        urlPoster
+        usarOriginal
+        listoPor {
+          nombre
+          en
+        }
+        publicacion {
+          ...ResumenPublicacionClip
+        }
+        estadoRevision
+      }
+    }
+  }
+  ${RESUMEN_PUBLICACION_CLIP}
 `;
 
 /** Los clips que propuso la IA, de mejor a peor (ng-creator-be#68). */

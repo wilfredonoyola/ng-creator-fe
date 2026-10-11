@@ -1,0 +1,25 @@
+{
+  "titulo": "Clips subidos",
+  "descripcion": "Subí clips que ya editaste afuera (en CapCut, un recorte de YouTube o cualquier video corto) y seguí con el flujo de siempre: revisión, programar en las cuatro redes y métricas. Salen tal cual o los podés abrir en el editor. No descuentan horas.",
+  "subir": "Subir clips",
+  "subiendo": "Subiendo {nombre}",
+  "enCola": "{n, plural, one {# más en espera} other {# más en espera}}",
+  "muyLargo": "{nombre} dura {dura} s y el máximo es {maximo} s.",
+  "errorSubir": "No se pudo subir. Probá de nuevo.",
+  "vacio": "Todavía no subiste clips.",
+  "confirmarBorrar": "¿Borrar «{titulo}»? Se borra el video y lo que tenga programado.",
+  "subidoPor": "subido por {nombre}",
+  "editado": "editado en Clipfine",
+  "programar": "Programar",
+  "editar": "Editar",
+  "borrar": "Borrar",
+  "estados": {
+    "subiendo": "Subiendo…",
+    "preparando": "Preparando el video…",
+    "listo": "Listo para programar",
+    "programado": "Programado",
+    "publicado": "Publicado",
+    "fallo": "No se pudo procesar. Subilo de nuevo.",
+    "falloCopia": "No se pudo preparar el video. Abrilo en el editor y exportalo."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "titulo": "Uploaded clips",
+  "descripcion": "Upload clips you already edited elsewhere (in CapCut, a YouTube cut or any short video) and keep the usual flow: review, scheduling on all four networks and analytics. They go out as they are, or you can open them in the editor. They don't use up hours.",
+  "subir": "Upload clips",
+  "subiendo": "Uploading {nombre}",
+  "enCola": "{n, plural, one {# more waiting} other {# more waiting}}",
+  "muyLargo": "{nombre} is {dura} s long and the limit is {maximo} s.",
+  "errorSubir": "Couldn't upload it. Try again.",
+  "vacio": "You haven't uploaded any clips yet.",
+  "confirmarBorrar": "Delete “{titulo}”? The video and anything scheduled for it are deleted.",
+  "subidoPor": "uploaded by {nombre}",
+  "editado": "edited in Clipfine",
+  "programar": "Schedule",
+  "editar": "Edit",
+  "borrar": "Delete",
+  "estados": {
+    "subiendo": "Uploading…",
+    "preparando": "Preparing the video…",
+    "listo": "Ready to schedule",
+    "programado": "Scheduled",
+    "publicado": "Published",
+    "fallo": "Couldn't process it. Upload it again.",
+    "falloCopia": "Couldn't prepare the video. Open it in the editor and export it."
+  }
+}
