@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "titulo": "Gestión de equipo y clientes para agencias de contenido | Clipfine",
+    "descripcion": "Todos los clientes de tu agencia en una cuenta, cada uno separado. Roles por cliente, invitaciones por correo y quién hizo cada clip, sin compartir contraseñas."
+  },
+  "titulo": "Más clientes y más gente,",
+  "destacado": "sin perder el control",
+  "bajada": "Cada cliente tiene su espacio y cada persona entra solo a los clientes que le tocan, con su rol. Ves quién edita qué, qué está listo y quién programó cada clip.",
+  "datos": {
+    "d1": { "cifra": "1 cuenta", "que": "para todos los clientes de tu agencia" },
+    "d2": { "cifra": "4 roles", "que": "por cliente: propietario, editor, revisor y lector" },
+    "d3": { "cifra": "0 contraseñas", "que": "compartidas: cada uno entra con su correo" }
+  },
+  "agencia": {
+    "marcas": "Sumás un cliente nuevo sin mezclar nada con los que ya tenés.",
+    "roles": "El freelancer ve solo los clientes que le tocan, y el cliente entra a aprobar sin ver los demás.",
+    "invitaciones": "Un editor nuevo trabaja el mismo día, y cuando se va le sacás el acceso en un clic.",
+    "tomar": "Dos editores nunca trabajan el mismo clip ni el mismo tramo.",
+    "listos": "Quien programa sabe qué está listo sin preguntar en el grupo.",
+    "autoria": "Si algo salió mal, sabés con quién hablar.",
+    "avisos": "Te enterás de lo importante sin entrar a revisar cada cliente.",
+    "idiomas": "Podés sumar gente que trabaja en inglés sin cambiar de herramienta."
+  },
+  "vistas": {
+    "marcas": { "cliente": "Cliente {letra}", "detalle": "episodios · clips · calendario" },
+    "roles": { "propietario": "Propietario", "editor": "Editor", "revisor": "Revisor" },
+    "invitaciones": { "rol": "Editor", "marca": "Cliente B", "invitar": "Invitar" },
+    "tomar": { "clip": "Nadie habla de esta parte", "deQuien": "Lo tiene Leo", "aviso": "Este tramo ya está en otro clip" },
+    "listos": { "terminado": "Terminado", "calendario": "Para programar", "pie": "Aparece en el calendario" },
+    "autoria": { "edito": "Editó Ana", "termino": "Terminó Leo", "programo": "Programó Marta" },
+    "avisos": { "listo": "Clip listo", "listoDetalle": "Leo terminó un clip de Cliente A", "publicado": "Publicado", "publicadoDetalle": "Salió en TikTok y Reels" },
+    "idiomas": { "rotulo": "Idioma", "pie": "Cada persona elige el suyo" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Un freelancer puede trabajar en un cliente sin ver los demás?", "r": "Sí. El acceso es por cliente: cada persona ve solo las marcas a las que la invitaste, con el rol que le diste." },
+    "p2": { "p": "¿Qué pasa cuando alguien deja la agencia?", "r": "Le sacás el acceso desde Equipo y deja de entrar. Sus clips quedan y siguen mostrando quién los hizo." },
+    "p3": { "p": "¿Mi cliente puede entrar a ver su contenido?", "r": "Sí. Lo invitás como lector, para que solo mire, o como revisor, para que apruebe o pida cambios antes de publicar." }
+  }
+}

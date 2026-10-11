@@ -1,0 +1,27 @@
+{
+  "seo": {
+    "titulo": "Subí el podcast o el live de tu cliente y recibí clips | Clipfine",
+    "descripcion": "Subí el episodio del podcast o traé el live de Restream de cada cliente. Clipfine lo transcribe solo y arma los clips. Hecho para agencias de contenido."
+  },
+  "titulo": "El episodio del cliente entra",
+  "destacado": "y vos seguís con otra cosa",
+  "bajada": "Subís el video del podcast o traés la grabación del live desde Restream. Clipfine lo transcribe solo y te avisa cuando los clips están listos.",
+  "datos": {
+    "d1": { "cifra": "2 caminos", "que": "subir el archivo o traer el live de Restream" },
+    "d2": { "cifra": "MP4 · MOV · MKV", "que": "el video como lo grabó el cliente" },
+    "d3": { "cifra": "1 Restream", "que": "conectado en cada cliente, sin compartir cuentas" }
+  },
+  "agencia": {
+    "subir": "Nadie de tu equipo transcribe ni busca momentos a mano. El episodio entra y el trabajo arranca solo.",
+    "restream": "El live del cliente se convierte en clips el mismo día, sin bajar archivos de varias horas."
+  },
+  "vistas": {
+    "subir": { "soltar": "Soltá el video del episodio", "formatos": "MP4, MOV o MKV", "archivo": "ep142-cliente-a.mov", "pie": "Después: transcripción y momentos" },
+    "restream": { "live1": "Live del martes", "live2": "Entrevista en vivo", "traer": "Traer", "traido": "Traído" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Tengo que transcribir el episodio?", "r": "No. Clipfine transcribe el episodio solo cuando lo subís, y a partir de esa transcripción elige los momentos y arma los subtítulos." },
+    "p2": { "p": "¿Cómo traigo un live de mi cliente?", "r": "Conectás el Restream del cliente a su marca en Clipfine y elegís la grabación del live. No hace falta bajarla ni esperar a que YouTube la procese." },
+    "p3": { "p": "¿Cada cliente tiene su propio Restream?", "r": "Sí. La conexión de Restream es de cada marca, así que los lives de un cliente nunca se mezclan con los de otro." }
+  }
+}

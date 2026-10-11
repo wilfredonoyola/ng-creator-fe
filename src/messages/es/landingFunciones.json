@@ -16,6 +16,8 @@
   "anterior": "Anterior",
   "siguiente": "Siguiente",
   "verTodas": "Ver todas las funciones",
+  "grupos": { "producir": { "titulo": "Producir más con el mismo equipo", "texto": "Del episodio largo a clips terminados, sin que un editor arranque de cero." }, "entregar": { "titulo": "Entregar a tiempo, con el visto bueno del cliente", "texto": "La semana de cada cliente programada en cuatro redes, y nada sale sin aprobación." }, "demostrar": { "titulo": "Demostrar resultados", "texto": "Los números que tu cliente quiere ver antes de renovar." }, "operar": { "titulo": "Muchos clientes, sin mezclarlos", "texto": "La marca de cada cliente, tu equipo con su rol y todo también en el celular." } },
+  "agencia": { "etiqueta": "Tu agencia", "funciones": "Qué hace, y qué te ahorra", "funcionesTexto": "Cada función como se ve en Clipfine, con lo que gana tu agencia.", "datos": "Lo que gana tu agencia", "preguntas": "Preguntas de agencias", "relacionadas": "Sigue con" },
   "secciones": {
     "ia": { "titulo": "Clips con IA", "texto": "Subís el episodio y recibís sus mejores momentos, cada uno con su porqué." },
     "edicion": { "titulo": "Edición", "texto": "Ajustá el tramo, sacá lo que sobra y encuadrá a quien habla, sin saber editar video." },

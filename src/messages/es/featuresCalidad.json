@@ -1,0 +1,33 @@
+{
+  "seo": {
+    "titulo": "Clips en alta calidad para tus clientes, sin recomprimir | Clipfine",
+    "descripcion": "Clips en 1080p con los cuadros por segundo del original, un aviso de calidad en cada uno y la vista previa de cada red. Para agencias y sus clientes."
+  },
+  "titulo": "Clips que podés mandarle al cliente",
+  "destacado": "sin revisarlos dos veces",
+  "bajada": "Cada clip sale con los cuadros por segundo del original, te avisa si el zoom le baja la calidad y te muestra cómo queda con la pantalla de cada red encima.",
+  "datos": {
+    "d1": { "cifra": "1080 × 1920", "que": "en vertical, también 1:1 y 16:9" },
+    "d2": { "cifra": "3 niveles", "que": "de calidad en cada clip: excelente, buena o baja" },
+    "d3": { "cifra": "90 s", "que": "el corte de la versión para Facebook, elegido por vos" }
+  },
+  "agencia": {
+    "render": "Ningún cliente recibe un clip pixelado ni a saltos. Tu marca de agencia queda bien en cada entrega.",
+    "indicador": "Te enterás de un clip borroso antes de que lo vea el cliente, no después.",
+    "vistaPrevia": "Nada queda tapado por los botones de TikTok o Reels. Una corrección menos por clip.",
+    "versionFacebook": "Un clip largo sirve igual en Facebook, sin armar otro a mano.",
+    "descargar": "Si el cliente quiere el archivo para otra red, se lo mandás en un minuto."
+  },
+  "vistas": {
+    "render": { "original": "Original", "clip": "Clip", "sinRecomprimir": "Sin recomprimir", "pie": "Los mismos cuadros por segundo que grabaste" },
+    "indicador": { "excelente": "Excelente", "buena": "Buena", "baja": "Baja", "zoom": "Zoom 1,2x.", "consejo": "Si agrandás más, baja a buena." },
+    "vistaPrevia": { "subtitulo": "NADIE HABLA DE ESTO" },
+    "versionFacebook": { "clip": "Clip", "pie": "El tramo de Facebook lo elegís vos" },
+    "descargar": { "archivo": "cliente-b-ep142-clip3.mp4", "boton": "Descargar MP4" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Los clips pierden calidad al exportarlos?", "r": "No. El video que subiste se guarda sin volver a comprimirlo y cada clip se arma desde ese original, en 1080p y con sus mismos cuadros por segundo. Si un zoom agranda demasiado la imagen, el indicador te avisa." },
+    "p2": { "p": "¿Qué pasa con los clips de más de 90 segundos en Facebook?", "r": "Los Reels de Facebook llegan hasta 90 segundos. Para esos clips elegís qué tramo sale en Facebook, y las otras redes reciben el clip entero." },
+    "p3": { "p": "¿Puedo ver cómo queda en cada red antes de publicar?", "r": "Sí. La vista previa pone encima la pantalla de TikTok, Reels, Shorts o Facebook, así ves si un subtítulo o un texto queda tapado." }
+  }
+}

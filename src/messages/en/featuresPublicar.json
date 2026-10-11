@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "titulo": "Schedule clips to TikTok, Reels and Shorts for your clients | Clipfine",
+    "descripcion": "Schedule every client's clips to TikTok, Instagram Reels, YouTube Shorts and Facebook from one calendar. No downloading or re-uploading files. Built for agencies."
+  },
+  "titulo": "Every client's week,",
+  "destacado": "scheduled in one afternoon",
+  "bajada": "Every client's clips go out on TikTok, Instagram Reels, YouTube Shorts and Facebook from a single calendar. No downloading the video, no uploading it again, no opening four apps.",
+  "datos": {
+    "d1": { "cifra": "4 networks", "que": "per clip, scheduled in one step" },
+    "d2": { "cifra": "0 files", "que": "to download and upload again" },
+    "d3": { "cifra": "1 calendar", "que": "per client, with each network's status" }
+  },
+  "agencia": {
+    "cuatroRedes": "One clip, four posts. Your editor stops uploading the same thing four times.",
+    "sinExportar": "Nobody sits watching an export bar. You schedule and move on to the next client.",
+    "porDefecto": "No way to post to the wrong account or with another client's hashtags.",
+    "portada": "The client's profile looks clean on the grid, not full of faces mid-word.",
+    "comoSale": "The error shows up before posting, not when the client asks why it never went out.",
+    "calendario": "By Tuesday you know whether every client's week is covered, without asking anyone.",
+    "editarAgendada": "When the client changes their mind at the last minute, it's a ten-second change.",
+    "reintentar": "No duplicate posts in front of the client just to fix one network."
+  },
+  "vistas": {
+    "cuatroRedes": { "pie": "Thu 6:00 PM · 4 posts" },
+    "sinExportar": { "editor": "Editor", "programar": "Schedule", "armando": "Building the final video", "pie": "Goes out when the video is ready" },
+    "porDefecto": { "marca": "Client B · defaults", "descripcion": "The mistake that almost cost us the show…" },
+    "portada": { "pie": "Cover: frame 00:12 · or upload an image" },
+    "comoSale": { "descripcion": "Nobody talks about this part of the business, so today I'm bringing you…", "sePasa": "TikTok: 112 over" },
+    "calendario": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri" },
+    "editarAgendada": { "antes": "Thursday 6:00 PM", "despues": "Friday 12:30 PM", "quitar": "Remove: YouTube", "pie": "Can be changed until it goes out" },
+    "reintentar": { "motivo": "Facebook: the account lost its permission.", "accion": "Retry Facebook only →" }
+  },
+  "preguntas": {
+    "p1": { "p": "Can I post to my clients' accounts without their passwords?", "r": "Yes. Each client connects their networks to their brand in Clipfine once, and your team schedules from there. Nobody on your team needs the password." },
+    "p2": { "p": "What if the client has to approve first?", "r": "Turn on review before publishing for their brand. What your team schedules stays To review until the client approves it or asks for changes." },
+    "p3": { "p": "Can I download the MP4 for other networks?", "r": "Yes. Every finished clip downloads as an MP4, ready for LinkedIn, X or wherever the client needs it." }
+  }
+}

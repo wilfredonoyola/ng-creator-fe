@@ -1,0 +1,31 @@
+{
+  "seo": {
+    "titulo": "Brand Kit por cliente para clips de agencia | Clipfine",
+    "descripcion": "Logo, colores y estilo de cada cliente guardados en su Brand Kit y aplicados solos en todos sus clips. Para agencias que manejan muchas marcas a la vez."
+  },
+  "titulo": "Cada cliente con su marca,",
+  "destacado": "en cada clip, sin pensarlo",
+  "bajada": "El logo, los colores y el estilo de cada cliente quedan guardados en su Brand Kit. Sus clips salen con todo eso puesto, los edite quien los edite.",
+  "datos": {
+    "d1": { "cifra": "1 Brand Kit", "que": "por cliente, separado de los demás" },
+    "d2": { "cifra": "4 colores", "que": "por marca, tomados del logo o elegidos a mano" },
+    "d3": { "cifra": "4 esquinas", "que": "para el logo, con tamaño y opacidad" }
+  },
+  "agencia": {
+    "logo": "El logo del cliente aparece siempre en el mismo lugar, sin que nadie lo tenga que acordar.",
+    "colores": "Arrancar con un cliente nuevo lleva un minuto: subís el logo y sus colores salen solos.",
+    "estiloMarca": "Un editor que toma un cliente nuevo no tiene que aprender su look. Ya está guardado.",
+    "aplicaSolo": "Imposible mandar un clip con el logo de otro cliente. Cada marca usa solo su Brand Kit."
+  },
+  "vistas": {
+    "logo": { "opacidad": "Opacidad" },
+    "colores": { "usar": "Usar colores del logo" },
+    "estiloMarca": { "cliente": "Cliente {letra}" },
+    "aplicaSolo": { "clip1": "Clip 1 · Brand Kit", "clip2": "Clip 2 · Brand Kit", "logo": "Logo en este clip", "pie": "Se apaga solo en este clip" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Puedo tener la marca de cada cliente por separado?", "r": "Sí. Cada cliente es una marca con su propio logo, colores y estilo. Los clips de una marca nunca usan el Brand Kit de otra." },
+    "p2": { "p": "¿Quién puede cambiar los colores de un cliente?", "r": "Solo el propietario de la marca. El resto del equipo edita clips con esos colores, pero no cambia la identidad del cliente." },
+    "p3": { "p": "¿Y si un clip no tiene que llevar el logo?", "r": "En ese clip apagás el logo o cambiás el estilo. El Brand Kit del cliente sigue igual para los demás clips." }
+  }
+}

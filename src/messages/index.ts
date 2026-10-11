@@ -33,6 +33,19 @@ import estilosGaleria_es from "./es/estilosGaleria.json";
 import estilosInterfaz_es from "./es/estilosInterfaz.json";
 import estilosNombres_es from "./es/estilosNombres.json";
 import estilosTema_es from "./es/estilosTema.json";
+import featuresApp_es from "./es/featuresApp.json";
+import featuresAudio_es from "./es/featuresAudio.json";
+import featuresCalidad_es from "./es/featuresCalidad.json";
+import featuresEdicion_es from "./es/featuresEdicion.json";
+import featuresEquipo_es from "./es/featuresEquipo.json";
+import featuresIa_es from "./es/featuresIa.json";
+import featuresImagenes_es from "./es/featuresImagenes.json";
+import featuresImportar_es from "./es/featuresImportar.json";
+import featuresMarca_es from "./es/featuresMarca.json";
+import featuresMetricas_es from "./es/featuresMetricas.json";
+import featuresPublicar_es from "./es/featuresPublicar.json";
+import featuresRevision_es from "./es/featuresRevision.json";
+import featuresTextos_es from "./es/featuresTextos.json";
 import grabar_es from "./es/grabar.json";
 import hashtagsChips_es from "./es/hashtagsChips.json";
 import idioma_es from "./es/idioma.json";
@@ -135,6 +148,19 @@ import estilosGaleria_en from "./en/estilosGaleria.json";
 import estilosInterfaz_en from "./en/estilosInterfaz.json";
 import estilosNombres_en from "./en/estilosNombres.json";
 import estilosTema_en from "./en/estilosTema.json";
+import featuresApp_en from "./en/featuresApp.json";
+import featuresAudio_en from "./en/featuresAudio.json";
+import featuresCalidad_en from "./en/featuresCalidad.json";
+import featuresEdicion_en from "./en/featuresEdicion.json";
+import featuresEquipo_en from "./en/featuresEquipo.json";
+import featuresIa_en from "./en/featuresIa.json";
+import featuresImagenes_en from "./en/featuresImagenes.json";
+import featuresImportar_en from "./en/featuresImportar.json";
+import featuresMarca_en from "./en/featuresMarca.json";
+import featuresMetricas_en from "./en/featuresMetricas.json";
+import featuresPublicar_en from "./en/featuresPublicar.json";
+import featuresRevision_en from "./en/featuresRevision.json";
+import featuresTextos_en from "./en/featuresTextos.json";
 import grabar_en from "./en/grabar.json";
 import hashtagsChips_en from "./en/hashtagsChips.json";
 import idioma_en from "./en/idioma.json";
@@ -240,6 +266,19 @@ export const mensajes = {
     "estilosInterfaz": estilosInterfaz_es,
     "estilosNombres": estilosNombres_es,
     "estilosTema": estilosTema_es,
+    "featuresApp": featuresApp_es,
+    "featuresAudio": featuresAudio_es,
+    "featuresCalidad": featuresCalidad_es,
+    "featuresEdicion": featuresEdicion_es,
+    "featuresEquipo": featuresEquipo_es,
+    "featuresIa": featuresIa_es,
+    "featuresImagenes": featuresImagenes_es,
+    "featuresImportar": featuresImportar_es,
+    "featuresMarca": featuresMarca_es,
+    "featuresMetricas": featuresMetricas_es,
+    "featuresPublicar": featuresPublicar_es,
+    "featuresRevision": featuresRevision_es,
+    "featuresTextos": featuresTextos_es,
     "grabar": grabar_es,
     "hashtagsChips": hashtagsChips_es,
     "idioma": idioma_es,
@@ -344,6 +383,19 @@ export const mensajes = {
     "estilosInterfaz": estilosInterfaz_en,
     "estilosNombres": estilosNombres_en,
     "estilosTema": estilosTema_en,
+    "featuresApp": featuresApp_en,
+    "featuresAudio": featuresAudio_en,
+    "featuresCalidad": featuresCalidad_en,
+    "featuresEdicion": featuresEdicion_en,
+    "featuresEquipo": featuresEquipo_en,
+    "featuresIa": featuresIa_en,
+    "featuresImagenes": featuresImagenes_en,
+    "featuresImportar": featuresImportar_en,
+    "featuresMarca": featuresMarca_en,
+    "featuresMetricas": featuresMetricas_en,
+    "featuresPublicar": featuresPublicar_en,
+    "featuresRevision": featuresRevision_en,
+    "featuresTextos": featuresTextos_en,
     "grabar": grabar_en,
     "hashtagsChips": hashtagsChips_en,
     "idioma": idioma_en,

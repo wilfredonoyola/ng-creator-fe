@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "titulo": "Aprobación de contenido para clientes de agencias | Clipfine",
+    "descripcion": "Tus clientes aprueban o piden cambios en cada clip antes de que salga, con texto o nota de voz. Sin idas y vueltas por WhatsApp. Para agencias."
+  },
+  "titulo": "El cliente aprueba en Clipfine,",
+  "destacado": "no por WhatsApp",
+  "bajada": "Lo que programa tu equipo espera a que alguien lo apruebe. Tu cliente mira el clip, lo aprueba con un toque o pide cambios con una nota de voz, y nada sale sin su sí.",
+  "datos": {
+    "d1": { "cifra": "1 toque", "que": "para aprobar, desde la web o el celular" },
+    "d2": { "cifra": "2 h", "que": "antes de la hora, avisa si nadie revisó" },
+    "d3": { "cifra": "3 canales", "que": "de aviso: en Clipfine, push y correo" }
+  },
+  "agencia": {
+    "porRevisar": "Un editor nuevo no puede publicar algo que el cliente no vio.",
+    "aprobar": "La aprobación del cliente queda en un solo lugar, no perdida en un chat.",
+    "pedirCambios": "Los cambios llegan al editor que hizo el clip, sin que vos hagas de mensajero.",
+    "notaVoz": "El cliente explica lo que quiere en diez segundos, y el editor lo lee o lo escucha.",
+    "clienteRevisor": "Tu cliente aprueba sin tocar nada ni ver lo de otros clientes.",
+    "vencimiento": "Nada sale sin aprobar a las 3 de la mañana. Vos decidís qué pasa si se vence.",
+    "editarVuelve": "Lo que sale es exactamente lo que el cliente aprobó.",
+    "avisosRevision": "Nadie tiene que perseguir a nadie: el que tiene que actuar se entera."
+  },
+  "vistas": {
+    "porRevisar": { "clip": "El error que casi nos cuesta…", "estado": "Por revisar", "pie": "jue 18:00 · espera la aprobación" },
+    "aprobar": { "boton": "Aprobar", "pie": "Sale a la hora programada" },
+    "pedirCambios": { "comentario": "Cortá antes de la risa y cambiá el gancho.", "estado": "Cambios pedidos", "vuelve": "Vuelve a Leo" },
+    "notaVoz": { "transcripcion": "Transcripción:", "texto": "el logo tapa la cara al final…" },
+    "clienteRevisor": { "cliente": "Marta · Cliente B", "rol": "Revisor", "ve": "Ve", "aprueba": "Aprueba", "noEdita": "No edita" },
+    "vencimiento": { "aviso": "Sale en 2 h y nadie lo revisó", "detalle": "Si se vence, no sale.", "publicarIgual": "Publicar igual" },
+    "editarVuelve": { "aprobado": "Aprobado", "editado": "Editado", "porRevisar": "Por revisar", "pie": "Cualquier cambio vuelve a revisión" },
+    "avisosRevision": { "aviso": "Hay un clip de Cliente B para revisar", "app": "Clipfine", "push": "Push", "correo": "Correo" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Mi cliente tiene que aprender a usar Clipfine para aprobar?", "r": "No. Lo invitás con el rol Revisor: le llega el aviso, mira el clip y toca Aprobar o Pedir cambios. Puede hacerlo desde la web o desde la app." },
+    "p2": { "p": "¿Qué pasa si el cliente no aprueba a tiempo?", "r": "Clipfine avisa 2 horas antes de la hora. Si llega sin aprobación, no sale. Si la marca eligió publicar igual, sale y queda marcado como Salió sin revisar." },
+    "p3": { "p": "¿Puedo activarla solo para algunos clientes?", "r": "Sí. La revisión se activa por marca, desde Equipo, y en cada marca elegís quién revisa." }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "seo": {
+    "titulo": "Subtítulos automáticos y textos para clips de clientes | Clipfine",
+    "descripcion": "Subtítulos automáticos con la palabra resaltada, 9 estilos, gancho y llamada a la acción con los colores de cada cliente. Para agencias que editan clips."
+  },
+  "titulo": "Subtítulos y textos listos,",
+  "destacado": "con la marca de cada cliente",
+  "bajada": "Los subtítulos salen solos de la transcripción, con la palabra que se dice resaltada. El gancho del inicio y el cierre del final salen con los colores del cliente. Tu editor corrige, no tipea.",
+  "datos": {
+    "d1": { "cifra": "9 estilos", "que": "de subtítulos, virales y profesionales" },
+    "d2": { "cifra": "14 letras", "que": "para los textos con diseño" },
+    "d3": { "cifra": "0 tipeo", "que": "los subtítulos salen de la transcripción" }
+  },
+  "agencia": {
+    "subtitulos": "El paso más lento de editar un clip lo hace Clipfine. Tu editor solo los revisa.",
+    "corregir": "Arreglar el nombre del cliente mal transcrito es cambiar una palabra, sin volver a sincronizar nada.",
+    "estilos": "Cada cliente con un look distinto sin diseñar desde cero: un estilo viral para uno y uno sobrio para otro.",
+    "textosDiseno": "Los textos se ven de agencia, no de plantilla genérica, y se arman en el mismo editor.",
+    "gancho": "Los primeros segundos deciden si el clip se mira. El gancho ya viene sugerido y se pone con un toque.",
+    "cta": "Cada clip termina llevando gente al episodio del cliente, que es lo que te paga."
+  },
+  "vistas": {
+    "subtitulos": { "antes": "esto es", "palabra": "lo que", "despues": "nadie dice", "arrastrar": "Arrastralos para subir o bajar", "transcripcion": "Desde la transcripción" },
+    "corregir": { "frase": "Hoy hablamos con el equipo de", "pie": "Los tiempos no se tocan" },
+    "estilos": { "viral": "Virales", "profesional": "Profesionales" },
+    "textosDiseno": { "texto": "Dato clave", "contorno": "Contorno", "caja": "Caja", "sombra": "Sombra", "pie": "Aparece en 00:04 · palabra destacada" },
+    "gancho": { "frase": "Nadie te cuenta esto", "cuando": "Primeros segundos del clip" },
+    "cta": { "texto": "Mirá el episodio completo", "cuando": "Últimos segundos", "color": "Con el color de la marca" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Tengo que escribir los subtítulos a mano?", "r": "No. Salen de la transcripción del episodio, palabra por palabra y sincronizados. Si una palabra salió mal, la cambiás sin tocar los tiempos." },
+    "p2": { "p": "¿Puedo usar un estilo distinto para cada cliente?", "r": "Sí. Cada marca tiene su estilo de subtítulos y gancho, pintado con sus colores. En un clip puntual lo podés cambiar." },
+    "p3": { "p": "¿Puedo sumar textos además de los subtítulos?", "r": "Sí. Agregás textos con la letra, el contorno, la sombra o la caja que quieras, con palabras destacadas en otro color y el segundo en que aparecen." }
+  }
+}

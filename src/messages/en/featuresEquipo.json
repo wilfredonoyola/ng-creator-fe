@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "titulo": "Team and client management for content agencies | Clipfine",
+    "descripcion": "All of your agency's clients in one account, each kept apart. Per-client roles, email invites and who made every clip, with no shared passwords."
+  },
+  "titulo": "More clients and more people,",
+  "destacado": "still in control",
+  "bajada": "Each client has its own space and each person only gets into the clients they work on, with their role. You see who's editing what, what's ready and who scheduled every clip.",
+  "datos": {
+    "d1": { "cifra": "1 account", "que": "for every client your agency runs" },
+    "d2": { "cifra": "4 roles", "que": "per client: owner, editor, reviewer and viewer" },
+    "d3": { "cifra": "0 passwords", "que": "shared: everyone signs in with their email" }
+  },
+  "agencia": {
+    "marcas": "Add a new client without mixing anything with the ones you already have.",
+    "roles": "Freelancers see only the clients they work on, and clients come in to approve without seeing the rest.",
+    "invitaciones": "A new editor works the same day, and when they leave you remove access in one click.",
+    "tomar": "Two editors never work on the same clip or the same span.",
+    "listos": "Whoever schedules knows what's ready without asking in the group chat.",
+    "autoria": "If something went wrong, you know who to talk to.",
+    "avisos": "You hear about what matters without checking every client.",
+    "idiomas": "You can bring on people who work in English without switching tools."
+  },
+  "vistas": {
+    "marcas": { "cliente": "Client {letra}", "detalle": "episodes · clips · calendar" },
+    "roles": { "propietario": "Owner", "editor": "Editor", "revisor": "Reviewer" },
+    "invitaciones": { "rol": "Editor", "marca": "Client B", "invitar": "Invite" },
+    "tomar": { "clip": "Nobody talks about this part", "deQuien": "Leo has it", "aviso": "This span is already in another clip" },
+    "listos": { "terminado": "Finished", "calendario": "To schedule", "pie": "Shows up in the calendar" },
+    "autoria": { "edito": "Edited by Ana", "termino": "Finished by Leo", "programo": "Scheduled by Marta" },
+    "avisos": { "listo": "Clip ready", "listoDetalle": "Leo finished a Client A clip", "publicado": "Published", "publicadoDetalle": "Went out on TikTok and Reels" },
+    "idiomas": { "rotulo": "Language", "pie": "Everyone picks their own" }
+  },
+  "preguntas": {
+    "p1": { "p": "Can a freelancer work on one client without seeing the others?", "r": "Yes. Access is per client: each person sees only the brands you invited them to, with the role you gave them." },
+    "p2": { "p": "What happens when someone leaves the agency?", "r": "You remove their access from Team and they can no longer sign in to it. Their clips stay and still show who made them." },
+    "p3": { "p": "Can my client log in to see their content?", "r": "Yes. Invite them as a viewer to just look, or as a reviewer to approve or request changes before publishing." }
+  }
+}

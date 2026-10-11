@@ -1,0 +1,35 @@
+{
+  "seo": {
+    "titulo": "Clipfine app for iPhone and Android: your clients' clips | Clipfine",
+    "descripcion": "Edit, schedule and approve your clients' clips from your phone, with the same account as the web. An iPhone and Android app built for agencies."
+  },
+  "titulo": "Your agency keeps moving",
+  "destacado": "even away from your computer",
+  "bajada": "The app is part of Clipfine, on iPhone and Android: same account, same clients, everything in sync with the web. Approve, edit or schedule from wherever you are.",
+  "datos": {
+    "d1": { "cifra": "2 platforms", "que": "iPhone and Android" },
+    "d2": { "cifra": "1 account", "que": "the same as on the web, with all your clients" },
+    "d3": { "cifra": "4 networks", "que": "to schedule from your phone" }
+  },
+  "agencia": {
+    "app": "Nobody has to set anything up again to work from their phone.",
+    "sincronizado": "What an editor leaves on the web, you pick up on your phone, no files passed around.",
+    "editarCelular": "A last-minute fix doesn't wait for someone to get back to the office.",
+    "aprobarCelular": "The client approves from their phone and the clip goes out on time.",
+    "push": "You hear about what needs your attention without keeping Clipfine open.",
+    "fotos": "The finished clip is on the phone, ready to send or post wherever it's needed."
+  },
+  "vistas": {
+    "app": { "cliente": "Client A", "clips": "Clips" },
+    "sincronizado": { "pie": "The same on the web and on the phone" },
+    "editarCelular": { "recortar": "Trim", "audio": "Audio", "texto": "Text" },
+    "aprobarCelular": { "aprobar": "Approve", "cambios": "Request changes" },
+    "push": { "aviso": "Leo scheduled a clip for Thursday", "pie": "You choose which alerts you get" },
+    "fotos": { "guardar": "Save to Photos", "guardando": "Saving the MP4" }
+  },
+  "preguntas": {
+    "p1": { "p": "Do I need another account for the app?", "r": "No. Sign in with the same account as the web and your clients, episodes and clips are already there." },
+    "p2": { "p": "Can I edit a full clip from my phone?", "r": "Yes. Trim, remove what's extra, change captions and text, add music and sound effects, adjust the speed and schedule on all four networks." },
+    "p3": { "p": "Can my client approve from their phone?", "r": "Yes. With the Reviewer role, they see the clip in the app and approve it or request changes, in writing or with a voice note." }
+  }
+}

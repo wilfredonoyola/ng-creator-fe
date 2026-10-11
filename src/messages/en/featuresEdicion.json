@@ -1,0 +1,44 @@
+{
+  "seo": {
+    "titulo": "CapCut-style clip editor for agencies | Clipfine",
+    "descripcion": "Edit your clients' clips in a CapCut-style editor: trims, cuts, silence removal, auto-framing and 9:16, 1:1 or 16:9. It saves on its own. Built for agencies."
+  },
+  "titulo": "Client-ready clips,",
+  "destacado": "without a senior editor on every one",
+  "bajada": "Trim, cut what's extra and frame whoever is talking in a CapCut-style editor. Clipfine does the heavy lifting and your team reviews, so anyone on your team can deliver clean clips.",
+  "datos": {
+    "d1": { "cifra": "100 steps", "que": "of undo and redo on every clip" },
+    "d2": { "cifra": "4 layouts", "que": "that can change in every segment" },
+    "d3": { "cifra": "3 formats", "que": "9:16, 1:1 and 16:9, whatever each network asks for" }
+  },
+  "agencia": {
+    "editor": "Your team already knows it: if they've ever opened CapCut, there's no learning curve.",
+    "guardado": "Nobody loses an hour of work because a tab closed or the internet dropped.",
+    "tramo": "The clip starts with the full idea, and the client doesn't ask you to redo it because it got cut off.",
+    "cortes": "You remove a mistake or a filler word in seconds, without exporting or jumping to another app.",
+    "silencios": "The most tedious pass on a clip becomes one tap and a quick review.",
+    "autoEncuadre": "The step that eats most of an editor's time happens on its own. Your team reviews instead of framing.",
+    "encuadreManual": "When the AI misses, you fix it in seconds without starting over.",
+    "formatos": "You deliver the format each of the client's networks asks for without another app.",
+    "disenos": "Two-person interviews look good vertical, without building a split screen by hand.",
+    "fondo": "Any video fits vertical without ugly edges, including footage shot horizontally.",
+    "velocidad": "A clip that runs past the ideal length fits without cutting content."
+  },
+  "vistas": {
+    "editor": { "deshacer": "Undo", "rehacer": "Redo", "video": "Video", "textos": "Text", "audio": "Audio" },
+    "guardado": { "estado": "Saved", "cuando": "1 s ago", "cambio": "Hook: “Nobody tells you this”", "pie": "No save button" },
+    "tramo": { "antes": "0:42", "despues": "0:47 · +5 s at the start" },
+    "cortes": { "antes": "…what we learned", "cortado": "uh, like, let's say", "despues": "is that the client…" },
+    "silencios": { "marcados": "3 silences", "pie": "marked as cuts" },
+    "autoEncuadre": { "habla": "Speaking: Ana", "labios": "Lips moving" },
+    "encuadreManual": { "pie": "Drag and resize the frame" },
+    "disenos": { "uno": "Single", "dividido": "Split", "horizontal": "Horizontal", "centrado": "Centered" },
+    "fondo": { "desenfocado": "Blurred", "negro": "Black" },
+    "velocidad": { "dura": "Length:", "pie": "The voice keeps its pitch" }
+  },
+  "preguntas": {
+    "p1": { "p": "Does my team need to know video editing?", "r": "No. Framing, silences and cuts are suggested automatically, and the editor works like CapCut. Anyone on your team can get a clip ready." },
+    "p2": { "p": "What happens if the browser closes mid-edit?", "r": "Nothing is lost. Every change saves on its own a second after you make it, and undo keeps the last 100 steps." },
+    "p3": { "p": "Can my team edit from their phone?", "r": "Yes. The iPhone and Android app has the editor, with the same account and the same clips as the web." }
+  }
+}
