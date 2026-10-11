@@ -27,7 +27,7 @@ export interface MiembroRevision {
  */
 export function estadoRevisores(miembros: MiembroRevision[]) {
   const nombre = (m: MiembroRevision) => m.nombre?.trim() || m.email.split("@")[0];
-  const revisores = miembros.filter((m) => m.rol === "PROPIETARIO" || m.revisor);
+  const revisores = miembros.filter((m) => m.rol === "PROPIETARIO" || m.rol === "REVISOR" || m.revisor);
   const programan = miembros.filter((m) => m.rol === "EDITOR" && !m.revisor);
   return {
     nombres: revisores.map(nombre),

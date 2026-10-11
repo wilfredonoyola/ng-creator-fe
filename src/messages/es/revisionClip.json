@@ -20,10 +20,10 @@
     "errorGuardar": "No se pudo guardar",
     "soloPropietario": "Esto lo cambia el propietario de la marca.",
     "revisores": "Quiénes revisan",
-    "revisoresAyuda": "El propietario revisa siempre. Marcá a los editores o lectores que también aprueban: un lector revisor aprueba o pide cambios, pero no edita.",
+    "revisoresAyuda": "El propietario y quien tiene el rol Revisor revisan siempre. Para el cliente que solo aprueba, invitalo como Revisor. Si un editor también aprueba, marcalo con «Revisa».",
     "chequeo": {
       "revisan": "{n, plural, one {Revisa: {nombres}} other {Revisan ({n}): {nombres}}}",
-      "soloPropietario": "Por ahora solo revisa el propietario: todo lo que programe el equipo le va a llegar a esa persona, y si no lo aprueba a tiempo no sale. Si querés repartirlo, marcá a otro editor o lector con «Revisa».",
+      "soloPropietario": "Por ahora solo revisa el propietario: todo lo que programe el equipo le va a llegar a esa persona, y si no lo aprueba a tiempo no sale. Para repartirlo, invitá a alguien como Revisor o marcá a un editor con «Revisa».",
       "sinEditores": "Todos los que programan clips son revisores, y lo que programa un revisor queda aprobado solo: la revisión no va a frenar nada hasta que haya un editor que no revise.",
       "marcarRevisores": "Marcar revisores en el equipo ↓"
     }

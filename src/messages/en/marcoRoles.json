@@ -7,6 +7,10 @@
     "etiqueta": "Editor",
     "ayuda": "Creates, reviews, approves and publishes. Doesn't need a Facebook account."
   },
+  "REVISOR": {
+    "etiqueta": "Reviewer",
+    "ayuda": "Approves or requests changes before publishing. Doesn't edit."
+  },
   "LECTOR": {
     "etiqueta": "Viewer",
     "ayuda": "Sees the page's work, doesn't change it."
