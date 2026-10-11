@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Mail, Sparkles } from "lucide-react";
 import { CONDENSADA, FOCO } from "@/components/landing/Publica";
+import { ENLACE_AYUDA } from "@/lib/ayuda";
 import { CONTACTO } from "@/lib/legal";
 
 /** El final de /ayuda y de cada artículo: escribirnos, y lo que viene con ChatGPT y Claude. */
@@ -33,6 +35,12 @@ export function ContactoAyuda() {
         </span>
         <h2 className="text-2xl font-extrabold leading-tight">{t("conIa.titulo")}</h2>
         <p className="leading-relaxed text-[#D9D8D2]">{t("conIa.texto")}</p>
+        <Link
+          href={`${ENLACE_AYUDA}/conectar-chatgpt-claude`}
+          className={`mt-auto w-fit font-semibold text-[#FFD400] underline decoration-[1.5px] underline-offset-[6px] hover:decoration-[3px] ${FOCO} focus-visible:outline-white`}
+        >
+          {t("conIa.boton")} →
+        </Link>
       </div>
     </div>
   );

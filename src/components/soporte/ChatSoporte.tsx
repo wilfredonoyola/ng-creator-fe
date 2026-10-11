@@ -12,7 +12,7 @@ import { conSesion, derivar, escribir, guardada, leer, olvidar, type MensajeChat
  * controles abajo a la derecha), grabar, montaje, el reporte para imprimir y
  * el superadmin.
  */
-const SIN_BURBUJA = [/^\/episodios\/[^/]+\/clips\/[^/]+$/, /^\/grabar/, /^\/montaje/, /^\/metricas\/reporte/, /^\/superadmin/, /^\/onboarding/];
+const SIN_BURBUJA = [/^\/episodios\/[^/]+\/clips\/[^/]+$/, /^\/grabar/, /^\/montaje/, /^\/metricas\/reporte/, /^\/superadmin/, /^\/onboarding/, /^\/conectar/];
 
 /** Con la barra de abajo del panel (NavInferior, en el teléfono), la burbuja va más arriba. */
 const PUBLICAS = [/^\/$/, /^\/features/, /^\/ayuda/, /^\/app$/, /^\/privacidad/, /^\/terminos/, /^\/login/, /^\/registro/];

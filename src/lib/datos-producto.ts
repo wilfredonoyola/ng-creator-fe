@@ -21,8 +21,12 @@ const porPlan = Object.fromEntries(
 /** El mayor ahorro del cobro anual, en %, como lo dice la página de precios. */
 const ahorroAnual = Math.max(...PLANES.map((p) => Math.round((1 - p.anual / p.mensual) * 100)));
 
+/** La URL del conector MCP: el backend + /mcp (ng-creator-be#182). */
+const URL_MCP = `${(process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "https://creator-api.ngstudios.co/graphql").replace(/\/graphql\/?$/, "")}/mcp`;
+
 export const DATOS_PRODUCTO = {
   soporte: CONTACTO,
+  mcp: URL_MCP,
   "prueba.dias": String(PRUEBA_DIAS),
   "prueba.horas": String(PRUEBA_HORAS),
   "custom.desde": String(CUSTOM.desde),
