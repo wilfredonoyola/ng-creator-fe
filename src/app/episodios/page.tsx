@@ -16,6 +16,7 @@ import {
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
+import { ClipsSubidos } from "@/components/episodios/ClipsSubidos";
 import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
 import { SelloDeAutoria, type Autoria } from "@/components/SelloDeAutoria";
 import { colorDeMarca, useMarcaActiva } from "@/lib/marca-activa";
@@ -407,6 +408,8 @@ export default function EpisodiosPage() {
               {!agotada && propietario && <ImportarDeRestream marcaId={marcaId} onImportado={() => void refetch()} />}
             </section>
           )}
+
+          <ClipsSubidos marcaId={marcaId} puedeOperar={opera} />
 
           {loading && !data ? (
             <div className="flex justify-center py-16">
