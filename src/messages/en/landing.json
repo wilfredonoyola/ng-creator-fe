@@ -283,6 +283,10 @@
         "p": "Can I edit the clips?",
         "r": "Yes, in a CapCut-style editor that saves on its own: timeline, cuts, captions, text, images, royalty-free music, sound effects, volume and speed. You schedule from the same editor and Clipfine builds the final video."
       },
+      "capcut": {
+        "p": "Can I upload clips I already edited in CapCut?",
+        "r": "Yes. In Publications, Upload clips: drop one or more videos, they go out as they are or you open them in the editor, and they follow the same path as the rest, with client review, scheduling on all four networks and analytics. They don't use up hours."
+      },
       "revision": {
         "p": "Can my client approve before it goes out?",
         "r": "Yes. With review before publishing, what the team schedules waits for a reviewer to approve it or ask for changes, with a comment or a voice note, from the web or the phone."
