@@ -24,6 +24,7 @@ import { PLANES } from "@/components/landing/planes";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MaquetaMetricas } from "@/components/landing/MaquetaMetricas";
 import { MaquetaRevision } from "@/components/landing/mockups/MaquetaRevision";
+import { MaquetaClipsSubidos } from "@/components/landing/mockups/MaquetaClipsSubidos";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landing");
@@ -53,6 +54,7 @@ const USOS = ["podcast", "lives"] as const;
 const PASOS = ["subir", "clips", "publicar"] as const;
 /** Lo que hace la analítica (#119), en el orden en que importa a una agencia. */
 const PUNTOS_METRICAS = ["porClip", "retencion", "ia", "programa", "reporte", "solo"] as const;
+const PUNTOS_SUBIDOS = ["tal", "editor", "flujo", "horas"] as const;
 const PUNTOS_APROBACION = ["rol", "voz", "hora", "editar"] as const;
 const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "editar", "capcut", "revision", "sigue", "idioma", "app"] as const;
 
@@ -402,6 +404,33 @@ export default function Landing() {
           <Link href={ENLACE_FUNCIONES} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}>
             {t("funciones.verTodas")} →
           </Link>
+        </div>
+      </section>
+
+      {/* ---- Clips ya editados (ng-creator-be#181) ---- */}
+      <section id="subir-clips" aria-labelledby="subidos-titulo" className="scroll-mt-20 bg-[#0A0A0A] text-white">
+        <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16 lg:py-28`}>
+          <div className="min-w-0 max-lg:order-2">
+            <MaquetaClipsSubidos />
+          </div>
+          <div className="flex flex-col gap-7">
+            <p className={`${ETIQUETA} text-sm font-bold uppercase tracking-[.12em] text-[#FFD400]`}>{t("subidos.etiqueta")}</p>
+            <h2 id="subidos-titulo" className={`${CONDENSADA} text-[44px] leading-[.95] sm:text-[68px]`}>{t("subidos.titulo")}</h2>
+            <p className="text-lg leading-relaxed text-[#D9D8D2] sm:text-[19px]">{t("subidos.texto")}</p>
+            <ul className="flex flex-col gap-4 border-t border-[#2E2E2B] pt-6">
+              {PUNTOS_SUBIDOS.map((k) => (
+                <li key={k} className="flex gap-3">
+                  <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 bg-[#FFD400]" />
+                  <p className="leading-relaxed text-[#D9D8D2]">
+                    <strong className="font-bold text-white">{t(`subidos.puntos.${k}.titulo`)}</strong> {t(`subidos.puntos.${k}.texto`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link href={`${ENLACE_FUNCIONES}/importar`} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-white`}>
+              {t("subidos.verMas")} →
+            </Link>
+          </div>
         </div>
       </section>
 
