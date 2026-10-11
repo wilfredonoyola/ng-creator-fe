@@ -25,7 +25,7 @@ const TABS: Tab[] = [
   { href: "/panel", icon: House, clave: "inicio" },
   { href: "/episodios", icon: Mic, clave: "episodios" },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
-  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
+  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis", "/clips-subidos"] },
 ];
 const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, clave: "crear" };
 
