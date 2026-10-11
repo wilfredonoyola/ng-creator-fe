@@ -1,0 +1,40 @@
+---
+titulo: Cómo elige la IA los clips
+descripcion: Qué mira la IA de Clipfine para proponer los momentos de cada episodio, qué significan el puntaje y el motivo, y cómo crear un clip a mano.
+categoria: clips
+orden: 2
+---
+Cuando el episodio termina de transcribirse, la IA lee la transcripción y propone los momentos que funcionan como clip solos. Tu equipo arranca eligiendo, no mirando 90 minutos de video.
+
+## Qué busca
+
+- Momentos que se entienden sin haber visto el resto del episodio.
+- Que enganchen en los primeros segundos y tengan un cierre.
+- Que duren entre 15 y 90 segundos.
+- Si es una respuesta, el clip arranca en la pregunta.
+
+Deja afuera lo que no es contenido: promociones y sorteos, pedidos de suscribirse o dar like, anuncios del programa, la apertura y la despedida, y las canciones o cortinas. Si no encuentra nada que valga la pena, prefiere no proponer nada antes que un clip flojo.
+
+## Qué te muestra en cada momento
+
+- **Puntuación** de 0 a 100: qué tan probable es que funcione en redes.
+- **Motivo**: **Gancho fuerte**, **Opinión polémica**, **Historia completa**, **Frase citable**, **Humor**, **Emoción** o **Dato sorprendente**.
+- Un título corto y, a veces, un **Gancho**: el texto para poner en pantalla los primeros segundos.
+
+Propone hasta 15 momentos por episodio, ordenados por puntaje. Todo es una sugerencia: el tramo, el título y el gancho se cambian en el editor.
+
+## Cómo usarlos
+
+1. Abrí el episodio desde **Episodios** o desde **Momentos destacados (IA)** en **Inicio**.
+2. Tocá **Ver lo que se dice** para leer el momento, o reproducilo.
+3. Tocá **Editar** para abrirlo en el [editor](/ayuda/editor-basico).
+
+Si querés otra tanda, en el episodio tenés **Buscar momentos otra vez** (reemplaza la lista de sugeridos).
+
+## Crear un clip a mano
+
+Si el cliente pide un momento puntual, tocá **+ Crear clip** en el episodio: buscás el momento en la transcripción, marcás inicio y fin, y vas al editor. En la app, escribís unas palabras de lo que se dice y la encuentra. Un clip puede durar hasta 3 minutos. Los clips hechos así aparecen como **Hecho a mano**.
+
+Funciona igual en la web y en la app.
+
+> **Consejo:** usá el motivo para explicarle al cliente por qué elegiste cada clip. Es más fácil que te lo apruebe en la [revisión](/ayuda/aprobar-o-pedir-cambios).
