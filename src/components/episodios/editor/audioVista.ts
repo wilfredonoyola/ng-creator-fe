@@ -147,7 +147,9 @@ export function useAudioDeVista(o: {
           v.playbackRate = e.velocidad;
         }
         if (!v.preservesPitch) v.preservesPitch = true;
-        const sonando = !v.paused && !v.ended;
+        // Cargando (buffering) no cuenta como pausado: el cuadro se congela pero
+        // `paused` sigue en false. La música y los efectos esperan al video.
+        const sonando = !v.paused && !v.ended && v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
         const voz = Math.max(0, e.volumenClip);
         if (!amp && !sinAmplificar && voz > 1 && sonando && sePuedeAmplificar(v)) {
           amp = amplificar(v);
