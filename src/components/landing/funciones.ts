@@ -263,3 +263,20 @@ export const GRUPOS = [
   { id: "demostrar", secciones: ["metricas"] },
   { id: "operar", secciones: ["marca", "equipo", "app"] },
 ] as const satisfies readonly { id: string; secciones: readonly IdSeccion[] }[];
+
+/** La función cuya vista previa adelanta cada sección en el índice de /features. */
+export const DESTACADA: Record<IdSeccion, string> = {
+  importar: "restream",
+  ia: "puntaje",
+  edicion: "editor",
+  audio: "efectos",
+  textos: "estilos",
+  imagenes: "quitarFondo",
+  calidad: "vistaPrevia",
+  publicar: "cuatroRedes",
+  revision: "aprobar",
+  metricas: "crecimiento",
+  marca: "colores",
+  equipo: "roles",
+  app: "app",
+};
