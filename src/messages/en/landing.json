@@ -100,6 +100,30 @@
       }
     }
   },
+  "aprobacion": {
+    "etiqueta": "Approval",
+    "titulo": "Your client approves before it goes out.",
+    "texto": "Turn on review per client and nothing is published without sign-off. Your team schedules as usual; the reviewer approves or requests changes from the web or their phone, with a comment or a voice note.",
+    "puntos": {
+      "rol": {
+        "titulo": "The client, with their own role.",
+        "texto": "Invite them as a Reviewer: they see their clips and approve them, but can't edit."
+      },
+      "voz": {
+        "titulo": "Changes, out loud.",
+        "texto": "A voice note with its transcript, instead of a long email."
+      },
+      "hora": {
+        "titulo": "Nothing goes out unapproved.",
+        "texto": "If the time comes without review, it doesn't go out, and everyone knows."
+      },
+      "editar": {
+        "titulo": "What's approved is what goes out.",
+        "texto": "If it's edited afterwards, it goes back to review."
+      }
+    },
+    "verMas": "How approval works"
+  },
   "metricas": {
     "etiqueta": "Analytics",
     "titulo": "Know which clip worked. Then show the client.",

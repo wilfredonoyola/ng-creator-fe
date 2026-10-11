@@ -6,6 +6,7 @@ const PERSONAS = [
   { nombre: "Vale", rol: "propietario" },
   { nombre: "Ana", rol: "editor" },
   { nombre: "Leo", rol: "editor" },
+  { nombre: "Cami", rol: "revisor" },
   { nombre: "Tomi", rol: "lector" },
 ] as const;
 
@@ -18,6 +19,7 @@ const CLIENTES = [
 const ROL: Record<(typeof PERSONAS)[number]["rol"], string> = {
   propietario: "bg-[#FFD400] text-[#0A0A0A] font-bold",
   editor: "text-white shadow-[inset_0_0_0_1px_#8A8983]",
+  revisor: "text-[#FFD400] shadow-[inset_0_0_0_1px_#FFD400]",
   lector: "text-[#A3A29C] shadow-[inset_0_0_0_1px_#3A3A36]",
 };
 

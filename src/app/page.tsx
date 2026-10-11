@@ -23,6 +23,7 @@ import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MaquetaMetricas } from "@/components/landing/MaquetaMetricas";
+import { MaquetaRevision } from "@/components/landing/mockups/MaquetaRevision";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landing");
@@ -52,6 +53,7 @@ const USOS = ["podcast", "lives"] as const;
 const PASOS = ["subir", "clips", "publicar"] as const;
 /** Lo que hace la analítica (#119), en el orden en que importa a una agencia. */
 const PUNTOS_METRICAS = ["porClip", "retencion", "ia", "programa", "reporte", "solo"] as const;
+const PUNTOS_APROBACION = ["rol", "voz", "hora", "editar"] as const;
 const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "editar", "revision", "sigue", "idioma", "app"] as const;
 
 const CLIPS = ["c1", "c2", "c3", "c4"] as const;
@@ -400,6 +402,36 @@ export default function Landing() {
           <Link href={ENLACE_FUNCIONES} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}>
             {t("funciones.verTodas")} →
           </Link>
+        </div>
+      </section>
+
+      {/* ---- Aprobación antes de publicar (ng-creator-be#178) ---- */}
+      <section id="aprobacion" aria-labelledby="aprobacion-titulo" className="scroll-mt-20">
+        <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-28`}>
+          <div className="flex flex-col gap-7">
+            <Seccion>{t("aprobacion.etiqueta")}</Seccion>
+            <h2 id="aprobacion-titulo" className={H2}>{t("aprobacion.titulo")}</h2>
+            <p className="text-lg leading-relaxed text-[#3A3935] sm:text-[19px]">{t("aprobacion.texto")}</p>
+            <ul className="flex flex-col gap-4 border-t border-[#D9D8D2] pt-6">
+              {PUNTOS_APROBACION.map((k) => (
+                <li key={k} className="flex gap-3">
+                  <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 bg-[#FFD400]" />
+                  <p className="leading-relaxed text-[#3A3935]">
+                    <strong className="font-bold text-[#0A0A0A]">{t(`aprobacion.puntos.${k}.titulo`)}</strong> {t(`aprobacion.puntos.${k}.texto`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href={`${ENLACE_FUNCIONES}#revision`}
+              className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}
+            >
+              {t("aprobacion.verMas")} →
+            </Link>
+          </div>
+          <div className="min-w-0">
+            <MaquetaRevision />
+          </div>
         </div>
       </section>
 

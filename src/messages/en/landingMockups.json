@@ -99,10 +99,23 @@
     "publicada": "published",
     "programar": "Schedule"
   },
+  "revision": {
+    "alt": "A clip marked “To review”, with the client's voice note and its transcript, and the buttons to request changes or approve.",
+    "clip": "Clip 07 · That's when it clicked",
+    "sale": "Fri 20:00 · TikTok, Instagram",
+    "porRevisar": "To review",
+    "revision": "Review",
+    "revisor": "Client A · Reviewer",
+    "quien": "Cami requested changes",
+    "transcripcion": "Move the hook up: start on the laugh.",
+    "grabar": "Hold to record",
+    "pedirCambios": "Request changes",
+    "aprobar": "Approve"
+  },
   "equipo": {
-    "alt": "A brand's team: the brand selector, people with their owner, editor or viewer role, an email invitation and a clip showing who edited it and who finished it.",
+    "alt": "A brand's team: the brand selector, people with their owner, editor, reviewer or viewer role, an email invitation and a clip showing who edited it and who finished it.",
     "equipo": "Team",
-    "roles": { "propietario": "Owner", "editor": "Editor", "lector": "Viewer" },
+    "roles": { "propietario": "Owner", "editor": "Editor", "revisor": "Reviewer", "lector": "Viewer" },
     "invitada": "invited",
     "invitar": "+ Invite",
     "clip": "Clip 03 · Nobody talks about this part",

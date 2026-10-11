@@ -99,10 +99,23 @@
     "publicada": "publicada",
     "programar": "Programar"
   },
+  "revision": {
+    "alt": "Un clip marcado «Por revisar», con la nota de voz del cliente y su transcripción, y los botones para pedir cambios o aprobar.",
+    "clip": "Clip 07 · Ahí nos cayó la ficha",
+    "sale": "Vie 20:00 · TikTok, Instagram",
+    "porRevisar": "Por revisar",
+    "revision": "Revisión",
+    "revisor": "Cliente A · Revisor",
+    "quien": "Cami pidió cambios",
+    "transcripcion": "El gancho va antes: arrancá en la risa.",
+    "grabar": "Mantener para grabar",
+    "pedirCambios": "Pedir cambios",
+    "aprobar": "Aprobar"
+  },
   "equipo": {
-    "alt": "El equipo de una marca: el selector de marcas, las personas con su rol de propietario, editor o lector, una invitación por correo y un clip que muestra quién lo editó y quién lo terminó.",
+    "alt": "El equipo de una marca: el selector de marcas, las personas con su rol de propietario, editor, revisor o lector, una invitación por correo y un clip que muestra quién lo editó y quién lo terminó.",
     "equipo": "Equipo",
-    "roles": { "propietario": "Propietario", "editor": "Editor", "lector": "Lector" },
+    "roles": { "propietario": "Propietario", "editor": "Editor", "revisor": "Revisor", "lector": "Lector" },
     "invitada": "invitada",
     "invitar": "+ Invitar",
     "clip": "Clip 03 · Nadie habla de esta parte",

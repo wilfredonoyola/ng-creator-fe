@@ -64,6 +64,10 @@ import {
   WandSparkles,
   Zap,
   Activity,
+  AlarmClock,
+  BadgeCheck,
+  Eye,
+  Undo2,
   BrainCircuit,
   type LucideIcon,
 } from "lucide-react";
@@ -205,6 +209,19 @@ const SECCIONES = [
     ],
   },
   {
+    id: "revision",
+    items: [
+      { clave: "porRevisar", icono: ClipboardCheck },
+      { clave: "aprobar", icono: BadgeCheck },
+      { clave: "pedirCambios", icono: MessageSquareText },
+      { clave: "notaVoz", icono: Mic },
+      { clave: "clienteRevisor", icono: Eye },
+      { clave: "vencimiento", icono: AlarmClock },
+      { clave: "editarVuelve", icono: Undo2 },
+      { clave: "avisosRevision", icono: BellRing },
+    ],
+  },
+  {
     id: "metricas",
     items: [
       { clave: "metricasClip", icono: ChartColumn },
@@ -224,8 +241,6 @@ const SECCIONES = [
       { clave: "invitaciones", icono: Mail },
       { clave: "tomar", icono: Hand },
       { clave: "listos", icono: ListChecks },
-      { clave: "revision", icono: ClipboardCheck },
-      { clave: "notaVoz", icono: Mic },
       { clave: "autoria", icono: UserCheck },
       { clave: "avisos", icono: Bell },
     ],
