@@ -11,7 +11,7 @@ import {
   reenviarCodigoRegistro,
   registrarse,
 } from "@/lib/auth";
-import { passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
+import { CampoPassword, passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
 import { conVolverA, MarcoAcceso } from "@/components/acceso/MarcoAcceso";
 import { NOMBRE_MAX, NOMBRE_MIN } from "@/lib/nombre";
 
@@ -30,7 +30,6 @@ export default function RegistroPage() {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
-  const [repetida, setRepetida] = useState("");
   const [codigo, setCodigo] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -42,14 +41,10 @@ export default function RegistroPage() {
   const nombreLimpio = nombre.trim();
   const nombreValido =
     nombreLimpio.length === 0 || (nombreLimpio.length >= NOMBRE_MIN && nombreLimpio.length <= NOMBRE_MAX);
-  const puedeCrear = passwordValida(password) && password === repetida && email.length > 0 && nombreValido;
+  const puedeCrear = passwordValida(password) && email.length > 0 && nombreValido;
 
   async function crear(e: React.FormEvent) {
     e.preventDefault();
-    if (password !== repetida) {
-      setError(t("noCoincidenLargo"));
-      return;
-    }
     setError(null);
     setCargando(true);
     try {
@@ -133,27 +128,14 @@ export default function RegistroPage() {
             required
           />
           <label className="mb-1 block text-xs text-white/50">{t("password")}</label>
-          <input
-            type="password"
+          <CampoPassword
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
-            className={`mb-3 ${campo}`}
+            className="mb-2"
             required
           />
           <RequisitosPassword valor={password} />
-          <label className="mb-1 block text-xs text-white/50">{t("repetila")}</label>
-          <input
-            type="password"
-            value={repetida}
-            onChange={(e) => setRepetida(e.target.value)}
-            autoComplete="new-password"
-            className={campo}
-            required
-          />
-          <p className="mb-6 mt-1 h-4 text-[11px] text-white/35">
-            {repetida && password !== repetida ? <span className="text-red-400">{t("noCoinciden")}</span> : null}
-          </p>
         </>
       ) : (
         <>

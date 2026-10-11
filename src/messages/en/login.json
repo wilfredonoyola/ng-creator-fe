@@ -1,14 +1,11 @@
 {
   "cuentaEliminada": "Your account was deleted.",
   "errorEntrar": "Couldn't sign in",
-  "noCoincidenLargo": "The two passwords don't match",
   "errorGuardar": "Couldn't save the password",
   "codigoEnviado": "If {correo} has an account, we sent it a code. If you don't see it, check spam.",
   "errorCodigo": "Couldn't send the code",
   "errorCambiar": "Couldn't change the password",
   "nuevaPassword": "New password",
-  "repetila": "Repeat it",
-  "noCoinciden": "They don't match",
   "titulos": {
     "entrar": "Welcome to Clipfine",
     "desafio": "Choose your password",
