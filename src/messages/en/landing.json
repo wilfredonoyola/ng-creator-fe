@@ -255,6 +255,14 @@
         "p": "How is Clipfine different from Opus Clip or Descript?",
         "r": "Those tools are built for a single creator. Clipfine is built for agencies with many clients: clips, calendar and analytics sit together, organized by client, with pricing that scales with your roster."
       },
+      "editar": {
+        "p": "Can I edit the clips?",
+        "r": "Yes, in a CapCut-style editor that saves on its own: timeline, cuts, captions, text, images, royalty-free music, sound effects, volume and speed. You schedule from the same editor and Clipfine builds the final video."
+      },
+      "revision": {
+        "p": "Can my client approve before it goes out?",
+        "r": "Yes. With review before publishing, what the team schedules waits for a reviewer to approve it or ask for changes, with a comment or a voice note, from the web or the phone."
+      },
       "sigue": {
         "p": "Does the clip follow the person speaking?",
         "r": "Yes, with auto-reframe. It recognizes voices and watches who's moving their lips, so it isn't fooled by someone gesturing. When several people talk, it splits the screen. Every shot can be corrected in the editor."

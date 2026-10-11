@@ -255,6 +255,14 @@
         "p": "¿En qué se diferencia de Opus Clip o Descript?",
         "r": "Esas herramientas están pensadas para un creador. Clipfine está pensado para agencias con muchos clientes: los clips, el calendario y el análisis están juntos y ordenados por cliente, con precios que crecen con tu cartera."
       },
+      "editar": {
+        "p": "¿Puedo editar los clips?",
+        "r": "Sí, en un editor como CapCut que se guarda solo: línea de tiempo, cortes, subtítulos, textos, imágenes, música libre de derechos, efectos de sonido, volumen y velocidad. Programás desde el mismo editor y Clipfine arma el video final."
+      },
+      "revision": {
+        "p": "¿Mi cliente puede aprobar antes de que se publique?",
+        "r": "Sí. Con la revisión antes de publicar, lo que programa el equipo espera a que un revisor lo apruebe o pida cambios, con un comentario o una nota de voz, desde la web o el celular."
+      },
       "sigue": {
         "p": "¿El clip sigue a la persona que habla?",
         "r": "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula. Cuando hablan varios, divide la pantalla. Cada plano se puede corregir en el editor."

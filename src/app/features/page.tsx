@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
+  AudioLines,
   BellRing,
   Bell,
   Blend,
@@ -10,11 +11,15 @@ import {
   CalendarDays,
   Captions,
   ChartColumn,
+  ClipboardCheck,
+  CloudCheck,
   ChartLine,
   Columns2,
   Crop,
   Download,
+  Drum,
   Eraser,
+  FastForward,
   FileDown,
   Film,
   Gauge,
@@ -27,9 +32,12 @@ import {
   ListChecks,
   Mail,
   Megaphone,
+  Mic,
   MessageSquareText,
   Move,
+  Music,
   Palette,
+  PanelsTopLeft,
   Pencil,
   Pipette,
   Radio,
@@ -51,6 +59,7 @@ import {
   Type,
   Upload,
   UserCheck,
+  Volume2,
   VolumeX,
   WandSparkles,
   Zap,
@@ -99,7 +108,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Todas las funciones de Clipfine, por sección. Solo lo que ya funciona en la
- * web o en la app (verificado contra el código el 6/10): si algo se apaga o
+ * web o en la app (verificado contra el código el 6/10; editor, audio y revisión el 10/10): si algo se apaga o
  * cambia, se saca de acá. Cada item es una clave de `landingFunciones.items`.
  */
 const SECCIONES = [
@@ -115,6 +124,8 @@ const SECCIONES = [
   {
     id: "edicion",
     items: [
+      { clave: "editor", icono: PanelsTopLeft },
+      { clave: "guardado", icono: CloudCheck },
       { clave: "tramo", icono: Crop },
       { clave: "cortes", icono: Scissors },
       { clave: "silencios", icono: VolumeX },
@@ -123,6 +134,16 @@ const SECCIONES = [
       { clave: "formatos", icono: Ratio },
       { clave: "disenos", icono: Columns2 },
       { clave: "fondo", icono: Blend },
+      { clave: "velocidad", icono: FastForward },
+    ],
+  },
+  {
+    id: "audio",
+    items: [
+      { clave: "volumenVoz", icono: Volume2 },
+      { clave: "musica", icono: Music },
+      { clave: "bajarAlHablar", icono: AudioLines },
+      { clave: "efectos", icono: Drum },
     ],
   },
   {
@@ -174,6 +195,7 @@ const SECCIONES = [
     id: "publicar",
     items: [
       { clave: "cuatroRedes", icono: Send },
+      { clave: "sinExportar", icono: Film },
       { clave: "porDefecto", icono: Hash },
       { clave: "portada", icono: IconoImagen },
       { clave: "comoSale", icono: TextCursorInput },
@@ -202,6 +224,8 @@ const SECCIONES = [
       { clave: "invitaciones", icono: Mail },
       { clave: "tomar", icono: Hand },
       { clave: "listos", icono: ListChecks },
+      { clave: "revision", icono: ClipboardCheck },
+      { clave: "notaVoz", icono: Mic },
       { clave: "autoria", icono: UserCheck },
       { clave: "avisos", icono: Bell },
     ],

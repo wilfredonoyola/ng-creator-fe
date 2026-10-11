@@ -1,7 +1,7 @@
 {
   "meta": {
     "titulo": "All features",
-    "descripcion": "AI clips, editing, captions, Brand Kit and publishing to TikTok, YouTube Shorts, Instagram Reels and Facebook: everything Clipfine does for agencies and podcasts."
+    "descripcion": "AI clips, a CapCut-style editor with music and sound effects, captions, Brand Kit, review before publishing and publishing to TikTok, YouTube Shorts, Instagram Reels and Facebook: everything Clipfine does for agencies and podcasts."
   },
   "portada": {
     "etiqueta": "Features",
@@ -13,6 +13,7 @@
   "secciones": {
     "ia": { "titulo": "AI clips", "texto": "Upload the episode and get its best moments, each one with the reason why." },
     "edicion": { "titulo": "Editing", "texto": "Adjust the span, cut what's extra and frame whoever is talking, no video skills needed." },
+    "audio": { "titulo": "Audio and music", "texto": "Royalty-free music, sound effects and just the right volume, heard while you edit." },
     "textos": { "titulo": "Text and captions", "texto": "Captions that are easy to read and designed text, ready for social." },
     "imagenes": { "titulo": "Images", "texto": "Add photos, logos or cut-out people on top of the clip." },
     "marca": { "titulo": "Brand Kit", "texto": "Every client with its logo, colors and style, on all of its clips." },
@@ -28,6 +29,8 @@
     "puntaje": { "titulo": "A score and the reason", "texto": "Every suggested clip comes with a 0–100 score and the reason: strong hook, humor, hot take, quotable line, emotion…" },
     "sugeridos": { "titulo": "Suggested title and hook", "texto": "Every moment arrives with a title and a hook line for the first seconds, ready to use or change." },
     "aMano": { "titulo": "Manual clips, from what's said", "texto": "Read the transcript, play the part, mark where it starts and ends, and open it in the editor." },
+    "editor": { "titulo": "A CapCut-style editor", "texto": "A timeline with every track, tools on the side, and undo or redo for any change." },
+    "guardado": { "titulo": "Saves on its own", "texto": "Every change is saved as you edit. No save button, no lost work." },
     "tramo": { "titulo": "Trim with context", "texto": "Make the clip longer or shorter from its edges so you never lose the start of an idea or the punchline." },
     "cortes": { "titulo": "Cuts inside the clip", "texto": "Remove what's extra in the middle of the clip, on the timeline or by tapping words in the transcript." },
     "silencios": { "titulo": "Remove long silences", "texto": "One tap marks long silences as cuts, and you review them one by one." },
@@ -36,6 +39,11 @@
     "formatos": { "titulo": "9:16, 1:1 and 16:9", "texto": "Vertical for Reels, TikTok and Shorts, square for the feed or horizontal for YouTube." },
     "disenos": { "titulo": "Four layouts", "texto": "Single, Split (two people, one above the other), Landscape and Centered. You can change them in each part of the clip." },
     "fondo": { "titulo": "Blurred or black background", "texto": "When the video doesn't fill the screen, the rest is filled with the same video, softened, or with black bars for text." },
+    "velocidad": { "titulo": "Clip speed", "texto": "From 0.5x to 2x without changing the pitch of the voice. You see right away how long it will run." },
+    "volumenVoz": { "titulo": "Voice volume", "texto": "Turn it up to 400% or mute it, and hear the change in the preview, no export needed." },
+    "musica": { "titulo": "Royalty-free music", "texto": "Pick a track from the Clipfine library or upload your own, and set its volume." },
+    "bajarAlHablar": { "titulo": "Music ducks under the voice", "texto": "The music steps back on its own while someone talks and comes back in the pauses." },
+    "efectos": { "titulo": "Sound effects", "texto": "A drum hit, a whoosh or applause at the exact second: one tap on the timeline." },
     "subtitulos": { "titulo": "Automatic captions", "texto": "They come from the transcript, with the spoken word highlighted. Drag them up, down or bigger." },
     "corregir": { "titulo": "Fix a word", "texto": "If a word was transcribed wrong, change it or remove it from the captions without touching the timing." },
     "estilos": { "titulo": "Viral and professional styles", "texto": "Pop, Karaoke, Beast, Editorial, Keynote and more, painted with the brand's colors." },
@@ -57,6 +65,7 @@
     "subir": { "titulo": "Upload the episode", "texto": "Pick the podcast video from your computer and Clipfine transcribes it for you." },
     "restream": { "titulo": "Your live stream from Restream", "texto": "Connect Restream and bring in the live recording directly, without waiting for YouTube to process it." },
     "cuatroRedes": { "titulo": "Four networks at once", "texto": "Schedule the same clip on TikTok, YouTube Shorts, Instagram Reels and Facebook in one step." },
+    "sinExportar": { "titulo": "Schedule without exporting", "texto": "Schedule from the editor and Clipfine builds the final video before publishing it. You can also download the MP4." },
     "porDefecto": { "titulo": "Default hashtags and accounts", "texto": "Each brand keeps its hashtags and accounts, and they're filled in every time you schedule." },
     "portada": { "titulo": "Choose the cover", "texto": "A frame from the video or your own image as the clip's cover." },
     "comoSale": { "titulo": "How it goes out on each network", "texto": "Before scheduling you see whether the caption is longer than a network allows." },
@@ -75,6 +84,8 @@
     "invitaciones": { "titulo": "Email invitations", "texto": "Add someone with their email and name, and they go straight into the brand." },
     "tomar": { "titulo": "Who's editing what", "texto": "Whoever takes a clip has it under their name and everyone sees it. If a part is already in another clip, Clipfine warns you." },
     "listos": { "titulo": "Ready to schedule", "texto": "When a clip is marked done, it shows up in the calendar for someone to schedule it." },
+    "revision": { "titulo": "Review before publishing", "texto": "What the team schedules waits for a reviewer to approve it. Approve or ask for changes from the web or your phone." },
+    "notaVoz": { "titulo": "Voice note comments", "texto": "Ask for changes in writing or with a voice note, which arrives transcribed." },
     "autoria": { "titulo": "Who did what", "texto": "Every clip shows who edited it, who finished it and who scheduled it." },
     "avisos": { "titulo": "Notifications", "texto": "Know when clips are ready, when someone takes or schedules one and when it's published." },
     "app": { "titulo": "iPhone and Android app", "texto": "Same account, same brands: edit, schedule and check the calendar from your phone." },

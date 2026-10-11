@@ -1,4 +1,5 @@
 import { MaquetaApp } from "./MaquetaApp";
+import { MaquetaAudio } from "./MaquetaAudio";
 import { MaquetaCalidad } from "./MaquetaCalidad";
 import { MaquetaEdicion } from "./MaquetaEdicion";
 import { MaquetaEquipo } from "./MaquetaEquipo";
@@ -14,6 +15,7 @@ import { MaquetaTextos } from "./MaquetaTextos";
 export const MAQUETAS = {
   ia: MaquetaIa,
   edicion: MaquetaEdicion,
+  audio: MaquetaAudio,
   textos: MaquetaTextos,
   imagenes: MaquetaImagenes,
   marca: MaquetaMarca,
