@@ -1,5 +1,6 @@
 import { CUSTOM, PLANES, PRUEBA_DIAS, PRUEBA_HORAS } from "@/components/landing/planes";
 import { CONTACTO } from "@/lib/legal";
+import { URL_MCP } from "@/lib/sitio";
 
 /**
  * Los datos del producto que se repiten en la wiki, el chat de soporte y el
@@ -20,9 +21,6 @@ const porPlan = Object.fromEntries(
 
 /** El mayor ahorro del cobro anual, en %, como lo dice la página de precios. */
 const ahorroAnual = Math.max(...PLANES.map((p) => Math.round((1 - p.anual / p.mensual) * 100)));
-
-/** La URL del conector MCP: el backend + /mcp (ng-creator-be#182). */
-const URL_MCP = `${(process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "https://creator-api.ngstudios.co/graphql").replace(/\/graphql\/?$/, "")}/mcp`;
 
 export const DATOS_PRODUCTO = {
   soporte: CONTACTO,
