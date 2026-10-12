@@ -39,5 +39,21 @@
     "permitir": "Permitir",
     "permitiendo": "Conectando…",
     "revocar": "Lo podés desconectar cuando quieras desde Perfil → Conectar con ChatGPT o Claude."
+  },
+  "estado": {
+    "ACTIVA": "Activa",
+    "INACTIVA": "Sin uso",
+    "VENCIDA": "Vencida",
+    "ayudaINACTIVA": "Hace más de una semana que no la usan. Si la quitaste en ChatGPT o Claude, desconectala acá también.",
+    "ayudaVENCIDA": "Pasaron 60 días sin uso. Para volver a usarla, conectala de nuevo desde ChatGPT o Claude.",
+    "ayudaACTIVA": "Se usó en la última semana."
+  },
+  "equipo": {
+    "titulo": "ChatGPT y Claude",
+    "texto": "Quiénes del equipo conectaron ChatGPT o Claude: pueden preguntarles por las métricas y lo programado de esta marca, solo para leer.",
+    "ninguna": "Nadie del equipo los conectó todavía.",
+    "cargando": "Cargando…",
+    "nota": "Cada persona desconecta las suyas desde Perfil. Si alguien no tiene que ver más esta marca, sacalo del equipo: el conector usa los mismos permisos que el panel.",
+    "como": "Cómo se conecta"
   }
 }
