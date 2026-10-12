@@ -38,4 +38,14 @@ Los nombres de los menús pueden cambiar según la versión de cada app.
 
 Es de **solo lectura**: no programa, no aprueba, no edita ni borra nada. Para desconectarlo, entrá a **Perfil → Conectar con ChatGPT o Claude** y tocá **Desconectar**.
 
+## Ver qué está conectado
+
+En **Perfil → Conectar con ChatGPT o Claude** ves cada app conectada con su estado:
+
+- **Activa**: se usó (o se conectó) en la última semana.
+- **Sin uso**: hace más de una semana que nadie le pregunta. Si la quitaste en ChatGPT o Claude, desconectala acá también: ellos no nos avisan.
+- **Vencida**: pasaron 60 días sin uso. Para volver a usarla, conectala de nuevo.
+
+Si sos **propietario** de una marca, en **Equipo** ves quiénes del equipo tienen ChatGPT o Claude conectado y pueden preguntar por esa marca. Cada persona desconecta las suyas; si alguien no tiene que ver más la marca, sacalo del equipo.
+
 > **Consejo:** si trabajás con varios clientes, nombrá la marca en la pregunta. Si no sabe cuál, te va a mostrar la lista de tus marcas.

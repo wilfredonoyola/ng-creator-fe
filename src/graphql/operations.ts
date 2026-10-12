@@ -2907,10 +2907,30 @@ export const MIS_CONEXIONES_MCP = gql`
     misConexionesMcp {
       _id
       nombreApp
+      estado
       ultimoUso
       createdAt
     }
     urlConectorMcp
+  }
+`;
+
+/** Quién del equipo de la marca conectó ChatGPT o Claude. Solo el propietario. */
+export const CONEXIONES_MCP_DE_MARCA = gql`
+  query ConexionesMcpDeMarca($marcaId: ID!) {
+    conexionesMcpDeMarca(marcaId: $marcaId) {
+      usuarioId
+      email
+      nombre
+      rol
+      conexion {
+        _id
+        nombreApp
+        estado
+        ultimoUso
+        createdAt
+      }
+    }
   }
 `;
 

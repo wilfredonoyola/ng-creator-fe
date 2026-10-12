@@ -20,6 +20,7 @@ import {
 } from "@/graphql/operations";
 import { AjustesRevisionMarca } from "@/components/revision/AjustesRevisionMarca";
 import { useRevisionMarca } from "@/lib/revision";
+import { ConexionesMcpDelEquipo } from "@/components/conectar/ConexionesMcpDelEquipo";
 
 interface Miembro {
   usuarioId: string;
@@ -274,6 +275,9 @@ export default function EquipoPage() {
           </div>
         )}
       </section>
+
+      {/* Solo el propietario: pedirlo sin serlo da un 403 inútil. */}
+      {mando && marcaId && <ConexionesMcpDelEquipo marcaId={marcaId} />}
 
       <LeyendaDeRoles />
     </DashboardLayout>

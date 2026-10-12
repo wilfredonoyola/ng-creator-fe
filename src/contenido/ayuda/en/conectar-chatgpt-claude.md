@@ -38,4 +38,14 @@ Menu names may change depending on each app's version.
 
 It's **read only**: it doesn't schedule, approve, edit or delete anything. To disconnect it, go to **Profile → Connect to ChatGPT or Claude** and click **Disconnect**.
 
+## See what's connected
+
+In **Profile → Connect to ChatGPT or Claude** you see each connected app with its status:
+
+- **Active**: used (or connected) in the last week.
+- **Not in use**: nobody has asked it anything in over a week. If you removed it in ChatGPT or Claude, disconnect it here too: they don't let us know.
+- **Expired**: 60 days went by without use. To use it again, connect it again.
+
+If you're the **owner** of a brand, **Team** shows who on the team has ChatGPT or Claude connected and can ask about that brand. Each person disconnects their own; if someone shouldn't see the brand anymore, remove them from the team.
+
 > **Tip:** if you work with several clients, name the brand in your question. If it doesn't know which one, it'll show you the list of your brands.

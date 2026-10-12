@@ -13,6 +13,7 @@ import { ENLACE_AYUDA } from "@/lib/ayuda";
 import { URL_SITIO } from "@/lib/sitio";
 import { aprobarSolicitud, rechazarSolicitud, verSolicitud } from "@/lib/conectar-mcp";
 import { MIS_CONEXIONES_MCP, REVOCAR_CONEXION_MCP } from "@/graphql/operations";
+import { EstadoConexion, type EstadoConexionMcp } from "@/components/conectar/EstadoConexionMcp";
 
 /** La guía de la wiki con los pasos para cada app: una sola fuente. */
 const GUIA = `${URL_SITIO}${ENLACE_AYUDA}/conectar-chatgpt-claude`;
@@ -119,7 +120,7 @@ function Aprobar({ solicitud }: { solicitud: string }) {
   );
 }
 
-type Conexion = { _id: string; nombreApp: string; ultimoUso: string | null; createdAt: string };
+type Conexion = { _id: string; nombreApp: string; estado: EstadoConexionMcp; ultimoUso: string | null; createdAt: string };
 
 function Conexiones() {
   const t = useTranslations("conectar");
@@ -185,11 +186,15 @@ function Conexiones() {
               {conexiones.map((c) => (
                 <li key={c._id} className="flex items-center justify-between gap-3 py-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{c.nombreApp}</p>
+                    <p className="flex items-center gap-2 text-sm font-medium">
+                      <span className="truncate">{c.nombreApp}</span>
+                      <EstadoConexion estado={c.estado} />
+                    </p>
                     <p className="text-xs text-white/45">
                       {t("conectadas.desde", { fecha: formato.dateTime(new Date(c.createdAt), { dateStyle: "medium" }) })}
                       {c.ultimoUso && ` · ${t("conectadas.uso", { cuando: formato.relativeTime(new Date(c.ultimoUso)) })}`}
                     </p>
+                    {c.estado !== "ACTIVA" && <p className="mt-1 text-xs text-white/40">{t(`estado.ayuda${c.estado}`)}</p>}
                   </div>
                   <button
                     type="button"
