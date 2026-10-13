@@ -72,6 +72,65 @@ export type EstadoPublicacion =
 /** Lo que un proceso tiene entre manos ahora mismo. */
 export const EN_CURSO: EstadoPublicacion[] = ["SUBIENDO", "PROCESANDO"];
 
+/** Ya salió en la red o está saliendo: otra publicación ahí sería un duplicado. */
+export const SALIO_O_SALE: EstadoPublicacion[] = ["PUBLICADA", "SUBIENDO", "PROCESANDO", "AGENDADA_EN_RED"];
+
+/** Mismo destino: la misma cuenta en la misma red. */
+export const mismoDestino = (a: { red: string; cuentaId: string }, b: { red: string; cuentaId: string }) =>
+  a.red === b.red && a.cuentaId === b.cuentaId;
+
+/**
+ * Lo que ya salió (o está saliendo) en ese destino, la más reciente. Sirve
+ * para no programar dos veces lo mismo sin querer.
+ */
+export function salidaEn<P extends Pick<Publicacion, "red" | "cuentaId" | "estado" | "publicarEn" | "publicadaEn">>(
+  destino: { red: string; cuentaId: string },
+  publicaciones: P[],
+): P | null {
+  const salidas = publicaciones.filter((p) => mismoDestino(p, destino) && SALIO_O_SALE.includes(p.estado));
+  const fecha = (p: P) => new Date(p.publicadaEn ?? p.publicarEn).getTime();
+  return salidas.sort((a, b) => fecha(b) - fecha(a))[0] ?? null;
+}
+
+/**
+ * Un intento fallido que ya no importa: en el mismo destino hay otra
+ * publicación que salió o está saliendo. No se ofrece reintentarlo (sería
+ * publicar dos veces).
+ */
+export function fallaReemplazada<P extends Pick<Publicacion, "_id" | "red" | "cuentaId" | "estado">>(p: P, todas: P[]): boolean {
+  return p.estado === "FALLIDA" && todas.some((o) => o._id !== p._id && mismoDestino(o, p) && SALIO_O_SALE.includes(o.estado));
+}
+
+/**
+ * Las publicaciones de un clip en el orden en que se leen: por destino, en el
+ * orden en que aparece cada uno, y dentro de cada destino primero lo que salió
+ * (o sale), después lo pendiente y al final los intentos fallidos.
+ */
+export function ordenarPorDestino<P extends Pick<Publicacion, "red" | "cuentaId" | "estado">>(publicaciones: P[]): P[] {
+  const destinos: string[] = [];
+  for (const p of publicaciones) {
+    const k = `${p.red}:${p.cuentaId}`;
+    if (!destinos.includes(k)) destinos.push(k);
+  }
+  const peso = (p: P) => (SALIO_O_SALE.includes(p.estado) ? 0 : p.estado === "FALLIDA" ? 2 : p.estado === "CANCELADA" ? 3 : 1);
+  return publicaciones
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => {
+      const d = destinos.indexOf(`${a.p.red}:${a.p.cuentaId}`) - destinos.indexOf(`${b.p.red}:${b.p.cuentaId}`);
+      return d || peso(a.p) - peso(b.p) || a.i - b.i;
+    })
+    .map((x) => x.p);
+}
+
+/**
+ * Si un error es la red rechazando a una cuenta etiquetada o colaboradora
+ * (privada, inexistente, sin invitaciones de colaboración o que no se ve).
+ * El texto de Upload-Post es largo y en inglés: se resume y el detalle queda a mano.
+ */
+export function esRechazoDeEtiquetas(error?: string | null): boolean {
+  return /not eligible to be tagged|user[_ ]?tags?\b|collaborat|user not visible/i.test(error ?? "");
+}
+
 /**
  * Una fecha como la pide `<input type="datetime-local">`: hora LOCAL, sin zona.
  *

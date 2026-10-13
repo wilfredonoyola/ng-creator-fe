@@ -119,5 +119,18 @@
       "pasarATag": "Pasar los colaboradores a etiquetas"
     },
     "saleYa": "Sale apenas tocás Reintentar"
-  }
+  },
+  "duplicado": {
+    "chip": "Ya salió",
+    "chipAyuda": "Ya salió en esta cuenta el {cuando}",
+    "linea": "Ya salió en {red} el {cuando}.",
+    "pregunta": "{n, plural, one {¿Publicarlo otra vez ahí?} other {¿Publicarlo otra vez en esas cuentas?}}"
+  },
+  "reemplazada": {
+    "chip": "Intento anterior",
+    "texto": "Este intento falló, pero después salió en {red}: no hay nada que reintentar."
+  },
+  "errorEtiquetas": "{red} rechazó una de las cuentas etiquetadas o colaboradoras (privada, inexistente, que no se ve o que no acepta colaboraciones).",
+  "verDetalle": "Ver detalle",
+  "ocultarDetalle": "Ocultar detalle"
 }

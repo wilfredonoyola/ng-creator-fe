@@ -21,7 +21,10 @@ import {
   REDES,
   aInputLocal,
   diaYHora,
+  esRechazoDeEtiquetas,
+  fallaReemplazada,
   horaCorta,
+  ordenarPorDestino,
   zonaHoraria,
   type EstadoPublicacion,
   type Publicacion,
@@ -485,7 +488,8 @@ function LogoRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
     );
   }
 
-  const fallida = pubs.find((x) => x.estado === "FALLIDA");
+  // Un intento fallido en una cuenta donde después salió no cuenta como falla.
+  const fallida = pubs.find((x) => x.estado === "FALLIDA" && !fallaReemplazada(x, pubs));
   const publicada = pubs.find((x) => x.estado === "PUBLICADA");
   const programadas = pubs.filter((x) => x.estado === "PROGRAMADA");
   const reintento = programadas.find((x) => x.error);
@@ -707,15 +711,17 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
             {nombre} · {t("detalle.noSale")}
           </p>
         ) : (
-          pubs.map((x) => (
+          ordenarPorDestino(pubs).map((x) => (
             <div key={x._id} className="min-w-0">
               <p className="truncate">
                 <span className="font-medium">{nombre}</span>
                 {x.cuentaNombre ? <span className="text-white/50"> · {x.cuentaNombre}</span> : null}
                 <span
-                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] ${ESTADOS_PUBLICACION[x.estado]?.clase ?? "bg-white/10 text-white/70"}`}
+                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] ${
+                    fallaReemplazada(x, pubs) ? "bg-white/10 text-white/50" : ESTADOS_PUBLICACION[x.estado]?.clase ?? "bg-white/10 text-white/70"
+                  }`}
                 >
-                  {estado(x.estado)}
+                  {fallaReemplazada(x, pubs) ? t("detalle.intentoAnteriorChip") : estado(x.estado)}
                 </span>
                 <span className="ml-1.5 inline-block">
                   <EtiquetaRevision etiqueta={etiquetaRevision([x], x.clip?.estadoRevision, Date.now())} chica />
@@ -727,9 +733,15 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
                 </a>
               )}
               {x.esperaVideo && x.estado === "PROGRAMADA" && <p className="text-xs text-white/55">{t("esperaVideo")}</p>}
-              {x.estado === "FALLIDA" && x.error && <p className="break-words text-xs text-red-400">{x.error}</p>}
+              {x.estado === "FALLIDA" && fallaReemplazada(x, pubs) ? (
+                <p className="text-xs text-white/45">{t("detalle.intentoAnterior", { red: nombre })}</p>
+              ) : x.estado === "FALLIDA" && x.error ? (
+                <p className="break-words text-xs text-red-400">
+                  {esRechazoDeEtiquetas(x.error) ? t("detalle.errorEtiquetas", { red: nombre }) : x.error}
+                </p>
+              ) : null}
               {/* Lo que falló se corrige y se reintenta en la pantalla de programar del clip, la misma publicación. */}
-              {x.estado === "FALLIDA" && opera && x.clip ? (
+              {x.estado === "FALLIDA" && opera && x.clip && !fallaReemplazada(x, pubs) ? (
                 <Link
                   href={`/episodios/${x.clip.episodioId}/clips/${x.clip._id}/publicar?reintentar=${x._id}`}
                   className="text-xs font-medium text-ng-celeste hover:underline"

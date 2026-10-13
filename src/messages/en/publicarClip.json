@@ -119,5 +119,18 @@
       "pasarATag": "Turn collaborators into tags"
     },
     "saleYa": "Goes out as soon as you tap Retry"
-  }
+  },
+  "duplicado": {
+    "chip": "Already out",
+    "chipAyuda": "Already published on this account on {cuando}",
+    "linea": "Already published on {red} on {cuando}.",
+    "pregunta": "{n, plural, one {Publish it there again?} other {Publish it again on those accounts?}}"
+  },
+  "reemplazada": {
+    "chip": "Earlier attempt",
+    "texto": "This attempt failed, but it was published on {red} afterwards: nothing to retry."
+  },
+  "errorEtiquetas": "{red} rejected one of the tagged or collaborator accounts (private, missing, not visible or not accepting collaborations).",
+  "verDetalle": "Show details",
+  "ocultarDetalle": "Hide details"
 }

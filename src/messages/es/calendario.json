@@ -80,7 +80,10 @@
     "sinCambios": "No hay cambios para guardar.",
     "errorRed": "{red}: {mensaje}",
     "noSePudo": "no se pudo guardar",
-    "editarYReintentar": "Editar y reintentar"
+    "editarYReintentar": "Editar y reintentar",
+    "intentoAnterior": "Un intento anterior falló; después salió en {red}.",
+    "intentoAnteriorChip": "Intento anterior",
+    "errorEtiquetas": "{red} rechazó una de las cuentas etiquetadas o colaboradoras. Abrí \"Editar y reintentar\" para ver el detalle."
   },
   "porRevisar": "Por revisar"
 }
