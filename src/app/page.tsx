@@ -23,6 +23,7 @@ import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MaquetaMetricas } from "@/components/landing/MaquetaMetricas";
+import { APP_EN_TIENDAS } from "@/lib/app-movil";
 import { MaquetaRevision } from "@/components/landing/mockups/MaquetaRevision";
 import { MaquetaClipsSubidos } from "@/components/landing/mockups/MaquetaClipsSubidos";
 
@@ -236,7 +237,7 @@ export default function Landing() {
       "@type": "SoftwareApplication",
       name: "Clipfine",
       applicationCategory: "MultimediaApplication",
-      operatingSystem: "Web, iOS, Android",
+      operatingSystem: APP_EN_TIENDAS ? "Web, iOS, Android" : "Web",
       inLanguage: locale,
       description: t("datos.descripcion"),
       offers: PLANES.map((p) => ({

@@ -98,7 +98,7 @@
     },
     "app": {
       "titulo": "The Clipfine app",
-      "texto": "Clipfine lives on your phone too, on iPhone and Android: same account, same clients, everything in sync with the web. Start on your computer and finish wherever you are."
+      "texto": "Coming soon to your phone, on iPhone and Android: same account, same clients, everything in sync with the web. Start on your computer and finish wherever you are."
     }
   },
   "items": {
@@ -447,5 +447,6 @@
     "titulo": "Try it with one client",
     "texto": "Upload an episode and see the clips you get, with the Brand Kit on and ready to schedule.",
     "cta": "Try it free"
-  }
+  },
+  "proximamenteTiendas": "Coming soon to the App Store and Google Play"
 }

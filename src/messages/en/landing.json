@@ -345,7 +345,7 @@
       "brandKit": "Brand Kit per client",
       "calendario": "Posting calendar",
       "analisis": "Analytics per client",
-      "app": "iPhone and Android app"
+      "app": "iPhone and Android app (coming soon)"
     }
   },
   "preguntas": {
@@ -401,7 +401,7 @@
       },
       "app": {
         "p": "Is there a mobile app?",
-        "r": "Yes. The iPhone and Android app is part of Clipfine: same account, same clients, everything in sync with the web. Edit, schedule or approve clips from your phone."
+        "r": "It's on its way: the iPhone and Android app is coming soon to the App Store and Google Play, with the same account, the same clients and everything in sync with the web. Meanwhile, everything works on the web, including your phone's browser."
       }
     }
   },

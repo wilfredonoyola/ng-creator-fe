@@ -345,7 +345,7 @@
       "brandKit": "Brand Kit por cliente",
       "calendario": "Calendario de publicaciones",
       "analisis": "Análisis por cliente",
-      "app": "App para iPhone y Android"
+      "app": "App para iPhone y Android (próximamente)"
     }
   },
   "preguntas": {
@@ -401,7 +401,7 @@
       },
       "app": {
         "p": "¿Hay app para el celular?",
-        "r": "Sí. La app para iPhone y Android es parte de Clipfine: la misma cuenta, los mismos clientes y todo sincronizado con la web. Editás, programás o aprobás clips desde el celular."
+        "r": "Está en camino: la app para iPhone y Android sale muy pronto en App Store y Google Play, con la misma cuenta, los mismos clientes y todo sincronizado con la web. Mientras tanto, todo funciona desde la web, también en el navegador del celular."
       }
     }
   },
