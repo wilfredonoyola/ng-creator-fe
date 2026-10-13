@@ -408,7 +408,8 @@ export function VistaPrevia({
                 width: "max-content",
                 maxWidth: tx.ancho * anchoVista,
                 fontFamily: `'${f.familia}', sans-serif`,
-                fontWeight: tx.fuente === "NUNITO" ? 900 : 400,
+                fontWeight: f.peso,
+                fontStyle: f.italica ? "italic" : undefined,
                 // libass mide por la altura "win": ver FUENTES.
                 fontSize: tx.tamano * f.factorCss * k,
                 lineHeight: `${tx.tamano * k}px`,
@@ -455,7 +456,8 @@ export function VistaPrevia({
                 ...(sp ? { top: sp.centroY * altoVista, transform: "translateY(-50%)" } : { bottom: margenAbajo * k }),
                 padding: `0 ${60 * k}px`,
                 fontFamily: `'${f.familia}', sans-serif`,
-                fontWeight: (sp?.fuente ?? "NUNITO") === "NUNITO" ? 900 : 400,
+                fontWeight: f.peso,
+                fontStyle: f.italica ? "italic" : undefined,
                 // Mismo factor que los textos: libass mide por la altura "win".
                 fontSize: c * f.factorCss * k,
                 lineHeight: `${c * k}px`,

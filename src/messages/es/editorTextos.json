@@ -45,5 +45,9 @@
   "de": "de",
   "a": "a",
   "quitar": "Quitar este texto",
-  "muestra": "Hola <d>tú</d>"
+  "muestra": "Hola <d>tú</d>",
+  "fuentes": {
+    "clasica": "Clásica",
+    "delEstilo": "Del estilo"
+  }
 }

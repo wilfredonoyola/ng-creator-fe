@@ -54,6 +54,7 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
     contenido: t.contenido,
     destacadas: [...t.destacadas],
     fuente: t.fuente,
+    fuenteElegida: t.fuenteElegida ?? false,
     tamano: t.tamano,
     color: t.color,
     colorDestacado: t.colorDestacado,
