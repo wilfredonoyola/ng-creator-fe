@@ -22,6 +22,7 @@ export function EtiquetarPublicacion({
   conInstagram,
   onAgregarInvitado,
   guardando,
+  marcaId,
 }: {
   personas: Persona[];
   /** Ids de los invitados del episodio: llevan su marca. */
@@ -32,9 +33,11 @@ export function EtiquetarPublicacion({
   onColaborador: (id: string) => void;
   /** Hay una cuenta de Instagram marcada: solo entonces se ofrece "colaborador". */
   conInstagram: boolean;
-  /** Sin esto (sin permiso), no se ofrece "+ Invitado". */
-  onAgregarInvitado?: (p: Persona) => Promise<unknown>;
+  /** Sin esto (sin permiso), no se ofrece "+ Invitado". `enMarca`: guardarlo también en la marca. */
+  onAgregarInvitado?: (p: Persona, enMarca: boolean) => Promise<unknown>;
   guardando?: boolean;
+  /** Para verificar los usuarios del invitado nuevo. */
+  marcaId?: string | null;
 }) {
   const t = useTranslations("etiquetas");
   const [agregando, setAgregando] = useState(false);
@@ -82,11 +85,13 @@ export function EtiquetarPublicacion({
         <FormPersona
           inicial={{ id: "", nombre: "" }}
           guardando={guardando}
+          marcaId={marcaId}
+          ofrecerMarca
           onCancelar={() => setAgregando(false)}
-          onGuardar={async (p) => {
+          onGuardar={async (p, o) => {
             setError(null);
             try {
-              await onAgregarInvitado(p);
+              await onAgregarInvitado(p, Boolean(o?.enMarca));
               setAgregando(false);
             } catch (e) {
               setError(e instanceof Error ? e.message : t("errorGuardar"));

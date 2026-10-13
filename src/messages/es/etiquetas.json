@@ -16,8 +16,8 @@
   },
   "ayudaUsuarios": "Alcanza con una red. Podés pegar el enlace del perfil.",
   "elenco": {
-    "titulo": "Elenco · personas para etiquetar",
-    "descripcion": "Quienes salen siempre en {marca} (conductores, columnistas). Al programar cada clip elegís a quién etiquetar.",
+    "titulo": "Personas de la marca · para etiquetar",
+    "descripcion": "Quienes salen seguido en {marca}: conductores, columnistas e invitados que vuelven. Al programar cada clip elegís a quién etiquetar.",
     "vacio": "Todavía no hay nadie. Agregá a quienes salen en todos los programas.",
     "soloLectura": "Lo cambian quienes operan la marca."
   },
@@ -29,7 +29,7 @@
   "publicar": {
     "titulo": "Etiquetar",
     "ayuda": "Instagram: etiqueta en el Reel. TikTok, YouTube y Facebook: @mención al final de la descripción. Si alguien no tiene usuario en una red, ahí no se lo menciona.",
-    "vacio": "Agregá el elenco en Redes conectadas o un invitado acá para etiquetarlos.",
+    "vacio": "Agregá personas de la marca en Redes conectadas, o un invitado acá, para etiquetarlas.",
     "invitado": "Invitado",
     "agregarInvitado": "Invitado",
     "colaborador": "Colaborador en Instagram",
@@ -37,5 +37,16 @@
     "maximoColaboradores": "Instagram acepta hasta {max} colaboradores.",
     "maximoEtiquetas": "Instagram acepta hasta {max} etiquetas: las demás no se etiquetan ahí.",
     "nEtiquetados": "{n, plural, one {# persona etiquetada} other {# personas etiquetadas}}"
+  },
+  "deLaMarca": "De la marca:",
+  "tambienEnMarca": "Guardar también en la marca",
+  "tambienEnMarcaAyuda": "Para elegirlo en otros episodios sin cargarlo de nuevo.",
+  "verificar": {
+    "existe": "Existe: {nombre}",
+    "noExiste": "No encontramos esa cuenta en {red}: revisá que esté bien escrita.",
+    "noExisteOPrivada": "No encontramos esa cuenta en {red} (o es privada): revisá que esté bien escrita.",
+    "instagramPersonal": "No se puede confirmar (Instagram solo deja ver cuentas profesionales): miralo en el enlace.",
+    "sinVerificar": "No se puede confirmar desde acá: miralo en el enlace.",
+    "verPerfil": "Ver perfil"
   }
 }

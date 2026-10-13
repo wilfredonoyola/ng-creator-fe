@@ -23,7 +23,7 @@ import {
   type Publicacion,
 } from "@/lib/publicaciones";
 import type { Red } from "@/lib/upload-post";
-import { MAXIMO_ETIQUETADOS_INSTAGRAM, ajustesInstagram, textoConMenciones, useElenco, useInvitados, type Persona } from "@/lib/etiquetas";
+import { MAXIMO_ETIQUETADOS_INSTAGRAM, ajustesInstagram, conPersona, textoConMenciones, useElenco, useInvitados, type Persona } from "@/lib/etiquetas";
 import { EtiquetarPublicacion } from "@/components/etiquetas/EtiquetarPublicacion";
 import {
   DESCRIPCION_MAX,
@@ -277,7 +277,8 @@ function Formulario({
   // A quién se etiqueta (ng-creator-be#198): los invitados del episodio
   // primero y marcados; el elenco de la marca, sin marcar. Se guarda solo lo
   // que la persona cambia, como con los destinos.
-  const { elenco } = useElenco(marcaId);
+  const marcaPersonas = useElenco(marcaId);
+  const elenco = marcaPersonas.elenco;
   const inv = useInvitados(episodioId, marcaId);
   const idsInvitados = new Set(inv.invitados.map((p) => p.id));
   const personas: Persona[] = [...inv.invitados, ...elenco.filter((p) => !idsInvitados.has(p.id))];
@@ -489,12 +490,15 @@ function Formulario({
                 })
               }
               conInstagram={elegidosEnOrden.some((d) => d.red === "INSTAGRAM")}
-              guardando={inv.guardando}
-              onAgregarInvitado={async (p) => {
+              guardando={inv.guardando || marcaPersonas.guardando}
+              marcaId={marcaId}
+              onAgregarInvitado={async (p, enMarca) => {
                 const guardados = await inv.guardar([...inv.invitados, p]);
                 // El nuevo es el último: ya sale marcado por ser invitado.
                 const nuevo = guardados[guardados.length - 1];
                 if (nuevo) setCambiosEtiquetas((m) => new Map(m).set(nuevo.id, true));
+                // Con el mismo id: es la misma persona en el episodio y en la marca.
+                if (enMarca && nuevo) await marcaPersonas.guardar(conPersona(elenco, nuevo));
               }}
             />
           </Seccion>

@@ -7,7 +7,8 @@ import { useElenco } from "@/lib/etiquetas";
 import { EditorPersonas } from "./EditorPersonas";
 
 /**
- * El elenco de la marca: quienes salen siempre y se etiquetan al programar.
+ * Las personas de la marca: el elenco y los invitados que vuelven, para
+ * etiquetarlos al programar cualquier clip.
  * Va junto a "Al publicar, por defecto" porque es lo mismo: el punto de
  * partida de cada publicación. Lo cambia quien opera la marca.
  */
@@ -22,7 +23,7 @@ export function ElencoMarca() {
     <section className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
       <h2 className="font-semibold">{t("elenco.titulo")}</h2>
       <p className="mb-3 mt-1 text-sm text-white/50">{t("elenco.descripcion", { marca: marca.nombre })}</p>
-      <EditorPersonas personas={elenco} onGuardar={guardar} puede={puede} guardando={guardando} vacio={t("elenco.vacio")} />
+      <EditorPersonas personas={elenco} onGuardar={guardar} puede={puede} guardando={guardando} vacio={t("elenco.vacio")} marcaId={marca._id} />
       {!puede && <p className="mt-3 text-xs text-white/40">{t("elenco.soloLectura")}</p>}
     </section>
   );

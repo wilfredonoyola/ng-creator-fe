@@ -25,6 +25,15 @@ export interface Persona {
 export const REDES_PERSONA = ["instagram", "tiktok", "youtube", "facebook"] as const;
 export type RedPersona = (typeof REDES_PERSONA)[number];
 
+/** El perfil en cada red, para abrirlo y mirarlo (lo mismo que arma el backend). */
+export function urlPerfil(red: RedPersona, usuario: string): string {
+  const u = usuario.trim().replace(/^@+/, "");
+  if (red === "instagram") return `https://www.instagram.com/${u}/`;
+  if (red === "tiktok") return `https://www.tiktok.com/@${u}`;
+  if (red === "youtube") return `https://www.youtube.com/@${u}`;
+  return /^\d+$/.test(u) ? `https://www.facebook.com/profile.php?id=${u}` : `https://www.facebook.com/${u}`;
+}
+
 /** Lo mismo que el backend: Instagram acepta hasta 20 etiquetas y 3 colaboradores. */
 export const MAXIMO_ETIQUETADOS_INSTAGRAM = 20;
 export const MAXIMO_COLABORADORES_INSTAGRAM = 3;
@@ -77,6 +86,14 @@ export function aEntrada(p: Persona) {
     youtube: p.youtube || undefined,
     facebook: p.facebook || undefined,
   };
+}
+
+/**
+ * Suma a alguien a una lista sin repetirlo: si ya está (mismo id), lo
+ * reemplaza con sus datos nuevos.
+ */
+export function conPersona(lista: Persona[], p: Persona): Persona[] {
+  return lista.some((x) => x.id === p.id) ? lista.map((x) => (x.id === p.id ? p : x)) : [...lista, p];
 }
 
 /** El elenco de la marca y cómo guardarlo (la lista entera, ya normalizada por el backend). */

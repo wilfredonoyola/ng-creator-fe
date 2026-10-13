@@ -16,8 +16,8 @@
   },
   "ayudaUsuarios": "One network is enough. You can paste the profile link.",
   "elenco": {
-    "titulo": "Cast · people to tag",
-    "descripcion": "Who's always on {marca} (hosts, regulars). When you schedule each clip you pick who to tag.",
+    "titulo": "Brand people · to tag",
+    "descripcion": "People who show up often on {marca}: hosts, columnists and returning guests. When scheduling each clip you choose who to tag.",
     "vacio": "No one yet. Add the people who are on every show.",
     "soloLectura": "Changed by the people who operate the brand."
   },
@@ -29,7 +29,7 @@
   "publicar": {
     "titulo": "Tag",
     "ayuda": "Instagram: tagged on the Reel. TikTok, YouTube and Facebook: @mention at the end of the description. If someone has no username on a network, they're not mentioned there.",
-    "vacio": "Add the cast in Connected networks or a guest here to tag them.",
+    "vacio": "Add brand people in Connected networks, or a guest here, to tag them.",
     "invitado": "Guest",
     "agregarInvitado": "Guest",
     "colaborador": "Instagram collaborator",
@@ -37,5 +37,16 @@
     "maximoColaboradores": "Instagram allows up to {max} collaborators.",
     "maximoEtiquetas": "Instagram allows up to {max} tags: the rest aren't tagged there.",
     "nEtiquetados": "{n, plural, one {# person tagged} other {# people tagged}}"
+  },
+  "deLaMarca": "From the brand:",
+  "tambienEnMarca": "Also save to the brand",
+  "tambienEnMarcaAyuda": "To pick them in other episodes without adding them again.",
+  "verificar": {
+    "existe": "Found: {nombre}",
+    "noExiste": "We couldn't find that account on {red}: check the spelling.",
+    "noExisteOPrivada": "We couldn't find that account on {red} (or it's private): check the spelling.",
+    "instagramPersonal": "Can't confirm it (Instagram only shows professional accounts): check it with the link.",
+    "sinVerificar": "Can't confirm it from here: check it with the link.",
+    "verPerfil": "View profile"
   }
 }
