@@ -9,7 +9,7 @@ If a clip is already edited (a CapCut reel, a tip shot on a phone, a YouTube cut
 
 ## Upload them on the web
 
-1. Pick the client's brand and go to **Posts**, **Upload clips** tab. You can also get there from **Episodes**, through the **Already have the clip edited?** link.
+1. Pick the client's brand and go to **Episodes**, **Uploaded clips** tab.
 2. Drop your videos on **Drop your videos here** or click **Choose videos**. You can upload several at once.
 3. Each clip shows **Preparing the video…** and within seconds it's **Ready to schedule**.
 4. On the clip's card, click **Schedule**, or **Edit** if you want to touch it up first.

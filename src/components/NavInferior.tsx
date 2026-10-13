@@ -23,9 +23,9 @@ interface Tab {
 
 const TABS: Tab[] = [
   { href: "/panel", icon: House, clave: "inicio" },
-  { href: "/episodios", icon: Mic, clave: "episodios" },
+  { href: "/episodios", icon: Mic, clave: "episodios", tambien: ["/clips-subidos"] },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
-  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis", "/clips-subidos"] },
+  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
 ];
 const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, clave: "crear" };
 

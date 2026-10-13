@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarClock, Loader2 } from "lucide-react";
+import { CalendarClock, Loader2, PencilLine } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import {
   CANCELAR_PUBLICACION,
   CLIP_EPISODIO,
+  EDITAR_PUBLICACION,
   PROGRAMAR_PUBLICACION,
   PUBLICACIONES_DE_CLIP,
+  REPROGRAMAR_PUBLICACION,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useMarcaActiva } from "@/lib/marca-activa";
@@ -321,6 +323,67 @@ function Formulario({
   const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX || comoSale.some((c) => c.texto.length > DESCRIPCION_MAX);
   const sePasan = comoSale.filter((c) => c.largo);
 
+  // ---- Editar lo que ya está programado ----
+  // Con publicaciones pendientes la pantalla abre en modo editar: lo marcado,
+  // la fecha, el texto y las etiquetas salen de lo programado, y el botón
+  // guarda los cambios (edita, mueve, suma o cancela) en vez de programar de nuevo.
+  const pendientes = publicaciones.filter((p) => PENDIENTES.includes(p.estado));
+  const modoEditar = pendientes.length > 0;
+  const pendienteDe = (d: Destino) => pendientes.find((p) => p.red === d.red && p.cuentaId === d.cuentaId);
+  const horasPendientes = [...new Set(pendientes.map((p) => Math.round(new Date(p.publicarEn).getTime() / 60_000)))];
+  const horasDistintas = horasPendientes.length > 1;
+  const inicializado = useRef(false);
+  const fechaInicial = useRef<string | null>(null);
+  const colaboradoresIniciados = useRef(false);
+  const [editarPub] = useMutation(EDITAR_PUBLICACION);
+  const [reprogramar] = useMutation(REPROGRAMAR_PUBLICACION);
+  const [cancelarPub] = useMutation(CANCELAR_PUBLICACION);
+  useEffect(() => {
+    if (inicializado.current || !pendientes.length || !destinos.length) return;
+    inicializado.current = true;
+    setCambios(new Map(destinos.map((d) => [d.clave, Boolean(pendienteDe(d))])));
+    const conTexto = pendientes.find((p) => p.textoBase) ?? pendientes.find((p) => p.red === "INSTAGRAM") ?? pendientes[0];
+    // El texto guardado ya trae los hashtags: no se vuelven a sumar.
+    setDescripcion(conTexto.textoBase ?? conTexto.descripcion ?? clip.titulo);
+    setHashtagsClip([]);
+    const primera = Math.min(...pendientes.map((p) => new Date(p.publicarEn).getTime()));
+    const inicial = aInputLocal(new Date(primera));
+    fechaInicial.current = inicial;
+    setFecha(inicial);
+    const yt = pendientes.find((p) => p.red === "YOUTUBE");
+    const titulo = (yt?.ajustes as { titulo?: string } | null | undefined)?.titulo;
+    if (titulo) setTituloYoutube(titulo);
+    const conPortada = pendientes.find((p) => p.portadaSeg != null);
+    if (conPortada?.portadaSeg != null) setPortadaSeg(conPortada.portadaSeg);
+    const ids = [...new Set(pendientes.flatMap((p) => p.personaIds ?? []))];
+    if (ids.length) setCambiosEtiquetas(new Map(ids.map((id) => [id, true])));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendientes.length, destinos.length]);
+  // Los colaboradores se guardaron como usuario (Instagram) o id de página
+  // (Facebook): se vuelven personas cuando la lista de personas ya llegó.
+  useEffect(() => {
+    if (colaboradoresIniciados.current || !inicializado.current || !todasLasPersonas.length) return;
+    colaboradoresIniciados.current = true;
+    const colabs = (red: string) =>
+      ((pendientes.find((p) => p.red === red)?.ajustes as { colaboradores?: string[] } | null | undefined)?.colaboradores ?? []);
+    const ig = colabs("INSTAGRAM");
+    const fb = colabs("FACEBOOK");
+    if (ig.length) setColaboradoresIg(new Set(todasLasPersonas.filter((p) => p.instagram && ig.includes(p.instagram)).map((p) => p._id)));
+    if (fb.length) setColaboradoresFb(new Set(todasLasPersonas.filter((p) => p.facebookPaginaId && fb.includes(p.facebookPaginaId)).map((p) => p._id)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todasLasPersonas.length, inicializado.current]);
+  const fechaTocada = modoEditar && fecha !== fechaInicial.current;
+  // Lo que se cancela al guardar: lo programado en una red que se desmarcó.
+  const aCancelar = pendientes.filter(
+    (p) => p.estado === "PROGRAMADA" && destinos.some((d) => d.red === p.red && d.cuentaId === p.cuentaId && !elegidos.has(d.clave)),
+  );
+  const resumenProgramado = pendientes
+    .map((p) => REDES[p.red as Red]?.nombre ?? p.red)
+    .filter((x, i, a) => a.indexOf(x) === i)
+    .join(", ");
+  // Con la fecha sin tocar, lo que ya está programado no se mueve (pueden ser horas distintas).
+  const faltaFecha = modoEditar ? (fechaTocada || aProgramar.some((d) => !pendienteDe(d))) && yaPaso : yaPaso;
+
   function alternar(d: Destino) {
     if (d.motivo || !opera) return;
     const on = elegidos.has(d.clave);
@@ -375,6 +438,7 @@ function Formulario({
                     : d.red === "FACEBOOK"
                       ? facebook
                       : undefined,
+              textoBase: descripcionFinal || undefined,
               ...(personaIds.length ? { personaIds } : {}),
               ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
               publicarEn: cuando.toISOString(),
@@ -404,8 +468,135 @@ function Formulario({
     }
   }
 
+  /**
+   * Modo editar: cada red marcada que ya tenía algo programado se edita (y se
+   * mueve si cambió la fecha), las nuevas se programan, y las desmarcadas se
+   * cancelan después de confirmar. Una por una: si una falla, las otras siguen.
+   */
+  async function guardarCambios() {
+    setAviso(null);
+    if (faltaFecha) {
+      setAviso({ tono: "error", texto: t("yaPasoLargo") });
+      return;
+    }
+    if (descripcionLarga) {
+      setAviso({ tono: "error", texto: t("descripcionLarga", { max: DESCRIPCION_MAX }) });
+      return;
+    }
+    const nombre = (red: string) => REDES[red as Red]?.nombre ?? red;
+    if (aCancelar.length && !window.confirm(t("editar.confirmarCancelar", { redes: aCancelar.map((p) => nombre(p.red)).join(", ") }))) return;
+    setEnviando(true);
+    const fallas: string[] = [];
+    const instagramCompleto = ajustesInstagram(etiquetadas, soloEtiquetadas(colaboradoresIg));
+    const instagram = instagramCompleto
+      ? { ...instagramCompleto, etiquetados: instagramCompleto.etiquetados.slice(0, MAXIMO_ETIQUETADOS_INSTAGRAM) }
+      : { etiquetados: [], colaboradores: [] };
+    const facebook = ajustesFacebook(etiquetadas, soloEtiquetadas(colaboradoresFb)) ?? { colaboradores: [] };
+    const personaIds = etiquetadas.map((p) => p._id);
+    const refetchQueries = ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"];
+    for (const d of aProgramar) {
+      const p = pendienteDe(d);
+      try {
+        if (!p) {
+          if (!cuando) continue;
+          await programar({
+            variables: {
+              input: {
+                marcaId,
+                red: d.red,
+                cuentaId: d.cuentaId,
+                clipId: clip._id,
+                formato: d.formato,
+                descripcion: textoDe(d.red) || undefined,
+                ajustes:
+                  d.red === "YOUTUBE"
+                    ? { titulo: tituloYoutube.trim() || clip.titulo }
+                    : d.red === "INSTAGRAM"
+                      ? instagramCompleto ?? undefined
+                      : d.red === "FACEBOOK"
+                        ? ajustesFacebook(etiquetadas, soloEtiquetadas(colaboradoresFb))
+                        : undefined,
+                textoBase: descripcionFinal || undefined,
+                ...(personaIds.length ? { personaIds } : {}),
+                ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
+                publicarEn: cuando.toISOString(),
+              },
+            },
+            refetchQueries,
+          });
+          continue;
+        }
+        // Lo que ya sube o ya tiene la red no se toca desde acá.
+        if (p.estado !== "PROGRAMADA") continue;
+        await editarPub({
+          variables: {
+            marcaId,
+            id: p._id,
+            descripcion: textoDe(d.red),
+            textoBase: descripcionFinal,
+            personaIds,
+            etiquetas: d.red === "INSTAGRAM" ? instagram : d.red === "FACEBOOK" ? facebook : undefined,
+            ...(d.red === "YOUTUBE" ? { tituloYoutube: tituloYoutube.trim() || clip.titulo } : {}),
+            ...(portadaSeg != null && portadaElegible
+              ? { portadaSeg }
+              : portadaSeg == null && p.portadaSeg != null
+                ? { quitarPortada: true }
+                : {}),
+          },
+          refetchQueries,
+        });
+        if (fechaTocada && cuando && Math.abs(new Date(p.publicarEn).getTime() - cuando.getTime()) >= 60_000) {
+          await reprogramar({ variables: { marcaId, id: p._id, publicarEn: cuando.toISOString() }, refetchQueries });
+        }
+      } catch (e) {
+        fallas.push(`${nombre(d.red)}: ${e instanceof Error ? e.message : t("noSePudo")}`);
+      }
+    }
+    for (const p of aCancelar) {
+      try {
+        await cancelarPub({ variables: { marcaId, id: p._id }, refetchQueries });
+      } catch (e) {
+        fallas.push(`${nombre(p.red)}: ${e instanceof Error ? e.message : t("noSePudo")}`);
+      }
+    }
+    setEnviando(false);
+    // Lo nuevo se vuelve a leer de lo programado.
+    inicializado.current = false;
+    colaboradoresIniciados.current = false;
+    refrescar();
+    setAviso(
+      fallas.length
+        ? { tono: "error", texto: t("editar.fallas", { detalle: fallas.join(" · ") }) }
+        : { tono: "ok", texto: t("editar.guardado") },
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {modoEditar && opera ? (
+        <div className="flex items-start gap-3 rounded-xl border border-marca/30 bg-marca/[0.06] p-3">
+          <PencilLine size={18} className="mt-0.5 shrink-0 text-marca" aria-hidden />
+          <div className="min-w-0 text-sm">
+            <p className="font-semibold text-white">
+              {horasDistintas
+                ? t("editar.tituloHoras", { redes: resumenProgramado })
+                : t("editar.titulo", { cuando: diaYHora(new Date(pendientes[0].publicarEn), locale), redes: resumenProgramado })}
+            </p>
+            <p className="mt-0.5 text-white/55">{t("editar.ayuda")}</p>
+            {horasDistintas ? (
+              <ul className="mt-1.5 space-y-0.5 text-xs text-white/55">
+                {pendientes.map((p) => (
+                  <li key={p._id}>
+                    {REDES[p.red as Red]?.nombre ?? p.red}
+                    {p.cuentaNombre ? ` · ${p.cuentaNombre}` : ""}: {diaYHora(new Date(p.publicarEn), locale)}
+                  </li>
+                ))}
+                <li className="text-white/40">{t("editar.horasAyuda")}</li>
+              </ul>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       <div className="flex items-center gap-4">
         <Poster url={clip.urlPoster} className="h-32 w-[72px]" />
         <div className="min-w-0 flex-1">
@@ -650,11 +841,22 @@ function Formulario({
                   <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
                 ) : null}
                 <div className="min-w-0 flex-1 space-y-1">
-                  <p className={`text-sm font-medium ${fecha && yaPaso ? "text-red-400" : "text-white"}`}>
-                    {!fecha ? t("elegiDiaHora") : yaPaso ? t("yaPaso") : t("sale", { cuando: diaYHora(cuando!, locale) })}
+                  <p className={`text-sm font-medium ${fecha && faltaFecha ? "text-red-400" : "text-white"}`}>
+                    {!fecha
+                      ? t("elegiDiaHora")
+                      : modoEditar && horasDistintas && !fechaTocada
+                        ? t("editar.horasPorRed")
+                        : faltaFecha
+                          ? t("yaPaso")
+                          : t("sale", { cuando: diaYHora(cuando!, locale) })}
                     {elegidosEnOrden.length ? <span className="font-normal text-white/50">{` · ${t("nRedes", { n: elegidosEnOrden.length })}`}</span> : null}
                   </p>
-                  {elegidosEnOrden.length === 0 ? <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p> : null}
+                  {elegidosEnOrden.length === 0 && !aCancelar.length ? <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p> : null}
+                  {modoEditar && aCancelar.length ? (
+                    <p className="text-xs text-amber-300">
+                      {t("editar.seCancela", { redes: aCancelar.map((p) => REDES[p.red as Red]?.nombre ?? p.red).join(", ") })}
+                    </p>
+                  ) : null}
                   {conFacebook && facebookEspera ? (
                     <p className="text-xs text-amber-300">{aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}</p>
                   ) : null}
@@ -667,16 +869,20 @@ function Formulario({
               </div>
               <button
                 type="button"
-                onClick={() => void enviar()}
-                disabled={enviando || aProgramar.length === 0 || yaPaso || descripcionLarga}
+                onClick={() => void (modoEditar ? guardarCambios() : enviar())}
+                disabled={enviando || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga}
                 className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
               >
                 {enviando ? <Loader2 size={16} className="animate-spin" aria-hidden /> : <CalendarClock size={16} aria-hidden />}
                 {enviando
-                  ? t("programando")
-                  : aProgramar.length > 1
-                    ? t("programarEnN", { n: aProgramar.length })
-                    : t("programar")}
+                  ? modoEditar
+                    ? t("editar.guardando")
+                    : t("programando")
+                  : modoEditar
+                    ? t("editar.guardar")
+                    : aProgramar.length > 1
+                      ? t("programarEnN", { n: aProgramar.length })
+                      : t("programar")}
               </button>
             </div>
           </div>

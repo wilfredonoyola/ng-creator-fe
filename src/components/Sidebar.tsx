@@ -68,9 +68,9 @@ interface ItemNav {
  */
 export const NAV_PRINCIPAL: ItemNav[] = [
   { href: "/panel", icon: House, clave: "inicio" },
-  { href: "/episodios", icon: Mic, clave: "episodios" },
+  { href: "/episodios", icon: Mic, clave: "episodios", tambien: ["/clips-subidos"] },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
-  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis", "/clips-subidos"] },
+  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
   // Cómo le fue a lo publicado, en todas las redes (ng-creator-be#119): es lo
   // que la agencia le muestra al cliente, así que va a la vista y no adentro.
   { href: "/metricas", icon: ChartColumnIncreasing, clave: "metricas" },

@@ -83,5 +83,18 @@
     "elegida": "Chosen cover",
     "facebook": "On Facebook it's applied a few minutes after publishing, if the page is also connected through Facebook (Connected networks → bottom).",
     "youtube": "YouTube only applies it on verified channels."
+  },
+  "editar": {
+    "titulo": "Already scheduled · goes out {cuando} on {redes}",
+    "tituloHoras": "Already scheduled on {redes}, at different times",
+    "ayuda": "Change anything and tap \"Save changes\": the scheduled posts are updated. Unchecking a network cancels it there.",
+    "horasAyuda": "If you change the date, all of them move to it.",
+    "horasPorRed": "Each network goes out at its own time",
+    "guardar": "Save changes",
+    "guardando": "Saving…",
+    "guardado": "Done: the scheduled posts were updated.",
+    "fallas": "Couldn't update everything: {detalle}",
+    "confirmarCancelar": "The scheduled post on {redes} will be canceled. Continue?",
+    "seCancela": "Saving cancels it on {redes}."
   }
 }

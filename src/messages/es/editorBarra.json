@@ -51,6 +51,10 @@
   "programar": {
     "elegi": "Elegí redes y hora.",
     "reintentar": "Reintentar",
-    "programar": "Programar"
+    "programar": "Programar",
+    "editar": "Editar programación",
+    "programado": "Programado · {n, plural, one {# red} other {# redes}}",
+    "programadoEl": "Programado · {cuando} · {n, plural, one {# red} other {# redes}}",
+    "verProgramado": "Ver y editar lo programado"
   }
 }

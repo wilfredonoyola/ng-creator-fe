@@ -688,6 +688,9 @@ export const EDITAR_PUBLICACION = gql`
     $tituloYoutube: String
     $portadaSeg: Float
     $quitarPortada: Boolean
+    $textoBase: String
+    $personaIds: [ID!]
+    $etiquetas: JSON
   ) {
     editarPublicacion(
       marcaId: $marcaId
@@ -696,6 +699,9 @@ export const EDITAR_PUBLICACION = gql`
       tituloYoutube: $tituloYoutube
       portadaSeg: $portadaSeg
       quitarPortada: $quitarPortada
+      textoBase: $textoBase
+      personaIds: $personaIds
+      etiquetas: $etiquetas
     ) {
       ...CamposPublicacion
       descripcion
@@ -721,6 +727,12 @@ export const PUBLICACIONES_DE_CLIP = gql`
   query PublicacionesDeClip($marcaId: ID!, $clipId: ID!) {
     publicacionesDeClip(marcaId: $marcaId, clipId: $clipId) {
       ...CamposPublicacion
+      # Para abrir "Programar" en modo editar con lo que ya está programado.
+      descripcion
+      portadaSeg
+      ajustes
+      textoBase
+      personaIds
     }
   }
   ${CAMPOS_PUBLICACION}

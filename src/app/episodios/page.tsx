@@ -14,6 +14,7 @@ import {
   IMPORTAR_DE_RESTREAM,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { PestanasEpisodios } from "@/components/PestanasEpisodios";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
 import { AvisoPrueba, usePrueba } from "@/components/prueba/AvisoPrueba";
@@ -337,18 +338,12 @@ export default function EpisodiosPage() {
 
   return (
     <DashboardLayout>
+      <PestanasEpisodios />
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{t("titulo")}</h1>
           <p className="mt-1 max-w-xl text-white/50">
             {t("descripcion")}
-          </p>
-          {/* Lo ya editado no es un episodio: va directo a publicar (ng-creator-be#181). */}
-          <p className="mt-2 text-sm text-white/50">
-            {t("yaEditado")}{" "}
-            <Link href="/clips-subidos" className="font-medium text-ng-azul hover:underline">
-              {t("subirClips")}
-            </Link>
           </p>
         </div>
         {activa && (

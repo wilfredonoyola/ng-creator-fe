@@ -29,12 +29,17 @@ Entrá a **Calendario** desde la barra lateral. Vas a ver:
 
 ## Cambiar algo programado
 
-Tocá una publicación en el calendario para abrir el detalle. Desde ahí podés:
+Un clip programado se edita en la misma pantalla con que se programó, en modo **Editar programación**:
 
-1. **Editar** la descripción o el título de YouTube y tocar **Guardar cambios**.
-2. **Cambiar hora**.
-3. **Agregar redes** que no estaban.
-4. Quitar una red de ese clip.
+- En el editor del clip, al lado del botón, ves **Programado · vie 18:00 · N redes**, y el botón pasa a **Editar programación**.
+- En el **Calendario**, tocá el clip y se abre esa misma pantalla.
+
+Arriba dice cuándo y en qué redes sale. Todo viene cargado como está programado: redes, texto, personas etiquetadas, título de YouTube, portada y fecha. Cambiá lo que quieras y tocá **Guardar cambios**:
+
+1. Si cambiás el **texto**, la **portada** o las **etiquetas**, se actualiza en cada red.
+2. Si cambiás la **fecha**, todas las redes pasan a la nueva hora. Si salían a horas distintas y no tocás la fecha, cada una mantiene la suya.
+3. Si **marcás una red nueva**, se programa ahí.
+4. Si **desmarcás una red**, se cancela ahí (te pide confirmar antes).
 
 Lo que ya salió en todas las redes queda solo para ver, con el link **Ver en** cada red.
 

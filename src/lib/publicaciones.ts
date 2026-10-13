@@ -41,6 +41,13 @@ export interface Publicacion {
   /** Salió sin revisar: la marca eligió publicar igual al vencer. */
   sinRevisar?: boolean | null;
   createdAt: string;
+  /** El texto como se escribió, con las @menciones sin resolver: para editar lo programado. */
+  textoBase?: string | null;
+  /** A quiénes se etiquetó (Etiquetas). */
+  personaIds?: string[] | null;
+  /** Lo propio de la red: título de YouTube, etiquetas y colaboradores. */
+  ajustes?: Record<string, unknown> | null;
+  portadaSeg?: number | null;
   creadoPor?: { nombre: string } | null;
   canceladoPor?: { nombre: string } | null;
 }
