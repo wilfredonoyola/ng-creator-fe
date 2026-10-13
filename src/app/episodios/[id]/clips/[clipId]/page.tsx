@@ -40,6 +40,7 @@ import { duracionEfectiva, normalizarCortes, type Corte } from "@/lib/cortes";
 import { borradorDelClip, type Borrador } from "@/components/episodios/editor/borrador";
 import { escribiendo, useHistorial } from "@/components/episodios/editor/historial";
 import { useReproductor } from "@/components/episodios/editor/reproductor";
+import { MAXIMO_TEXTOS, disenosDeTexto, textoNuevo } from "@/components/episodios/PanelTextos";
 import { useGuardado } from "@/components/episodios/editor/useGuardado";
 import { BarraSuperior } from "@/components/episodios/editor/BarraSuperior";
 import { RielHerramientas } from "@/components/episodios/editor/RielHerramientas";
@@ -80,6 +81,7 @@ export default function EditorClipPage({
   const tr = useTranslations("editorClip");
   const tn = useTranslations("estilosNombres");
   const ti = useTranslations("editorImagenes");
+  const tTextos = useTranslations("editorTextos");
   const te = useTranslations("erroresSubida");
   const th = useTranslations("editorHerramientas");
   const { activa } = useMarcaActiva();
@@ -353,6 +355,24 @@ export default function EditorClipPage({
     setTextoElegido(null);
     setImagenElegida(b.imagenes.length);
     elegirHerramienta("superposicion");
+  }
+
+  /**
+   * "+ Texto" en la línea de tiempo: el texto aparece ya en el video, donde
+   * está el cabezal, elegido para escribirlo ahí o en el panel (como en CapCut).
+   */
+  function agregarTexto() {
+    if (!b || !estilo || b.textos.length >= MAXIMO_TEXTOS) return;
+    const i = b.textos.length;
+    const enCabezal = reproductor.reloj.get() - b.desdeSeg;
+    // Cerca del final no se vería: entonces va desde el principio.
+    const desdeSeg = enCabezal > 0 && enCabezal < b.hastaSeg - b.desdeSeg - 1 ? Math.round(enCabezal * 10) / 10 : 0;
+    const centroY = [0.15, 0.3, 0.7, 0.85][i] ?? 0.5;
+    const nuevo = { ...textoNuevo(disenosDeTexto(estilo.colorResaltado)[0].estilo, tTextos("textoNuevo"), centroY), desdeSeg };
+    cambiar({ textos: [...b.textos, nuevo] });
+    setImagenElegida(null);
+    setTextoElegido(i);
+    elegirHerramienta("texto");
   }
 
   const elegirTexto = (i: number | null) => {
@@ -652,6 +672,7 @@ export default function EditorClipPage({
             onCambiarTextos={(textos) => cambiar({ textos })}
             textoElegido={textoElegido}
             onElegirTexto={elegirTexto}
+            onAgregarTexto={b.textos.length < MAXIMO_TEXTOS ? agregarTexto : undefined}
             imagenes={b.imagenes}
             onCambiarImagenes={(imagenes) => cambiar({ imagenes })}
             imagenElegida={imagenElegida}
