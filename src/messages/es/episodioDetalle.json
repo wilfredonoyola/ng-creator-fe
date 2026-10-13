@@ -42,5 +42,12 @@
   "modal": {
     "etiqueta": "Video final: {titulo}",
     "cerrar": "Cerrar"
+  },
+  "pestanas": {
+    "etiqueta": "Clips del episodio",
+    "ia": "Con IA",
+    "manuales": "Manuales",
+    "sinManuales": "Todavía no hiciste clips a mano. Tocá \"Crear clip\" para armar uno desde la transcripción.",
+    "sinManualesSoloVer": "Todavía no hay clips hechos a mano."
   }
 }

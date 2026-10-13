@@ -92,6 +92,30 @@ export default function DetalleEpisodioPage({
 
   const ep = episodioQ.data?.episodio;
   const clips: Clip[] = clipsQ.data?.clipsDeEpisodio ?? [];
+  const deIa = clips.filter((c) => c.origen !== "MANUAL");
+  const manuales = clips.filter((c) => c.origen === "MANUAL");
+  // La pestaña elegida se recuerda por episodio: al volver del editor de un
+  // clip hecho a mano, se vuelve a "Manuales" y no a la lista de la IA.
+  const clavePestana = `clips-pestana:${id}`;
+  const [pestanaElegida, setPestanaElegida] = useState<"ia" | "manuales" | null>(() => {
+    try {
+      const v = sessionStorage.getItem(clavePestana);
+      return v === "ia" || v === "manuales" ? v : null;
+    } catch {
+      return null;
+    }
+  });
+  // Sin elegir: la de la IA, salvo que no tenga clips y haya manuales.
+  const pestana = pestanaElegida ?? (deIa.length === 0 && manuales.length > 0 ? "manuales" : "ia");
+  const elegirPestana = (p: "ia" | "manuales") => {
+    setPestanaElegida(p);
+    try {
+      sessionStorage.setItem(clavePestana, p);
+    } catch {
+      // Sin almacenamiento (privado): la pestaña vale mientras esté abierta la página.
+    }
+  };
+  const visibles = pestana === "manuales" ? manuales : deIa;
   const estado: EstadoMomentos | null = ep?.estadoMomentos ?? null;
   const trabajando =
     estado === "EN_COLA" ||
@@ -247,10 +271,39 @@ export default function DetalleEpisodioPage({
               />
             </div>
           )}
-          <EstadoDelAnalisis ep={ep} />
           {clips.length > 0 && (
+            <div role="tablist" aria-label={t("pestanas.etiqueta")} className="mb-3 flex gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-1">
+              {(
+                [
+                  ["ia", t("pestanas.ia"), deIa.length],
+                  ["manuales", t("pestanas.manuales"), manuales.length],
+                ] as const
+              ).map(([clave, nombre, n]) => (
+                <button
+                  key={clave}
+                  type="button"
+                  role="tab"
+                  aria-selected={pestana === clave}
+                  onClick={() => elegirPestana(clave)}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition ${
+                    pestana === clave ? "bg-white/10 font-semibold text-white" : "text-white/55 hover:text-white/80"
+                  }`}
+                >
+                  {nombre}
+                  <span className={`rounded-full px-1.5 text-[11px] ${pestana === clave ? "bg-white/15" : "bg-white/5"}`}>{n}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {pestana === "ia" && <EstadoDelAnalisis ep={ep} />}
+          {pestana === "manuales" && manuales.length === 0 && (
+            <p className="mb-3 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/50">
+              {t(opera ? "pestanas.sinManuales" : "pestanas.sinManualesSoloVer")}
+            </p>
+          )}
+          {visibles.length > 0 && (
             <ol className="space-y-3">
-              {clips.map((c, i) => (
+              {visibles.map((c, i) => (
                 <TarjetaClip
                   key={c._id}
                   editar={`/episodios/${id}/clips/${c._id}`}

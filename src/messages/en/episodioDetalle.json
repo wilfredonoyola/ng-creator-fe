@@ -42,5 +42,12 @@
   "modal": {
     "etiqueta": "Final video: {titulo}",
     "cerrar": "Close"
+  },
+  "pestanas": {
+    "etiqueta": "Episode clips",
+    "ia": "AI picks",
+    "manuales": "Manual",
+    "sinManuales": "No manual clips yet. Tap \"Create clip\" to make one from the transcript.",
+    "sinManualesSoloVer": "No manual clips yet."
   }
 }
