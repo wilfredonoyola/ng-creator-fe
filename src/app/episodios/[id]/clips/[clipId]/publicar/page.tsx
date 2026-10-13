@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CalendarClock, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -365,43 +366,6 @@ function Formulario({
 
       {opera ? (
         <>
-          {/* Dónde y cuándo sale, al día con lo que se marca abajo, y el botón
-              arriba: no hace falta bajar hasta el final para programar. */}
-          <div className="sticky top-2 z-10 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-ng-fondo/95 p-3 backdrop-blur">
-            {portadaSeg != null && portadaElegible ? (
-              <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
-            ) : null}
-            <div className="min-w-0 flex-1 space-y-1.5">
-              <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/55"}`}>
-                {!fecha ? t("elegiDiaHora") : yaPaso ? t("yaPaso") : t("sale", { cuando: diaYHora(cuando!, locale) })}
-                {elegidosEnOrden.length ? ` · ${t("nRedes", { n: elegidosEnOrden.length })}` : ""}
-              </p>
-              {elegidosEnOrden.length === 0 ? <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p> : null}
-              {conFacebook && facebookEspera ? (
-                <p className="text-xs text-amber-300">
-                  {aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}
-                </p>
-              ) : null}
-              {revision.activa ? (
-                <p className={`text-xs ${revision.soyRevisor ? "text-white/45" : "text-amber-300"}`}>
-                  {revision.soyRevisor ? tr("avisoRevisor") : tr("aviso")}
-                </p>
-              ) : null}
-            </div>
-            <button
-              type="button"
-              onClick={() => void enviar()}
-              disabled={enviando || aProgramar.length === 0 || yaPaso || descripcionLarga}
-              className="shrink-0 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
-            >
-              {enviando
-                ? t("programando")
-                : aProgramar.length > 1
-                  ? t("programarEnN", { n: aProgramar.length })
-                  : t("programar")}
-            </button>
-          </div>
-
           <Seccion titulo={t("secciones.donde")}>
             {destinos.length === 0 ? (
               <p className="text-sm text-white/60">
@@ -478,6 +442,41 @@ function Formulario({
               ))}
           </Seccion>
 
+          <Seccion titulo={t("secciones.cuando")}>
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="datetime-local"
+                value={fecha}
+                min={aInputLocal(new Date(Date.now() + MARGEN_MS))}
+                onChange={(e) => setFecha(e.target.value)}
+                required
+                className="rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-ng-azul"
+              />
+              {[12, 18, 20].map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  onClick={() => aLas(h)}
+                  className={`rounded-full border px-3 py-1.5 text-xs ${
+                    cuando && cuando.getHours() === h && cuando.getMinutes() === 0
+                      ? "border-ng-azul bg-ng-azul/15 text-white"
+                      : "border-white/15 text-white/60 hover:bg-white/5"
+                  }`}
+                >
+                  {h}:00
+                </button>
+              ))}
+            </div>
+            <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/40"}`}>
+              {!fecha
+                ? t("elegiDiaHoraPunto")
+                : yaPaso
+                  ? t("yaPasoLargo")
+                  : t("salePunto", { cuando: diaYHora(cuando!, locale) })}{" "}
+              {t("horaDe", { zona: zonaHoraria(locale) })}
+            </p>
+          </Seccion>
+
           {conFacebook && necesitaVersion && conVideo && clip.urlVideo ? (
             <SeccionVersionFacebook
               clipId={clip._id}
@@ -532,58 +531,62 @@ function Formulario({
             )}
           </Seccion>
 
-          <Seccion titulo={t("secciones.cuando")}>
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="datetime-local"
-                value={fecha}
-                min={aInputLocal(new Date(Date.now() + MARGEN_MS))}
-                onChange={(e) => setFecha(e.target.value)}
-                required
-                className="rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-ng-azul"
-              />
-              {[12, 18, 20].map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  onClick={() => aLas(h)}
-                  className={`rounded-full border px-3 py-1.5 text-xs ${
-                    cuando && cuando.getHours() === h && cuando.getMinutes() === 0
-                      ? "border-ng-azul bg-ng-azul/15 text-white"
-                      : "border-white/15 text-white/60 hover:bg-white/5"
-                  }`}
-                >
-                  {h}:00
-                </button>
-              ))}
+          {/* Lo que se va a programar y el botón, fijos abajo como en un
+              checkout: se arma de arriba hacia abajo (dónde, cuándo, qué
+              dice) y el botón queda a mano sin volver a subir. */}
+          <div className="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 space-y-2 lg:bottom-4">
+            {aviso && (
+              <p
+                className={`rounded-lg border p-3 text-sm ${
+                  aviso.tono === "ok"
+                    ? "border-ng-teal/30 bg-ng-teal/[0.06] text-ng-teal"
+                    : "border-red-500/30 bg-red-500/[0.06] text-red-400"
+                }`}
+              >
+                {aviso.texto}
+                {aviso.tono === "ok" && (
+                  <Link href="/calendario" className="ml-2 underline underline-offset-2">
+                    {t("irAlCalendario")}
+                  </Link>
+                )}
+              </p>
+            )}
+            <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-ng-fondo/95 p-3 shadow-[0_-8px_24px_rgba(0,0,0,0.35)] backdrop-blur sm:flex-row sm:items-center">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                {portadaSeg != null && portadaElegible ? (
+                  <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
+                ) : null}
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className={`text-sm font-medium ${fecha && yaPaso ? "text-red-400" : "text-white"}`}>
+                    {!fecha ? t("elegiDiaHora") : yaPaso ? t("yaPaso") : t("sale", { cuando: diaYHora(cuando!, locale) })}
+                    {elegidosEnOrden.length ? <span className="font-normal text-white/50">{` · ${t("nRedes", { n: elegidosEnOrden.length })}`}</span> : null}
+                  </p>
+                  {elegidosEnOrden.length === 0 ? <p className="text-xs text-amber-300">{t("marcaUnaRed")}</p> : null}
+                  {conFacebook && facebookEspera ? (
+                    <p className="text-xs text-amber-300">{aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}</p>
+                  ) : null}
+                  {revision.activa ? (
+                    <p className={`text-xs ${revision.soyRevisor ? "text-white/45" : "text-amber-300"}`}>
+                      {revision.soyRevisor ? tr("avisoRevisor") : tr("aviso")}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => void enviar()}
+                disabled={enviando || aProgramar.length === 0 || yaPaso || descripcionLarga}
+                className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+              >
+                {enviando ? <Loader2 size={16} className="animate-spin" aria-hidden /> : <CalendarClock size={16} aria-hidden />}
+                {enviando
+                  ? t("programando")
+                  : aProgramar.length > 1
+                    ? t("programarEnN", { n: aProgramar.length })
+                    : t("programar")}
+              </button>
             </div>
-            <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/40"}`}>
-              {!fecha
-                ? t("elegiDiaHoraPunto")
-                : yaPaso
-                  ? t("yaPasoLargo")
-                  : t("salePunto", { cuando: diaYHora(cuando!, locale) })}{" "}
-              {t("horaDe", { zona: zonaHoraria(locale) })}
-            </p>
-          </Seccion>
-
-          {aviso && (
-            <p
-              className={`rounded-lg border p-3 text-sm ${
-                aviso.tono === "ok"
-                  ? "border-ng-teal/30 bg-ng-teal/[0.06] text-ng-teal"
-                  : "border-red-500/30 bg-red-500/[0.06] text-red-400"
-              }`}
-            >
-              {aviso.texto}
-              {aviso.tono === "ok" && (
-                <Link href="/calendario" className="ml-2 underline underline-offset-2">
-                  {t("irAlCalendario")}
-                </Link>
-              )}
-            </p>
-          )}
-
+          </div>
         </>
       ) : (
         <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/50">
