@@ -2802,6 +2802,20 @@ export const GUARDAR_ELENCO = gql`
   }
 `;
 
+/** Si un usuario existe en la red (be#200): para atrapar un error de tipeo al cargar a alguien. */
+export const VERIFICAR_USUARIO_RED = gql`
+  query VerificarUsuarioRed($marcaId: ID!, $red: RedSocial!, $usuario: String!) {
+    verificarUsuarioRed(marcaId: $marcaId, red: $red, usuario: $usuario) {
+      estado
+      usuario
+      url
+      nombre
+      foto
+      motivo
+    }
+  }
+`;
+
 /** Los invitados de un episodio. Aparte de EPISODIO por lo mismo que el elenco. */
 export const INVITADOS_EPISODIO = gql`
   query InvitadosEpisodio($id: ID!, $marcaId: String!) {
