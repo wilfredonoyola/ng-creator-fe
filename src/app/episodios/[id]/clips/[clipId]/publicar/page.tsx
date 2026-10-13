@@ -404,8 +404,11 @@ function Formulario({
     .filter((x, i, a) => a.indexOf(x) === i)
     .join(", ");
   // Con la fecha sin tocar, lo que ya está programado no se mueve (pueden ser horas distintas).
+  // Un reintento sin tocar la hora sale ya: la hora que se mostró al abrir
+  // pudo quedar atrás mientras se corregían las etiquetas.
+  const reintentoYa = modoReintento && !fechaTocada;
   const faltaFecha = modoReintento
-    ? yaPaso
+    ? fechaTocada && yaPaso
     : modoEditar
       ? (fechaTocada || aProgramar.some((d) => !pendienteDe(d))) && yaPaso
       : yaPaso;
@@ -595,7 +598,7 @@ function Formulario({
           refetchQueries,
         });
         if (esReintento) {
-          await reintentarPub({ variables: { marcaId, id: p._id, publicarEn: cuando?.toISOString() }, refetchQueries });
+          await reintentarPub({ variables: { marcaId, id: p._id, publicarEn: reintentoYa ? undefined : cuando?.toISOString() }, refetchQueries });
           continue;
         }
         if (fechaTocada && cuando && Math.abs(new Date(p.publicarEn).getTime() - cuando.getTime()) >= 60_000) {
@@ -962,7 +965,9 @@ function Formulario({
                       ? t("elegiDiaHora")
                       : modoEditar && !modoReintento && horasDistintas && !fechaTocada
                         ? t("editar.horasPorRed")
-                        : faltaFecha
+                        : reintentoYa
+                          ? t("reintentar.saleYa")
+                          : faltaFecha
                           ? t("yaPaso")
                           : t("sale", { cuando: diaYHora(cuando!, locale) })}
                     {elegidosEnOrden.length ? <span className="font-normal text-white/50">{` · ${t("nRedes", { n: elegidosEnOrden.length })}`}</span> : null}
