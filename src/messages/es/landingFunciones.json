@@ -98,7 +98,7 @@
     },
     "app": {
       "titulo": "La app de Clipfine",
-      "texto": "Clipfine también vive en tu celular, en iPhone y Android: la misma cuenta, los mismos clientes y todo sincronizado con la web. Empezás en la compu y terminás donde estés."
+      "texto": "Muy pronto en tu celular, en iPhone y Android: la misma cuenta, los mismos clientes y todo sincronizado con la web. Empezás en la compu y terminás donde estés."
     }
   },
   "items": {
@@ -447,5 +447,6 @@
     "titulo": "Probalo con un cliente",
     "texto": "Subí un episodio y mirá los clips que salen, con su Brand Kit y listos para programar.",
     "cta": "Probar gratis"
-  }
+  },
+  "proximamenteTiendas": "Próximamente en App Store y Google Play"
 }

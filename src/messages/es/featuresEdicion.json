@@ -7,9 +7,18 @@
   "destacado": "sin un editor senior en cada uno",
   "bajada": "Recortá, sacá lo que sobra y encuadrá a quien habla en un editor como CapCut. Lo pesado lo hace Clipfine y tu equipo revisa, así cualquiera de tu equipo entrega clips prolijos.",
   "datos": {
-    "d1": { "cifra": "100 pasos", "que": "de deshacer y rehacer en cada clip" },
-    "d2": { "cifra": "4 diseños", "que": "de pantalla, que cambian en cada tramo" },
-    "d3": { "cifra": "3 formatos", "que": "9:16, 1:1 y 16:9, según lo que pida cada red" }
+    "d1": {
+      "cifra": "100 pasos",
+      "que": "de deshacer y rehacer en cada clip"
+    },
+    "d2": {
+      "cifra": "4 diseños",
+      "que": "de pantalla, que cambian en cada tramo"
+    },
+    "d3": {
+      "cifra": "3 formatos",
+      "que": "9:16, 1:1 y 16:9, según lo que pida cada red"
+    }
   },
   "agencia": {
     "editor": "Tu equipo ya sabe usarlo: si alguna vez abrió CapCut, no hay curva de aprendizaje.",
@@ -25,20 +34,66 @@
     "velocidad": "Un clip que se pasa del largo ideal entra en tiempo sin recortar contenido."
   },
   "vistas": {
-    "editor": { "deshacer": "Deshacer", "rehacer": "Rehacer", "video": "Video", "textos": "Textos", "audio": "Audio" },
-    "guardado": { "estado": "Guardado", "cuando": "hace 1 s", "cambio": "Gancho: «Nadie te cuenta esto»", "pie": "Sin botón de guardar" },
-    "tramo": { "antes": "0:42", "despues": "0:47 · +5 s al inicio" },
-    "cortes": { "antes": "…lo que aprendimos", "cortado": "eh, o sea, digamos que", "despues": "es que el cliente…" },
-    "silencios": { "marcados": "3 silencios", "pie": "marcados como cortes" },
-    "autoEncuadre": { "habla": "Habla: Ana", "labios": "Mueve los labios" },
-    "encuadreManual": { "pie": "Arrastrá y agrandá el recuadro" },
-    "disenos": { "uno": "Uno", "dividido": "Dividido", "horizontal": "Horizontal", "centrado": "Centrado" },
-    "fondo": { "desenfocado": "Desenfocado", "negro": "Negro" },
-    "velocidad": { "dura": "Dura:", "pie": "La voz no cambia de tono" }
+    "editor": {
+      "deshacer": "Deshacer",
+      "rehacer": "Rehacer",
+      "video": "Video",
+      "textos": "Textos",
+      "audio": "Audio"
+    },
+    "guardado": {
+      "estado": "Guardado",
+      "cuando": "hace 1 s",
+      "cambio": "Gancho: «Nadie te cuenta esto»",
+      "pie": "Sin botón de guardar"
+    },
+    "tramo": {
+      "antes": "0:42",
+      "despues": "0:47 · +5 s al inicio"
+    },
+    "cortes": {
+      "antes": "…lo que aprendimos",
+      "cortado": "eh, o sea, digamos que",
+      "despues": "es que el cliente…"
+    },
+    "silencios": {
+      "marcados": "3 silencios",
+      "pie": "marcados como cortes"
+    },
+    "autoEncuadre": {
+      "habla": "Habla: Ana",
+      "labios": "Mueve los labios"
+    },
+    "encuadreManual": {
+      "pie": "Arrastrá y agrandá el recuadro"
+    },
+    "disenos": {
+      "uno": "Uno",
+      "dividido": "Dividido",
+      "horizontal": "Horizontal",
+      "centrado": "Centrado"
+    },
+    "fondo": {
+      "desenfocado": "Desenfocado",
+      "negro": "Negro"
+    },
+    "velocidad": {
+      "dura": "Dura:",
+      "pie": "La voz no cambia de tono"
+    }
   },
   "preguntas": {
-    "p1": { "p": "¿Mi equipo necesita saber editar video?", "r": "No. El encuadre, los silencios y los cortes se proponen solos, y el editor se usa como CapCut. Cualquiera de tu equipo puede dejar un clip listo." },
-    "p2": { "p": "¿Qué pasa si se cierra el navegador en medio de una edición?", "r": "Nada se pierde. Cada cambio se guarda solo un segundo después de hacerlo, y deshacer guarda los últimos 100 pasos." },
-    "p3": { "p": "¿Mi equipo puede editar desde el celular?", "r": "Sí. La app para iPhone y Android tiene el editor, con la misma cuenta y los mismos clips que la web." }
+    "p1": {
+      "p": "¿Mi equipo necesita saber editar video?",
+      "r": "No. El encuadre, los silencios y los cortes se proponen solos, y el editor se usa como CapCut. Cualquiera de tu equipo puede dejar un clip listo."
+    },
+    "p2": {
+      "p": "¿Qué pasa si se cierra el navegador en medio de una edición?",
+      "r": "Nada se pierde. Cada cambio se guarda solo un segundo después de hacerlo, y deshacer guarda los últimos 100 pasos."
+    },
+    "p3": {
+      "p": "¿Mi equipo puede editar desde el celular?",
+      "r": "Muy pronto: la app para iPhone y Android trae el editor, con la misma cuenta y los mismos clips que la web. Mientras tanto, la web funciona en el navegador del celular."
+    }
   }
 }

@@ -14,6 +14,7 @@ import { PREFIJO_SITIO } from "@/lib/sitio";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { ErrorDeSubida, uploadMarcaLogo } from "@/lib/upload";
 import { URL_SITIO } from "@/lib/sitio";
+import { APP_EN_TIENDAS } from "@/lib/app-movil";
 import { ESTILO_TEXTO_POR_DEFECTO, temaValido, type EstiloTexto, type Tema } from "@/lib/estilos-texto";
 import { PLANTILLA_POR_DEFECTO, type PlantillaClip } from "@/lib/plantilla-clip";
 import {
@@ -338,13 +339,6 @@ function PasoKit({ marca, onSeguir }: { marca: { _id: string; nombre: string }; 
     </div>
   );
 }
-
-/**
- * Si la app ya está en App Store y Google Play. Mientras las tiendas no la
- * aprueben, el paso dice "Próximamente" en vez del QR: el QR lleva a /app, que
- * hoy no tiene a qué tienda mandar. Cuando estén aprobadas, pasa a true.
- */
-const APP_EN_TIENDAS = false;
 
 /** Paso 3: la app. */
 function PasoApp({ onTerminar }: { onTerminar: () => void }) {

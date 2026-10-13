@@ -19,6 +19,7 @@ import {
   LINK_DEMO,
 } from "@/components/landing/Publica";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
+import { APP_EN_TIENDAS } from "@/lib/app-movil";
 import { MAQUETAS } from "@/components/landing/mockups";
 import { RELACIONADAS, SECCIONES, esSeccion, namespaceDe, numero, type IdSeccion } from "@/components/landing/funciones";
 import { VISTAS } from "@/components/landing/vistas";
@@ -100,6 +101,11 @@ function Seccion({ id }: { id: IdSeccion }) {
             </nav>
             <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-14">
               <div className="flex min-w-0 flex-col gap-7">
+                {s.id === "app" && !APP_EN_TIENDAS && (
+                  <span className={`${ETIQUETA} self-start rounded-full bg-[#FFD400] px-3 py-1 text-xs font-bold uppercase tracking-[.08em] text-[#0A0A0A]`}>
+                    {t("proximamenteTiendas")}
+                  </span>
+                )}
                 <h1 className={`${CONDENSADA} break-words text-[44px] leading-[.93] tracking-[-0.005em] sm:text-[76px] lg:text-[88px]`}>
                   {ta("titulo")} <span className="text-[#FFD400]">{ta("destacado")}</span>
                 </h1>
