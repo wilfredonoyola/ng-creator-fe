@@ -60,6 +60,7 @@ export function LineaDeTiempo({
   onCambiarTextos,
   textoElegido,
   onElegirTexto,
+  onAgregarTexto,
   imagenes,
   onCambiarImagenes,
   imagenElegida,
@@ -87,6 +88,8 @@ export function LineaDeTiempo({
   onCambiarTextos: (t: Texto[]) => void;
   textoElegido: number | null;
   onElegirTexto: (i: number) => void;
+  /** "+ Texto": lo crea ya en el video. Sin él (llegó al máximo), solo abre el panel. */
+  onAgregarTexto?: () => void;
   imagenes: ImagenClip[];
   onCambiarImagenes: (im: ImagenClip[]) => void;
   imagenElegida: number | null;
@@ -334,7 +337,7 @@ export function LineaDeTiempo({
             duracion={duracion}
             vacia={
               puedeEditar ? (
-                <button type="button" onClick={() => onAbrir("texto")} className={AGREGAR}>
+                <button type="button" onClick={() => (onAgregarTexto ? onAgregarTexto() : onAbrir("texto"))} className={AGREGAR}>
                   <Plus size={12} aria-hidden />
                   {tr("linea.agregarTexto")}
                 </button>
@@ -445,7 +448,11 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
       finDeRenglon[r] = b.hasta;
       renglonDe.set(b.clave, r);
     });
-  const renglones = Math.max(1, finDeRenglon.length);
+  // Con solo barras fijas (logo, llamada a la acción) el botón de agregar va
+  // en su propio renglón: si no, queda encima de la barra, que ocupa todo el clip.
+  const conVacia = Boolean(vacia) && !barras.some((b) => !b.fija);
+  const corrimiento = conVacia && barras.length > 0 ? 1 : 0;
+  const renglones = Math.max(1, finDeRenglon.length + corrimiento);
   const ALTO = 28;
   const ESPACIO = 4;
 
@@ -488,9 +495,9 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
 
   return (
     <div ref={pista} className="relative" style={{ height: renglones * ALTO + (renglones - 1) * ESPACIO }}>
-      {!barras.some((b) => !b.fija) && vacia}
+      {conVacia && <div className="absolute inset-x-0 top-0" style={{ height: ALTO }}>{vacia}</div>}
       {barras.map((b) => {
-        const r = renglonDe.get(b.clave) ?? 0;
+        const r = (renglonDe.get(b.clave) ?? 0) + corrimiento;
         const editable = Boolean(b.alMover) && !b.fija && !b.musica;
         const bordes = editable && !b.soloMover;
         return (
