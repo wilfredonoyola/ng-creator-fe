@@ -3,15 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { AtSign, Plus, Sparkles, Users, X } from "lucide-react";
+import { AtSign, ExternalLink, Plus, Sparkles, Users, X } from "lucide-react";
 import { IconoRed } from "@/components/IconoRed";
 import {
   MAXIMO_COLABORADORES_FACEBOOK,
   MAXIMO_COLABORADORES_INSTAGRAM,
   MAXIMO_ETIQUETADOS_INSTAGRAM,
+  NOMBRE_RED,
   RED_DE,
   REDES_PERSONA,
   datosDe,
+  urlPerfil,
   usuarioEn,
   type DatosPersona,
   type Persona,
@@ -123,8 +125,18 @@ export function EtiquetarPublicacion({
                 <AvatarPersona persona={p} tamano={22} />
                 <span className="text-xs text-white">{p.nombre}</span>
                 <span className="flex items-center gap-0.5">
+                  {/* Cada red, un enlace al perfil: para mirar antes de publicar que la cuenta exista y sea pública. */}
                   {REDES_PERSONA.filter((r) => p[r]).map((r) => (
-                    <IconoRed key={r} red={RED_DE[r]} chico />
+                    <a
+                      key={r}
+                      href={urlPerfil(r, p[r]!)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={t("publicar.verPerfilEn", { red: NOMBRE_RED[r], usuario: p[r]! })}
+                      className="rounded-full transition hover:scale-110 hover:opacity-80"
+                    >
+                      <IconoRed red={RED_DE[r]} chico />
+                    </a>
                   ))}
                 </span>
                 {enTexto.has(p._id) ? (
@@ -184,6 +196,8 @@ export function EtiquetarPublicacion({
           icono={<Users size={13} aria-hidden />}
           personas={conIg}
           etiqueta={(p) => `@${usuarioEn("INSTAGRAM", p)}`}
+          perfil={(p) => urlPerfil("instagram", usuarioEn("INSTAGRAM", p)!)}
+          verPerfil={t("publicar.verPerfil")}
           elegidos={colaboradoresIg}
           maximo={MAXIMO_COLABORADORES_INSTAGRAM}
           onAlternar={onColaboradorIg}
@@ -197,6 +211,8 @@ export function EtiquetarPublicacion({
           icono={<IconoRed red="FACEBOOK" chico />}
           personas={conPagina}
           etiqueta={(p) => p.nombre}
+          perfil={(p) => urlPerfil("facebook", p.facebookPaginaId ?? p.facebook ?? "")}
+          verPerfil={t("publicar.verPerfil")}
           elegidos={colaboradoresFb}
           maximo={MAXIMO_COLABORADORES_FACEBOOK}
           onAlternar={onColaboradorFb}
@@ -220,6 +236,8 @@ function Colaboradores({
   icono,
   personas,
   etiqueta,
+  perfil,
+  verPerfil,
   elegidos,
   maximo,
   onAlternar,
@@ -230,6 +248,9 @@ function Colaboradores({
   icono: React.ReactNode;
   personas: Persona[];
   etiqueta: (p: Persona) => string;
+  /** El perfil en esa red, para revisar que la cuenta exista y acepte colaboraciones. */
+  perfil: (p: Persona) => string;
+  verPerfil: string;
   elegidos: Set<string>;
   maximo: number;
   onAlternar: (id: string) => void;
@@ -244,19 +265,33 @@ function Colaboradores({
           const on = elegidos.has(p._id);
           const tope = !on && elegidos.size >= maximo;
           return (
-            <button
+            <span
               key={p._id}
-              type="button"
-              onClick={() => onAlternar(p._id)}
-              disabled={tope}
-              aria-pressed={on}
-              title={tope ? lleno : undefined}
-              className={`rounded-full border px-2.5 py-0.5 text-[11px] transition disabled:cursor-not-allowed disabled:opacity-40 ${
-                on ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/10 text-white/50 hover:text-white/80"
-              }`}
+              className={`inline-flex items-center rounded-full border text-[11px] transition ${
+                on ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/10 text-white/50"
+              } ${tope ? "opacity-40" : ""}`}
             >
-              {etiqueta(p)}
-            </button>
+              <button
+                type="button"
+                onClick={() => onAlternar(p._id)}
+                disabled={tope}
+                aria-pressed={on}
+                title={tope ? lleno : undefined}
+                className="py-0.5 pl-2.5 pr-1 hover:text-white disabled:cursor-not-allowed"
+              >
+                {etiqueta(p)}
+              </button>
+              <a
+                href={perfil(p)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`${verPerfil} · ${etiqueta(p)}`}
+                aria-label={`${verPerfil} · ${etiqueta(p)}`}
+                className="rounded-r-full py-1 pl-0.5 pr-2 text-white/40 hover:text-ng-celeste"
+              >
+                <ExternalLink size={11} aria-hidden />
+              </a>
+            </span>
           );
         })}
       </div>

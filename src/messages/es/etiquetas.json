@@ -130,7 +130,9 @@
     "maximoColaboradoresFb": "Facebook acepta hasta {max} páginas colaboradoras.",
     "maximoEtiquetas": "Instagram acepta hasta {max} etiquetas: las demás no se etiquetan ahí.",
     "comoSale": "Instagram: etiqueta en el Reel y @usuario en el texto. TikTok, YouTube y Facebook: @usuario (o su nombre, si no tiene usuario en esa red).",
-    "verTodas": "Administrar en Etiquetas"
+    "verTodas": "Administrar en Etiquetas",
+    "verPerfil": "Ver perfil",
+    "verPerfilEn": "Ver @{usuario} en {red}"
   },
   "enRedes": {
     "titulo": "Personas para etiquetar",
