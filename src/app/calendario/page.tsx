@@ -80,9 +80,11 @@ const MARGEN_MS = 60_000;
 const REFETCH = ["PublicacionesDeMarca", "ClipsListosSinProgramar", "ClipsDeEpisodio", "ClipEpisodio"];
 
 /**
- * Las publicaciones del mismo clip a la misma hora: una tarjeta, con un logo
- * por red. Es como se programan (un clip, varias redes, una hora), y así se
- * quita una red sin tocar las otras. Lo que no es de un clip va solo.
+ * Las publicaciones del mismo clip en el día: una tarjeta, con un logo por
+ * red. Es como se programan (un clip, varias redes, una hora), y así se quita
+ * una red sin tocar las otras. Va por día y no por hora: un reintento o una
+ * red movida a otra hora siguen siendo el mismo clip, en la misma tarjeta (a
+ * la hora de la primera). Lo que no es de un clip va solo.
  */
 interface Grupo {
   clave: string;
@@ -92,8 +94,8 @@ interface Grupo {
 function agrupar(pubs: PublicacionCalendario[]): Grupo[] {
   const grupos = new Map<string, Grupo>();
   for (const p of pubs) {
-    const minuto = Math.floor(new Date(p.publicarEn).getTime() / 60_000);
-    const clave = p.clip ? `${p.clip._id}@${minuto}` : p._id;
+    // El clip y el día (local): el detalle agrupa toda la semana de una vez.
+    const clave = p.clip ? `${p.clip._id}@${new Date(p.publicarEn).toDateString()}` : p._id;
     const g = grupos.get(clave);
     if (g) g.pubs.push(p);
     else grupos.set(clave, { clave, pubs: [p] });
