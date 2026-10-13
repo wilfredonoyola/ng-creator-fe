@@ -36,9 +36,15 @@ const CLAVE: Record<Red, RedPersona> = {
   FACEBOOK: "facebook",
 };
 
-/** Su usuario en esa red, o null si no tiene: ahí no se lo etiqueta. */
+/**
+ * Su usuario en esa red, o null si no tiene: ahí no se lo etiqueta. En
+ * Facebook, un perfil sin nombre de usuario se guarda con su número
+ * (profile.php?id=…): un número no se puede mencionar, así que tampoco.
+ */
 export function usuarioEn(red: Red, p: Persona): string | null {
-  return p[CLAVE[red]]?.trim() || null;
+  const u = p[CLAVE[red]]?.trim();
+  if (!u || (red === "FACEBOOK" && (/^\d+$/.test(u) || /\.php$/i.test(u)))) return null;
+  return u;
 }
 
 /**
