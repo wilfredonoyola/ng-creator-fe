@@ -51,6 +51,14 @@
     "subtitulo": "Revisá y publicá tus clips desde el teléfono. Escaneá el código con la cámara.",
     "qrAlt": "Código QR para bajar la app",
     "desdeElTelefono": "¿Estás en el teléfono? <link>Bajala acá</link>.",
-    "irAlPanel": "Ir al panel"
+    "irAlPanel": "Ir al panel",
+    "pronto": "Próximamente",
+    "subtituloPronto": "La app para iPhone y Android está en camino. Con tu misma cuenta vas a poder:",
+    "puntos": {
+      "revisar": "Revisar los clips de cada cliente desde el teléfono.",
+      "aprobar": "Aprobar o pedir cambios con una nota de voz.",
+      "subir": "Subir clips ya editados desde la galería."
+    },
+    "mientras": "Mientras tanto, todo funciona desde la web, en cualquier navegador."
   }
 }
