@@ -9,10 +9,11 @@ import { conSesion, derivar, escribir, guardada, leer, olvidar, type MensajeChat
 
 /**
  * Las pantallas donde la burbuja estorba: el editor (ocupa todo, con sus
- * controles abajo a la derecha), grabar, montaje, el reporte para imprimir y
+ * controles abajo a la derecha), programar (su botón va fijo abajo), grabar,
+ * montaje, el reporte para imprimir y
  * el superadmin.
  */
-const SIN_BURBUJA = [/^\/episodios\/[^/]+\/clips\/[^/]+$/, /^\/grabar/, /^\/montaje/, /^\/metricas\/reporte/, /^\/superadmin/, /^\/onboarding/, /^\/conectar/];
+const SIN_BURBUJA = [/^\/episodios\/[^/]+\/clips\/[^/]+(\/publicar)?$/, /^\/grabar/, /^\/montaje/, /^\/metricas\/reporte/, /^\/superadmin/, /^\/onboarding/, /^\/conectar/];
 
 /** Con la barra de abajo del panel (NavInferior, en el teléfono), la burbuja va más arriba. */
 const PUBLICAS = [/^\/$/, /^\/features/, /^\/ayuda/, /^\/app$/, /^\/privacidad/, /^\/terminos/, /^\/login/, /^\/registro/];
