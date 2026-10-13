@@ -130,7 +130,9 @@
     "maximoColaboradoresFb": "Facebook allows up to {max} collaborating pages.",
     "maximoEtiquetas": "Instagram allows up to {max} tags: the rest aren't tagged there.",
     "comoSale": "Instagram: tagged on the Reel and @username in the text. TikTok, YouTube and Facebook: @username (or their name, if they have no username there).",
-    "verTodas": "Manage in Tags"
+    "verTodas": "Manage in Tags",
+    "verPerfil": "View profile",
+    "verPerfilEn": "View @{usuario} on {red}"
   },
   "enRedes": {
     "titulo": "People to tag",
