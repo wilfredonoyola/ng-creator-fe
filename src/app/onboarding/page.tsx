@@ -339,8 +339,20 @@ function PasoKit({ marca, onSeguir }: { marca: { _id: string; nombre: string }; 
   );
 }
 
-/** Paso 3: la app, con un QR a /app (que manda a la tienda que corresponda). */
+/**
+ * Si la app ya está en App Store y Google Play. Mientras las tiendas no la
+ * aprueben, el paso dice "Próximamente" en vez del QR: el QR lleva a /app, que
+ * hoy no tiene a qué tienda mandar. Cuando estén aprobadas, pasa a true.
+ */
+const APP_EN_TIENDAS = false;
+
+/** Paso 3: la app. */
 function PasoApp({ onTerminar }: { onTerminar: () => void }) {
+  return APP_EN_TIENDAS ? <PasoAppQr onTerminar={onTerminar} /> : <PasoAppPronto onTerminar={onTerminar} />;
+}
+
+/** La app ya en las tiendas: un QR a /app, que manda a la tienda que corresponda. */
+function PasoAppQr({ onTerminar }: { onTerminar: () => void }) {
   const t = useTranslations("onboarding");
   const url = `${URL_SITIO}/app`;
   const [svg, setSvg] = useState<string | null>(null);
@@ -380,6 +392,39 @@ function PasoApp({ onTerminar }: { onTerminar: () => void }) {
         <button type="button" onClick={onTerminar} className={botonSaltar}>
           {t("saltar")}
         </button>
+        <button type="button" onClick={onTerminar} className={botonPrincipal}>
+          {t("app.irAlPanel")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Paso 3 mientras la app no está en las tiendas: lo que va a hacer y "Próximamente". */
+function PasoAppPronto({ onTerminar }: { onTerminar: () => void }) {
+  const t = useTranslations("onboarding");
+  return (
+    <div>
+      <span className="inline-flex rounded-full bg-ng-violeta/15 px-2.5 py-1 text-xs font-semibold text-ng-violeta">{t("app.pronto")}</span>
+      <h1 className="mt-3 text-2xl font-bold tracking-tight">{t("app.titulo")}</h1>
+      <p className="mt-1 text-sm text-ng-secundario">{t("app.subtituloPronto")}</p>
+      <ul className="mt-5 flex flex-col gap-2.5 text-sm">
+        {(["revisar", "aprobar", "subir"] as const).map((k) => (
+          <li key={k} className="flex items-start gap-2.5">
+            <span aria-hidden className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-ng-violeta" />
+            <span className="text-white/80">{t(`app.puntos.${k}`)}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5 flex flex-wrap gap-2">
+        {["App Store", "Google Play"].map((tienda) => (
+          <span key={tienda} className="rounded-ng-md border border-white/10 px-3 py-2 text-xs text-white/50">
+            {tienda} · {t("app.pronto")}
+          </span>
+        ))}
+      </div>
+      <p className="mt-4 text-xs text-white/40">{t("app.mientras")}</p>
+      <div className="mt-6 flex justify-end">
         <button type="button" onClick={onTerminar} className={botonPrincipal}>
           {t("app.irAlPanel")}
         </button>
