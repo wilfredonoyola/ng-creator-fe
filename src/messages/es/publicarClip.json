@@ -83,5 +83,18 @@
     "elegida": "Portada elegida",
     "facebook": "En Facebook se aplica unos minutos después de publicar, si la página está conectada también en Facebook (Redes conectadas → abajo).",
     "youtube": "YouTube solo la aplica en canales verificados."
+  },
+  "editar": {
+    "titulo": "Ya está programado · sale el {cuando} en {redes}",
+    "tituloHoras": "Ya está programado en {redes}, a horas distintas",
+    "ayuda": "Cambiá lo que quieras y tocá \"Guardar cambios\": se actualiza lo programado. Si desmarcás una red, se cancela ahí.",
+    "horasAyuda": "Si cambiás la fecha, todas pasan a la nueva.",
+    "horasPorRed": "Cada red sale a su hora",
+    "guardar": "Guardar cambios",
+    "guardando": "Guardando…",
+    "guardado": "Listo: se actualizó lo programado.",
+    "fallas": "No se pudo actualizar todo: {detalle}",
+    "confirmarCancelar": "Se va a cancelar lo programado en {redes}. ¿Seguimos?",
+    "seCancela": "Al guardar se cancela en {redes}."
   }
 }

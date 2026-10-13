@@ -6,13 +6,12 @@ import { useTranslations } from "next-intl";
 
 const PESTANAS = [
   { href: "/publicados", clave: "publicados" },
-  { href: "/clips-subidos", clave: "subirClips" },
   { href: "/analisis", clave: "analisis" },
 ] as const;
 
 /**
- * Publicaciones es una sola sección del menú: lo que salió, subir clips ya
- * editados para publicarlos (ng-creator-be#181) y cómo le fue. Análisis dejó
+ * Publicaciones es una sola sección del menú: lo que salió y cómo le fue (los
+ * clips subidos ya editados pasaron a Episodios). Análisis dejó
  * de ser un destino aparte porque mirar el rendimiento es parte de publicar.
  */
 export function PestanasPublicaciones() {

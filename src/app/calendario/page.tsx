@@ -386,11 +386,18 @@ function TarjetaGrupo({
       ? `/publicados/${p.expedienteId}`
       : null;
   const hayProgramadas = pubs.some((x) => x.estado === "PROGRAMADA");
+  // Un clip que todavía va a salir se abre en su pantalla de programar, en
+  // modo editar (la misma con que se programó). Lo que ya salió abre el detalle.
+  const editarEnProgramar = Boolean(p.clip && enlace && pubs.some((x) => x.estado === "PROGRAMADA" || x.estado === "AGENDADA_EN_RED"));
 
   return (
     <li className="min-w-0 rounded-lg border border-white/10 bg-ng-tarjeta p-2">
       <div className="flex gap-2">
-        {p.clip ? (
+        {editarEnProgramar ? (
+          <Link href={enlace!} aria-label={t("tarjeta.editarProgramacion")} className="shrink-0 rounded-lg hover:brightness-125">
+            <Poster url={p.clip?.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
+          </Link>
+        ) : p.clip ? (
           <button onClick={onAbrir} aria-label={t("detalle.titulo")} className="shrink-0 rounded-lg hover:brightness-125">
             <Poster url={p.clip.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
           </button>
@@ -403,7 +410,15 @@ function TarjetaGrupo({
               {horaCorta(hora, locale)}
             </span>
           </p>
-          {p.clip ? (
+          {editarEnProgramar ? (
+            <Link
+              href={enlace!}
+              title={t("tarjeta.editarProgramacion")}
+              className="mt-0.5 line-clamp-2 break-words text-sm leading-snug hover:underline"
+            >
+              {titulo}
+            </Link>
+          ) : p.clip ? (
             <button
               onClick={onAbrir}
               className="mt-0.5 line-clamp-2 break-words text-left text-sm leading-snug hover:underline"

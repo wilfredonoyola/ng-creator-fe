@@ -9,7 +9,7 @@ Si el clip ya está editado (un reel de CapCut, un tip grabado con el celular, u
 
 ## Cómo subirlos en la web
 
-1. Elegí la marca del cliente y entrá a **Publicaciones**, pestaña **Subir clips**. También llegás desde **Episodios**, con el link **¿Ya tenés el clip editado?**
+1. Elegí la marca del cliente y entrá a **Episodios**, pestaña **Clips subidos**.
 2. Soltá los videos en **Soltá tus videos acá** o tocá **Elegir videos**. Podés subir varios a la vez.
 3. Cada clip pasa por **Preparando el video…** y en unos segundos queda **Listo para programar**.
 4. En la tarjeta del clip tocá **Programar**, o **Editar** si querés retocarlo antes.

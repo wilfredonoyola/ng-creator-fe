@@ -51,6 +51,10 @@
   "programar": {
     "elegi": "Choose networks and time.",
     "reintentar": "Retry",
-    "programar": "Schedule"
+    "programar": "Schedule",
+    "editar": "Edit schedule",
+    "programado": "Scheduled · {n, plural, one {# network} other {# networks}}",
+    "programadoEl": "Scheduled · {cuando} · {n, plural, one {# network} other {# networks}}",
+    "verProgramado": "See and edit what is scheduled"
   }
 }

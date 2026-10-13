@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useMutation } from "@apollo/client";
-import { useTranslations } from "next-intl";
-import { ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, Redo2, Send, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { CalendarCheck, ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, PencilLine, Redo2, Send, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
+import { diaYHora } from "@/lib/publicaciones";
 import { SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/graphql/operations";
 import { useSesion } from "@/lib/sesion";
 import type { CalidadClip } from "@/lib/calidad";
@@ -76,7 +77,8 @@ export function BarraSuperior({
   const alDia = render.estado === "LISTO" && Boolean(render.urlVideo) && !render.desactualizado;
   const bajada = useDescargarMp4(render.urlVideo, titulo);
   const [bajarAlTerminar, setBajarAlTerminar] = useState(false);
-  const { fallidas = 0 } = exportar.publicacion ?? {};
+  const { fallidas = 0, programadas = 0, proximaEn } = exportar.publicacion ?? {};
+  const locale = useLocale();
 
   // Se pidió "Descargar" sin el MP4 al día: baja solo en cuanto termina. Un
   // FALLIDO de antes no cuenta: solo el del render que se pidió ahora.
@@ -253,14 +255,27 @@ export function BarraSuperior({
             <ChevronDown size={16} aria-hidden />
           </button>
         </div>
+        {/* Ya programado: se ve acá, y el botón lleva a editar lo programado. */}
+        {programadas > 0 && (
+          <Link
+            href={hrefProgramar}
+            title={t("programar.verProgramado")}
+            className="hidden h-10 items-center gap-1.5 rounded-ng-md border border-ng-teal/30 bg-ng-teal/10 px-3 text-xs font-semibold text-ng-teal lg:inline-flex"
+          >
+            <CalendarCheck size={14} aria-hidden />
+            {proximaEn
+              ? t("programar.programadoEl", { cuando: diaYHora(new Date(proximaEn), locale), n: programadas })
+              : t("programar.programado", { n: programadas })}
+          </Link>
+        )}
         {puedeOperar && (
           <Link
             href={hrefProgramar}
             title={alDia ? undefined : th("exportar.seExportaSolo")}
             className="inline-flex h-10 items-center gap-2 rounded-ng-md bg-ng-azul px-4 text-sm font-bold text-ng-tinta transition hover:brightness-110"
           >
-            <Send size={16} aria-hidden />
-            {fallidas ? t("programar.reintentar") : t("programar.programar")}
+            {programadas > 0 ? <PencilLine size={16} aria-hidden /> : <Send size={16} aria-hidden />}
+            {fallidas ? t("programar.reintentar") : programadas > 0 ? t("programar.editar") : t("programar.programar")}
           </Link>
         )}
         {abierto && (

@@ -29,12 +29,17 @@ Open **Calendar** from the sidebar. You'll see:
 
 ## Change something scheduled
 
-Click a post in the calendar to open its details. From there you can:
+A scheduled clip is edited on the same screen you scheduled it with, in **Edit schedule** mode:
 
-1. **Edit** the description or the YouTube title and click **Save changes**.
-2. **Change time**.
-3. **Add networks** that weren't included.
-4. Remove a network from that clip.
+- In the clip editor, next to the button, you see **Scheduled · Fri 6:00 PM · N networks**, and the button becomes **Edit schedule**.
+- In the **Calendar**, click the clip and that same screen opens.
+
+The top says when and on which networks it goes out. Everything comes loaded as scheduled: networks, text, tagged people, YouTube title, cover and date. Change anything and click **Save changes**:
+
+1. If you change the **text**, the **cover** or the **tags**, it's updated on each network.
+2. If you change the **date**, every network moves to the new time. If they went out at different times and you don't touch the date, each keeps its own.
+3. If you **check a new network**, it's scheduled there.
+4. If you **uncheck a network**, it's canceled there (you confirm first).
 
 Anything that already went out on every network is view-only, with a **View on** link for each network.
 

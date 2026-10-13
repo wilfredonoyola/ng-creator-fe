@@ -37,7 +37,8 @@
     "confirmarQuitar": "Remove {red} from this clip?",
     "quitarRed": "Remove {red} from this clip",
     "apagada": "Not going out on {red}",
-    "verEn": "View on {red}"
+    "verEn": "View on {red}",
+    "editarProgramacion": "Edit the schedule"
   },
   "cambiarHora": {
     "titulo": "Change time",

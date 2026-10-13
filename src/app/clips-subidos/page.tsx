@@ -2,14 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
+import { PestanasEpisodios } from "@/components/PestanasEpisodios";
 import { ClipsSubidos } from "@/components/episodios/ClipsSubidos";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { useSesion } from "@/lib/sesion";
 
 /**
- * Subir clips ya editados (ng-creator-be#181), como pestaña de Publicaciones:
- * es contenido que va directo a publicar, no un episodio del que salen clips.
+ * Subir clips ya editados (ng-creator-be#181), como pestaña de Episodios: es
+ * donde se busca el contenido con el que se trabaja, junto a los episodios.
  */
 export default function ClipsSubidosPage() {
   const t = useTranslations("clipsSubidos");
@@ -19,7 +19,7 @@ export default function ClipsSubidosPage() {
 
   return (
     <DashboardLayout>
-      <PestanasPublicaciones />
+      <PestanasEpisodios />
       {marcaId ? (
         <ClipsSubidos marcaId={marcaId} puedeOperar={puedeOperar(marcaId)} />
       ) : (

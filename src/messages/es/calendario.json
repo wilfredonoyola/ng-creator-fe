@@ -37,7 +37,8 @@
     "confirmarQuitar": "¿Quitar {red} de este clip?",
     "quitarRed": "Quitar {red} de este clip",
     "apagada": "No sale en {red}",
-    "verEn": "Ver en {red}"
+    "verEn": "Ver en {red}",
+    "editarProgramacion": "Editar la programación"
   },
   "cambiarHora": {
     "titulo": "Cambiar hora",
