@@ -23,6 +23,10 @@ import {
   REDES,
   aInputLocal,
   diaYHora,
+  esRechazoDeEtiquetas,
+  fallaReemplazada,
+  ordenarPorDestino,
+  salidaEn,
   zonaHoraria,
   type Publicacion,
 } from "@/lib/publicaciones";
@@ -252,8 +256,10 @@ function Formulario({
   const yaVa = new Set(
     publicaciones.filter((p) => PENDIENTES.includes(p.estado)).map((p) => `${p.red}:${p.cuentaId}`),
   );
+  // Lo que ya salió en esa cuenta tampoco: publicarlo otra vez se elige a propósito.
+  const yaSalioEn = (d: Destino) => salidaEn(d, publicaciones);
   const marcadoDeEntrada = (d: Destino) =>
-    !d.motivo && !apagados.has(d.cuentaId) && !yaVa.has(`${d.red}:${d.cuentaId}`);
+    !d.motivo && !apagados.has(d.cuentaId) && !yaVa.has(`${d.red}:${d.cuentaId}`) && !yaSalioEn(d);
   const elegidos = new Set(
     destinos.filter((d) => !d.motivo && (cambios.get(d.clave) ?? marcadoDeEntrada(d))).map((d) => d.clave),
   );
@@ -351,6 +357,14 @@ function Formulario({
     objetivoAnterior.current = objetivoClave;
     inicializado.current = false;
   }
+  // Cuando lo que se editaba sale (o se reintentó y salió), la pantalla deja
+  // el modo editar: lo marcado vuelve a lo de entrada, que ya no incluye las
+  // cuentas donde salió. Si no, el botón quedaba listo para publicar otra vez.
+  const habiaObjetivo = useRef(objetivoClave !== "");
+  useEffect(() => {
+    if (objetivoClave === "" && habiaObjetivo.current) setCambios(new Map());
+    habiaObjetivo.current = objetivoClave !== "";
+  }, [objetivoClave]);
   const colaboradoresIniciados = useRef(false);
   const [editarPub] = useMutation(EDITAR_PUBLICACION);
   const [reprogramar] = useMutation(REPROGRAMAR_PUBLICACION);
@@ -417,7 +431,8 @@ function Formulario({
   const falloPorEtiquetas = Boolean(
     reintentando &&
       (reintentando.etiquetasDescartadas ||
-        /user_tags|collaborat|not eligible to be tagged|etiquet|colaborador/i.test(reintentando.error ?? "")),
+        esRechazoDeEtiquetas(reintentando.error) ||
+        /etiquet|colaborador/i.test(reintentando.error ?? "")),
   );
   const nombreRed = (red: string) => REDES[red as Red]?.nombre ?? red;
 
@@ -438,7 +453,27 @@ function Formulario({
     // Reintentando, la pantalla es de esa publicación sola.
     if (modoReintento && !pendienteDe(d)) return;
     const on = elegidos.has(d.clave);
+    const salio = !on && !pendienteDe(d) ? yaSalioEn(d) : null;
+    if (salio && !window.confirm(confirmacionDuplicado([d]))) return;
     setCambios((m) => new Map(m).set(d.clave, !on));
+  }
+
+  /** "Ya salió en Instagram el mar 13, 15:50. ¿Publicarlo otra vez?" para cada destino donde ya salió. */
+  function confirmacionDuplicado(ds: Destino[]): string {
+    const lineas = ds.map((d) => {
+      const s = yaSalioEn(d)!;
+      return t("duplicado.linea", {
+        red: [nombreRed(d.red), d.nombre].filter(Boolean).join(" · "),
+        cuando: diaYHora(new Date(s.publicadaEn ?? s.publicarEn), locale),
+      });
+    });
+    return `${lineas.join("\n")}\n\n${t("duplicado.pregunta", { n: ds.length })}`;
+  }
+
+  /** Antes de crear publicaciones nuevas: si alguna ya salió en esa cuenta, se pregunta. */
+  function confirmarSinDuplicados(nuevos: Destino[]): boolean {
+    const repetidos = nuevos.filter((d) => yaSalioEn(d));
+    return !repetidos.length || window.confirm(confirmacionDuplicado(repetidos));
   }
 
   /** Deja el día elegido y cambia la hora: los atajos de la app (12, 18, 20). */
@@ -452,6 +487,7 @@ function Formulario({
     const aEnviar = aProgramar;
     if (!aEnviar.length) return;
     setAviso(null);
+    if (!confirmarSinDuplicados(aEnviar)) return;
     if (!cuando || yaPaso) {
       setAviso({ tono: "error", texto: t("yaPasoLargo") });
       return;
@@ -536,6 +572,7 @@ function Formulario({
     }
     const nombre = (red: string) => REDES[red as Red]?.nombre ?? red;
     if (aCancelar.length && !window.confirm(t("editar.confirmarCancelar", { redes: aCancelar.map((p) => nombre(p.red)).join(", ") }))) return;
+    if (!confirmarSinDuplicados(aProgramar.filter((d) => !pendienteDe(d)))) return;
     setEnviando(true);
     const fallas: string[] = [];
     const instagramCompleto = ajustesInstagram(etiquetadas, soloEtiquetadas(colaboradoresIg));
@@ -644,7 +681,7 @@ function Formulario({
                 {t("reintentar.titulo", { red: [nombreRed(reintentando.red), reintentando.cuentaNombre].filter(Boolean).join(" · ") })}
               </p>
               <p className="mt-0.5 text-white/60">{t("reintentar.ayuda")}</p>
-              {reintentando.error ? <p className="mt-1.5 break-words text-xs text-red-300/90">{reintentando.error}</p> : null}
+              {reintentando.error ? <ErrorPublicacion error={reintentando.error} red={nombreRed(reintentando.red)} /> : null}
             </div>
             <button type="button" onClick={salirDelReintento} className="shrink-0 text-xs text-white/50 hover:text-white/80">
               {t("reintentar.salir")}
@@ -780,6 +817,16 @@ function Formulario({
                         <span className={on ? "text-white/55" : ""}>{red}</span> {d.nombre}
                       </span>
                       {esperaVersion(d) && on ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" /> : null}
+                      {!pendienteDe(d) && yaSalioEn(d) ? (
+                        <span
+                          className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 text-[10px] text-emerald-300"
+                          title={t("duplicado.chipAyuda", {
+                            cuando: diaYHora(new Date(yaSalioEn(d)!.publicadaEn ?? yaSalioEn(d)!.publicarEn), locale),
+                          })}
+                        >
+                          {t("duplicado.chip")}
+                        </span>
+                      ) : null}
                       {on ? <span className="text-[10px] text-white/70">✓</span> : null}
                     </button>
                   );
@@ -1026,10 +1073,11 @@ function Formulario({
 
       {publicaciones.length > 0 && (
         <Seccion titulo={t("secciones.publicaciones")}>
-          {publicaciones.map((p) => (
+          {ordenarPorDestino(publicaciones).map((p) => (
             <FilaPublicacionClip
               key={p._id}
               p={p}
+              reemplazada={fallaReemplazada(p, publicaciones)}
               marcaId={marcaId}
               opera={opera}
               estadoRevision={clip.estadoRevision}
@@ -1052,8 +1100,11 @@ function FilaPublicacionClip({
   onCambio,
   reintentando,
   onEditarYReintentar,
+  reemplazada,
 }: {
   p: Publicacion;
+  /** Falló, pero en esa cuenta salió otra: es un intento anterior, no hay nada que reintentar. */
+  reemplazada: boolean;
   marcaId: string;
   opera: boolean;
   estadoRevision?: EstadoRevision | null;
@@ -1099,7 +1150,7 @@ function FilaPublicacionClip({
   }
 
   return (
-    <div className={`rounded-xl border border-white/10 bg-white/[0.03] p-3 ${p.estado === "CANCELADA" ? "opacity-50" : ""}`}>
+    <div className={`rounded-xl border border-white/10 bg-white/[0.03] p-3 ${p.estado === "CANCELADA" || reemplazada ? "opacity-50" : ""}`}>
       <div className="flex items-center gap-2">
         <IconoRed red={p.red} chico />
         <p className="min-w-0 flex-1 truncate text-sm font-medium">
@@ -1111,7 +1162,11 @@ function FilaPublicacionClip({
           <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/70">{t("esperaVideo")}</span>
         ) : null}
         <EtiquetaRevision etiqueta={etiquetaRevision([p], estadoRevision, Date.now())} />
-        <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.clase}`}>{e.texto}</span>
+        {reemplazada ? (
+          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/60">{t("reemplazada.chip")}</span>
+        ) : (
+          <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.clase}`}>{e.texto}</span>
+        )}
       </div>
       {fecha ? (
         <p className="mt-1 text-xs text-white/45">
@@ -1123,7 +1178,8 @@ function FilaPublicacionClip({
           {p.creadoPor?.nombre ? t("fila.por", { nombre: p.creadoPor.nombre }) : ""}
         </p>
       ) : null}
-      {p.error ? <p className="mt-1 break-words text-xs text-red-400">{p.error}</p> : null}
+      {reemplazada ? <p className="mt-1 text-xs text-white/55">{t("reemplazada.texto", { red })}</p> : null}
+      {p.error ? <ErrorPublicacion error={p.error} red={red} apagado={reemplazada} /> : null}
       {p.aviso ? (
         <p className="mt-1 flex items-start gap-1.5 break-words text-xs text-amber-300">
           <TriangleAlert size={13} className="mt-px shrink-0" aria-hidden />
@@ -1131,7 +1187,7 @@ function FilaPublicacionClip({
         </p>
       ) : null}
       {error ? <p className="mt-1 text-xs text-red-400">{error}</p> : null}
-      {opera && fallo && !reintentando ? (
+      {opera && fallo && !reintentando && !reemplazada ? (
         p.quizasPublicada ? (
           <div className="mt-2 rounded-lg border border-amber-400/25 bg-amber-400/[0.06] p-2 text-xs text-amber-100/90">
             <p>{t("reintentar.quizas", { red })}</p>
@@ -1187,6 +1243,28 @@ function FilaPublicacionClip({
           ) : null}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * El error de una publicación. El de Upload-Post cuando Instagram rechaza una
+ * etiqueta es un párrafo largo en inglés: se resume y el texto original queda
+ * en "Ver detalle". Los demás se muestran tal cual.
+ */
+function ErrorPublicacion({ error, red, apagado = false }: { error: string; red: string; apagado?: boolean }) {
+  const t = useTranslations("publicarClip");
+  const [abierto, setAbierto] = useState(false);
+  const resumir = apagado || esRechazoDeEtiquetas(error);
+  const color = apagado ? "text-white/45" : "text-red-400";
+  if (!resumir) return <p className={`mt-1 break-words text-xs ${color}`}>{error}</p>;
+  return (
+    <div className={`mt-1 text-xs ${color}`}>
+      {esRechazoDeEtiquetas(error) ? <p>{t("errorEtiquetas", { red })}</p> : null}
+      <button type="button" onClick={() => setAbierto((v) => !v)} className="mt-0.5 text-white/45 underline-offset-2 hover:underline">
+        {abierto ? t("ocultarDetalle") : t("verDetalle")}
+      </button>
+      {abierto ? <p className="mt-1 break-words text-white/40">{error}</p> : null}
     </div>
   );
 }
