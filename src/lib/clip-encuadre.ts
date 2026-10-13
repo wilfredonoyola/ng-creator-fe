@@ -296,6 +296,14 @@ export interface Texto {
   /** La eligió la persona: con un estilo de texto, manda sobre la letra del estilo. */
   fuenteElegida?: boolean;
   tamano: number;
+  /** Alto de cada renglón, en veces el tamaño de la letra. 1 = el de siempre. */
+  interlineado?: number;
+  /**
+   * El texto se ve con su propia letra, tamaño, colores, efecto e interlineado
+   * aunque el clip o la marca tengan un estilo de texto: cualquier cambio de
+   * diseño en el editor manda sobre el Brand Kit.
+   */
+  estiloPropio?: boolean;
   color: string;
   colorDestacado: string;
   efecto: EfectoTexto;

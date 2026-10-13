@@ -2168,6 +2168,8 @@ const CAMPOS_CLIP_EDITOR = gql`
       fuente
       fuenteElegida
       tamano
+      interlineado
+      estiloPropio
       color
       colorDestacado
       efecto

@@ -358,17 +358,15 @@ export default function EditorClipPage({
   }
 
   /**
-   * "+ Texto" en la línea de tiempo: el texto aparece ya en el video, donde
-   * está el cabezal, elegido para escribirlo ahí o en el panel (como en CapCut).
+   * "+ Texto" en la línea de tiempo: el texto aparece ya en el video, todo el
+   * clip, elegido para escribirlo ahí o en el panel (como en CapCut).
    */
   function agregarTexto() {
     if (!b || !estilo || b.textos.length >= MAXIMO_TEXTOS) return;
     const i = b.textos.length;
-    const enCabezal = reproductor.reloj.get() - b.desdeSeg;
-    // Cerca del final no se vería: entonces va desde el principio.
-    const desdeSeg = enCabezal > 0 && enCabezal < b.hastaSeg - b.desdeSeg - 1 ? Math.round(enCabezal * 10) / 10 : 0;
     const centroY = [0.15, 0.3, 0.7, 0.85][i] ?? 0.5;
-    const nuevo = { ...textoNuevo(disenosDeTexto(estilo.colorResaltado)[0].estilo, tTextos("textoNuevo"), centroY), desdeSeg };
+    // Todo el clip y con el diseño Simple: el cuándo se cambia en el panel o con los bordes en la línea de tiempo.
+    const nuevo = textoNuevo(disenosDeTexto(estilo.colorResaltado)[0].estilo, tTextos("textoNuevo"), centroY);
     cambiar({ textos: [...b.textos, nuevo] });
     setImagenElegida(null);
     setTextoElegido(i);

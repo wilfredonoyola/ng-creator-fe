@@ -1,5 +1,6 @@
 {
   "disenos": {
+    "simple": "Simple",
     "impacto": "Impact",
     "caja": "Black box",
     "marca": "Brand box",
@@ -49,5 +50,10 @@
   "fuentes": {
     "clasica": "Classic",
     "delEstilo": "From style"
+  },
+  "interlineado": "Line spacing {n}",
+  "estiloPropio": {
+    "nota": "This text uses its own style (not the brand’s).",
+    "usarMarca": "Use the brand style"
   }
 }
