@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarClock, Loader2, PencilLine } from "lucide-react";
+import { CalendarClock, Loader2, PencilLine, RotateCcw, TriangleAlert } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -11,6 +12,7 @@ import {
   EDITAR_PUBLICACION,
   PROGRAMAR_PUBLICACION,
   PUBLICACIONES_DE_CLIP,
+  REINTENTAR_PUBLICACION,
   REPROGRAMAR_PUBLICACION,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -327,26 +329,44 @@ function Formulario({
   // Con publicaciones pendientes la pantalla abre en modo editar: lo marcado,
   // la fecha, el texto y las etiquetas salen de lo programado, y el botón
   // guarda los cambios (edita, mueve, suma o cancela) en vez de programar de nuevo.
-  const pendientes = publicaciones.filter((p) => PENDIENTES.includes(p.estado));
+  const programadas = publicaciones.filter((p) => PENDIENTES.includes(p.estado));
+  // "Editar y reintentar" (desde la fila que falló o con ?reintentar= desde el
+  // calendario): la pantalla se enfoca en esa publicación sola. Se corrige lo
+  // que haga falta y se vuelve a mandar la misma, sin programar otra.
+  const paramReintentar = useSearchParams().get("reintentar");
+  const [reintentandoId, setReintentandoId] = useState<string | null>(paramReintentar);
+  const reintentando = publicaciones.find((p) => p._id === reintentandoId && p.estado === "FALLIDA") ?? null;
+  const modoReintento = Boolean(reintentando);
+  const pendientes = reintentando ? [reintentando] : programadas;
   const modoEditar = pendientes.length > 0;
   const pendienteDe = (d: Destino) => pendientes.find((p) => p.red === d.red && p.cuentaId === d.cuentaId);
   const horasPendientes = [...new Set(pendientes.map((p) => Math.round(new Date(p.publicarEn).getTime() / 60_000)))];
   const horasDistintas = horasPendientes.length > 1;
   const inicializado = useRef(false);
   const fechaInicial = useRef<string | null>(null);
+  // Al entrar o salir de un reintento se vuelve a leer lo que corresponde.
+  const objetivoClave = pendientes.map((p) => p._id).join(",");
+  const objetivoAnterior = useRef(objetivoClave);
+  if (objetivoAnterior.current !== objetivoClave) {
+    objetivoAnterior.current = objetivoClave;
+    inicializado.current = false;
+  }
   const colaboradoresIniciados = useRef(false);
   const [editarPub] = useMutation(EDITAR_PUBLICACION);
   const [reprogramar] = useMutation(REPROGRAMAR_PUBLICACION);
   const [cancelarPub] = useMutation(CANCELAR_PUBLICACION);
+  const [reintentarPub] = useMutation(REINTENTAR_PUBLICACION);
   useEffect(() => {
     if (inicializado.current || !pendientes.length || !destinos.length) return;
     inicializado.current = true;
+    colaboradoresIniciados.current = false;
     setCambios(new Map(destinos.map((d) => [d.clave, Boolean(pendienteDe(d))])));
     const conTexto = pendientes.find((p) => p.textoBase) ?? pendientes.find((p) => p.red === "INSTAGRAM") ?? pendientes[0];
     // El texto guardado ya trae los hashtags: no se vuelven a sumar.
     setDescripcion(conTexto.textoBase ?? conTexto.descripcion ?? clip.titulo);
     setHashtagsClip([]);
-    const primera = Math.min(...pendientes.map((p) => new Date(p.publicarEn).getTime()));
+    // Lo que se reintenta sale apenas pueda (se puede elegir otra hora).
+    const primera = modoReintento ? Date.now() + 2 * MARGEN_MS : Math.min(...pendientes.map((p) => new Date(p.publicarEn).getTime()));
     const inicial = aInputLocal(new Date(primera));
     fechaInicial.current = inicial;
     setFecha(inicial);
@@ -358,7 +378,7 @@ function Formulario({
     const ids = [...new Set(pendientes.flatMap((p) => p.personaIds ?? []))];
     if (ids.length) setCambiosEtiquetas(new Map(ids.map((id) => [id, true])));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendientes.length, destinos.length]);
+  }, [objetivoClave, destinos.length]);
   // Los colaboradores se guardaron como usuario (Instagram) o id de página
   // (Facebook): se vuelven personas cuando la lista de personas ya llegó.
   useEffect(() => {
@@ -371,21 +391,49 @@ function Formulario({
     if (ig.length) setColaboradoresIg(new Set(todasLasPersonas.filter((p) => p.instagram && ig.includes(p.instagram)).map((p) => p._id)));
     if (fb.length) setColaboradoresFb(new Set(todasLasPersonas.filter((p) => p.facebookPaginaId && fb.includes(p.facebookPaginaId)).map((p) => p._id)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [todasLasPersonas.length, inicializado.current]);
+  }, [todasLasPersonas.length, inicializado.current, objetivoClave]);
   const fechaTocada = modoEditar && fecha !== fechaInicial.current;
   // Lo que se cancela al guardar: lo programado en una red que se desmarcó.
-  const aCancelar = pendientes.filter(
-    (p) => p.estado === "PROGRAMADA" && destinos.some((d) => d.red === p.red && d.cuentaId === p.cuentaId && !elegidos.has(d.clave)),
-  );
+  const aCancelar = modoReintento
+    ? []
+    : pendientes.filter(
+        (p) => p.estado === "PROGRAMADA" && destinos.some((d) => d.red === p.red && d.cuentaId === p.cuentaId && !elegidos.has(d.clave)),
+      );
   const resumenProgramado = pendientes
     .map((p) => REDES[p.red as Red]?.nombre ?? p.red)
     .filter((x, i, a) => a.indexOf(x) === i)
     .join(", ");
   // Con la fecha sin tocar, lo que ya está programado no se mueve (pueden ser horas distintas).
-  const faltaFecha = modoEditar ? (fechaTocada || aProgramar.some((d) => !pendienteDe(d))) && yaPaso : yaPaso;
+  const faltaFecha = modoReintento
+    ? yaPaso
+    : modoEditar
+      ? (fechaTocada || aProgramar.some((d) => !pendienteDe(d))) && yaPaso
+      : yaPaso;
+  // Lo que falló por las etiquetas: a quién se etiquetó o invitó, para revisarlo.
+  const ajustesReintento = (reintentando?.ajustes ?? {}) as { etiquetados?: string[]; colaboradores?: string[] };
+  const falloPorEtiquetas = Boolean(
+    reintentando &&
+      (reintentando.etiquetasDescartadas ||
+        /user_tags|collaborat|not eligible to be tagged|etiquet|colaborador/i.test(reintentando.error ?? "")),
+  );
+  const nombreRed = (red: string) => REDES[red as Red]?.nombre ?? red;
+
+  function salirDelReintento() {
+    setReintentandoId(null);
+    setAviso(null);
+    if (paramReintentar) window.history.replaceState(null, "", window.location.pathname);
+  }
+
+  function empezarReintento(id: string) {
+    setReintentandoId(id);
+    setAviso(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   function alternar(d: Destino) {
     if (d.motivo || !opera) return;
+    // Reintentando, la pantalla es de esa publicación sola.
+    if (modoReintento && !pendienteDe(d)) return;
     const on = elegidos.has(d.clave);
     setCambios((m) => new Map(m).set(d.clave, !on));
   }
@@ -526,8 +574,9 @@ function Formulario({
           });
           continue;
         }
-        // Lo que ya sube o ya tiene la red no se toca desde acá.
-        if (p.estado !== "PROGRAMADA") continue;
+        // Lo que ya sube o ya tiene la red no se toca desde acá (salvo lo que se reintenta).
+        const esReintento = modoReintento && p._id === reintentando?._id;
+        if (p.estado !== "PROGRAMADA" && !esReintento) continue;
         await editarPub({
           variables: {
             marcaId,
@@ -545,6 +594,10 @@ function Formulario({
           },
           refetchQueries,
         });
+        if (esReintento) {
+          await reintentarPub({ variables: { marcaId, id: p._id, publicarEn: cuando?.toISOString() }, refetchQueries });
+          continue;
+        }
         if (fechaTocada && cuando && Math.abs(new Date(p.publicarEn).getTime() - cuando.getTime()) >= 60_000) {
           await reprogramar({ variables: { marcaId, id: p._id, publicarEn: cuando.toISOString() }, refetchQueries });
         }
@@ -564,6 +617,12 @@ function Formulario({
     inicializado.current = false;
     colaboradoresIniciados.current = false;
     refrescar();
+    if (modoReintento && !fallas.length && reintentando) {
+      const red = nombreRed(reintentando.red);
+      salirDelReintento();
+      setAviso({ tono: "ok", texto: t("reintentar.listo", { red }) });
+      return;
+    }
     setAviso(
       fallas.length
         ? { tono: "error", texto: t("editar.fallas", { detalle: fallas.join(" · ") }) }
@@ -573,7 +632,64 @@ function Formulario({
 
   return (
     <div className="space-y-6">
-      {modoEditar && opera ? (
+      {modoReintento && opera && reintentando ? (
+        <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-500/[0.06] p-3 text-sm">
+          <div className="flex items-start gap-3">
+            <RotateCcw size={18} className="mt-0.5 shrink-0 text-red-300" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-white">
+                {t("reintentar.titulo", { red: [nombreRed(reintentando.red), reintentando.cuentaNombre].filter(Boolean).join(" · ") })}
+              </p>
+              <p className="mt-0.5 text-white/60">{t("reintentar.ayuda")}</p>
+              {reintentando.error ? <p className="mt-1.5 break-words text-xs text-red-300/90">{reintentando.error}</p> : null}
+            </div>
+            <button type="button" onClick={salirDelReintento} className="shrink-0 text-xs text-white/50 hover:text-white/80">
+              {t("reintentar.salir")}
+            </button>
+          </div>
+          {falloPorEtiquetas ? (
+            <div className="rounded-lg border border-amber-400/25 bg-amber-400/[0.06] p-2.5 text-xs text-amber-100/90">
+              <p className="font-medium">{t("reintentar.etiquetas.titulo")}</p>
+              <p className="mt-0.5 text-amber-100/70">{t("reintentar.etiquetas.ayuda")}</p>
+              {[
+                ...(ajustesReintento.colaboradores ?? reintentando.etiquetasDescartadas?.colaboradores ?? []).map((u) => [u, true] as const),
+                ...(ajustesReintento.etiquetados ?? reintentando.etiquetasDescartadas?.etiquetados ?? []).map((u) => [u, false] as const),
+              ].length ? (
+                <ul className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+                  {[
+                    ...(ajustesReintento.colaboradores ?? reintentando.etiquetasDescartadas?.colaboradores ?? []).map((u) => [u, true] as const),
+                    ...(ajustesReintento.etiquetados ?? reintentando.etiquetasDescartadas?.etiquetados ?? []).map((u) => [u, false] as const),
+                  ].map(([u, colab]) => (
+                    <li key={`${u}-${colab}`}>
+                      <a
+                        href={reintentando.red === "FACEBOOK" ? `https://www.facebook.com/${/^\d+$/.test(u) ? `profile.php?id=${u}` : u}` : `https://www.instagram.com/${u}/`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-ng-celeste hover:underline"
+                      >
+                        @{u} ↗
+                      </a>
+                      <span className="text-amber-100/50"> · {colab ? t("reintentar.etiquetas.colaborador") : t("reintentar.etiquetas.etiquetado")}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {colaboradoresIg.size || colaboradoresFb.size ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setColaboradoresIg(new Set());
+                    setColaboradoresFb(new Set());
+                  }}
+                  className="mt-2 rounded-md border border-amber-300/40 px-2 py-1 text-[11px] font-medium text-amber-100 hover:bg-amber-300/10"
+                >
+                  {t("reintentar.etiquetas.pasarATag")}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      ) : modoEditar && opera ? (
         <div className="flex items-start gap-3 rounded-xl border border-marca/30 bg-marca/[0.06] p-3">
           <PencilLine size={18} className="mt-0.5 shrink-0 text-marca" aria-hidden />
           <div className="min-w-0 text-sm">
@@ -844,7 +960,7 @@ function Formulario({
                   <p className={`text-sm font-medium ${fecha && faltaFecha ? "text-red-400" : "text-white"}`}>
                     {!fecha
                       ? t("elegiDiaHora")
-                      : modoEditar && horasDistintas && !fechaTocada
+                      : modoEditar && !modoReintento && horasDistintas && !fechaTocada
                         ? t("editar.horasPorRed")
                         : faltaFecha
                           ? t("yaPaso")
@@ -873,13 +989,23 @@ function Formulario({
                 disabled={enviando || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga}
                 className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
               >
-                {enviando ? <Loader2 size={16} className="animate-spin" aria-hidden /> : <CalendarClock size={16} aria-hidden />}
+                {enviando ? (
+                  <Loader2 size={16} className="animate-spin" aria-hidden />
+                ) : modoReintento ? (
+                  <RotateCcw size={16} aria-hidden />
+                ) : (
+                  <CalendarClock size={16} aria-hidden />
+                )}
                 {enviando
-                  ? modoEditar
-                    ? t("editar.guardando")
-                    : t("programando")
-                  : modoEditar
-                    ? t("editar.guardar")
+                  ? modoReintento
+                    ? t("reintentar.enviando")
+                    : modoEditar
+                      ? t("editar.guardando")
+                      : t("programando")
+                  : modoReintento && reintentando
+                    ? t("reintentar.boton", { red: nombreRed(reintentando.red) })
+                    : modoEditar
+                      ? t("editar.guardar")
                     : aProgramar.length > 1
                       ? t("programarEnN", { n: aProgramar.length })
                       : t("programar")}
@@ -903,6 +1029,8 @@ function Formulario({
               opera={opera}
               estadoRevision={clip.estadoRevision}
               onCambio={refrescar}
+              reintentando={p._id === reintentando?._id}
+              onEditarYReintentar={() => empezarReintento(p._id)}
             />
           ))}
         </Seccion>
@@ -917,18 +1045,37 @@ function FilaPublicacionClip({
   opera,
   estadoRevision,
   onCambio,
+  reintentando,
+  onEditarYReintentar,
 }: {
   p: Publicacion;
   marcaId: string;
   opera: boolean;
   estadoRevision?: EstadoRevision | null;
   onCambio: () => void;
+  /** Es la que se está reintentando arriba. */
+  reintentando: boolean;
+  onEditarYReintentar: () => void;
 }) {
   const t = useTranslations("publicarClip");
   const locale = useLocale();
-  const [cancelar, { loading }] = useMutation(CANCELAR_PUBLICACION, {
-    refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
-  });
+  const refetchQueries = ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"];
+  const [cancelar, { loading }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries });
+  const [reintentar, { loading: reintentandoAhora }] = useMutation(REINTENTAR_PUBLICACION, { refetchQueries });
+  const fallo = p.estado === "FALLIDA";
+  const red = REDES[p.red]?.nombre ?? p.red;
+
+  /** La misma publicación otra vez, sin cambios. `forzar`: aunque quizás haya salido. */
+  async function reintentarla(forzar = false) {
+    if (forzar && !window.confirm(t("reintentar.confirmarForzar", { red }))) return;
+    setError(null);
+    try {
+      await reintentar({ variables: { marcaId, id: p._id, ...(forzar ? { forzar: true } : {}) } });
+      onCambio();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("noSePudo"));
+    }
+  }
   const [error, setError] = useState<string | null>(null);
   const e = ESTADOS_PUBLICACION[p.estado]
     ? { texto: t(`estados.${p.estado}`), clase: ESTADOS_PUBLICACION[p.estado].clase }
@@ -972,7 +1119,55 @@ function FilaPublicacionClip({
         </p>
       ) : null}
       {p.error ? <p className="mt-1 break-words text-xs text-red-400">{p.error}</p> : null}
+      {p.aviso ? (
+        <p className="mt-1 flex items-start gap-1.5 break-words text-xs text-amber-300">
+          <TriangleAlert size={13} className="mt-px shrink-0" aria-hidden />
+          {p.aviso}
+        </p>
+      ) : null}
       {error ? <p className="mt-1 text-xs text-red-400">{error}</p> : null}
+      {opera && fallo && !reintentando ? (
+        p.quizasPublicada ? (
+          <div className="mt-2 rounded-lg border border-amber-400/25 bg-amber-400/[0.06] p-2 text-xs text-amber-100/90">
+            <p>{t("reintentar.quizas", { red })}</p>
+            <div className="mt-1.5 flex flex-wrap gap-3">
+              {p.permalink ? (
+                <a href={p.permalink} target="_blank" rel="noreferrer" className="text-ng-celeste hover:underline">
+                  {t("reintentar.verCuenta")}
+                </a>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => void reintentarla(true)}
+                disabled={reintentandoAhora}
+                className="font-medium text-amber-200 hover:underline disabled:opacity-50"
+              >
+                {reintentandoAhora ? t("reintentar.enviando") : t("reintentar.igual")}
+              </button>
+            </div>
+          </div>
+        ) : p.puedeReintentar ? (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={onEditarYReintentar}
+              className="flex items-center gap-1.5 rounded-lg bg-marca px-3 py-1.5 text-xs font-semibold text-ng-tinta hover:brightness-105"
+            >
+              <RotateCcw size={13} aria-hidden />
+              {t("reintentar.editar")}
+            </button>
+            <button
+              type="button"
+              onClick={() => void reintentarla()}
+              disabled={reintentandoAhora}
+              className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/75 hover:bg-white/5 disabled:opacity-50"
+            >
+              {reintentandoAhora ? t("reintentar.enviando") : t("reintentar.sinCambios")}
+            </button>
+          </div>
+        ) : null
+      ) : null}
+      {reintentando ? <p className="mt-1 text-xs text-white/45">{t("reintentar.arriba")}</p> : null}
       {(p.permalink || (opera && p.estado === "PROGRAMADA")) && (
         <div className="mt-2 flex gap-4 text-xs">
           {p.permalink ? (

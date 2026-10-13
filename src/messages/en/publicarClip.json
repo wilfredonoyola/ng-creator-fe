@@ -96,5 +96,27 @@
     "fallas": "Couldn't update everything: {detalle}",
     "confirmarCancelar": "The scheduled post on {redes} will be canceled. Continue?",
     "seCancela": "Saving cancels it on {redes}."
+  },
+  "reintentar": {
+    "titulo": "Retry on {red}",
+    "ayuda": "Fix what you need (tags, text, time) and tap \"Retry\": this same post is sent again, without scheduling another one.",
+    "salir": "Exit",
+    "boton": "Retry on {red}",
+    "enviando": "Retrying…",
+    "listo": "Done: {red} is trying again. You can see it below, in Posts.",
+    "editar": "Edit and retry",
+    "sinCambios": "Retry as is",
+    "igual": "Retry anyway",
+    "verCuenta": "View the post ↗",
+    "quizas": "It may have gone out anyway on {red}: check the account before retrying, so it isn't posted twice.",
+    "confirmarForzar": "If it already went out on {red}, it will be there twice. Retry anyway?",
+    "arriba": "Being edited above to retry.",
+    "etiquetas": {
+      "titulo": "It failed because of the tags",
+      "ayuda": "Instagram rejected one of these accounts: it may be private, not exist or not accept collaboration invites. Safest: keep them as tags, not as collaborators.",
+      "colaborador": "collaborator",
+      "etiquetado": "tagged",
+      "pasarATag": "Turn collaborators into tags"
+    }
   }
 }

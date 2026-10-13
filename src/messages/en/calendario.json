@@ -79,7 +79,8 @@
     "guardado": "Saved",
     "sinCambios": "There are no changes to save.",
     "errorRed": "{red}: {mensaje}",
-    "noSePudo": "couldn't save"
+    "noSePudo": "couldn't save",
+    "editarYReintentar": "Edit and retry"
   },
   "porRevisar": "To review"
 }
