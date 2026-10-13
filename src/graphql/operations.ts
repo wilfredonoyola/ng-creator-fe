@@ -2768,35 +2768,116 @@ export const GUARDAR_AJUSTES_PUBLICACION = gql`
   }
 `;
 
-// ---- Personas para etiquetar (ng-creator-be#198) ----
+// ---- Etiquetas: personas para etiquetar (elenco, global y por episodio) ----
 
 const CAMPOS_PERSONA = `
-  id
+  _id
+  marcaId
   nombre
+  alias
   instagram
   tiktok
   youtube
   facebook
+  facebookPaginaId
+  foto
+  nivel
+  episodioId
+  verificaciones {
+    red
+    estado
+    nombre
+    foto
+    verificadoEn
+  }
+  usos
+  ultimoUsoEn
+  createdAt
 `;
 
-/**
- * El elenco de cada marca: quienes salen siempre. Va aparte de MARCAS_ACTIVAS
- * a propósito: si el backend todavía no tiene el campo, falla esta sola.
- */
-export const ELENCO_MARCAS = gql`
-  query ElencoMarcas {
-    marcasActivas {
+/** Las personas de la marca. Sin `nivel`: elenco y global (elenco primero, después las más usadas). */
+export const PERSONAS = gql`
+  query Personas($marcaId: ID!, $buscar: String, $nivel: NivelPersona) {
+    personas(marcaId: $marcaId, buscar: $buscar, nivel: $nivel) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+/** Los episodios recientes, livianos: para "Por episodio" en Etiquetas. */
+export const EPISODIOS_ETIQUETAS = gql`
+  query EpisodiosEtiquetas($marcaId: String!, $limite: Int) {
+    episodios(marcaId: $marcaId, limite: $limite) {
       _id
-      elenco {
+      titulo
+      miniaturaUrl
+      createdAt
+    }
+  }
+`;
+
+export const INVITADOS_EPISODIO = gql`
+  query InvitadosEpisodio($marcaId: ID!, $episodioId: ID!) {
+    invitadosEpisodio(marcaId: $marcaId, episodioId: $episodioId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+/** A quién etiquetar en un clip: invitados del episodio, elenco y quien se nombra en lo que se dice. */
+export const SUGERIR_PERSONAS_CLIP = gql`
+  query SugerirPersonasClip($marcaId: ID!, $clipId: ID!) {
+    sugerirPersonasClip(marcaId: $marcaId, clipId: $clipId) {
+      motivo
+      segundo
+      persona {
         ${CAMPOS_PERSONA}
       }
     }
   }
 `;
 
-export const GUARDAR_ELENCO = gql`
-  mutation GuardarElenco($marcaId: ID!, $personas: [PersonaEtiquetaInput!]!) {
-    guardarElenco(marcaId: $marcaId, personas: $personas) {
+export const CREAR_PERSONA = gql`
+  mutation CrearPersona($marcaId: ID!, $input: PersonaInput!, $episodioId: ID) {
+    crearPersona(marcaId: $marcaId, input: $input, episodioId: $episodioId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const ACTUALIZAR_PERSONA = gql`
+  mutation ActualizarPersona($marcaId: ID!, $id: ID!, $input: PersonaInput!) {
+    actualizarPersona(marcaId: $marcaId, id: $id, input: $input) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const BORRAR_PERSONA = gql`
+  mutation BorrarPersona($marcaId: ID!, $id: ID!) {
+    borrarPersona(marcaId: $marcaId, id: $id)
+  }
+`;
+
+export const AGREGAR_INVITADO = gql`
+  mutation AgregarInvitado($marcaId: ID!, $episodioId: ID!, $personaId: ID!) {
+    agregarInvitado(marcaId: $marcaId, episodioId: $episodioId, personaId: $personaId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const QUITAR_INVITADO = gql`
+  mutation QuitarInvitado($marcaId: ID!, $episodioId: ID!, $personaId: ID!) {
+    quitarInvitado(marcaId: $marcaId, episodioId: $episodioId, personaId: $personaId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const REVERIFICAR_PERSONA = gql`
+  mutation ReverificarPersona($marcaId: ID!, $id: ID!) {
+    reverificarPersona(marcaId: $marcaId, id: $id) {
       ${CAMPOS_PERSONA}
     }
   }
@@ -2812,26 +2893,6 @@ export const VERIFICAR_USUARIO_RED = gql`
       nombre
       foto
       motivo
-    }
-  }
-`;
-
-/** Los invitados de un episodio. Aparte de EPISODIO por lo mismo que el elenco. */
-export const INVITADOS_EPISODIO = gql`
-  query InvitadosEpisodio($id: ID!, $marcaId: String!) {
-    episodio(id: $id, marcaId: $marcaId) {
-      _id
-      invitados {
-        ${CAMPOS_PERSONA}
-      }
-    }
-  }
-`;
-
-export const GUARDAR_INVITADOS_EPISODIO = gql`
-  mutation GuardarInvitadosEpisodio($marcaId: ID!, $episodioId: ID!, $personas: [PersonaEtiquetaInput!]!) {
-    guardarInvitadosEpisodio(marcaId: $marcaId, episodioId: $episodioId, personas: $personas) {
-      ${CAMPOS_PERSONA}
     }
   }
 `;

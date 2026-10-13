@@ -12,6 +12,7 @@ import { VISTAS_PUBLICAR } from "./publicar";
 import { VISTAS_REVISION } from "./revision";
 import { VISTAS_METRICAS } from "./metricas";
 import { VISTAS_EQUIPO } from "./equipo";
+import { VISTAS_ETIQUETAS } from "./etiquetas";
 import { VISTAS_APP } from "./app";
 
 /**
@@ -29,6 +30,7 @@ export const VISTAS: Partial<Record<IdSeccion, Record<string, () => JSX.Element>
   importar: VISTAS_IMPORTAR,
   "subir-clips": VISTAS_SUBIR_CLIPS,
   publicar: VISTAS_PUBLICAR,
+  etiquetas: VISTAS_ETIQUETAS,
   revision: VISTAS_REVISION,
   metricas: VISTAS_METRICAS,
   equipo: VISTAS_EQUIPO,

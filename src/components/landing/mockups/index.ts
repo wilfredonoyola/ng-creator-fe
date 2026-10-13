@@ -4,6 +4,7 @@ import { MaquetaClipsSubidos } from "./MaquetaClipsSubidos";
 import { MaquetaCalidad } from "./MaquetaCalidad";
 import { MaquetaEdicion } from "./MaquetaEdicion";
 import { MaquetaEquipo } from "./MaquetaEquipo";
+import { MaquetaEtiquetas } from "./MaquetaEtiquetas";
 import { MaquetaIa } from "./MaquetaIa";
 import { MaquetaImagenes } from "./MaquetaImagenes";
 import { MaquetaImportar } from "./MaquetaImportar";
@@ -25,6 +26,7 @@ export const MAQUETAS = {
   importar: MaquetaImportar,
   "subir-clips": MaquetaClipsSubidos,
   publicar: MaquetaPublicar,
+  etiquetas: MaquetaEtiquetas,
   revision: MaquetaRevision,
   // La misma de la landing: lo que se ve en /metricas, con datos de ejemplo.
   metricas: MaquetaMetricas,

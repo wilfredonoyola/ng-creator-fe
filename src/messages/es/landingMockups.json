@@ -195,5 +195,13 @@
     "fotos": "Guardar en Fotos",
     "sincro": "Sincronizado con la web",
     "plataformas": "Próximamente en"
+  },
+  "etiquetas": {
+    "alt": "La descripción de un clip con la mención @Ana Radio resaltada, la lista para elegir a quién mencionar y cómo sale en cada red: etiqueta en Instagram y su usuario en TikTok, YouTube y Facebook.",
+    "descripcion": "Descripción",
+    "texto": "Hoy con",
+    "textoFin": "hablamos de radio",
+    "etiqueta": "etiqueta",
+    "verificada": "Cuentas verificadas"
   }
 }
