@@ -43,6 +43,7 @@ import featuresAudio_es from "./es/featuresAudio.json";
 import featuresCalidad_es from "./es/featuresCalidad.json";
 import featuresEdicion_es from "./es/featuresEdicion.json";
 import featuresEquipo_es from "./es/featuresEquipo.json";
+import featuresEtiquetas_es from "./es/featuresEtiquetas.json";
 import featuresIa_es from "./es/featuresIa.json";
 import featuresImagenes_es from "./es/featuresImagenes.json";
 import featuresImportar_es from "./es/featuresImportar.json";
@@ -163,6 +164,7 @@ import featuresAudio_en from "./en/featuresAudio.json";
 import featuresCalidad_en from "./en/featuresCalidad.json";
 import featuresEdicion_en from "./en/featuresEdicion.json";
 import featuresEquipo_en from "./en/featuresEquipo.json";
+import featuresEtiquetas_en from "./en/featuresEtiquetas.json";
 import featuresIa_en from "./en/featuresIa.json";
 import featuresImagenes_en from "./en/featuresImagenes.json";
 import featuresImportar_en from "./en/featuresImportar.json";
@@ -286,6 +288,7 @@ export const mensajes = {
     "featuresCalidad": featuresCalidad_es,
     "featuresEdicion": featuresEdicion_es,
     "featuresEquipo": featuresEquipo_es,
+    "featuresEtiquetas": featuresEtiquetas_es,
     "featuresIa": featuresIa_es,
     "featuresImagenes": featuresImagenes_es,
     "featuresImportar": featuresImportar_es,
@@ -408,6 +411,7 @@ export const mensajes = {
     "featuresCalidad": featuresCalidad_en,
     "featuresEdicion": featuresEdicion_en,
     "featuresEquipo": featuresEquipo_en,
+    "featuresEtiquetas": featuresEtiquetas_en,
     "featuresIa": featuresIa_en,
     "featuresImagenes": featuresImagenes_en,
     "featuresImportar": featuresImportar_en,

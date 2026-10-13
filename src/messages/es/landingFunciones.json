@@ -23,7 +23,7 @@
     },
     "entregar": {
       "titulo": "Entregar a tiempo, con el visto bueno del cliente",
-      "texto": "La semana de cada cliente programada en cuatro redes, y nada sale sin aprobación."
+      "texto": "La semana de cada cliente programada en cuatro redes, con la gente bien etiquetada, y nada sale sin aprobación."
     },
     "demostrar": {
       "titulo": "Demostrar resultados",
@@ -99,6 +99,10 @@
     "app": {
       "titulo": "La app de Clipfine",
       "texto": "Muy pronto en tu celular, en iPhone y Android: la misma cuenta, los mismos clientes y todo sincronizado con la web. Empezás en la compu y terminás donde estés."
+    },
+    "etiquetas": {
+      "titulo": "Etiquetas",
+      "texto": "Mencioná con @ a quien sale en el clip y cada red recibe su usuario: etiqueta real en Instagram, @mención en TikTok, YouTube y Facebook."
     }
   },
   "items": {
@@ -441,6 +445,30 @@
     "desdeCelular": {
       "titulo": "Desde el celular",
       "texto": "En la app, elegís los videos de la galería y si se corta la conexión, sigue desde donde quedó."
+    },
+    "menciones": {
+      "titulo": "@menciones que se resuelven solas",
+      "texto": "Escribís @Ana una vez en la descripción y al publicar cada red recibe su usuario de esa red. Si no tiene cuenta ahí, sale su nombre."
+    },
+    "tresNiveles": {
+      "titulo": "Elenco, Global y por episodio",
+      "texto": "El elenco que sale siempre, un directorio Global para quien aparece cada tanto y los invitados de cada programa, que pasás a Global con un toque."
+    },
+    "verificar": {
+      "titulo": "Cuentas verificadas",
+      "texto": "Al cargar un usuario, Clipfine lo busca en la red y te muestra su nombre y foto. Si no existe, avisa antes de publicar. Donde la red no deja confirmarlo, te deja el perfil a un clic."
+    },
+    "sugeridas": {
+      "titulo": "Sugeridas por lo que se dice",
+      "texto": "Si en el clip nombran a alguien de tu lista, aparece sugerido con el segundo en que lo dicen. Los invitados del episodio ya vienen marcados."
+    },
+    "colaboradores": {
+      "titulo": "Colaboradores en Instagram y Facebook",
+      "texto": "Invitá hasta 3 cuentas de Instagram y hasta 10 páginas de Facebook: si aceptan, el Reel sale también en su perfil o su página."
+    },
+    "buscar": {
+      "titulo": "Un directorio que se busca",
+      "texto": "Buscá por nombre, apodo o usuario, sin acentos, y mirá cuántas veces etiquetaste a cada uno."
     }
   },
   "cierre": {

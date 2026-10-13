@@ -195,5 +195,13 @@
     "fotos": "Save to Photos",
     "sincro": "In sync with the web",
     "plataformas": "Coming soon on"
+  },
+  "etiquetas": {
+    "alt": "A clip description with the mention @Ana Radio highlighted, the list to choose who to mention, and how it comes out on each network: a tag on Instagram and the username on TikTok, YouTube and Facebook.",
+    "descripcion": "Description",
+    "texto": "Today with",
+    "textoFin": "we talk radio",
+    "etiqueta": "tag",
+    "verificada": "Verified accounts"
   }
 }

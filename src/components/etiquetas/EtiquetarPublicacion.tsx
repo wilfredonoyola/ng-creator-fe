@@ -1,137 +1,266 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Check, Plus, Users } from "lucide-react";
-import { MAXIMO_COLABORADORES_INSTAGRAM, MAXIMO_ETIQUETADOS_INSTAGRAM, usuarioEn, type Persona } from "@/lib/etiquetas";
-import { FormPersona } from "./EditorPersonas";
+import { AtSign, Plus, Sparkles, Users, X } from "lucide-react";
+import { IconoRed } from "@/components/IconoRed";
+import {
+  MAXIMO_COLABORADORES_FACEBOOK,
+  MAXIMO_COLABORADORES_INSTAGRAM,
+  MAXIMO_ETIQUETADOS_INSTAGRAM,
+  RED_DE,
+  REDES_PERSONA,
+  datosDe,
+  usuarioEn,
+  type DatosPersona,
+  type Persona,
+  type Sugerida,
+} from "@/lib/etiquetas";
+import { AvatarPersona } from "./TarjetaPersona";
+import { BuscadorPersonas } from "./BuscadorPersonas";
+import { FormPersona } from "./FormPersona";
+
+const reloj = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
 /**
- * "Etiquetar" al programar: el elenco de la marca y los invitados del
- * episodio, como fichas para tocar. Los invitados salen marcados (vinieron a
- * este programa); el elenco, no. En Instagram, cada uno puede ir como
- * colaborador (el Reel sale también en su perfil).
+ * "Etiquetar" al programar. Arriba las sugeridas para este clip (invitados del
+ * episodio, el elenco y a quién se nombra en lo que se dice), después las
+ * etiquetadas, y un buscador para sumar a cualquiera de la marca o crear un
+ * invitado. Quien se menciona con @ en la descripción ya queda etiquetado.
+ *
+ * Colaboradores: en Instagram (hasta 3, por usuario) y en Facebook (hasta 10,
+ * solo páginas con su id): el Reel sale también en su perfil o su página si
+ * aceptan la invitación.
  */
 export function EtiquetarPublicacion({
+  sugeridas,
   personas,
-  invitados,
-  elegidas,
-  onAlternar,
-  colaboradores,
-  onColaborador,
+  etiquetadas,
+  enTexto,
+  onAgregar,
+  onQuitar,
+  colaboradoresIg,
+  onColaboradorIg,
   conInstagram,
-  onAgregarInvitado,
+  colaboradoresFb,
+  onColaboradorFb,
+  conFacebook,
+  onNuevoInvitado,
   guardando,
   marcaId,
 }: {
+  sugeridas: Sugerida[];
+  /** Todas las que se pueden sumar: elenco, global e invitados del episodio. */
   personas: Persona[];
-  /** Ids de los invitados del episodio: llevan su marca. */
-  invitados: Set<string>;
-  elegidas: Set<string>;
-  onAlternar: (id: string) => void;
-  colaboradores: Set<string>;
-  onColaborador: (id: string) => void;
-  /** Hay una cuenta de Instagram marcada: solo entonces se ofrece "colaborador". */
+  etiquetadas: Persona[];
+  /** Ids de quienes están mencionados en la descripción: se quitan borrando la mención. */
+  enTexto: Set<string>;
+  onAgregar: (p: Persona) => void;
+  onQuitar: (p: Persona) => void;
+  colaboradoresIg: Set<string>;
+  onColaboradorIg: (id: string) => void;
   conInstagram: boolean;
-  /** Sin esto (sin permiso), no se ofrece "+ Invitado". `enMarca`: guardarlo también en la marca. */
-  onAgregarInvitado?: (p: Persona, enMarca: boolean) => Promise<unknown>;
+  colaboradoresFb: Set<string>;
+  onColaboradorFb: (id: string) => void;
+  conFacebook: boolean;
+  /** Sin esto (sin permiso), no se crean invitados. */
+  onNuevoInvitado?: (d: DatosPersona) => Promise<unknown>;
   guardando?: boolean;
-  /** Para verificar los usuarios del invitado nuevo. */
   marcaId?: string | null;
 }) {
   const t = useTranslations("etiquetas");
-  const [agregando, setAgregando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const elegidasConIg = personas.filter((p) => elegidas.has(p.id) && usuarioEn("INSTAGRAM", p));
-  const deMas = elegidasConIg.filter((p) => !colaboradores.has(p.id)).length > MAXIMO_ETIQUETADOS_INSTAGRAM;
+  const [nuevo, setNuevo] = useState<string | null>(null);
+  const ids = new Set(etiquetadas.map((p) => p._id));
+  const porSugerir = sugeridas.filter((s) => !ids.has(s.persona._id));
+  const conIg = etiquetadas.filter((p) => usuarioEn("INSTAGRAM", p));
+  const conPagina = etiquetadas.filter((p) => p.facebookPaginaId);
+  const deMas = conIg.filter((p) => !colaboradoresIg.has(p._id)).length > MAXIMO_ETIQUETADOS_INSTAGRAM;
+
+  const motivo = (s: Sugerida) =>
+    s.motivo === "mencionado"
+      ? s.segundo != null
+        ? t("publicar.motivo.mencionado", { segundo: reloj(s.segundo) })
+        : t("publicar.motivo.mencionadoSinSegundo")
+      : t(`publicar.motivo.${s.motivo}`);
 
   return (
-    <div className="space-y-2">
-      {personas.length === 0 && !agregando ? <p className="text-xs text-white/40">{t("publicar.vacio")}</p> : null}
-      <div className="flex flex-wrap gap-1.5">
-        {personas.map((p) => {
-          const on = elegidas.has(p.id);
-          return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => onAlternar(p.id)}
-              aria-pressed={on}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition ${
-                on ? "border-white/15 bg-white/10 text-white" : "border-white/10 text-white/45 hover:border-white/20 hover:text-white/70"
-              }`}
-            >
-              {on ? <Check size={12} aria-hidden /> : null}
-              {p.nombre}
-              {invitados.has(p.id) ? <span className="rounded-full bg-marca/20 px-1.5 text-[10px] text-marca">{t("publicar.invitado")}</span> : null}
-            </button>
-          );
-        })}
-        {onAgregarInvitado && !agregando && (
-          <button
-            type="button"
-            onClick={() => {
-              setError(null);
-              setAgregando(true);
-            }}
-            className="flex items-center gap-1 rounded-full border border-dashed border-white/20 px-3 py-1 text-xs text-white/60 hover:border-white/40 hover:text-white"
-          >
-            <Plus size={12} aria-hidden /> {t("publicar.agregarInvitado")}
-          </button>
+    <div className="space-y-3">
+      {porSugerir.length > 0 && (
+        <div>
+          <p className="mb-1.5 flex items-center gap-1.5 text-xs text-white/55">
+            <Sparkles size={12} className="text-marca" aria-hidden /> {t("publicar.sugeridas")}
+          </p>
+          <ul className="flex flex-wrap gap-1.5">
+            {porSugerir.map((s) => (
+              <li key={s.persona._id}>
+                <button
+                  type="button"
+                  onClick={() => onAgregar(s.persona)}
+                  className="flex items-center gap-2 rounded-full border border-dashed border-white/20 py-1 pl-1 pr-3 text-left transition hover:border-marca/60 hover:bg-marca/5"
+                >
+                  <AvatarPersona persona={s.persona} tamano={24} />
+                  <span className="leading-tight">
+                    <span className="block text-xs text-white">{s.persona.nombre}</span>
+                    <span className="block text-[10px] text-white/40">{motivo(s)}</span>
+                  </span>
+                  <Plus size={13} className="text-white/50" aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div>
+        <p className="mb-1.5 text-xs text-white/55">{t("publicar.etiquetadas")}</p>
+        {etiquetadas.length === 0 ? (
+          <p className="text-xs text-white/40">{t("publicar.ninguna")}</p>
+        ) : (
+          <ul className="flex flex-wrap gap-1.5">
+            {etiquetadas.map((p) => (
+              <li key={p._id} className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 py-1 pl-1 pr-1.5">
+                <AvatarPersona persona={p} tamano={22} />
+                <span className="text-xs text-white">{p.nombre}</span>
+                <span className="flex items-center gap-0.5">
+                  {REDES_PERSONA.filter((r) => p[r]).map((r) => (
+                    <IconoRed key={r} red={RED_DE[r]} chico />
+                  ))}
+                </span>
+                {enTexto.has(p._id) ? (
+                  <span className="inline-flex items-center gap-0.5 rounded-full bg-ng-azul/20 px-1.5 text-[10px] text-ng-celeste" title={t("publicar.enTexto")}>
+                    <AtSign size={9} aria-hidden />
+                    {t("publicar.enTexto")}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onQuitar(p)}
+                    aria-label={t("publicar.quitar", { nombre: p.nombre })}
+                    className="rounded-full p-0.5 text-white/40 hover:bg-white/10 hover:text-white"
+                  >
+                    <X size={12} aria-hidden />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
-      {agregando && onAgregarInvitado && (
+      {nuevo !== null && onNuevoInvitado ? (
         <FormPersona
-          inicial={{ id: "", nombre: "" }}
-          guardando={guardando}
+          titulo={t("publicar.nuevoInvitado")}
+          inicial={{ ...datosDe(null, "EPISODIO"), nombre: nuevo }}
           marcaId={marcaId}
-          ofrecerMarca
-          onCancelar={() => setAgregando(false)}
-          onGuardar={async (p, o) => {
-            setError(null);
-            try {
-              await onAgregarInvitado(p, Boolean(o?.enMarca));
-              setAgregando(false);
-            } catch (e) {
-              setError(e instanceof Error ? e.message : t("errorGuardar"));
-            }
+          enEpisodio
+          guardando={guardando}
+          onCancelar={() => setNuevo(null)}
+          onGuardar={async (d) => {
+            await onNuevoInvitado(d);
+            setNuevo(null);
           }}
         />
-      )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
-
-      {conInstagram && elegidasConIg.length > 0 && (
-        <div className="space-y-1.5 rounded-xl border border-white/10 px-3 py-2">
-          <p className="flex items-center gap-1.5 text-xs text-white/60">
-            <Users size={13} aria-hidden /> {t("publicar.colaborador")}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {elegidasConIg.map((p) => {
-              const on = colaboradores.has(p.id);
-              const lleno = !on && colaboradores.size >= MAXIMO_COLABORADORES_INSTAGRAM;
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => onColaborador(p.id)}
-                  disabled={lleno}
-                  aria-pressed={on}
-                  title={lleno ? t("publicar.maximoColaboradores", { max: MAXIMO_COLABORADORES_INSTAGRAM }) : undefined}
-                  className={`rounded-full border px-2.5 py-0.5 text-[11px] transition disabled:cursor-not-allowed disabled:opacity-40 ${
-                    on ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/10 text-white/50 hover:text-white/80"
-                  }`}
-                >
-                  @{usuarioEn("INSTAGRAM", p)}
-                </button>
-              );
-            })}
-          </div>
-          <p className="text-[11px] text-white/35">{t("publicar.colaboradorAyuda", { max: MAXIMO_COLABORADORES_INSTAGRAM })}</p>
+      ) : (
+        <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+          <BuscadorPersonas personas={personas} excluir={ids} onElegir={onAgregar} onCrear={onNuevoInvitado ? (n) => setNuevo(n) : undefined} />
+          {onNuevoInvitado && (
+            <button
+              type="button"
+              onClick={() => setNuevo("")}
+              className="inline-flex items-center justify-center gap-1 rounded-xl border border-dashed border-white/20 px-3 py-2 text-xs text-white/70 hover:border-white/40 hover:text-white"
+            >
+              <Plus size={13} aria-hidden /> {t("publicar.nuevoInvitado")}
+            </button>
+          )}
         </div>
       )}
+
+      {conInstagram && conIg.length > 0 && (
+        <Colaboradores
+          titulo={t("publicar.colaboradorIg")}
+          ayuda={t("publicar.colaboradorIgAyuda", { max: MAXIMO_COLABORADORES_INSTAGRAM })}
+          lleno={t("publicar.maximoColaboradores", { max: MAXIMO_COLABORADORES_INSTAGRAM })}
+          icono={<Users size={13} aria-hidden />}
+          personas={conIg}
+          etiqueta={(p) => `@${usuarioEn("INSTAGRAM", p)}`}
+          elegidos={colaboradoresIg}
+          maximo={MAXIMO_COLABORADORES_INSTAGRAM}
+          onAlternar={onColaboradorIg}
+        />
+      )}
+      {conFacebook && conPagina.length > 0 && (
+        <Colaboradores
+          titulo={t("publicar.colaboradorFb")}
+          ayuda={t("publicar.colaboradorFbAyuda", { max: MAXIMO_COLABORADORES_FACEBOOK })}
+          lleno={t("publicar.maximoColaboradoresFb", { max: MAXIMO_COLABORADORES_FACEBOOK })}
+          icono={<IconoRed red="FACEBOOK" chico />}
+          personas={conPagina}
+          etiqueta={(p) => p.nombre}
+          elegidos={colaboradoresFb}
+          maximo={MAXIMO_COLABORADORES_FACEBOOK}
+          onAlternar={onColaboradorFb}
+        />
+      )}
       {deMas && <p className="text-xs text-amber-300">{t("publicar.maximoEtiquetas", { max: MAXIMO_ETIQUETADOS_INSTAGRAM })}</p>}
-      <p className="text-xs text-white/40">{t("publicar.ayuda")}</p>
+      <p className="text-[11px] text-white/40">
+        {t("publicar.comoSale")}{" "}
+        <Link href="/etiquetas" className="text-ng-celeste hover:underline">
+          {t("publicar.verTodas")}
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+function Colaboradores({
+  titulo,
+  ayuda,
+  lleno,
+  icono,
+  personas,
+  etiqueta,
+  elegidos,
+  maximo,
+  onAlternar,
+}: {
+  titulo: string;
+  ayuda: string;
+  lleno: string;
+  icono: React.ReactNode;
+  personas: Persona[];
+  etiqueta: (p: Persona) => string;
+  elegidos: Set<string>;
+  maximo: number;
+  onAlternar: (id: string) => void;
+}) {
+  return (
+    <div className="space-y-1.5 rounded-xl border border-white/10 px-3 py-2">
+      <p className="flex items-center gap-1.5 text-xs text-white/60">
+        {icono} {titulo}
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {personas.map((p) => {
+          const on = elegidos.has(p._id);
+          const tope = !on && elegidos.size >= maximo;
+          return (
+            <button
+              key={p._id}
+              type="button"
+              onClick={() => onAlternar(p._id)}
+              disabled={tope}
+              aria-pressed={on}
+              title={tope ? lleno : undefined}
+              className={`rounded-full border px-2.5 py-0.5 text-[11px] transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                on ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/10 text-white/50 hover:text-white/80"
+              }`}
+            >
+              {etiqueta(p)}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-[11px] text-white/35">{ayuda}</p>
     </div>
   );
 }

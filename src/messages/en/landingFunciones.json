@@ -22,8 +22,8 @@
       "texto": "From the long episode to finished clips, without an editor starting from scratch."
     },
     "entregar": {
-      "titulo": "Deliver on time, with the client's OK",
-      "texto": "Every client's week scheduled on four networks, and nothing goes out without approval."
+      "titulo": "Deliver on time, with the client's sign-off",
+      "texto": "Every client's week scheduled on four networks, with the right people tagged, and nothing goes out without approval."
     },
     "demostrar": {
       "titulo": "Prove results",
@@ -99,6 +99,10 @@
     "app": {
       "titulo": "The Clipfine app",
       "texto": "Coming soon to your phone, on iPhone and Android: same account, same clients, everything in sync with the web. Start on your computer and finish wherever you are."
+    },
+    "etiquetas": {
+      "titulo": "Tags",
+      "texto": "Mention whoever's in the clip with @ and each network gets their username: a real tag on Instagram, an @mention on TikTok, YouTube and Facebook."
     }
   },
   "items": {
@@ -441,6 +445,30 @@
     "desdeCelular": {
       "titulo": "From your phone",
       "texto": "In the app, pick videos from the gallery and if the connection drops, it resumes where it left off."
+    },
+    "menciones": {
+      "titulo": "@mentions that resolve themselves",
+      "texto": "Type @Ana once in the description and, when it publishes, each network gets her username there. If she has no account on it, her name goes out."
+    },
+    "tresNiveles": {
+      "titulo": "Cast, Global and by episode",
+      "texto": "The cast who's always on, a Global directory for people who show up now and then, and each show's guests, which you move to Global in one tap."
+    },
+    "verificar": {
+      "titulo": "Verified accounts",
+      "texto": "When you add a username, Clipfine looks it up on the network and shows the name and photo. If it doesn't exist, you're warned before publishing. Where the network doesn't allow checking, the profile is one click away."
+    },
+    "sugeridas": {
+      "titulo": "Suggested from what's said",
+      "texto": "If someone on your list is named in the clip, they're suggested with the second they're mentioned. The episode's guests come already selected."
+    },
+    "colaboradores": {
+      "titulo": "Instagram and Facebook collaborators",
+      "texto": "Invite up to 3 Instagram accounts and up to 10 Facebook Pages: if they accept, the Reel also shows on their profile or Page."
+    },
+    "buscar": {
+      "titulo": "A searchable directory",
+      "texto": "Search by name, nickname or username, accents optional, and see how many times you've tagged each person."
     }
   },
   "cierre": {

@@ -23,7 +23,20 @@ import {
   type Publicacion,
 } from "@/lib/publicaciones";
 import type { Red } from "@/lib/upload-post";
-import { MAXIMO_ETIQUETADOS_INSTAGRAM, ajustesInstagram, conPersona, textoConMenciones, useElenco, useInvitados, type Persona } from "@/lib/etiquetas";
+import {
+  MAXIMO_ETIQUETADOS_INSTAGRAM,
+  ajustesFacebook,
+  ajustesInstagram,
+  mencionadas,
+  sinRepetir,
+  textoParaRed,
+  useAccionesPersonas,
+  useInvitados,
+  usePersonas,
+  useSugeridas,
+  type Persona,
+} from "@/lib/etiquetas";
+import { EditorMenciones } from "@/components/etiquetas/EditorMenciones";
 import { EtiquetarPublicacion } from "@/components/etiquetas/EtiquetarPublicacion";
 import {
   DESCRIPCION_MAX,
@@ -274,23 +287,36 @@ function Formulario({
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
-  // A quién se etiqueta (ng-creator-be#198): los invitados del episodio
-  // primero y marcados; el elenco de la marca, sin marcar. Se guarda solo lo
-  // que la persona cambia, como con los destinos.
-  const marcaPersonas = useElenco(marcaId);
-  const elenco = marcaPersonas.elenco;
-  const inv = useInvitados(episodioId, marcaId);
-  const idsInvitados = new Set(inv.invitados.map((p) => p.id));
-  const personas: Persona[] = [...inv.invitados, ...elenco.filter((p) => !idsInvitados.has(p.id))];
+  // A quién se etiqueta: los invitados del episodio salen marcados; el resto
+  // (elenco, Global, sugeridas por lo que se dice) se suma con un toque o
+  // mencionándolo con @ en la descripción. Se guarda solo lo que se cambia.
+  const { personas: deLaMarca } = usePersonas(marcaId);
+  const { invitados } = useInvitados(marcaId, episodioId);
+  const { sugeridas } = useSugeridas(marcaId, clip._id);
+  const accionesPersonas = useAccionesPersonas(marcaId);
+  const [creadas, setCreadas] = useState<Persona[]>([]);
   const [cambiosEtiquetas, setCambiosEtiquetas] = useState<Map<string, boolean>>(() => new Map());
-  const [colaboradores, setColaboradores] = useState<Set<string>>(() => new Set());
-  const etiquetadas = personas.filter((p) => cambiosEtiquetas.get(p.id) ?? idsInvitados.has(p.id));
-  const idsEtiquetadas = new Set(etiquetadas.map((p) => p.id));
-  const colaboradoresElegidos = new Set([...colaboradores].filter((id) => idsEtiquetadas.has(id)));
+  const [colaboradoresIg, setColaboradoresIg] = useState<Set<string>>(() => new Set());
+  const [colaboradoresFb, setColaboradoresFb] = useState<Set<string>>(() => new Set());
+  const idsInvitados = new Set(invitados.map((p) => p._id));
+  const todasLasPersonas = sinRepetir(invitados, deLaMarca, sugeridas.map((x) => x.persona), creadas);
+  const enTexto = mencionadas(descripcion, todasLasPersonas);
+  const idsEnTexto = new Set(enTexto.map((p) => p._id));
+  const etiquetadas = todasLasPersonas.filter((p) => idsEnTexto.has(p._id) || (cambiosEtiquetas.get(p._id) ?? idsInvitados.has(p._id)));
+  const idsEtiquetadas = new Set(etiquetadas.map((p) => p._id));
+  const soloEtiquetadas = (c: Set<string>) => new Set([...c].filter((id) => idsEtiquetadas.has(id)));
+  const alternarEn = (set: typeof setColaboradoresIg) => (id: string) =>
+    set((c) => {
+      const n = new Set(c);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
 
   const descripcionFinal = conHashtags(descripcion, hashtags);
-  // El texto de cada red: con las @menciones donde no hay etiquetas de verdad.
-  const textoDe = (red: Red) => textoConMenciones(descripcionFinal, red, etiquetadas);
+  // El texto de cada red: cada @Nombre pasa a su usuario en esa red, y donde
+  // no hay etiquetas de verdad van las @menciones de quien no se nombró.
+  const textoDe = (red: Red) => textoParaRed(descripcionFinal, red, enTexto, etiquetadas);
   const comoSale = comoSaleEnCadaRed(elegidosEnOrden, descripcionFinal, tituloYoutube.trim() || clip.titulo, textoDe);
   const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX || comoSale.some((c) => c.texto.length > DESCRIPCION_MAX);
   const sePasan = comoSale.filter((c) => c.largo);
@@ -323,10 +349,12 @@ function Formulario({
     setEnviando(true);
     const fallas: string[] = [];
     // Instagram acepta hasta 20 etiquetas: las demás quedan afuera ahí (se avisa arriba).
-    const instagramCompleto = ajustesInstagram(etiquetadas, colaboradoresElegidos);
+    const instagramCompleto = ajustesInstagram(etiquetadas, soloEtiquetadas(colaboradoresIg));
     const instagram = instagramCompleto
       ? { ...instagramCompleto, etiquetados: instagramCompleto.etiquetados.slice(0, MAXIMO_ETIQUETADOS_INSTAGRAM) }
       : undefined;
+    const facebook = ajustesFacebook(etiquetadas, soloEtiquetadas(colaboradoresFb));
+    const personaIds = etiquetadas.map((p) => p._id);
     // Una por destino: si una red rechaza, las otras salen igual.
     for (const d of aEnviar) {
       try {
@@ -344,7 +372,10 @@ function Formulario({
                   ? { titulo: tituloYoutube.trim() || clip.titulo }
                   : d.red === "INSTAGRAM"
                     ? instagram
-                    : undefined,
+                    : d.red === "FACEBOOK"
+                      ? facebook
+                      : undefined,
+              ...(personaIds.length ? { personaIds } : {}),
               ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
               publicarEn: cuando.toISOString(),
             },
@@ -476,29 +507,30 @@ function Formulario({
 
           <Seccion titulo={tEtq("publicar.titulo")}>
             <EtiquetarPublicacion
-              personas={personas}
-              invitados={idsInvitados}
-              elegidas={idsEtiquetadas}
-              onAlternar={(id) => setCambiosEtiquetas((m) => new Map(m).set(id, !idsEtiquetadas.has(id)))}
-              colaboradores={colaboradoresElegidos}
-              onColaborador={(id) =>
-                setColaboradores((c) => {
-                  const n = new Set(c);
-                  if (n.has(id)) n.delete(id);
-                  else n.add(id);
-                  return n;
-                })
-              }
+              sugeridas={sugeridas}
+              personas={todasLasPersonas}
+              etiquetadas={etiquetadas}
+              enTexto={idsEnTexto}
+              onAgregar={(p) => {
+                if (!todasLasPersonas.some((x) => x._id === p._id)) setCreadas((c) => [...c, p]);
+                setCambiosEtiquetas((m) => new Map(m).set(p._id, true));
+              }}
+              onQuitar={(p) => setCambiosEtiquetas((m) => new Map(m).set(p._id, false))}
+              colaboradoresIg={soloEtiquetadas(colaboradoresIg)}
+              onColaboradorIg={alternarEn(setColaboradoresIg)}
               conInstagram={elegidosEnOrden.some((d) => d.red === "INSTAGRAM")}
-              guardando={inv.guardando || marcaPersonas.guardando}
+              colaboradoresFb={soloEtiquetadas(colaboradoresFb)}
+              onColaboradorFb={alternarEn(setColaboradoresFb)}
+              conFacebook={elegidosEnOrden.some((d) => d.red === "FACEBOOK")}
+              guardando={accionesPersonas.guardando}
               marcaId={marcaId}
-              onAgregarInvitado={async (p, enMarca) => {
-                const guardados = await inv.guardar([...inv.invitados, p]);
-                // El nuevo es el último: ya sale marcado por ser invitado.
-                const nuevo = guardados[guardados.length - 1];
-                if (nuevo) setCambiosEtiquetas((m) => new Map(m).set(nuevo.id, true));
-                // Con el mismo id: es la misma persona en el episodio y en la marca.
-                if (enMarca && nuevo) await marcaPersonas.guardar(conPersona(elenco, nuevo));
+              onNuevoInvitado={async (d) => {
+                // Queda como invitado del episodio (y en Global si lo marcó), ya etiquetado.
+                const nueva = await accionesPersonas.crear(d, episodioId);
+                if (nueva) {
+                  setCreadas((c) => [...c, nueva]);
+                  setCambiosEtiquetas((m) => new Map(m).set(nueva._id, true));
+                }
               }}
             />
           </Seccion>
@@ -549,13 +581,13 @@ function Formulario({
           ) : null}
 
           <Seccion titulo={t("secciones.descripcion")}>
-            <textarea
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+            <EditorMenciones
+              valor={descripcion}
+              onCambio={setDescripcion}
+              personas={todasLasPersonas}
+              onMencionar={(p) => setCambiosEtiquetas((m) => new Map(m).set(p._id, true))}
               placeholder={t("descripcionPlaceholder")}
               maxLength={DESCRIPCION_MAX}
-              rows={4}
-              className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
             />
             <div className="space-y-1">
               <span className="block text-xs text-white/45">{t("hashtags")}</span>

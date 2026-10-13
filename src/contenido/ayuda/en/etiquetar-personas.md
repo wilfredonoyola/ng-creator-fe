@@ -1,39 +1,57 @@
 ---
-titulo: Tag people in clips
-descripcion: Save the brand's people and each episode's guests, and pick who to tag when you schedule each clip on Instagram, TikTok, YouTube and Facebook.
+titulo: Tag people in your clips
+descripcion: Add the cast, guests and occasional people in Tags, and mention them with @ when you publish: each network gets their username.
 categoria: publicar
-orden: 3
-funciones: publicar
+orden: 4
+funciones: etiquetas, publicar
 ---
-You can tag the people in each clip: the brand's people (the cast and returning guests) and an episode's guests. You save them once, and when you schedule you just tap who to tag.
+Tagging someone in a clip means typing **@** and their name in the description. Clipfine puts that person's username for each network on that network. You add people once, in **Tags**, in the left menu.
 
-## The brand's people
+## The three levels
 
-These are the people who show up often: hosts, columnists and returning guests. Go to **Connected networks** and, under **Brand people · to tag**, tap **Add person**. Enter their name and their username on each network. One network is enough, and you can paste the profile link.
+- **Cast**: the people who are always on, like hosts and regulars. They show up first when tagging.
+- **Global**: the brand's directory, with people who show up now and then and you want at hand.
+- **By episode**: each show's guests. Add them on the episode page, under **Guests on this episode**. If someone comes back, check **Also save to Global** when you add them, or later tap **Move to Global** on their card: they stay on the episode and in Global.
 
-## An episode's guests
+## Add a person
 
-If someone came on a show, add them on the episode page, under **Guests on this episode**, or while scheduling with **+ Guest**. If they'll be back, check **Also save to the brand**: they stay for upcoming episodes. Someone already in the brand is added to the episode with one tap, from **From the brand**.
+In **Tags**, tap **Add person**:
 
-## Check the username is right
+1. Enter their **name**, as they're called on the show.
+2. **Paste their profile link** (Instagram, TikTok, YouTube or Facebook): Clipfine recognizes the network and the username. You can also type the username for each network. One is enough.
+3. Under **Also known as**, add nicknames. They're used to suggest the person when they're named in a clip.
 
-While you type a username, Clipfine looks it up on the network to catch a typo:
+### Check that the account exists
 
-- **TikTok and YouTube**: it tells you whether the account exists, with its name.
-- **Instagram**: it confirms professional accounts; a personal account can't be confirmed.
-- **Facebook**: it can't be confirmed from Clipfine.
+While you type a username, Clipfine looks it up on the network to catch typos:
 
-When it can't be confirmed, tap **View profile** to open it and check. If it says it doesn't exist, check the spelling before saving.
+- **TikTok and YouTube**: it confirms whether the account exists and shows its name and photo. If it can't find it, you're warned (on TikTok it may also be a private account).
+- **Instagram**: it confirms professional accounts (business or creator). A personal account can't be confirmed from outside.
+- **Facebook**: it confirms Pages that Meta lets us see.
 
-## When you schedule a clip
+When the network doesn't allow checking, use **View profile** to make sure it exists. A warning never stops you from saving.
 
-In **Schedule**, the **Tag** section shows the brand's people and the guests. The episode's guests come already selected; the brand's people don't. Tap to select or unselect.
+## Tag when you schedule
 
-Each network allows it differently:
+On a clip's schedule screen:
 
-- **Instagram**: they're tagged on the Reel. You can also invite up to 3 people as **collaborators**: if they accept, the Reel also shows on their profile.
-- **TikTok, YouTube and Facebook**: they don't offer tags to apps like Clipfine, so it goes as an **@mention** at the end of the description. You see it in **How it looks on each network** before scheduling.
+- **Suggested**: the episode's guests, the cast and anyone named in what's said in the clip, with the second they're named. Tap one to tag them. The episode's guests come already selected.
+- **Search**: add anyone from the brand by name, nickname or username, or create a new guest without leaving the screen.
+- **In the description**: type **@** and pick the person from the list. They're highlighted and tagged.
 
-If someone has no username on a network, they're not mentioned there.
+### How it comes out on each network
 
-> **Tip:** Instagram allows up to 20 tagged people per post.
+- **Instagram**: they're tagged on the Reel and their Instagram @username appears in the text.
+- **TikTok and YouTube**: their @username for that network appears in the text.
+- **Facebook**: their @username; if they have none, their name.
+- If someone has no username on a network, their name goes out there, without @.
+- People you tagged but didn't name in the text are mentioned at the end on TikTok, YouTube and Facebook.
+
+You see it before scheduling under **How it looks on each network**.
+
+## Collaborators
+
+- **Instagram**: mark up to 3 people as **Instagram collaborator**. They get the invitation and, if they accept, the Reel also shows on their profile.
+- **Facebook**: mark up to 10 Pages as **Facebook collaborator**. Pages only, not personal profiles. For that, the Page has to be added with its number (the `facebook.com/profile.php?id=…` link, or a username Meta recognizes as a Page). The Page gets the invitation and, if it accepts, the Reel also shows on it.
+
+> **Tip:** each card in **Tags** shows how many times you've tagged that person. It helps keep the cast up to date.

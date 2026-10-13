@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  AtSign,
   CalendarDays,
   ChartColumnIncreasing,
   CircleHelp,
@@ -48,6 +49,7 @@ type ClaveNav =
   | "creators"
   | "equipo"
   | "brandKit"
+  | "etiquetas"
   | "redesConectadas"
   | "superadmin";
 
@@ -96,6 +98,8 @@ export const NAV_REACCION: ItemNav[] = [
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
+/** Las personas que se etiquetan al publicar: elenco, Global y los invitados de cada episodio. */
+const navEtiquetas: ItemNav = { href: "/etiquetas", icon: AtSign, clave: "etiquetas" };
 /** El panel de quienes administran Clipfine: aparte, con su propio login. */
 const navSuperadmin: ItemNav = { href: "/superadmin", icon: ShieldCheck, clave: "superadmin" };
 const navAdmin: ItemNav[] = [
@@ -255,6 +259,15 @@ export function Sidebar({
                 colapsado={c}
                 activo={pathname.startsWith(navPlantilla.href)}
                 onClick={() => ir(navPlantilla.href)}
+              />
+            )}
+            {rolAqui && (
+              <BotonNav
+                {...navEtiquetas}
+                label={t(`nav.${navEtiquetas.clave}`)}
+                colapsado={c}
+                activo={pathname.startsWith(navEtiquetas.href)}
+                onClick={() => ir(navEtiquetas.href)}
               />
             )}
             {esAdmin &&

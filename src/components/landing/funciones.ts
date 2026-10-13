@@ -65,6 +65,10 @@ import {
   WandSparkles,
   Zap,
   Activity,
+  AtSign,
+  Handshake,
+  Layers,
+  Search,
   AlarmClock,
   BadgeCheck,
   Eye,
@@ -187,6 +191,17 @@ export const SECCIONES = [
     ],
   },
   {
+    id: "etiquetas",
+    items: [
+      { clave: "menciones", icono: AtSign },
+      { clave: "tresNiveles", icono: Layers },
+      { clave: "verificar", icono: BadgeCheck },
+      { clave: "sugeridas", icono: Sparkles },
+      { clave: "colaboradores", icono: Handshake },
+      { clave: "buscar", icono: Search },
+    ],
+  },
+  {
     id: "revision",
     items: [
       { clave: "porRevisar", icono: ClipboardCheck },
@@ -263,7 +278,8 @@ export const RELACIONADAS: Record<IdSeccion, readonly IdSeccion[]> = {
   calidad: ["edicion", "publicar"],
   importar: ["subir-clips", "ia"],
   "subir-clips": ["publicar", "revision"],
-  publicar: ["revision", "metricas"],
+  publicar: ["etiquetas", "revision"],
+  etiquetas: ["publicar", "metricas"],
   revision: ["publicar", "equipo"],
   metricas: ["publicar", "revision"],
   equipo: ["revision", "marca"],
@@ -276,7 +292,7 @@ export const RELACIONADAS: Record<IdSeccion, readonly IdSeccion[]> = {
  */
 export const GRUPOS = [
   { id: "producir", secciones: ["importar", "subir-clips", "ia", "edicion", "audio", "textos", "imagenes", "calidad"] },
-  { id: "entregar", secciones: ["publicar", "revision"] },
+  { id: "entregar", secciones: ["publicar", "etiquetas", "revision"] },
   { id: "demostrar", secciones: ["metricas"] },
   { id: "operar", secciones: ["marca", "equipo", "app"] },
 ] as const satisfies readonly { id: string; secciones: readonly IdSeccion[] }[];
@@ -292,6 +308,7 @@ export const DESTACADA: Record<IdSeccion, string> = {
   imagenes: "quitarFondo",
   calidad: "vistaPrevia",
   publicar: "cuatroRedes",
+  etiquetas: "menciones",
   revision: "aprobar",
   metricas: "crecimiento",
   marca: "colores",
