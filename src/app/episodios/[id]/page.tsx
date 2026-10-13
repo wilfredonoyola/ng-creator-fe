@@ -16,6 +16,7 @@ import {
   type ControlReproductor,
 } from "@/components/ReproductorEpisodio";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { InvitadosEpisodio } from "@/components/etiquetas/InvitadosEpisodio";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ReimportarDeRestream, reimportando } from "@/components/episodios/ReimportarDeRestream";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
@@ -219,6 +220,7 @@ export default function DetalleEpisodioPage({
               onLanzada={() => void episodioQ.refetch()}
             />
           )}
+          {marcaId && <InvitadosEpisodio episodioId={id} marcaId={marcaId} opera={opera} />}
         </div>
 
         <div>

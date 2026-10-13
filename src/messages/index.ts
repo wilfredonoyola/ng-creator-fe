@@ -37,6 +37,7 @@ import estilosGaleria_es from "./es/estilosGaleria.json";
 import estilosInterfaz_es from "./es/estilosInterfaz.json";
 import estilosNombres_es from "./es/estilosNombres.json";
 import estilosTema_es from "./es/estilosTema.json";
+import etiquetas_es from "./es/etiquetas.json";
 import featuresApp_es from "./es/featuresApp.json";
 import featuresAudio_es from "./es/featuresAudio.json";
 import featuresCalidad_es from "./es/featuresCalidad.json";
@@ -156,6 +157,7 @@ import estilosGaleria_en from "./en/estilosGaleria.json";
 import estilosInterfaz_en from "./en/estilosInterfaz.json";
 import estilosNombres_en from "./en/estilosNombres.json";
 import estilosTema_en from "./en/estilosTema.json";
+import etiquetas_en from "./en/etiquetas.json";
 import featuresApp_en from "./en/featuresApp.json";
 import featuresAudio_en from "./en/featuresAudio.json";
 import featuresCalidad_en from "./en/featuresCalidad.json";
@@ -278,6 +280,7 @@ export const mensajes = {
     "estilosInterfaz": estilosInterfaz_es,
     "estilosNombres": estilosNombres_es,
     "estilosTema": estilosTema_es,
+    "etiquetas": etiquetas_es,
     "featuresApp": featuresApp_es,
     "featuresAudio": featuresAudio_es,
     "featuresCalidad": featuresCalidad_es,
@@ -399,6 +402,7 @@ export const mensajes = {
     "estilosInterfaz": estilosInterfaz_en,
     "estilosNombres": estilosNombres_en,
     "estilosTema": estilosTema_en,
+    "etiquetas": etiquetas_en,
     "featuresApp": featuresApp_en,
     "featuresAudio": featuresAudio_en,
     "featuresCalidad": featuresCalidad_en,

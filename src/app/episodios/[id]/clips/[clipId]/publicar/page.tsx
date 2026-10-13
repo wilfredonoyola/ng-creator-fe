@@ -23,6 +23,8 @@ import {
   type Publicacion,
 } from "@/lib/publicaciones";
 import type { Red } from "@/lib/upload-post";
+import { MAXIMO_ETIQUETADOS_INSTAGRAM, ajustesInstagram, textoConMenciones, useElenco, useInvitados, type Persona } from "@/lib/etiquetas";
+import { EtiquetarPublicacion } from "@/components/etiquetas/EtiquetarPublicacion";
 import {
   DESCRIPCION_MAX,
   TITULO_YOUTUBE_MAX,
@@ -140,6 +142,7 @@ export default function ProgramarClipPage({
           />
         </div>
         <Formulario
+          episodioId={episodioId}
           clip={clip}
           marcaId={marcaId}
           opera={opera}
@@ -166,6 +169,7 @@ export default function ProgramarClipPage({
 }
 
 function Formulario({
+  episodioId,
   clip,
   marcaId,
   opera,
@@ -211,8 +215,10 @@ function Formulario({
   tiktokPronto: boolean;
   publicaciones: Publicacion[];
   refrescar: () => void;
+  episodioId: string;
 }) {
   const t = useTranslations("publicarClip");
+  const tEtq = useTranslations("etiquetas");
   const tv = useTranslations("versionFacebook");
   const tc = useTranslations("calidadClip");
   const tr = useTranslations("revisionClip.programar");
@@ -268,9 +274,24 @@ function Formulario({
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
+  // A quién se etiqueta (ng-creator-be#198): los invitados del episodio
+  // primero y marcados; el elenco de la marca, sin marcar. Se guarda solo lo
+  // que la persona cambia, como con los destinos.
+  const { elenco } = useElenco(marcaId);
+  const inv = useInvitados(episodioId, marcaId);
+  const idsInvitados = new Set(inv.invitados.map((p) => p.id));
+  const personas: Persona[] = [...inv.invitados, ...elenco.filter((p) => !idsInvitados.has(p.id))];
+  const [cambiosEtiquetas, setCambiosEtiquetas] = useState<Map<string, boolean>>(() => new Map());
+  const [colaboradores, setColaboradores] = useState<Set<string>>(() => new Set());
+  const etiquetadas = personas.filter((p) => cambiosEtiquetas.get(p.id) ?? idsInvitados.has(p.id));
+  const idsEtiquetadas = new Set(etiquetadas.map((p) => p.id));
+  const colaboradoresElegidos = new Set([...colaboradores].filter((id) => idsEtiquetadas.has(id)));
+
   const descripcionFinal = conHashtags(descripcion, hashtags);
-  const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX;
-  const comoSale = comoSaleEnCadaRed(elegidosEnOrden, descripcionFinal, tituloYoutube.trim() || clip.titulo);
+  // El texto de cada red: con las @menciones donde no hay etiquetas de verdad.
+  const textoDe = (red: Red) => textoConMenciones(descripcionFinal, red, etiquetadas);
+  const comoSale = comoSaleEnCadaRed(elegidosEnOrden, descripcionFinal, tituloYoutube.trim() || clip.titulo, textoDe);
+  const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX || comoSale.some((c) => c.texto.length > DESCRIPCION_MAX);
   const sePasan = comoSale.filter((c) => c.largo);
 
   function alternar(d: Destino) {
@@ -300,6 +321,11 @@ function Formulario({
     }
     setEnviando(true);
     const fallas: string[] = [];
+    // Instagram acepta hasta 20 etiquetas: las demás quedan afuera ahí (se avisa arriba).
+    const instagramCompleto = ajustesInstagram(etiquetadas, colaboradoresElegidos);
+    const instagram = instagramCompleto
+      ? { ...instagramCompleto, etiquetados: instagramCompleto.etiquetados.slice(0, MAXIMO_ETIQUETADOS_INSTAGRAM) }
+      : undefined;
     // Una por destino: si una red rechaza, las otras salen igual.
     for (const d of aEnviar) {
       try {
@@ -311,8 +337,13 @@ function Formulario({
               cuentaId: d.cuentaId,
               clipId: clip._id,
               formato: d.formato,
-              descripcion: descripcionFinal || undefined,
-              ajustes: d.red === "YOUTUBE" ? { titulo: tituloYoutube.trim() || clip.titulo } : undefined,
+              descripcion: textoDe(d.red) || undefined,
+              ajustes:
+                d.red === "YOUTUBE"
+                  ? { titulo: tituloYoutube.trim() || clip.titulo }
+                  : d.red === "INSTAGRAM"
+                    ? instagram
+                    : undefined,
               ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
               publicarEn: cuando.toISOString(),
             },
@@ -440,6 +471,32 @@ function Formulario({
                   })}
                 </p>
               ))}
+          </Seccion>
+
+          <Seccion titulo={tEtq("publicar.titulo")}>
+            <EtiquetarPublicacion
+              personas={personas}
+              invitados={idsInvitados}
+              elegidas={idsEtiquetadas}
+              onAlternar={(id) => setCambiosEtiquetas((m) => new Map(m).set(id, !idsEtiquetadas.has(id)))}
+              colaboradores={colaboradoresElegidos}
+              onColaborador={(id) =>
+                setColaboradores((c) => {
+                  const n = new Set(c);
+                  if (n.has(id)) n.delete(id);
+                  else n.add(id);
+                  return n;
+                })
+              }
+              conInstagram={elegidosEnOrden.some((d) => d.red === "INSTAGRAM")}
+              guardando={inv.guardando}
+              onAgregarInvitado={async (p) => {
+                const guardados = await inv.guardar([...inv.invitados, p]);
+                // El nuevo es el último: ya sale marcado por ser invitado.
+                const nuevo = guardados[guardados.length - 1];
+                if (nuevo) setCambiosEtiquetas((m) => new Map(m).set(nuevo.id, true));
+              }}
+            />
           </Seccion>
 
           <Seccion titulo={t("secciones.cuando")}>

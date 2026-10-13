@@ -24,6 +24,7 @@ import {
 } from "@/lib/upload-post";
 import { IconoRed } from "@/components/IconoRed";
 import { AjustesPublicacionMarca } from "@/components/AjustesPublicacionMarca";
+import { ElencoMarca } from "@/components/etiquetas/ElencoMarca";
 import {
   FACEBOOK_ESTADO,
   FACEBOOK_PAGINAS,
@@ -171,6 +172,7 @@ export default function AdminFacebookPage() {
 
       <VueltaDeUploadPost />
       <AjustesPublicacionMarca />
+      <ElencoMarca />
       {redesUploadPost.length > 0 && <SeccionUploadPost redes={redesUploadPost} />}
 
       {sinMetaPropia ? (

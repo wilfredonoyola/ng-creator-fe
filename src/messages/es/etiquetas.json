@@ -1,0 +1,41 @@
+{
+  "agregar": "Agregar persona",
+  "editar": "Editar a {nombre}",
+  "quitar": "Quitar a {nombre}",
+  "nombre": "Nombre (como lo conocen)",
+  "guardar": "Guardar",
+  "guardando": "Guardando…",
+  "cancelar": "Cancelar",
+  "errorGuardar": "No se pudo guardar.",
+  "sinUsuarios": "Sin usuarios: no se etiqueta en ninguna red",
+  "usuario": {
+    "instagram": "usuario de Instagram",
+    "tiktok": "usuario de TikTok",
+    "youtube": "canal de YouTube",
+    "facebook": "página de Facebook"
+  },
+  "ayudaUsuarios": "Alcanza con una red. Podés pegar el enlace del perfil.",
+  "elenco": {
+    "titulo": "Elenco · personas para etiquetar",
+    "descripcion": "Quienes salen siempre en {marca} (conductores, columnistas). Al programar cada clip elegís a quién etiquetar.",
+    "vacio": "Todavía no hay nadie. Agregá a quienes salen en todos los programas.",
+    "soloLectura": "Lo cambian quienes operan la marca."
+  },
+  "invitados": {
+    "titulo": "Invitados de este episodio",
+    "descripcion": "Quienes vinieron solo a este programa. Salen marcados al programar sus clips.",
+    "vacio": "Sin invitados. Agregalos para etiquetarlos en los clips."
+  },
+  "publicar": {
+    "titulo": "Etiquetar",
+    "ayuda": "Instagram: etiqueta en el Reel. TikTok, YouTube y Facebook: @mención al final de la descripción. Si alguien no tiene usuario en una red, ahí no se lo menciona.",
+    "vacio": "Agregá el elenco en Redes conectadas o un invitado acá para etiquetarlos.",
+    "invitado": "Invitado",
+    "agregarInvitado": "Invitado",
+    "colaborador": "Colaborador en Instagram",
+    "colaboradorAyuda": "El Reel sale también en su perfil si acepta la invitación. Hasta {max}.",
+    "maximoColaboradores": "Instagram acepta hasta {max} colaboradores.",
+    "maximoEtiquetas": "Instagram acepta hasta {max} etiquetas: las demás no se etiquetan ahí.",
+    "nEtiquetados": "{n, plural, one {# persona etiquetada} other {# personas etiquetadas}}"
+  }
+}
