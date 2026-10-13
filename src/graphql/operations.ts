@@ -2768,6 +2768,60 @@ export const GUARDAR_AJUSTES_PUBLICACION = gql`
   }
 `;
 
+// ---- Personas para etiquetar (ng-creator-be#198) ----
+
+const CAMPOS_PERSONA = `
+  id
+  nombre
+  instagram
+  tiktok
+  youtube
+  facebook
+`;
+
+/**
+ * El elenco de cada marca: quienes salen siempre. Va aparte de MARCAS_ACTIVAS
+ * a propósito: si el backend todavía no tiene el campo, falla esta sola.
+ */
+export const ELENCO_MARCAS = gql`
+  query ElencoMarcas {
+    marcasActivas {
+      _id
+      elenco {
+        ${CAMPOS_PERSONA}
+      }
+    }
+  }
+`;
+
+export const GUARDAR_ELENCO = gql`
+  mutation GuardarElenco($marcaId: ID!, $personas: [PersonaEtiquetaInput!]!) {
+    guardarElenco(marcaId: $marcaId, personas: $personas) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+/** Los invitados de un episodio. Aparte de EPISODIO por lo mismo que el elenco. */
+export const INVITADOS_EPISODIO = gql`
+  query InvitadosEpisodio($id: ID!, $marcaId: String!) {
+    episodio(id: $id, marcaId: $marcaId) {
+      _id
+      invitados {
+        ${CAMPOS_PERSONA}
+      }
+    }
+  }
+`;
+
+export const GUARDAR_INVITADOS_EPISODIO = gql`
+  mutation GuardarInvitadosEpisodio($marcaId: ID!, $episodioId: ID!, $personas: [PersonaEtiquetaInput!]!) {
+    guardarInvitadosEpisodio(marcaId: $marcaId, episodioId: $episodioId, personas: $personas) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
 // ---- Revisión antes de publicar (ng-creator-be#175) ----
 
 export const AJUSTES_REVISION = gql`

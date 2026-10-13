@@ -1,0 +1,41 @@
+{
+  "agregar": "Add person",
+  "editar": "Edit {nombre}",
+  "quitar": "Remove {nombre}",
+  "nombre": "Name (as people know them)",
+  "guardar": "Save",
+  "guardando": "Saving…",
+  "cancelar": "Cancel",
+  "errorGuardar": "Couldn't save.",
+  "sinUsuarios": "No usernames: not tagged on any network",
+  "usuario": {
+    "instagram": "Instagram username",
+    "tiktok": "TikTok username",
+    "youtube": "YouTube channel",
+    "facebook": "Facebook page"
+  },
+  "ayudaUsuarios": "One network is enough. You can paste the profile link.",
+  "elenco": {
+    "titulo": "Cast · people to tag",
+    "descripcion": "Who's always on {marca} (hosts, regulars). When you schedule each clip you pick who to tag.",
+    "vacio": "No one yet. Add the people who are on every show.",
+    "soloLectura": "Changed by the people who operate the brand."
+  },
+  "invitados": {
+    "titulo": "Guests on this episode",
+    "descripcion": "Who came just for this show. They're preselected when you schedule its clips.",
+    "vacio": "No guests. Add them to tag them in the clips."
+  },
+  "publicar": {
+    "titulo": "Tag",
+    "ayuda": "Instagram: tagged on the Reel. TikTok, YouTube and Facebook: @mention at the end of the description. If someone has no username on a network, they're not mentioned there.",
+    "vacio": "Add the cast in Connected networks or a guest here to tag them.",
+    "invitado": "Guest",
+    "agregarInvitado": "Guest",
+    "colaborador": "Instagram collaborator",
+    "colaboradorAyuda": "The Reel also shows on their profile if they accept the invite. Up to {max}.",
+    "maximoColaboradores": "Instagram allows up to {max} collaborators.",
+    "maximoEtiquetas": "Instagram allows up to {max} tags: the rest aren't tagged there.",
+    "nEtiquetados": "{n, plural, one {# person tagged} other {# people tagged}}"
+  }
+}
