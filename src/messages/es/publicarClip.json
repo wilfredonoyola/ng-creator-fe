@@ -96,5 +96,27 @@
     "fallas": "No se pudo actualizar todo: {detalle}",
     "confirmarCancelar": "Se va a cancelar lo programado en {redes}. ¿Seguimos?",
     "seCancela": "Al guardar se cancela en {redes}."
+  },
+  "reintentar": {
+    "titulo": "Reintentar en {red}",
+    "ayuda": "Corregí lo que haga falta (etiquetas, texto, hora) y tocá \"Reintentar\": se vuelve a mandar esta misma publicación, sin programar otra.",
+    "salir": "Salir",
+    "boton": "Reintentar en {red}",
+    "enviando": "Reintentando…",
+    "listo": "Listo: {red} vuelve a intentarlo. Lo ves abajo, en Publicaciones.",
+    "editar": "Editar y reintentar",
+    "sinCambios": "Reintentar sin cambios",
+    "igual": "Reintentar igual",
+    "verCuenta": "Ver la publicación ↗",
+    "quizas": "Puede que haya salido igual en {red}: revisá la cuenta antes de reintentar, para no publicarlo dos veces.",
+    "confirmarForzar": "Si ya salió en {red}, va a quedar dos veces. ¿Reintentamos igual?",
+    "arriba": "Editándola arriba para reintentar.",
+    "etiquetas": {
+      "titulo": "Falló por las etiquetas",
+      "ayuda": "Instagram rechazó alguna de estas cuentas: puede ser privada, no existir o no aceptar invitaciones de colaboración. Lo más seguro: dejalas como etiqueta, no como colaborador.",
+      "colaborador": "colaborador",
+      "etiquetado": "etiquetado",
+      "pasarATag": "Pasar los colaboradores a etiquetas"
+    }
   }
 }

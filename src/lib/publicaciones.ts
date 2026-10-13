@@ -48,6 +48,14 @@ export interface Publicacion {
   /** Lo propio de la red: título de YouTube, etiquetas y colaboradores. */
   ajustes?: Record<string, unknown> | null;
   portadaSeg?: number | null;
+  /** Salió, pero con algo menos de lo pedido (p. ej. sin etiquetas que Instagram rechazó). */
+  aviso?: string | null;
+  /** Falló y se puede volver a mandar la misma ("Editar y reintentar"). */
+  puedeReintentar?: boolean | null;
+  /** Falló después de pedir que publique: puede que haya salido igual. */
+  quizasPublicada?: boolean | null;
+  /** Las etiquetas que Instagram rechazó y se sacaron para que saliera igual. */
+  etiquetasDescartadas?: { etiquetados: string[]; colaboradores: string[]; motivo?: string | null } | null;
   creadoPor?: { nombre: string } | null;
   canceladoPor?: { nombre: string } | null;
 }

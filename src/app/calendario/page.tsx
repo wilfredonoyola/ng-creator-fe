@@ -728,6 +728,15 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
               )}
               {x.esperaVideo && x.estado === "PROGRAMADA" && <p className="text-xs text-white/55">{t("esperaVideo")}</p>}
               {x.estado === "FALLIDA" && x.error && <p className="break-words text-xs text-red-400">{x.error}</p>}
+              {/* Lo que falló se corrige y se reintenta en la pantalla de programar del clip, la misma publicación. */}
+              {x.estado === "FALLIDA" && opera && x.clip ? (
+                <Link
+                  href={`/episodios/${x.clip.episodioId}/clips/${x.clip._id}/publicar?reintentar=${x._id}`}
+                  className="text-xs font-medium text-ng-celeste hover:underline"
+                >
+                  {t("detalle.editarYReintentar")} →
+                </Link>
+              ) : null}
               {x.estado === "PROGRAMADA" && x.error && (
                 <p className="break-words text-xs text-amber-300">{t("detalle.reintentando", { error: x.error })}</p>
               )}

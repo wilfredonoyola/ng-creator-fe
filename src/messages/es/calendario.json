@@ -79,7 +79,8 @@
     "guardado": "Guardado",
     "sinCambios": "No hay cambios para guardar.",
     "errorRed": "{red}: {mensaje}",
-    "noSePudo": "no se pudo guardar"
+    "noSePudo": "no se pudo guardar",
+    "editarYReintentar": "Editar y reintentar"
   },
   "porRevisar": "Por revisar"
 }

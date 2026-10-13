@@ -733,6 +733,29 @@ export const PUBLICACIONES_DE_CLIP = gql`
       ajustes
       textoBase
       personaIds
+      # Para "Editar y reintentar" lo que falló.
+      aviso
+      puedeReintentar
+      quizasPublicada
+      etiquetasDescartadas {
+        etiquetados
+        colaboradores
+        motivo
+      }
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
+/**
+ * Vuelve a mandar una publicación que falló, la misma (sin programar otra).
+ * Sin `publicarEn`, sale apenas pueda. `forzar` es para cuando el backend
+ * avisa que quizás salió igual (`quizasPublicada`): reintentar podría duplicarla.
+ */
+export const REINTENTAR_PUBLICACION = gql`
+  mutation ReintentarPublicacion($marcaId: ID!, $id: ID!, $publicarEn: DateTime, $forzar: Boolean) {
+    reintentarPublicacion(marcaId: $marcaId, id: $id, publicarEn: $publicarEn, forzar: $forzar) {
+      ...CamposPublicacion
     }
   }
   ${CAMPOS_PUBLICACION}
