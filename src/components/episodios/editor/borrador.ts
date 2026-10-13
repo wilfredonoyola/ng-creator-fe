@@ -55,6 +55,8 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
     destacadas: [...t.destacadas],
     fuente: t.fuente,
     fuenteElegida: t.fuenteElegida ?? false,
+    interlineado: t.interlineado ?? 1,
+    estiloPropio: t.estiloPropio ?? false,
     tamano: t.tamano,
     color: t.color,
     colorDestacado: t.colorDestacado,
@@ -71,7 +73,9 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
   // diseño "Impacto": desde acá, todo texto sobre el clip es uno de estos.
   if (!textos.length && clip.ganchoActivo && clip.gancho?.trim()) {
     textos.push({
-      ...textoNuevo(disenosDeTexto(colorResaltado)[0].estilo, clip.gancho.trim(), 0.15),
+      // Con el diseño "Impacto" y el estilo de la marca: como se veía el gancho.
+      ...textoNuevo(disenosDeTexto(colorResaltado).find((d) => d.id === "impacto")!.estilo, clip.gancho.trim(), 0.15),
+      estiloPropio: false,
       hastaSeg: clip.ganchoSeg ?? 3,
     });
   }

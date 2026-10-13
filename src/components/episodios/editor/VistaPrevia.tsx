@@ -338,6 +338,8 @@ export function VistaPrevia({
           const delTexto = textos.map((tx, i) => {
             const fin = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : duracion;
             const visible = tc >= tx.desdeSeg && tc < fin;
+            // Con estilo propio no lo dibuja el estilo: va abajo, con su letra y sus colores.
+            if (tx.estiloPropio) return null;
             if (!visible && textoElegido !== i) return null;
             const d = dibujarTexto(tx, estiloTexto.gancho, lienzo, { duracionSeg: duracion, nombreMarca, tc });
             return d && !visible ? { ...d, opacidad: 0.4 } : d;
@@ -379,10 +381,11 @@ export function VistaPrevia({
             </>
           );
         })()}
-      {!estiloTexto &&
-        [...textos, ...(plantilla.llamada ? [plantilla.llamada] : [])].map((tx, i) => {
+      {[...textos, ...(!estiloTexto && plantilla.llamada ? [plantilla.llamada] : [])].map((tx, i) => {
           // La llamada a la acción es de la plantilla: se ve, pero no se mueve ni se elige acá.
           const deLaPlantilla = i >= textos.length;
+          // Con un estilo de texto, acá van solo los textos con estilo propio (el resto lo dibuja el estilo).
+          if (estiloTexto && (deLaPlantilla || !tx.estiloPropio)) return null;
           // Los textos, en el tiempo original del clip; la llamada, en el del clip ya cortado.
           const [ahora, dur] = deLaPlantilla ? [ts, efectiva] : [tc, duracion];
           const fin = tx.hastaSeg && tx.hastaSeg > tx.desdeSeg ? tx.hastaSeg : dur;
@@ -412,7 +415,7 @@ export function VistaPrevia({
                 fontStyle: f.italica ? "italic" : undefined,
                 // libass mide por la altura "win": ver FUENTES.
                 fontSize: tx.tamano * f.factorCss * k,
-                lineHeight: `${tx.tamano * k}px`,
+                lineHeight: `${tx.tamano * (tx.interlineado ?? 1) * k}px`,
                 color: tx.color,
                 ...(tx.efecto === "CONTORNO" ? { WebkitTextStroke: `${2 * borde * k}px ${tx.colorEfecto}`, paintOrder: "stroke fill" } : {}),
                 ...(tx.efecto === "SOMBRA" ? { textShadow: `${sombra * k}px ${sombra * k}px 0 ${tx.colorEfecto}` } : {}),
