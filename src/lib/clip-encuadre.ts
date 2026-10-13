@@ -249,24 +249,52 @@ export function posicionEn(posiciones: PosicionEfectiva[], t: number): PosicionE
 
 // ---- Textos sobre el clip (copiado del backend, igual) ----
 
-export type FuenteTexto = "NUNITO" | "ANTON" | "BEBAS";
+/** Las mismas del backend (FuenteTexto): las de los textos y las de los estilos. */
+export type FuenteTexto =
+  | "NUNITO"
+  | "ANTON"
+  | "BEBAS"
+  | "MONTSERRAT_BLACK"
+  | "MONTSERRAT_EXTRABOLD"
+  | "INTER_TIGHT_SEMIBOLD"
+  | "INTER_TIGHT_BOLD"
+  | "INSTRUMENT_SERIF"
+  | "INSTRUMENT_SERIF_ITALICA"
+  | "MANROPE_SEMIBOLD"
+  | "MANROPE_BOLD"
+  | "GEIST_MEDIUM"
+  | "GEIST_SEMIBOLD"
+  | "PLUS_JAKARTA_BOLD";
 export type EfectoTexto = "NINGUNO" | "CONTORNO" | "SOMBRA" | "CAJA";
 
 /**
- * Nombre de la familia y factor para CSS. libass mide la letra por la altura
- * "win" de la fuente y CSS por el em: sin el factor la vista previa se ve
- * hasta un 70% más grande que el MP4. Ver FUENTES en el backend.
+ * Familia, peso y factor para CSS (los @font-face de globals.css). libass mide
+ * la letra por la altura "win" de la fuente y CSS por el em: sin el factor la
+ * vista previa se ve hasta un 70% más grande que el MP4. Ver FUENTES en el backend.
  */
-export const FUENTES: Record<FuenteTexto, { familia: string; factorCss: number }> = {
-  NUNITO: { familia: "Nunito Black", factorCss: 1000 / 1377 },
-  ANTON: { familia: "Anton", factorCss: 2048 / 3550 },
-  BEBAS: { familia: "Bebas Neue", factorCss: 1000 / 1300 },
+export const FUENTES: Record<FuenteTexto, { familia: string; peso: number; italica?: boolean; factorCss: number }> = {
+  NUNITO: { familia: "Nunito Black", peso: 900, factorCss: 1000 / 1377 },
+  ANTON: { familia: "Anton", peso: 400, factorCss: 2048 / 3550 },
+  BEBAS: { familia: "Bebas Neue", peso: 400, factorCss: 1000 / 1300 },
+  MONTSERRAT_BLACK: { familia: "Montserrat", peso: 900, factorCss: 1000 / 1562 },
+  MONTSERRAT_EXTRABOLD: { familia: "Montserrat", peso: 800, factorCss: 1000 / 1562 },
+  INTER_TIGHT_SEMIBOLD: { familia: "Inter Tight", peso: 600, factorCss: 2048 / 2917 },
+  INTER_TIGHT_BOLD: { familia: "Inter Tight", peso: 700, factorCss: 2048 / 2917 },
+  INSTRUMENT_SERIF: { familia: "Instrument Serif", peso: 400, factorCss: 1000 / 1300 },
+  INSTRUMENT_SERIF_ITALICA: { familia: "Instrument Serif", peso: 400, italica: true, factorCss: 1000 / 1300 },
+  MANROPE_SEMIBOLD: { familia: "Manrope", peso: 600, factorCss: 2000 / 2732 },
+  MANROPE_BOLD: { familia: "Manrope", peso: 700, factorCss: 2000 / 2732 },
+  GEIST_MEDIUM: { familia: "Geist", peso: 500, factorCss: 1000 / 1350 },
+  GEIST_SEMIBOLD: { familia: "Geist", peso: 600, factorCss: 1000 / 1350 },
+  PLUS_JAKARTA_BOLD: { familia: "Plus Jakarta Sans", peso: 700, factorCss: 1000 / 1652 },
 };
 
 export interface Texto {
   contenido: string;
   destacadas: string[];
   fuente: FuenteTexto;
+  /** La eligió la persona: con un estilo de texto, manda sobre la letra del estilo. */
+  fuenteElegida?: boolean;
   tamano: number;
   color: string;
   colorDestacado: string;

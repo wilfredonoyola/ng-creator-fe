@@ -54,6 +54,7 @@ export function PanelTexto({
           onElegir={onElegir}
           duracion={duracion}
           colorMarca={estilo.colorResaltado}
+          estiloManda={Boolean(nombreEstilo)}
           deshabilitado={!puedeEditar}
         />
         <p className="text-xs text-ng-tenue">{tr("texto.ayuda")}</p>

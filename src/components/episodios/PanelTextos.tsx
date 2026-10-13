@@ -59,10 +59,14 @@ export function textoNuevo(
   return { contenido, destacadas: [], ...estilo, centroX: 0.5, centroY, ancho: 0.85, desdeSeg: 0, hastaSeg: null };
 }
 
-const FUENTES_ELEGIBLES: { valor: FuenteTexto; etiqueta: string }[] = [
+/** Primero las simples, de lectura tranquila; después las de impacto. */
+const FUENTES_ELEGIBLES: { valor: FuenteTexto; etiqueta?: string }[] = [
+  { valor: "INTER_TIGHT_BOLD" },
+  { valor: "MONTSERRAT_EXTRABOLD", etiqueta: "Montserrat" },
+  { valor: "INSTRUMENT_SERIF", etiqueta: "Serif" },
+  { valor: "NUNITO", etiqueta: "Nunito" },
   { valor: "ANTON", etiqueta: "Anton" },
   { valor: "BEBAS", etiqueta: "Bebas" },
-  { valor: "NUNITO", etiqueta: "Nunito" },
 ];
 
 const EFECTOS: EfectoTexto[] = ["CONTORNO", "SOMBRA", "CAJA", "NINGUNO"];
@@ -87,6 +91,7 @@ export function PanelTextos({
   onElegir,
   duracion,
   colorMarca,
+  estiloManda,
   deshabilitado,
 }: {
   textos: Texto[];
@@ -96,6 +101,8 @@ export function PanelTextos({
   /** Del clip, en segundos. */
   duracion: number;
   colorMarca: string;
+  /** Hay un estilo de texto que pone la letra: sin elegir una a mano, va la suya. */
+  estiloManda?: boolean;
   deshabilitado?: boolean;
 }) {
   const tr = useTranslations("editorTextos");
@@ -199,10 +206,20 @@ export function PanelTextos({
           </div>
 
           <Fila etiqueta={tr("filas.letra")}>
+            {estiloManda && (
+              <Opcion activa={!t.fuenteElegida} onClick={() => cambiar(elegido, { fuenteElegida: false })} deshabilitado={deshabilitado}>
+                {tr("fuentes.delEstilo")}
+              </Opcion>
+            )}
             {FUENTES_ELEGIBLES.map((f) => (
-              <Opcion key={f.valor} activa={t.fuente === f.valor} onClick={() => cambiar(elegido, { fuente: f.valor })} deshabilitado={deshabilitado}>
-                <span style={{ fontFamily: `'${FUENTES[f.valor].familia}'`, fontWeight: f.valor === "NUNITO" ? 900 : 400 }}>
-                  {f.etiqueta}
+              <Opcion
+                key={f.valor}
+                activa={t.fuente === f.valor && (!estiloManda || Boolean(t.fuenteElegida))}
+                onClick={() => cambiar(elegido, { fuente: f.valor, fuenteElegida: true })}
+                deshabilitado={deshabilitado}
+              >
+                <span style={{ fontFamily: `'${FUENTES[f.valor].familia}'`, fontWeight: FUENTES[f.valor].peso }}>
+                  {f.etiqueta ?? tr("fuentes.clasica")}
                 </span>
               </Opcion>
             ))}
@@ -291,7 +308,7 @@ function MuestraDiseno({ estilo }: { estilo: ReturnType<typeof disenosDeTexto>[n
     <span
       style={{
         fontFamily: `'${f.familia}', sans-serif`,
-        fontWeight: estilo.fuente === "NUNITO" ? 900 : 400,
+        fontWeight: f.peso,
         fontSize: estilo.tamano * f.factorCss * escala,
         lineHeight: 1.1,
         color: estilo.color,

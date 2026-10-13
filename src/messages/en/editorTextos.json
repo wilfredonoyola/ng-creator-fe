@@ -45,5 +45,9 @@
   "de": "from",
   "a": "to",
   "quitar": "Remove this text",
-  "muestra": "Hello <d>you</d>"
+  "muestra": "Hello <d>you</d>",
+  "fuentes": {
+    "clasica": "Classic",
+    "delEstilo": "From style"
+  }
 }

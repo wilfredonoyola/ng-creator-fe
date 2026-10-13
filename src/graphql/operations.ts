@@ -2131,6 +2131,7 @@ const CAMPOS_CLIP_EDITOR = gql`
       contenido
       destacadas
       fuente
+      fuenteElegida
       tamano
       color
       colorDestacado
