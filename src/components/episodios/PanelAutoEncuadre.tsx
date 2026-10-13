@@ -89,12 +89,12 @@ export function PanelAutoEncuadre({
         <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
           <div className="h-full rounded-full bg-ng-violeta transition-all duration-700" style={{ width: `${Math.max(3, p * 100)}%` }} />
         </div>
-        <ol className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1 text-xs sm:grid-cols-4">
+        <ol className="mt-3 flex flex-col gap-1.5 text-xs">
           {ETAPAS.map((e, i) => {
             const hecha = i < actual;
             const enCurso = i === actual;
             return (
-              <li key={e} className={`flex items-center gap-1.5 ${hecha ? "text-white/80" : enCurso ? "text-white" : "text-white/35"}`}>
+              <li key={e} className={`flex min-w-0 items-center gap-2 ${hecha ? "text-white/80" : enCurso ? "text-white" : "text-white/35"}`}>
                 <span
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs ${
                     hecha ? "bg-emerald-500 text-ng-tinta" : enCurso ? "animate-pulse bg-ng-violeta text-ng-tinta" : "border border-white/20"
