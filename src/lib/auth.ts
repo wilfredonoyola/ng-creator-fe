@@ -328,7 +328,12 @@ export async function asegurarTokenValido(): Promise<boolean> {
 }
 
 /**
- * Cierra sesion llamando al backend y limpiando localStorage.
+ * Cierra sesion: limpia localStorage y avisa al backend.
+ *
+ * Lo local se borra ANTES de llamar al backend, sin esperar nada: quien llama
+ * suele ir a /login en seguida, y /login manda al panel a quien todavia tiene
+ * tokens guardados (useRedirigirSiHaySesion). Si se borraban despues de la
+ * respuesta, el primer "Cerrar sesion" volvia al panel y habia que darle dos veces.
  */
 export async function cerrarSesion(): Promise<void> {
   if (refreshTimeout) {
@@ -337,6 +342,16 @@ export async function cerrarSesion(): Promise<void> {
   }
 
   const accessToken = localStorage.getItem("accessToken");
+
+  localStorage.removeItem("idToken");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("tokenExpiresAt");
+  desmarcarSesion();
+
+  // Que quien entre después en este navegador no vea, ni por un instante, las
+  // marcas y datos de la cuenta anterior.
+  const limpiarCache = apolloClient.clearStore().catch(() => {});
 
   if (accessToken) {
     try {
@@ -353,18 +368,10 @@ export async function cerrarSesion(): Promise<void> {
         }),
       });
     } catch {
-      // Ignoramos errores de logout, igual limpiamos local
+      // Ignoramos errores de logout: lo local ya se limpió.
     }
   }
-
-  localStorage.removeItem("idToken");
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("tokenExpiresAt");
-  desmarcarSesion();
-  // Que quien entre después en este navegador no vea, ni por un instante, las
-  // marcas y datos de la cuenta anterior.
-  await apolloClient.clearStore().catch(() => {});
+  await limpiarCache;
 }
 
 export function haySesion(): boolean {
