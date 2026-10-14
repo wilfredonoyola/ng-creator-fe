@@ -78,10 +78,25 @@ export function PanelFormato({
     onCambiarPosiciones(posiciones.map((p, k) => (k === indiceActiva ? { ...p, diseno: d, regiones } : p)));
   }
 
-  /** Un cambio de encuadre donde está parado el video, copiando el actual. */
+  /**
+   * Un cambio de encuadre donde está parado el video, copiando el actual.
+   *
+   * Arranca en el cabezal redondeado PARA ABAJO: el recuadro que se arrastra
+   * es el del cambio donde está parado el video (`posicionEn`), y si el nuevo
+   * empezaba una centésima después del cuadro que se ve, lo que se movía era
+   * el anterior y el encuadre "se iba a otro lado".
+   */
   function nuevaPosicion() {
-    const seg = Math.round(tc * 100) / 100;
-    if (posiciones.some((p) => Math.abs(p.desdeSeg - seg) < 0.2)) return;
+    const seg = Math.floor(tc * 100) / 100;
+    const cerca = posiciones.findIndex((p) => Math.abs(p.desdeSeg - seg) < 0.2);
+    if (cerca >= 0) {
+      // Ya hay uno pegado. Si arranca un poco después del cabezal, se trae
+      // hasta acá: así el que se mueve es ese, no el de antes.
+      if (cerca > 0 && posiciones[cerca].desdeSeg > seg) {
+        onCambiarPosiciones(posiciones.map((p, k) => (k === cerca ? { ...p, desdeSeg: seg } : p)));
+      }
+      return;
+    }
     onCambiarPosiciones(
       [...posiciones, { desdeSeg: seg, diseno: activa.diseno, regiones: activa.regiones.map((r) => ({ ...r })) }].sort((a, b) => a.desdeSeg - b.desdeSeg),
     );
