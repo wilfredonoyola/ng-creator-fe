@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useApolloClient, useMutation, useQuery } from "@apollo/client";
-import { BUSCAR_EN_EPISODIO, CREAR_CLIP_EPISODIO, TRANSCRIPCION_EPISODIO } from "@/graphql/operations";
+import { BUSCAR_EN_EPISODIO, CREAR_CLIP_EPISODIO, SUGERIR_CLIP_EPISODIO, TRANSCRIPCION_EPISODIO } from "@/graphql/operations";
 import type { ControlReproductor } from "@/components/ReproductorEpisodio";
 import type { FormatoClip } from "@/lib/clip-encuadre";
 import { useSesion } from "@/lib/sesion";
@@ -12,7 +12,10 @@ import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
 
 /**
- * "Crear clip" guiado, en tres pasos y con el episodio a la vista:
+ * "Crear clip". Lo primero, lo rápido: desde y hasta en h:mm:ss, y ahí mismo
+ * el título, que lo sugiere la IA con lo que se dice en ese tramo (el tramo se
+ * lleva a las palabras: no corta ninguna a la mitad). Si no se sabe el
+ * minuto, el guiado, en tres pasos y con el episodio a la vista:
  * 1. el momento (buscando una frase o desde donde está el video),
  * 2. dónde empieza y termina, tocando las palabras,
  * 3. título, formato y si ya sale auto-encuadrado.
@@ -30,6 +33,24 @@ const FORMATOS: { valor: FormatoClip; etiqueta: string; detalle: "vertical" | "c
   { valor: "HORIZONTAL", etiqueta: "16:9", detalle: "horizontal" },
 ];
 const PASOS = ["momento", "inicioFin", "crear"] as const;
+
+/**
+ * Lo que se escribe en Desde y Hasta: "1:02:30", "62:30", "3750" o con
+ * décimas ("1:02:30.5", también con coma). Null si no se entiende.
+ */
+export function leerTiempo(texto: string): number | null {
+  const t = texto.trim().replace(",", ".");
+  if (!/^\d+(:\d{1,2}){0,2}(\.\d+)?$/.test(t)) return null;
+  const partes = t.split(":").map(Number);
+  if (partes.slice(1).some((n) => n >= 60)) return null;
+  return partes.reduce((s, n) => s * 60 + n, 0);
+}
+
+/** Como `tiempo`, con décimas si no es un segundo justo: lo que quedó al llevarlo a las palabras. */
+export function tiempoFino(seg: number): string {
+  const decima = Math.round((seg % 1) * 10);
+  return decima && decima < 10 ? `${tiempo(seg)}.${decima}` : tiempo(Math.round(seg));
+}
 
 export function tiempo(seg: number): string {
   const s = Math.max(0, Math.floor(seg));
@@ -63,13 +84,17 @@ export function CrearClipGuiado({
 }) {
   const t = useTranslations("editorGuiado");
   const router = useRouter();
-  const [paso, setPaso] = useState<1 | 2 | 3>(1);
+  // 0: lo rápido, por tiempo. 1-3: el guiado.
+  const [paso, setPaso] = useState<0 | 1 | 2 | 3>(0);
   const [busqueda, setBusqueda] = useState("");
   const texto = useDemorado(busqueda.trim(), 350);
   const [desde, setDesde] = useState(0);
   const [hasta, setHasta] = useState(30);
   const [marcando, setMarcando] = useState<"inicio" | "fin">("inicio");
   const [titulo, setTitulo] = useState("");
+  // Si la persona lo escribió, la IA ya no lo pisa.
+  const [tituloTocado, setTituloTocado] = useState(false);
+  const [gancho, setGancho] = useState<string | null>(null);
   const [formato, setFormato] = useState<FormatoClip>("VERTICAL");
   const [autoEncuadre, setAutoEncuadre] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,13 +117,60 @@ export function CrearClipGuiado({
   const [ventana, setVentana] = useState({ desde: 0, hasta: 0 });
   const palabrasQ = useQuery(TRANSCRIPCION_EPISODIO, {
     variables: { id: episodioId, marcaId, desdeSeg: ventana.desde, hastaSeg: ventana.hasta },
-    skip: paso === 1,
+    skip: paso < 2,
   });
   const palabras: Palabra[] = useMemo(() => palabrasQ.data?.transcripcionEpisodio ?? [], [palabrasQ.data]);
   const dentro = palabras.filter((p) => p.desde >= desde - 0.05 && p.hasta <= hasta + 0.05);
   const textoDelClip = dentro.map((p) => p.texto.trim()).join(" ");
 
   const [crear, { loading: creando }] = useMutation(CREAR_CLIP_EPISODIO);
+
+  // ---- Lo rápido: desde y hasta escritos ----
+  const [textoDesde, setTextoDesde] = useState(() => tiempo(reproductor.current?.tiempoActual() ?? 0));
+  const [textoHasta, setTextoHasta] = useState(() => tiempo((reproductor.current?.tiempoActual() ?? 0) + 30));
+  const escritoDesde = leerTiempo(textoDesde);
+  const escritoHasta = leerTiempo(textoHasta);
+  const tramoEscrito =
+    escritoDesde !== null && escritoHasta !== null && escritoHasta - escritoDesde >= 1 && escritoHasta - escritoDesde <= MAXIMO_SEG
+      ? { desdeSeg: escritoDesde, hastaSeg: Math.min(escritoHasta, duracionEpisodio || escritoHasta) }
+      : null;
+  const pedido = useDemorado(tramoEscrito, 500);
+  const sugerenciaQ = useQuery(SUGERIR_CLIP_EPISODIO, {
+    variables: { episodioId, marcaId, desdeSeg: pedido?.desdeSeg ?? 0, hastaSeg: pedido?.hastaSeg ?? 0 },
+    skip: paso !== 0 || !pedido,
+  });
+  const sugerencia: { desdeSeg: number; hastaSeg: number; texto: string; titulo: string; gancho: string | null; conIa: boolean } | undefined =
+    paso === 0 && pedido && tramoEscrito && pedido.desdeSeg === tramoEscrito.desdeSeg && pedido.hastaSeg === tramoEscrito.hastaSeg
+      ? sugerenciaQ.data?.sugerirClipEpisodio
+      : undefined;
+  // El tramo que se crea es el llevado a las palabras; el título, el de la IA si no se tocó.
+  useEffect(() => {
+    if (!sugerencia) return;
+    setDesde(sugerencia.desdeSeg);
+    setHasta(sugerencia.hastaSeg);
+    setGancho(sugerencia.gancho ?? null);
+    if (!tituloTocado) setTitulo(sugerencia.titulo);
+  }, [sugerencia]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /** Del guiado al paso 3: el título también lo sugiere la IA, con el tramo elegido. */
+  async function sugerirTitulo() {
+    if (tituloTocado) return;
+    setTitulo(textoDelClip.slice(0, 60));
+    try {
+      const r = await cliente.query({
+        query: SUGERIR_CLIP_EPISODIO,
+        variables: { episodioId, marcaId, desdeSeg: desde, hastaSeg: hasta },
+        fetchPolicy: "no-cache",
+      });
+      const s = r.data?.sugerirClipEpisodio;
+      if (s?.conIa) {
+        setTitulo((actual) => (actual === textoDelClip.slice(0, 60) ? s.titulo : actual));
+        setGancho(s.gancho ?? null);
+      }
+    } catch {
+      // Queda el principio de lo que se dice.
+    }
+  }
   const duracion = hasta - desde;
 
   function cubrir(d: number, h: number) {
@@ -160,7 +232,16 @@ export function CrearClipGuiado({
     try {
       const r = await crear({
         variables: {
-          input: { marcaId, episodioId, desdeSeg: desde, hastaSeg: hasta, titulo: titulo.trim() || undefined, formato, autoEncuadre },
+          input: {
+            marcaId,
+            episodioId,
+            desdeSeg: desde,
+            hastaSeg: hasta,
+            titulo: titulo.trim() || undefined,
+            gancho: gancho || undefined,
+            formato,
+            autoEncuadre,
+          },
         },
       });
       router.push(`/episodios/${episodioId}/clips/${r.data.crearClipEpisodio._id}`);
@@ -168,6 +249,67 @@ export function CrearClipGuiado({
       setError(e instanceof Error ? e.message : t("errorCrear"));
     }
   }
+
+  // Lo que comparten lo rápido y el último paso del guiado.
+  const listoParaCrear = paso === 0 ? Boolean(tramoEscrito && sugerencia) : true;
+  const campoTitulo = (
+          <label className="block text-sm">
+            <span className="mb-1 block text-white/60">{t("tituloCampo")}</span>
+            <input
+              value={titulo}
+              onChange={(e) => {
+                setTitulo(e.target.value);
+                setTituloTocado(true);
+              }}
+              maxLength={120}
+              className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 outline-none focus:border-ng-violeta"
+            />
+          </label>
+  );
+  const opcionesYCrear = (
+    <>
+          <div>
+            <span className="mb-1 block text-sm text-white/60">{t("formato")}</span>
+            <div className="grid grid-cols-3 gap-2">
+              {FORMATOS.map((f) => (
+                <button
+                  key={f.valor}
+                  onClick={() => setFormato(f.valor)}
+                  className={`rounded-lg border px-2 py-2 text-center ${formato === f.valor ? "border-ng-azul bg-ng-azul/10" : "border-white/10 hover:border-white/25"}`}
+                >
+                  <span className="block text-sm font-medium">{f.etiqueta}</span>
+                  <span className="block text-[11px] text-white/45">{t(`formatos.${f.detalle}`)}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="flex cursor-pointer items-start gap-2 text-sm">
+            <input type="checkbox" checked={autoEncuadre} onChange={(e) => setAutoEncuadre(e.target.checked)} className="mt-1" />
+            <span>
+              {t("autoEncuadre")}
+              <span className="block text-xs text-white/50">{t("autoEncuadreAyuda")}</span>
+            </span>
+          </label>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          {cruces ? (
+            <AvisoCruces
+              cruces={cruces}
+              usuarioId={usuario?._id}
+              textoSeguir={creando ? t("creando") : t("crearIgual")}
+              onSeguir={() => void crearYEditar()}
+              onCancelar={() => setCruces(null)}
+            />
+          ) : (
+            <button
+              onClick={() => void revisarYCrear()}
+              disabled={creando || revisando || !listoParaCrear}
+              className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
+            >
+              {creando ? t("creando") : revisando ? t("revisando") : t("crearYAbrir")}
+            </button>
+          )}
+    </>
+  );
 
   return (
     <div className="rounded-xl border border-ng-violeta/40 bg-ng-violeta/[0.06] p-4">
@@ -178,6 +320,7 @@ export function CrearClipGuiado({
         </button>
       </div>
 
+      {paso > 0 && (
       <ol className="mb-4 flex items-center gap-2 text-xs">
         {PASOS.map((nombre, i) => {
           const n = (i + 1) as 1 | 2 | 3;
@@ -203,9 +346,13 @@ export function CrearClipGuiado({
           );
         })}
       </ol>
+      )}
 
       {paso === 1 && (
         <div className="space-y-3">
+          <button type="button" onClick={() => setPaso(0)} className="text-xs text-white/50 hover:text-white/80">
+            {t("porTiempo.volver")}
+          </button>
           <p className="text-sm text-white/70">{t("buscarPregunta")}</p>
           <input
             autoFocus
@@ -311,7 +458,7 @@ export function CrearClipGuiado({
           <button
             disabled={duracion < 1 || duracion > MAXIMO_SEG}
             onClick={() => {
-              if (!titulo) setTitulo(textoDelClip.slice(0, 60));
+              void sugerirTitulo();
               setPaso(3);
             }}
             className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
@@ -321,60 +468,108 @@ export function CrearClipGuiado({
         </div>
       )}
 
+      {paso === 0 && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            {([
+              ["desde", textoDesde, setTextoDesde, escritoDesde],
+              ["hasta", textoHasta, setTextoHasta, escritoHasta],
+            ] as const).map(([clave, valor, poner, leido]) => (
+              <label key={clave} className="block text-sm">
+                <span className="mb-1 block text-white/60">{t(`porTiempo.${clave}`)}</span>
+                <input
+                  value={valor}
+                  onChange={(e) => poner(e.target.value)}
+                  onBlur={() => leido !== null && poner(tiempoFino(leido))}
+                  placeholder={t("porTiempo.formatoHora")}
+                  inputMode="decimal"
+                  autoFocus={clave === "desde"}
+                  className={`w-full rounded-lg border bg-black/30 px-3 py-2 text-lg tabular-nums outline-none focus:border-ng-violeta ${
+                    leido === null ? "border-red-400/60" : "border-white/15"
+                  }`}
+                />
+              </label>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                const ahora = Math.floor(reproductor.current?.tiempoActual() ?? 0);
+                setTextoDesde(tiempo(ahora));
+                if (escritoHasta === null || escritoHasta <= ahora + 1) setTextoHasta(tiempo(ahora + 30));
+              }}
+              className="rounded-lg border border-white/15 px-2.5 py-1 text-white/70 hover:bg-white/5"
+            >
+              {t("porTiempo.usarVideo")}
+            </button>
+            {DURACIONES.map((d) => (
+              <button
+                key={d}
+                type="button"
+                disabled={escritoDesde === null}
+                onClick={() => escritoDesde !== null && setTextoHasta(tiempoFino(escritoDesde + d))}
+                className={`rounded-lg border px-2.5 py-1 disabled:opacity-40 ${
+                  tramoEscrito && Math.abs(tramoEscrito.hastaSeg - tramoEscrito.desdeSeg - d) < 1
+                    ? "border-ng-violeta text-white"
+                    : "border-white/15 text-white/70 hover:bg-white/5"
+                }`}
+              >
+                {d} s
+              </button>
+            ))}
+            {tramoEscrito && (
+              <button
+                type="button"
+                onClick={() => reproductor.current?.reproducirTramo(sugerencia?.desdeSeg ?? tramoEscrito.desdeSeg, sugerencia?.hastaSeg ?? tramoEscrito.hastaSeg)}
+                className="ml-auto rounded-lg bg-ng-violeta px-3 py-1 font-medium text-ng-tinta hover:brightness-110"
+              >
+                {t("escuchar")}
+              </button>
+            )}
+          </div>
+          {escritoDesde === null || escritoHasta === null ? (
+            <p className="text-xs text-red-400">{t("porTiempo.invalido")}</p>
+          ) : escritoHasta - escritoDesde < 1 ? (
+            <p className="text-xs text-red-400">{t("porTiempo.alReves")}</p>
+          ) : escritoHasta - escritoDesde > MAXIMO_SEG ? (
+            <p className="text-xs text-red-400">{t("maximo")}</p>
+          ) : (
+            <div className="space-y-1 text-xs text-white/60">
+              <p>
+                {t("porTiempo.dura", { dura: tiempoFino((sugerencia?.hastaSeg ?? escritoHasta) - (sugerencia?.desdeSeg ?? escritoDesde)) })}
+                {sugerencia && (Math.abs(sugerencia.desdeSeg - escritoDesde) > 0.05 || Math.abs(sugerencia.hastaSeg - escritoHasta) > 0.05) && (
+                  <span className="text-white/45">
+                    {" · "}
+                    {t("porTiempo.ajustado", { desde: tiempoFino(sugerencia.desdeSeg), hasta: tiempoFino(sugerencia.hastaSeg) })}
+                  </span>
+                )}
+              </p>
+              <AvisoVersionFacebook duracion={escritoHasta - escritoDesde} />
+            </div>
+          )}
+          {tramoEscrito && (
+            <div className="max-h-28 overflow-y-auto rounded-lg bg-black/25 p-3 text-sm leading-6 text-white/80">
+              {sugerencia ? sugerencia.texto || <span className="text-white/40">{t("porTiempo.sinPalabras")}</span> : <span className="text-white/40">{t("cargandoTranscripcion")}</span>}
+            </div>
+          )}
+          {campoTitulo}
+          {tramoEscrito && !sugerencia && sugerenciaQ.loading && <p className="-mt-2 text-xs text-white/45">{t("porTiempo.pensando")}</p>}
+          {sugerencia?.conIa && !tituloTocado && <p className="-mt-2 text-xs text-ng-violeta">{t("porTiempo.tituloIa")}</p>}
+          {sugerencia?.gancho && <p className="text-xs text-white/50">{t("porTiempo.gancho", { gancho: sugerencia.gancho })}</p>}
+          {opcionesYCrear}
+          <button type="button" onClick={() => setPaso(1)} className="w-full text-center text-xs text-white/50 underline-offset-2 hover:text-white/80 hover:underline">
+            {t("porTiempo.buscarFrase")}
+          </button>
+        </div>
+      )}
       {paso === 3 && (
         <div className="space-y-4">
-          <label className="block text-sm">
-            <span className="mb-1 block text-white/60">{t("tituloCampo")}</span>
-            <input
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              maxLength={120}
-              className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 outline-none focus:border-ng-violeta"
-            />
-          </label>
-          <div>
-            <span className="mb-1 block text-sm text-white/60">{t("formato")}</span>
-            <div className="grid grid-cols-3 gap-2">
-              {FORMATOS.map((f) => (
-                <button
-                  key={f.valor}
-                  onClick={() => setFormato(f.valor)}
-                  className={`rounded-lg border px-2 py-2 text-center ${formato === f.valor ? "border-ng-azul bg-ng-azul/10" : "border-white/10 hover:border-white/25"}`}
-                >
-                  <span className="block text-sm font-medium">{f.etiqueta}</span>
-                  <span className="block text-[11px] text-white/45">{t(`formatos.${f.detalle}`)}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <label className="flex cursor-pointer items-start gap-2 text-sm">
-            <input type="checkbox" checked={autoEncuadre} onChange={(e) => setAutoEncuadre(e.target.checked)} className="mt-1" />
-            <span>
-              {t("autoEncuadre")}
-              <span className="block text-xs text-white/50">{t("autoEncuadreAyuda")}</span>
-            </span>
-          </label>
+          {campoTitulo}
           <p className="text-xs text-white/50">
             {tiempo(desde)} → {tiempo(hasta)} ({duracion.toFixed(1)} s)
           </p>
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          {cruces ? (
-            <AvisoCruces
-              cruces={cruces}
-              usuarioId={usuario?._id}
-              textoSeguir={creando ? t("creando") : t("crearIgual")}
-              onSeguir={() => void crearYEditar()}
-              onCancelar={() => setCruces(null)}
-            />
-          ) : (
-            <button
-              onClick={() => void revisarYCrear()}
-              disabled={creando || revisando}
-              className="w-full rounded-lg bg-ng-violeta px-3 py-2 text-sm font-medium text-ng-tinta hover:brightness-110 disabled:opacity-50"
-            >
-              {creando ? t("creando") : revisando ? t("revisando") : t("crearYAbrir")}
-            </button>
-          )}
+          {opcionesYCrear}
         </div>
       )}
     </div>

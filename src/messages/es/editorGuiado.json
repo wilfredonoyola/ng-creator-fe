@@ -33,5 +33,21 @@
   "creando": "Creando…",
   "crearIgual": "Crear igual",
   "revisando": "Revisando…",
-  "crearYAbrir": "Crear y abrir el editor"
+  "crearYAbrir": "Crear y abrir el editor",
+  "porTiempo": {
+    "desde": "Desde",
+    "hasta": "Hasta",
+    "formatoHora": "h:mm:ss",
+    "usarVideo": "Donde está el video",
+    "invalido": "Escribilo como 1:02:30, 62:30 o 3750.",
+    "alReves": "El final tiene que ser después del inicio.",
+    "dura": "Dura {dura}",
+    "ajustado": "Ajustado a las palabras: {desde} → {hasta}",
+    "pensando": "Pensando el título…",
+    "tituloIa": "✨ Título sugerido por la IA: cambialo si querés.",
+    "gancho": "Gancho sugerido (lo prendés en el editor): {gancho}",
+    "sinPalabras": "En ese tramo no se dice nada.",
+    "buscarFrase": "¿No sabés el minuto? Buscá una frase en la transcripción",
+    "volver": "← Poner el tiempo a mano"
+  }
 }
