@@ -237,7 +237,8 @@ export function PanelEditar({
 
       <Seccion titulo={tr("editar.enElEpisodio")}>
         <BarraDelTramo desde={desde} hasta={hasta} t={t} duracionEpisodio={duracionEpisodio} onCambiar={onCambiarTramo} deshabilitado={!puedeEditar} />
-        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
+        {/* Uno abajo del otro: el panel es angosto aun en pantallas grandes, y de a dos se pisaban. */}
+        <div className="grid gap-3">
           <AjusteFino etiqueta={tClip("empieza")} valor={desde} onCambio={(v) => onCambiarTramo(Math.min(v, hasta - 1), hasta)} disabled={!puedeEditar} />
           <AjusteFino etiqueta={tClip("termina")} valor={hasta} onCambio={(v) => onCambiarTramo(desde, Math.max(v, desde + 1))} disabled={!puedeEditar} />
         </div>
