@@ -2635,6 +2635,23 @@ export const CRUCES_DE_TRAMO = gql`
 `;
 
 /** Dónde se dice una frase en el episodio: el paso 1 del "Crear clip" guiado. */
+/**
+ * Para crear un clip a mano por tiempo (h:mm:ss): el tramo llevado a las
+ * palabras, lo que se dice, y un título y un gancho de la IA. No guarda nada.
+ */
+export const SUGERIR_CLIP_EPISODIO = gql`
+  query SugerirClipEpisodio($episodioId: ID!, $marcaId: String!, $desdeSeg: Float!, $hastaSeg: Float!) {
+    sugerirClipEpisodio(episodioId: $episodioId, marcaId: $marcaId, desdeSeg: $desdeSeg, hastaSeg: $hastaSeg) {
+      desdeSeg
+      hastaSeg
+      texto
+      titulo
+      gancho
+      conIa
+    }
+  }
+`;
+
 export const BUSCAR_EN_EPISODIO = gql`
   query BuscarEnEpisodio($id: ID!, $marcaId: String!, $texto: String!) {
     buscarEnEpisodio(id: $id, marcaId: $marcaId, texto: $texto) {
