@@ -36,10 +36,10 @@ import { ESTILO_TEXTO_POR_DEFECTO, resolverEstilo, type EstiloTexto } from "@/li
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
 import { calidadDePosiciones } from "@/lib/calidad";
 import { plantillaDelClip } from "@/lib/plantilla-clip";
-import { duracionEfectiva, normalizarCortes, type Corte } from "@/lib/cortes";
+import { duracionEfectiva, estaCortado, normalizarCortes, type Corte } from "@/lib/cortes";
 import { borradorDelClip, type Borrador } from "@/components/episodios/editor/borrador";
 import { escribiendo, useHistorial } from "@/components/episodios/editor/historial";
-import { useReproductor } from "@/components/episodios/editor/reproductor";
+import { CUADRO_SEG, useReproductor } from "@/components/episodios/editor/reproductor";
 import { MAXIMO_TEXTOS, disenosDeTexto, textoNuevo } from "@/components/episodios/PanelTextos";
 import { useGuardado } from "@/components/episodios/editor/useGuardado";
 import { BarraSuperior } from "@/components/episodios/editor/BarraSuperior";
@@ -145,6 +145,38 @@ export default function EditorClipPage({
 
   // ---- El video ----
   const reproductor = useReproductor({ desde: b?.desdeSeg ?? 0, hasta: b?.hastaSeg ?? 0, cortes: b?.cortes ?? SIN_CORTES });
+
+  // ---- El teclado sobre el video: para dividir justo donde va ----
+  // Espacio reproduce o pausa; ← → corren el cabezal un cuadro (con Shift, un
+  // segundo); S divide en el cabezal, como el botón Dividir.
+  const { alternar, correr, reloj } = reproductor;
+  const tramoB = b ? { desde: b.desdeSeg, hasta: b.hastaSeg, cortes: b.cortes } : null;
+  const tramoTeclas = useRef(tramoB);
+  tramoTeclas.current = tramoB;
+  useEffect(() => {
+    const teclas = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || escribiendo(e.target)) return;
+      const objetivo = e.target instanceof HTMLElement ? e.target : null;
+      if (e.key === " ") {
+        // Sobre un botón, el espacio es apretarlo.
+        if (objetivo?.closest("button, a, [role=button], [role=radio]")) return;
+        alternar();
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        // Un deslizador o un grupo con flechas propias se queda con ellas.
+        if (objetivo?.closest("input, [role=radiogroup], [role=tablist], [role=slider]")) return;
+        const seg = e.shiftKey ? 1 : CUADRO_SEG;
+        correr(e.key === "ArrowLeft" ? -seg : seg);
+      } else if ((e.key === "s" || e.key === "S") && opera) {
+        const tr = tramoTeclas.current;
+        const t = reloj.get();
+        if (!tr || t <= tr.desde + 0.1 || t >= tr.hasta - 0.1 || estaCortado(t, tr.cortes)) return;
+        setSeleccion((x) => ({ puntos: [...x.puntos.filter((p) => Math.abs(p - t) > 0.05), Math.round(t * 1000) / 1000], elegido: null }));
+      } else return;
+      e.preventDefault();
+    };
+    window.addEventListener("keydown", teclas);
+    return () => window.removeEventListener("keydown", teclas);
+  }, [alternar, correr, reloj, opera]);
 
   // Deshacer y rehacer con el teclado, salvo mientras se escribe en un campo.
   const { deshacer, rehacer } = historial;

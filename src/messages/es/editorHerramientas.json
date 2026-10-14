@@ -63,7 +63,7 @@
     "empiezaAca": "Empieza acá",
     "terminaAca": "Termina acá",
     "cortes": "Cortes · {n}",
-    "ayuda": "Dividir parte el video en el cabezal. Tocá un tramo (o arrastrá) en la línea de tiempo y quitalo. Lo rayado no sale; la ✕ lo devuelve.",
+    "ayuda": "Dividir parte el video en el cabezal. Para que caiga justo: ← → lo corren un cuadro (Shift: un segundo), espacio reproduce y S divide. Tocá un tramo (o arrastrá) en la línea de tiempo y quitalo. Lo rayado no sale; la ✕ lo devuelve.",
     "enElEpisodio": "En el episodio",
     "velocidad": "Velocidad",
     "duraFinal": "Dura {antes} → {despues} a {velocidad}",
