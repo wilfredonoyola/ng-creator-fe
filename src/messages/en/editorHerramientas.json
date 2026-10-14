@@ -93,6 +93,7 @@
     "zoom": "Zoom · {zoom}%",
     "zoomEtiqueta": "Box zoom",
     "todoElAlto": "Full height",
+    "todosTodoElAlto": "Every segment at full height",
     "zoomAyuda": "At 100% the box uses the video's full height. Raise it only to get closer."
   },
   "auto": {
