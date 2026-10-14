@@ -9,12 +9,26 @@ import {
   CLIENTES_SUPERADMIN,
   MARCAS_ACTIVAS,
 } from "@/graphql/operations";
-import { fechaCompleta } from "@/lib/time";
+import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 
 type Cliente = {
   propietarios: string[];
   miembros: number;
   episodios: number;
+  clips: number;
+  horasProcesadas: number;
+  costoUsd: number;
+  tokensIa: number;
+  ultimoAccesoEn?: string | null;
+  ultimoEpisodioEn?: string | null;
+  soporteAbiertos: number;
+  prueba?: {
+    desde: string;
+    diasEnPrueba: number;
+    topeEpisodios: number;
+    episodiosUsados: number;
+    agotada: boolean;
+  } | null;
   marca: {
     _id: string;
     nombre: string;
@@ -25,37 +39,147 @@ type Cliente = {
   };
 };
 
-type Filtro = "todos" | "activos" | "demo" | "archivados";
+const FILTROS = ["activos", "enPrueba", "pruebaAgotada", "demo", "archivados", "todos"] as const;
+type Filtro = (typeof FILTROS)[number];
+
+const COLUMNAS = ["agencia", "correos", "episodios", "horas", "tokens", "gasto", "prueba", "ultimoAcceso", "tickets"] as const;
+type Columna = (typeof COLUMNAS)[number];
+/** Las de números se alinean a la derecha y arrancan de mayor a menor. */
+const NUMERICAS: ReadonlySet<Columna> = new Set(["episodios", "horas", "tokens", "gasto", "prueba", "ultimoAcceso", "tickets"]);
+
+function pasaFiltro(c: Cliente, f: Filtro): boolean {
+  switch (f) {
+    case "activos":
+      return !c.marca.archivadaEn;
+    case "archivados":
+      return !!c.marca.archivadaEn;
+    case "demo":
+      return c.marca.demo;
+    case "enPrueba":
+      return !!c.prueba && !c.prueba.agotada && !c.marca.archivadaEn;
+    case "pruebaAgotada":
+      return !!c.prueba?.agotada;
+    default:
+      return true;
+  }
+}
+
+function valorDe(c: Cliente, col: Columna): string | number {
+  switch (col) {
+    case "agencia":
+      return c.marca.nombre.toLowerCase();
+    case "correos":
+      return (c.propietarios[0] ?? "").toLowerCase();
+    case "episodios":
+      return c.episodios;
+    case "horas":
+      return c.horasProcesadas;
+    case "tokens":
+      return c.tokensIa;
+    case "gasto":
+      return c.costoUsd;
+    case "prueba":
+      return c.prueba ? c.prueba.diasEnPrueba : -1;
+    case "ultimoAcceso":
+      return c.ultimoAccesoEn ? new Date(c.ultimoAccesoEn).getTime() : 0;
+    case "tickets":
+      return c.soporteAbiertos;
+  }
+}
+
+const usd = (n: number) => `$${n.toFixed(2)}`;
+const horas = (n: number) => n.toFixed(1);
+
+/** La tabla tal como se ve (filtro y orden), para abrirla en una planilla. */
+function descargarCsv(clientes: Cliente[]) {
+  const celda = (v: string | number | null | undefined) => {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const filas = [
+    ["agencia", "correos", "personas", "episodios", "clips", "horas", "tokens_ia", "gasto_usd", "dias_en_prueba", "episodios_usados", "tope", "prueba_agotada", "ultimo_acceso", "tickets_abiertos", "demo", "apagado", "creada"],
+    ...clientes.map((c) => [
+      c.marca.nombre,
+      c.propietarios.join(" "),
+      c.miembros,
+      c.episodios,
+      c.clips,
+      horas(c.horasProcesadas),
+      c.tokensIa,
+      c.costoUsd.toFixed(2),
+      c.prueba?.diasEnPrueba ?? "",
+      c.prueba?.episodiosUsados ?? "",
+      c.prueba?.topeEpisodios ?? "",
+      c.prueba ? (c.prueba.agotada ? "si" : "no") : "",
+      c.ultimoAccesoEn ?? "",
+      c.soporteAbiertos,
+      c.marca.demo ? "si" : "no",
+      c.marca.archivadaEn ? "si" : "no",
+      c.marca.createdAt,
+    ]),
+  ];
+  const csv = filas.map((f) => f.map(celda).join(",")).join("\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `clientes-clipfine-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 /**
- * Los clientes de Clipfine (cada marca): quién es el dueño, cuánto tienen, y
- * desde acá se renombran, se marcan como demo, se les ajusta el cupo de
- * episodios y se apagan o prenden.
+ * Los clientes de Clipfine (cada marca) en una tabla: quién es el dueño, cuánto
+ * usa y cuánto nos cuesta, cómo va su prueba y si tiene tickets abiertos. Al
+ * tocar una fila se abre su panel: renombrar, marcar como demo, ajustar el
+ * cupo de episodios (habilitar más videos) y apagar o prender la cuenta.
  */
 export default function ClientesSuperadmin() {
   const t = useTranslations("superadmin.clientes");
+  const locale = useLocale();
+  const ahora = useAhora(60_000);
   const { data, loading, error } = useQuery<{ clientesSuperadmin: Cliente[] }>(CLIENTES_SUPERADMIN, {
     fetchPolicy: "cache-and-network",
   });
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState<Filtro>("activos");
+  const [orden, setOrden] = useState<{ col: Columna; desc: boolean }>({ col: "ultimoAcceso", desc: true });
+  const [elegidoId, setElegidoId] = useState<string | null>(null);
 
-  const todos = data?.clientesSuperadmin ?? [];
+  const todos = useMemo(() => data?.clientesSuperadmin ?? [], [data]);
   const clientes = useMemo(() => {
     const q = busqueda.trim().toLowerCase();
-    return todos.filter((c) => {
-      if (filtro === "activos" && c.marca.archivadaEn) return false;
-      if (filtro === "archivados" && !c.marca.archivadaEn) return false;
-      if (filtro === "demo" && !c.marca.demo) return false;
+    const filtrados = todos.filter((c) => {
+      if (!pasaFiltro(c, filtro)) return false;
       if (!q) return true;
       return c.marca.nombre.toLowerCase().includes(q) || c.propietarios.some((p) => p.toLowerCase().includes(q));
     });
-  }, [todos, busqueda, filtro]);
+    const signo = orden.desc ? -1 : 1;
+    return [...filtrados].sort((a, b) => {
+      const va = valorDe(a, orden.col);
+      const vb = valorDe(b, orden.col);
+      if (va < vb) return -signo;
+      if (va > vb) return signo;
+      return a.marca.nombre.localeCompare(b.marca.nombre);
+    });
+  }, [todos, busqueda, filtro, orden]);
 
-  const cuenta = (f: Filtro) =>
-    f === "todos"
-      ? todos.length
-      : todos.filter((c) => (f === "activos" ? !c.marca.archivadaEn : f === "archivados" ? !!c.marca.archivadaEn : c.marca.demo)).length;
+  const elegido = todos.find((c) => c.marca._id === elegidoId) ?? null;
+  const cuenta = (f: Filtro) => todos.filter((c) => pasaFiltro(c, f)).length;
+
+  function ordenarPor(col: Columna) {
+    setOrden((o) => (o.col === col ? { col, desc: !o.desc } : { col, desc: NUMERICAS.has(col) }));
+  }
+
+  const totales = useMemo(
+    () => ({
+      episodios: clientes.reduce((s, c) => s + c.episodios, 0),
+      horas: clientes.reduce((s, c) => s + c.horasProcesadas, 0),
+      tokens: clientes.reduce((s, c) => s + c.tokensIa, 0),
+      gasto: clientes.reduce((s, c) => s + c.costoUsd, 0),
+      tickets: clientes.reduce((s, c) => s + c.soporteAbiertos, 0),
+    }),
+    [clientes],
+  );
 
   return (
     <>
@@ -73,7 +197,7 @@ export default function ClientesSuperadmin() {
           className="w-full max-w-sm rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2 text-sm outline-none transition focus:border-ng-azul"
         />
         <div className="flex flex-wrap gap-1.5">
-          {(["activos", "demo", "archivados", "todos"] as const).map((f) => (
+          {FILTROS.map((f) => (
             <button
               key={f}
               onClick={() => setFiltro(f)}
@@ -86,6 +210,14 @@ export default function ClientesSuperadmin() {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={() => descargarCsv(clientes)}
+          disabled={clientes.length === 0}
+          className="ml-auto rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/70 transition hover:bg-white/5 hover:text-white disabled:opacity-40"
+        >
+          {t("exportarCsv")}
+        </button>
       </div>
 
       {error && (
@@ -94,22 +226,131 @@ export default function ClientesSuperadmin() {
         </div>
       )}
 
+      {elegido && <PanelCliente key={elegido.marca._id} cliente={elegido} onCerrar={() => setElegidoId(null)} />}
+
       {loading && !data ? (
         <p className="text-sm text-white/40">{t("cargando")}</p>
       ) : clientes.length === 0 ? (
         <p className="text-sm text-white/40">{t("vacio")}</p>
       ) : (
-        <ul className="space-y-3">
-          {clientes.map((c) => (
-            <FilaCliente key={c.marca._id} cliente={c} />
-          ))}
-        </ul>
+        <>
+          <p className="mb-2 text-xs text-white/40">{t("ayudaTabla")}</p>
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+            <table className="w-full min-w-[960px] text-left text-sm">
+              <thead className="border-b border-white/10 bg-white/[0.03] text-xs text-white/50">
+                <tr>
+                  {COLUMNAS.map((col) => (
+                    <th
+                      key={col}
+                      scope="col"
+                      aria-sort={orden.col === col ? (orden.desc ? "descending" : "ascending") : "none"}
+                      className={`whitespace-nowrap px-3 py-2 font-medium ${NUMERICAS.has(col) ? "text-right" : ""}`}
+                    >
+                      <button type="button" onClick={() => ordenarPor(col)} className="inline-flex items-center gap-1 hover:text-white">
+                        {t(`columnas.${col}`)}
+                        <span aria-hidden className={orden.col === col ? "text-marca" : "text-white/20"}>
+                          {orden.col === col && !orden.desc ? "▲" : "▼"}
+                        </span>
+                      </button>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {clientes.map((c) => {
+                  const archivada = !!c.marca.archivadaEn;
+                  const activo = c.marca._id === elegidoId;
+                  return (
+                    <tr
+                      key={c.marca._id}
+                      onClick={() => setElegidoId(activo ? null : c.marca._id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setElegidoId(activo ? null : c.marca._id);
+                        }
+                      }}
+                      tabIndex={0}
+                      aria-selected={activo}
+                      className={`cursor-pointer border-b border-white/5 align-top transition last:border-0 hover:bg-white/[0.04] focus:bg-white/[0.04] focus:outline-none ${
+                        activo ? "bg-marca/10" : ""
+                      } ${archivada ? "opacity-60" : ""}`}
+                    >
+                      <td className="px-3 py-2.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="font-medium">{c.marca.nombre}</span>
+                          {c.marca.demo && <span className="rounded-full bg-marca px-1.5 py-0.5 text-[10px] font-bold uppercase text-ng-tinta">{t("demo")}</span>}
+                          {archivada && <span className="rounded-full border border-red-400/40 px-1.5 py-0.5 text-[10px] text-red-300">{t("apagado")}</span>}
+                        </div>
+                        <p className="mt-0.5 text-xs text-white/40" title={fechaCompleta(c.marca.createdAt, locale)}>
+                          {t("resumen", { miembros: c.miembros, episodios: c.episodios })}
+                        </p>
+                      </td>
+                      <td className="px-3 py-2.5 text-xs text-white/70">
+                        {c.propietarios.length > 0 ? c.propietarios.map((p) => <div key={p}>{p}</div>) : <span className="text-white/40">{t("sinPropietario")}</span>}
+                      </td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">
+                        {c.episodios}
+                        <div className="text-xs text-white/40">{t("clips", { n: c.clips })}</div>
+                      </td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{horas(c.horasProcesadas)}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{c.tokensIa.toLocaleString(locale)}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{usd(c.costoUsd)}</td>
+                      <td className="px-3 py-2.5 text-right">
+                        {c.prueba ? (
+                          <div className="flex flex-col items-end gap-1">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                                c.prueba.agotada ? "border border-red-400/40 text-red-300" : "bg-marca/15 text-marca"
+                              }`}
+                            >
+                              {c.prueba.agotada ? t("prueba.agotada") : t("prueba.enPrueba")}
+                            </span>
+                            <span className="whitespace-nowrap text-xs text-white/50">
+                              {t("prueba.detalle", { dias: c.prueba.diasEnPrueba, usados: c.prueba.episodiosUsados, tope: c.prueba.topeEpisodios })}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-white/40">{t("prueba.sinTope")}</span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2.5 text-right text-xs text-white/60" title={c.ultimoAccesoEn ? fechaCompleta(c.ultimoAccesoEn, locale) : undefined}>
+                        {c.ultimoAccesoEn ? tiempoRelativo(c.ultimoAccesoEn, ahora, locale) : t("nunca")}
+                      </td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">
+                        {c.soporteAbiertos > 0 ? (
+                          <span className="rounded-full bg-marca px-2 py-0.5 text-xs font-bold text-ng-tinta">{c.soporteAbiertos}</span>
+                        ) : (
+                          <span className="text-white/30">0</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot className="border-t border-white/10 bg-white/[0.03] text-xs text-white/60">
+                <tr>
+                  <td className="px-3 py-2 font-medium" colSpan={2}>
+                    {t("totales", { n: clientes.length })}
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums">{totales.episodios}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{horas(totales.horas)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{totales.tokens.toLocaleString(locale)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{usd(totales.gasto)}</td>
+                  <td />
+                  <td />
+                  <td className="px-3 py-2 text-right tabular-nums">{totales.tickets}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </>
       )}
     </>
   );
 }
 
-function FilaCliente({ cliente }: { cliente: Cliente }) {
+function PanelCliente({ cliente, onCerrar }: { cliente: Cliente; onCerrar: () => void }) {
   const t = useTranslations("superadmin.clientes");
   const locale = useLocale();
   const { marca } = cliente;
@@ -162,7 +403,7 @@ function FilaCliente({ cliente }: { cliente: Cliente }) {
   }
 
   return (
-    <li className={`rounded-xl border p-4 ${archivada ? "border-white/5 bg-white/[0.01] opacity-70" : "border-white/10 bg-white/[0.03]"}`}>
+    <div className={`mb-4 rounded-xl border p-4 ${archivada ? "border-white/10 bg-white/[0.02]" : "border-marca/40 bg-white/[0.03]"}`}>
       <div className="flex flex-wrap items-center gap-2">
         <input
           value={nombre}
@@ -172,6 +413,9 @@ function FilaCliente({ cliente }: { cliente: Cliente }) {
         />
         {marca.demo && <span className="rounded-full bg-marca px-2 py-0.5 text-[11px] font-bold uppercase text-ng-tinta">{t("demo")}</span>}
         {archivada && <span className="rounded-full border border-red-400/40 px-2 py-0.5 text-[11px] text-red-300">{t("apagado")}</span>}
+        <button type="button" onClick={onCerrar} className="ml-auto rounded-lg px-2 py-1 text-sm text-white/50 hover:bg-white/5 hover:text-white">
+          {t("cerrar")}
+        </button>
       </div>
 
       <p className="mt-2 text-xs text-white/45">
@@ -233,6 +477,6 @@ function FilaCliente({ cliente }: { cliente: Cliente }) {
         </div>
       </div>
       {mensaje && <p className={`mt-2 text-xs ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}
-    </li>
+    </div>
   );
 }

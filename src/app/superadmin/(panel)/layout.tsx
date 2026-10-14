@@ -10,7 +10,9 @@ import { useSesion } from "@/lib/sesion";
 import { useSoySuperadmin } from "@/lib/superadmin";
 
 const SECCIONES = [
+  { href: "/superadmin", clave: "inicio" },
   { href: "/superadmin/clientes", clave: "clientes" },
+  { href: "/superadmin/soporte", clave: "soporte" },
   { href: "/superadmin/usuarios", clave: "usuarios" },
   { href: "/superadmin/origenes", clave: "origenes" },
   { href: "/superadmin/sonidos", clave: "sonidos" },
@@ -57,7 +59,7 @@ export default function SuperadminLayout({ children }: { children: React.ReactNo
     <div className="min-h-screen bg-ng-fondo">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-ng-fondo/95 backdrop-blur" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <Link href="/superadmin/clientes" className="flex items-center gap-2">
+          <Link href="/superadmin" className="flex items-center gap-2">
             <LogoNG tamano={26} soloIcono />
             <span className="rounded-full bg-marca px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ng-tinta">Superadmin</span>
           </Link>
@@ -67,7 +69,7 @@ export default function SuperadminLayout({ children }: { children: React.ReactNo
                 key={s.href}
                 href={s.href}
                 className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm transition ${
-                  pathname.startsWith(s.href) ? "bg-white/10 text-white" : "text-white/60 hover:text-white"
+                  (s.href === "/superadmin" ? pathname === s.href : pathname.startsWith(s.href)) ? "bg-white/10 text-white" : "text-white/60 hover:text-white"
                 }`}
               >
                 {t(`secciones.${s.clave}`)}

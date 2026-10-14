@@ -1,6 +1,8 @@
 {
   "secciones": {
+    "inicio": "Inicio",
     "clientes": "Clientes",
+    "soporte": "Soporte",
     "usuarios": "Usuarios",
     "origenes": "Cómo nos conocieron",
     "sonidos": "Sonidos"
@@ -24,7 +26,7 @@
   },
   "clientes": {
     "titulo": "Clientes",
-    "subtitulo": "Cada marca de Clipfine: quién la tiene, cuánto usa, si es de demo y cuántos episodios puede subir. Apagar un cliente le corta el acceso a todo su equipo sin borrar nada.",
+    "subtitulo": "Cada marca de Clipfine: quién la tiene, cuánto usa y cuánto nos cuesta, cómo va su prueba y si tiene tickets abiertos. Tocá una fila para renombrarla, marcarla como demo, darle más episodios o apagarla. Apagar un cliente le corta el acceso a todo su equipo sin borrar nada.",
     "buscar": "Buscar por marca o correo",
     "cargando": "Cargando…",
     "vacio": "No hay clientes con ese filtro.",
@@ -47,9 +49,34 @@
     "confirmarApagar": "¿Apagar {nombre}? Nadie de su equipo va a poder entrar hasta que la prendas de nuevo. No se borra nada.",
     "filtros": {
       "activos": "Activos",
+      "enPrueba": "En prueba",
+      "pruebaAgotada": "Prueba agotada",
       "demo": "Demo",
       "archivados": "Apagados",
       "todos": "Todos"
+    },
+    "cerrar": "Cerrar",
+    "exportarCsv": "Exportar CSV",
+    "ayudaTabla": "Tocá un encabezado para ordenar y una fila para editar el cliente.",
+    "nunca": "Nunca",
+    "clips": "{n, plural, one {1 clip} other {# clips}}",
+    "totales": "{n, plural, one {1 cliente} other {# clientes}}",
+    "columnas": {
+      "agencia": "Agencia",
+      "correos": "Correo",
+      "episodios": "Episodios",
+      "horas": "Horas",
+      "tokens": "Tokens IA",
+      "gasto": "Gasto USD",
+      "prueba": "Prueba",
+      "ultimoAcceso": "Último acceso",
+      "tickets": "Tickets"
+    },
+    "prueba": {
+      "enPrueba": "En prueba",
+      "agotada": "Agotada",
+      "sinTope": "Sin tope",
+      "detalle": "{dias, plural, one {1 día} other {# días}} · {usados}/{tope}"
     }
   },
   "usuarios": {
@@ -87,5 +114,67 @@
     "vacio": "Todavía no hay sonidos de este tipo.",
     "subir": "Subir a la biblioteca",
     "subirBoton": "Subir sonido"
+  },
+  "soporte": {
+    "titulo": "Soporte",
+    "subtitulo": "Las conversaciones del chat que la persona le pasó al equipo (también llegan por correo a support@clipfine.io). Respondé por correo y movelas a en progreso o cerradas.",
+    "pestanas": {
+      "abiertos": "Abiertos",
+      "enProgreso": "En progreso",
+      "cerrados": "Cerrados"
+    },
+    "filtroCliente": "Filtrar por cliente",
+    "todosLosClientes": "Todos los clientes",
+    "cargando": "Cargando…",
+    "vacio": {
+      "abiertos": "No hay tickets abiertos.",
+      "enProgreso": "No hay tickets en progreso.",
+      "cerrados": "Todavía no hay tickets cerrados."
+    },
+    "sinCorreo": "Sin correo",
+    "mensajes": "{n, plural, one {1 mensaje} other {# mensajes}}",
+    "pagina": "Escribió desde {pagina}",
+    "persona": "Persona",
+    "asistente": "Asistente",
+    "responder": "Responder por correo",
+    "asuntoCorreo": "Soporte de Clipfine · {marcas}",
+    "acciones": {
+      "enProgreso": "Pasar a en progreso",
+      "cerrar": "Cerrar",
+      "reabrir": "Reabrir"
+    },
+    "error": "No se pudo cambiar."
+  },
+  "metricas": {
+    "titulo": "Inicio",
+    "subtitulo": "Cómo va Clipfine: clientes, uso, lo que nos cuesta, pruebas y soporte.",
+    "periodo": "Período",
+    "dias": "{n} días",
+    "cargando": "Cargando…",
+    "notaPeriodo": "Nuevos, activos, registros, episodios, horas, gasto y tokens son de los últimos {n} días; el resto es de hoy.",
+    "tarjetas": {
+      "clientes": "Clientes",
+      "clientesNuevos": "Clientes nuevos",
+      "clientesActivos": "Clientes activos",
+      "usuariosActivos": "Personas activas",
+      "registros": "Registros",
+      "episodios": "Episodios",
+      "horas": "Horas procesadas",
+      "gasto": "Gasto USD",
+      "tokens": "Tokens IA",
+      "enPrueba": "En prueba",
+      "pruebasAgotadas": "Pruebas agotadas",
+      "ticketsAbiertos": "Tickets abiertos"
+    },
+    "porDia": "Por día",
+    "series": {
+      "episodios": "Episodios",
+      "horas": "Horas",
+      "costoUsd": "Gasto USD",
+      "registros": "Registros"
+    },
+    "total": "Total: {valor}",
+    "maximo": "Máximo: {valor}",
+    "sinDatos": "Sin datos en este período."
   }
 }

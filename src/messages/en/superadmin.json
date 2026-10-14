@@ -1,6 +1,8 @@
 {
   "secciones": {
+    "inicio": "Home",
     "clientes": "Clients",
+    "soporte": "Support",
     "usuarios": "Users",
     "origenes": "How people found us",
     "sonidos": "Sounds"
@@ -24,7 +26,7 @@
   },
   "clientes": {
     "titulo": "Clients",
-    "subtitulo": "Every Clipfine brand: who owns it, how much it uses, whether it's a demo and how many episodes it can upload. Turning a client off cuts access for its whole team without deleting anything.",
+    "subtitulo": "Every Clipfine brand: who owns it, how much it uses and what it costs us, how its trial is going and whether it has open tickets. Click a row to rename it, mark it as demo, give it more episodes or turn it off. Turning a client off cuts access for its whole team without deleting anything.",
     "buscar": "Search by brand or email",
     "cargando": "Loading…",
     "vacio": "No clients with that filter.",
@@ -47,9 +49,34 @@
     "confirmarApagar": "Turn off {nombre}? Nobody on its team will be able to get in until you turn it back on. Nothing is deleted.",
     "filtros": {
       "activos": "Active",
+      "enPrueba": "On trial",
+      "pruebaAgotada": "Trial used up",
       "demo": "Demo",
-      "archivados": "Off",
+      "archivados": "Turned off",
       "todos": "All"
+    },
+    "cerrar": "Close",
+    "exportarCsv": "Export CSV",
+    "ayudaTabla": "Click a header to sort and a row to edit the client.",
+    "nunca": "Never",
+    "clips": "{n, plural, one {1 clip} other {# clips}}",
+    "totales": "{n, plural, one {1 client} other {# clients}}",
+    "columnas": {
+      "agencia": "Agency",
+      "correos": "Email",
+      "episodios": "Episodes",
+      "horas": "Hours",
+      "tokens": "AI tokens",
+      "gasto": "Spend USD",
+      "prueba": "Trial",
+      "ultimoAcceso": "Last access",
+      "tickets": "Tickets"
+    },
+    "prueba": {
+      "enPrueba": "On trial",
+      "agotada": "Used up",
+      "sinTope": "No cap",
+      "detalle": "{dias, plural, one {1 day} other {# days}} · {usados}/{tope}"
     }
   },
   "usuarios": {
@@ -87,5 +114,67 @@
     "vacio": "There are no sounds of this type yet.",
     "subir": "Upload to the library",
     "subirBoton": "Upload sound"
+  },
+  "soporte": {
+    "titulo": "Support",
+    "subtitulo": "Chat conversations the person handed to the team (they also arrive by email at support@clipfine.io). Reply by email and move them to in progress or closed.",
+    "pestanas": {
+      "abiertos": "Open",
+      "enProgreso": "In progress",
+      "cerrados": "Closed"
+    },
+    "filtroCliente": "Filter by client",
+    "todosLosClientes": "All clients",
+    "cargando": "Loading…",
+    "vacio": {
+      "abiertos": "No open tickets.",
+      "enProgreso": "No tickets in progress.",
+      "cerrados": "No closed tickets yet."
+    },
+    "sinCorreo": "No email",
+    "mensajes": "{n, plural, one {1 message} other {# messages}}",
+    "pagina": "Wrote from {pagina}",
+    "persona": "Person",
+    "asistente": "Assistant",
+    "responder": "Reply by email",
+    "asuntoCorreo": "Clipfine support · {marcas}",
+    "acciones": {
+      "enProgreso": "Move to in progress",
+      "cerrar": "Close",
+      "reabrir": "Reopen"
+    },
+    "error": "Couldn't change it."
+  },
+  "metricas": {
+    "titulo": "Home",
+    "subtitulo": "How Clipfine is doing: clients, usage, what it costs us, trials and support.",
+    "periodo": "Period",
+    "dias": "{n} days",
+    "cargando": "Loading…",
+    "notaPeriodo": "New, active, sign-ups, episodes, hours, spend and tokens cover the last {n} days; the rest is as of today.",
+    "tarjetas": {
+      "clientes": "Clients",
+      "clientesNuevos": "New clients",
+      "clientesActivos": "Active clients",
+      "usuariosActivos": "Active people",
+      "registros": "Sign-ups",
+      "episodios": "Episodes",
+      "horas": "Hours processed",
+      "gasto": "Spend USD",
+      "tokens": "AI tokens",
+      "enPrueba": "On trial",
+      "pruebasAgotadas": "Trials used up",
+      "ticketsAbiertos": "Open tickets"
+    },
+    "porDia": "Per day",
+    "series": {
+      "episodios": "Episodes",
+      "horas": "Hours",
+      "costoUsd": "Spend USD",
+      "registros": "Sign-ups"
+    },
+    "total": "Total: {valor}",
+    "maximo": "Max: {valor}",
+    "sinDatos": "No data in this period."
   }
 }

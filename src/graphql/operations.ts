@@ -416,6 +416,20 @@ export const CLIENTES_SUPERADMIN = gql`
       propietarios
       miembros
       episodios
+      clips
+      horasProcesadas
+      costoUsd
+      tokensIa
+      ultimoAccesoEn
+      ultimoEpisodioEn
+      soporteAbiertos
+      prueba {
+        desde
+        diasEnPrueba
+        topeEpisodios
+        episodiosUsados
+        agotada
+      }
       marca {
         _id
         nombre
@@ -426,6 +440,73 @@ export const CLIENTES_SUPERADMIN = gql`
           topeEpisodios
           episodiosUsados
         }
+      }
+    }
+  }
+`;
+
+/**
+ * Los tickets de soporte (conversaciones del chat que se pasaron al equipo),
+ * de los tres estados a la vez para las pestañas con su conteo. Solo superadmin.
+ */
+const CAMPOS_TICKET_SOPORTE = `
+  _id
+  correo
+  nombre
+  estado
+  derivadaEn
+  createdAt
+  updatedAt
+  pagina
+  marcas
+  mensajes {
+    rol
+    texto
+    fecha
+  }
+`;
+
+export const TICKETS_SOPORTE_SUPERADMIN = gql`
+  query TicketsSoporteSuperadmin($marcaId: ID) {
+    abiertos: ticketsSoporteSuperadmin(estado: DERIVADA, marcaId: $marcaId) { ${CAMPOS_TICKET_SOPORTE} }
+    enProgreso: ticketsSoporteSuperadmin(estado: EN_PROGRESO, marcaId: $marcaId) { ${CAMPOS_TICKET_SOPORTE} }
+    cerrados: ticketsSoporteSuperadmin(estado: CERRADA, marcaId: $marcaId) { ${CAMPOS_TICKET_SOPORTE} }
+  }
+`;
+
+/** Mueve un ticket: en progreso, cerrado, o de vuelta a abierto (DERIVADA). */
+export const CAMBIAR_ESTADO_TICKET_SUPERADMIN = gql`
+  mutation CambiarEstadoTicketSuperadmin($id: ID!, $estado: EstadoConversacionSoporte!) {
+    cambiarEstadoTicketSuperadmin(id: $id, estado: $estado) {
+      _id
+      estado
+      updatedAt
+    }
+  }
+`;
+
+/** Las métricas de inicio de /superadmin, de los últimos `dias` días. */
+export const METRICAS_SUPERADMIN = gql`
+  query MetricasSuperadmin($dias: Int) {
+    metricasSuperadmin(dias: $dias) {
+      clientes
+      clientesNuevos
+      clientesActivos
+      usuariosActivos
+      registros
+      episodios
+      horasProcesadas
+      costoUsd
+      tokensIa
+      enPrueba
+      pruebasAgotadas
+      ticketsAbiertos
+      porDia {
+        fecha
+        episodios
+        horas
+        costoUsd
+        registros
       }
     }
   }
