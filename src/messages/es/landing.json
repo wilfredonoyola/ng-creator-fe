@@ -397,7 +397,7 @@
       },
       "idioma": {
         "p": "¿En qué idioma funciona?",
-        "r": "Está pensado para videos en español: la transcripción, los momentos y los subtítulos."
+        "r": "Clipfine detecta solo el idioma del video y lo transcribe, encuentra los momentos y escribe los subtítulos en ese mismo idioma: español, inglés, portugués y más. El panel está en español e inglés."
       },
       "app": {
         "p": "¿Hay app para el celular?",

@@ -397,7 +397,7 @@
       },
       "idioma": {
         "p": "What language does it work in?",
-        "r": "It's built for Spanish-language videos: the transcription, the moments and the captions."
+        "r": "Clipfine detects the video's language on its own and transcribes it, finds the moments and writes the captions in that same language: English, Spanish, Portuguese and more. The dashboard is in English and Spanish."
       },
       "app": {
         "p": "Is there a mobile app?",
