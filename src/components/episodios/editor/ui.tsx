@@ -79,3 +79,17 @@ export function Interruptor({
     </div>
   );
 }
+
+/**
+ * "Beta" al lado de lo que todavía se equivoca seguido (el auto-encuadre):
+ * que se sepa que hay que revisar lo que hace.
+ */
+export function EtiquetaBeta({ className = "" }: { className?: string }) {
+  return (
+    <span
+      className={`inline-block rounded-full border border-ng-azul/60 px-1.5 py-px align-middle text-[9px] font-bold uppercase leading-none tracking-[.08em] text-ng-azul ${className}`}
+    >
+      Beta
+    </span>
+  );
+}

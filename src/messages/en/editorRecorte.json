@@ -51,5 +51,6 @@
     "finalAntes": "Move the end 5 s earlier (the clip gets shorter)",
     "finalDespues": "Move the end 5 s later (the clip gets longer)",
     "conCortes": "{efectiva} of {total}"
-  }
+  },
+  "avisoBeta": "Sometimes it doesn't follow whoever is speaking. Check the framing changes on the timeline and fix the ones that are off; if it fails on a clip, let us know."
 }

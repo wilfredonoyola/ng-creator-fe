@@ -5,7 +5,7 @@ import { Plus, ScanFace, X } from "lucide-react";
 import { conZoom, llevaFondo, panelesDe, posicionEn, regionPorDefecto, zoomDe, type DisenoClip, type FondoClip, type FormatoClip, type PosicionEfectiva } from "@/lib/clip-encuadre";
 import { useTiempo, type Reproductor } from "./reproductor";
 import { relojFino } from "./tipos";
-import { Seccion } from "./ui";
+import { EtiquetaBeta, Seccion } from "./ui";
 
 const FORMATOS = [
   { valor: "VERTICAL", etiqueta: "9:16" },
@@ -205,6 +205,7 @@ export function PanelFormato({
           >
             <ScanFace size={16} aria-hidden />
             {th("formato.irAuto")}
+            <EtiquetaBeta />
           </button>
         )}
       </Seccion>

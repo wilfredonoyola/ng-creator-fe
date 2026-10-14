@@ -10,6 +10,7 @@ import type { FormatoClip } from "@/lib/clip-encuadre";
 import { useSesion } from "@/lib/sesion";
 import { AvisoVersionFacebook } from "@/components/episodios/VersionFacebook";
 import { AvisoCruces, buscarCruces, type CruceClip } from "@/components/episodios/TomarClip";
+import { EtiquetaBeta } from "@/components/episodios/editor/ui";
 
 /**
  * "Crear clip". Lo primero, lo rápido: desde y hasta en h:mm:ss, y ahí mismo
@@ -286,7 +287,7 @@ export function CrearClipGuiado({
           <label className="flex cursor-pointer items-start gap-2 text-sm">
             <input type="checkbox" checked={autoEncuadre} onChange={(e) => setAutoEncuadre(e.target.checked)} className="mt-1" />
             <span>
-              {t("autoEncuadre")}
+              {t("autoEncuadre")} <EtiquetaBeta />
               <span className="block text-xs text-white/50">{t("autoEncuadreAyuda")}</span>
             </span>
           </label>

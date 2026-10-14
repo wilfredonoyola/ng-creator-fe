@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Captions, Layers, LoaderCircle, Music, RectangleVertical, ScanFace, Scissors, Type, type LucideIcon } from "lucide-react";
 import { HERRAMIENTAS, type Herramienta } from "./tipos";
+import { EtiquetaBeta } from "./ui";
 
 const ICONOS: Record<Herramienta, LucideIcon> = {
   editar: Scissors,
@@ -73,6 +74,7 @@ export function RielHerramientas({
           >
             <Icono size={20} aria-hidden className={h === "auto" && analizando ? "animate-spin" : undefined} />
             <span className="leading-tight">{tr(`nombres.${h}`)}</span>
+            {h === "auto" && <EtiquetaBeta className="-mt-0.5" />}
           </button>
         );
       })}
