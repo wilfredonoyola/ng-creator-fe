@@ -25,7 +25,7 @@ Solo si querés que entre. Para que apruebe los clips, invitalo por correo con e
 
 ## ¿Está en inglés?
 
-La interfaz está en español y en inglés, en la web y en la app. Cambiala en **Perfil**, en **Idioma**; **Automático** usa el idioma de tu navegador o de tu teléfono. La transcripción, los momentos y los subtítulos están pensados para videos en español.
+La interfaz está en español y en inglés, en la web y en la app. Cambiala en **Perfil**, en **Idioma**; **Automático** usa el idioma de tu navegador o de tu teléfono. Los videos pueden estar en español, inglés, portugués y otros idiomas: Clipfine detecta solo en qué idioma se habla y transcribe, elige los momentos y escribe los subtítulos en ese mismo idioma, sin traducir.
 
 ## ¿En qué redes puedo publicar?
 

@@ -26,7 +26,7 @@ No hace falta dejar la página abierta. En la lista de **Episodios** vas viendo 
 ## Ver los clips
 
 1. Abrí el episodio desde **Episodios**.
-2. En **Clips** vas a ver cada momento con su tramo, su gancho y su puntuación. Tocá **Escuchar** para oírlo.
+2. En **Clips**, la pestaña **Con IA** tiene cada momento que eligió la IA con su tramo, su gancho y su puntuación; **Manuales**, los que armaste a mano. Tocá **Escuchar** para oírlo.
 3. Tocá **Editar** en el que te guste para abrirlo en el editor. Ver [El editor de clips](/ayuda/editor-basico).
 4. Si querés un momento que la IA no eligió, tocá **+ Crear clip**, marcá inicio y fin, y pasá al editor.
 
