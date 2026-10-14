@@ -14,6 +14,7 @@ import {
 import { CampoPassword, passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
 import { conVolverA, MarcoAcceso } from "@/components/acceso/MarcoAcceso";
 import { NOMBRE_MAX, NOMBRE_MIN } from "@/lib/nombre";
+import { empujarEvento } from "@/lib/data-layer";
 
 /**
  * Registro abierto con prueba gratis.
@@ -49,6 +50,8 @@ export default function RegistroPage() {
     setCargando(true);
     try {
       await registrarse(email, password, nombreLimpio || null);
+      // Para GTM: la cuenta quedó creada en Cognito (si falla, no llega acá).
+      empujarEvento({ event: "signup_form_submit", method: "email" });
       setPaso("codigo");
       setCodigo("");
       setAviso(t("codigoEnviado", { correo: email }));
