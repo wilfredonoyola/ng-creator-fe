@@ -89,7 +89,11 @@
     "esteTramo": "This segment · {desde} → {hasta}",
     "irAuto": "Auto-frame",
     "fondo": "Background",
-    "nuevoEncuadre": "Framing here"
+    "nuevoEncuadre": "Framing here",
+    "zoom": "Zoom · {zoom}%",
+    "zoomEtiqueta": "Box zoom",
+    "todoElAlto": "Full height",
+    "zoomAyuda": "At 100% the box uses the video's full height. Raise it only to get closer."
   },
   "auto": {
     "pedir": "Auto-frame",

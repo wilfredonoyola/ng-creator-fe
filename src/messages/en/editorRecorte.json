@@ -18,7 +18,7 @@
   "diseno": "Layout",
   "enEsteTramo": " (in this segment)",
   "tramo": "Segment {desde}–{hasta} s",
-  "ayudaRecuadro": "Drag the box to move it; drag the corner to resize it.",
+  "ayudaRecuadro": "Drag the box to move it. It uses the full height; zoom is in the panel.",
   "ayudaRecuadroEtiqueta": "How to move the box",
   "abajo": "Bottom",
   "arriba": "Top",
