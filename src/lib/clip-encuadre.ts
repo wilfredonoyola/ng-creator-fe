@@ -182,6 +182,12 @@ export function ajustarRegion(
   };
 }
 
+/**
+ * El recuadro de un panel cuando no hay uno elegido: todo el alto del video
+ * (de abajo hacia arriba; todo el ancho si el panel es más ancho que el
+ * video), centrado en su parte del cuadro. Con varios paneles se pisan: cada
+ * uno sigue con todo el alto, no se achica para entrar.
+ */
 export function regionPorDefecto(
   fuente: { ancho: number; alto: number },
   panel: { ancho: number; alto: number },
@@ -189,8 +195,28 @@ export function regionPorDefecto(
   total: number,
 ): Region {
   const cx = total === 1 ? 0.5 : (indice + 0.5) / total;
-  const ancho = total === 1 ? 1 : 1 / total;
+  const ancho = anchoDeTodoElAlto(fuente, panel);
   return ajustarRegion({ x: cx - ancho / 2, y: 0, ancho, alto: 1 }, fuente, panel);
+}
+
+/** El ancho (fracción del video) del recuadro de todo el alto para un panel. */
+function anchoDeTodoElAlto(fuente: { ancho: number; alto: number }, panel: { ancho: number; alto: number }): number {
+  return Math.min(1, (panel.ancho / panel.alto) * (fuente.alto / fuente.ancho));
+}
+
+/** El zoom de un recuadro: 1 es todo el alto (o todo el ancho); 2, la mitad. */
+export function zoomDe(r: Region, fuente: { ancho: number; alto: number }, panel: { ancho: number; alto: number }): number {
+  const lleno = anchoDeTodoElAlto(fuente, panel);
+  return r.ancho > 0 ? Math.max(1, lleno / r.ancho) : 1;
+}
+
+/** El recuadro con otro zoom, sobre el mismo centro (y dentro del cuadro). */
+export function conZoom(r: Region, zoom: number, fuente: { ancho: number; alto: number }, panel: { ancho: number; alto: number }): Region {
+  const ancho = anchoDeTodoElAlto(fuente, panel) / Math.max(1, zoom);
+  const alto = ancho / ((panel.ancho / panel.alto) * (fuente.alto / fuente.ancho));
+  const cx = r.x + r.ancho / 2;
+  const cy = r.y + r.alto / 2;
+  return ajustarRegion({ x: cx - ancho / 2, y: cy - alto / 2, ancho, alto }, fuente, panel);
 }
 
 export interface PosicionEfectiva {

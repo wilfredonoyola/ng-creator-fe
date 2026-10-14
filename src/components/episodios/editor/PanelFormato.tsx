@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Plus, ScanFace, X } from "lucide-react";
-import { ajustarRegion, llevaFondo, panelesDe, posicionEn, regionPorDefecto, type DisenoClip, type FondoClip, type FormatoClip, type PosicionEfectiva } from "@/lib/clip-encuadre";
+import { ajustarRegion, conZoom, llevaFondo, panelesDe, posicionEn, regionPorDefecto, zoomDe, type DisenoClip, type FondoClip, type FormatoClip, type PosicionEfectiva } from "@/lib/clip-encuadre";
 import { useTiempo, type Reproductor } from "./reproductor";
 import { relojFino } from "./tipos";
 import { Seccion } from "./ui";
@@ -78,6 +78,14 @@ export function PanelFormato({
     onCambiarPosiciones(posiciones.map((p, k) => (k === indiceActiva ? { ...p, diseno: d, regiones } : p)));
   }
 
+  // El zoom del tramo: 1 es todo el alto, que es como arranca siempre.
+  const panelesActiva = panelesDe(formato, activa.diseno);
+  const zoom = activa.regiones.length && panelesActiva[0] ? zoomDe(activa.regiones[0], fuente, panelesActiva[0]) : 1;
+  function cambiarZoom(z: number) {
+    const regiones = activa.regiones.map((r, i) => (panelesActiva[i] ? conZoom(r, z, fuente, panelesActiva[i]) : r));
+    onCambiarPosiciones(posiciones.map((p, k) => (k === indiceActiva ? { ...p, regiones } : p)));
+  }
+
   /**
    * Un cambio de encuadre donde está parado el video, copiando el actual.
    *
@@ -146,6 +154,28 @@ export function PanelFormato({
               </span>
             </button>
           ))}
+        </div>
+        <div>
+          <div className="mb-1 flex items-center justify-between text-xs">
+            <span className="text-ng-secundario">{th("formato.zoom", { zoom: Math.round(zoom * 100) })}</span>
+            {zoom > 1.005 && puedeEditar && (
+              <button type="button" onClick={() => cambiarZoom(1)} className="font-medium text-ng-azul hover:underline">
+                {th("formato.todoElAlto")}
+              </button>
+            )}
+          </div>
+          <input
+            type="range"
+            min={1}
+            max={3}
+            step={0.05}
+            value={Math.min(3, zoom)}
+            disabled={!puedeEditar}
+            onChange={(e) => cambiarZoom(Number(e.target.value))}
+            aria-label={th("formato.zoomEtiqueta")}
+            className="w-full accent-[#FFD400]"
+          />
+          <p className="mt-1 text-[11px] text-ng-tenue">{th("formato.zoomAyuda")}</p>
         </div>
         {puedeEditar && (
           <button

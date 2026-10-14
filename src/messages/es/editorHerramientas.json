@@ -89,7 +89,11 @@
     "esteTramo": "Este tramo · {desde} → {hasta}",
     "irAuto": "Auto-encuadre",
     "fondo": "Fondo",
-    "nuevoEncuadre": "Encuadre acá"
+    "nuevoEncuadre": "Encuadre acá",
+    "zoom": "Zoom · {zoom} %",
+    "zoomEtiqueta": "Zoom del recuadro",
+    "todoElAlto": "Todo el alto",
+    "zoomAyuda": "En 100 % el recuadro usa todo el alto del video. Subilo solo si te querés acercar."
   },
   "auto": {
     "pedir": "Auto-encuadrar",

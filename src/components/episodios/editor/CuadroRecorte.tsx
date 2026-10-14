@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
-import { ajustarRegion, panelesDe, REGION_MINIMA, type FormatoClip, type PosicionEfectiva, type Region } from "@/lib/clip-encuadre";
+import { ajustarRegion, panelesDe, type FormatoClip, type PosicionEfectiva, type Region } from "@/lib/clip-encuadre";
 import type { Reproductor } from "./reproductor";
 
 /** Colores de los recuadros, uno por panel, como en la vista previa. */
@@ -50,7 +50,11 @@ export function CuadroRecorte({
     );
   }
 
-  function empezarArrastre(e: React.PointerEvent, i: number, modo: "mover" | "agrandar") {
+  /**
+   * Arrastrar solo mueve el recuadro: el tamaño no se toca acá (con todo el
+   * alto, solo se corre de costado). El zoom, si se quiere, está en Formato.
+   */
+  function empezarArrastre(e: React.PointerEvent, i: number) {
     if (!puedeEditar) return;
     e.preventDefault();
     e.stopPropagation();
@@ -59,21 +63,11 @@ export function CuadroRecorte({
     const inicial = activa.regiones[i];
     const x0 = e.clientX;
     const y0 = e.clientY;
-    // ancho / alto que tiene que tener la región, en fracciones.
-    const k = (paneles[i].ancho / paneles[i].alto) * (fuente.alto / fuente.ancho);
 
     const mover = (ev: PointerEvent) => {
       const dx = (ev.clientX - x0) / caja.width;
       const dy = (ev.clientY - y0) / caja.height;
-      if (modo === "mover") {
-        cambiarRegion(i, { ...inicial, x: inicial.x + dx, y: inicial.y + dy });
-      } else {
-        // Desde la esquina de abajo a la derecha, con la de arriba a la
-        // izquierda quieta y la proporción del panel.
-        const ancho = Math.min(1 - inicial.x, Math.max(REGION_MINIMA, inicial.ancho + dx));
-        const alto = Math.min(1 - inicial.y, ancho / k);
-        cambiarRegion(i, { x: inicial.x, y: inicial.y, ancho: alto * k, alto });
-      }
+      cambiarRegion(i, { ...inicial, x: inicial.x + dx, y: inicial.y + dy });
     };
     const soltar = () => {
       window.removeEventListener("pointermove", mover);
@@ -119,7 +113,7 @@ export function CuadroRecorte({
             {activa.regiones.map((r, i) => (
               <div
                 key={i}
-                onPointerDown={(e) => empezarArrastre(e, i, "mover")}
+                onPointerDown={(e) => empezarArrastre(e, i)}
                 className={`absolute ${puedeEditar ? "cursor-move" : ""}`}
                 style={{
                   left: `${r.x * 100}%`,
@@ -140,13 +134,6 @@ export function CuadroRecorte({
                         ? "1:1"
                         : "16:9"}
                 </span>
-                {puedeEditar && (
-                  <div
-                    onPointerDown={(e) => empezarArrastre(e, i, "agrandar")}
-                    className="absolute -bottom-1.5 -right-1.5 h-4 w-4 cursor-nwse-resize rounded-sm border-2 border-ng-tinta"
-                    style={{ background: COLORES[i] }}
-                  />
-                )}
               </div>
             ))}
           </>
