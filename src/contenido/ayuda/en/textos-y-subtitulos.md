@@ -9,9 +9,12 @@ Text and captions are what make a clip work with the sound off. In the editor yo
 
 ## Add text
 
-1. Pick the **Text** tool and click **Add text** to choose a design: **Impact**, **Black box**, **Brand box**, **Yellow**, **Shadow** or **Clean**.
+1. Pick the **Text** tool and click **Add text** to choose a design: **Simple** (white, no outline, like TikTok's own text; it's the default), **Impact**, **Black box**, **Brand box**, **Yellow**, **Shadow** or **Clean**.
 2. Type your text and tap the words you want highlighted.
-3. Drag the text on the video to move it. Under **When** you choose whether it shows for the **Whole clip**, the **First 3 s**, or a specific range; you can also stretch its edges on the timeline.
+3. Drag the text on the video to move it. Under **When** you choose whether it shows for the **Whole clip** (the default), the **First 3 s**, or a specific range; you can also stretch its edges on the timeline.
+4. Adjust the **Size** (small sizes too), the **Line spacing** and the **Font**: **Classic**, Montserrat, Serif and more.
+
+What you change in the editor wins over the Brand kit: the text keeps **its own style** and comes out that way in the video. To go back to the brand's, click **Use the brand style**.
 
 ## Text style
 

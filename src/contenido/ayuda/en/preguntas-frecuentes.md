@@ -25,7 +25,7 @@ Only if you want them to log in. To have them approve clips, invite them by emai
 
 ## Is it available in English?
 
-The interface is in Spanish and English, on the web and in the app. Change it under **Profile**, in **Language**; **Automatic** uses your browser's or phone's language. Transcription, moments and captions are built for Spanish-language videos.
+The interface is in Spanish and English, on the web and in the app. Change it under **Profile**, in **Language**; **Automatic** uses your browser's or phone's language. Videos can be in English, Spanish, Portuguese and other languages: Clipfine detects the spoken language on its own and transcribes, picks the moments and writes the captions in that same language, without translating.
 
 ## Which networks can I post to?
 

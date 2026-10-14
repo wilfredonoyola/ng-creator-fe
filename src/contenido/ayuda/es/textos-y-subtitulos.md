@@ -9,9 +9,12 @@ Los textos y los subtítulos son lo que hace que un clip se entienda sin sonido.
 
 ## Agregar un texto
 
-1. Elegí la herramienta **Texto** y tocá **Agregar texto** para elegir un diseño: **Impacto**, **Caja negra**, **Caja de la marca**, **Amarillo**, **Sombra** o **Limpio**.
+1. Elegí la herramienta **Texto** y tocá **Agregar texto** para elegir un diseño: **Simple** (blanco, sin contorno, como los textos de TikTok; es el de por defecto), **Impacto**, **Caja negra**, **Caja de la marca**, **Amarillo**, **Sombra** o **Limpio**.
 2. Escribí el texto y tocá las palabras que van destacadas.
-3. Arrastrá el texto en el video para moverlo. En **Cuándo** elegís si se ve en **Todo el clip**, en los **Primeros 3 s** o en un tramo; también podés estirar sus bordes en la línea de tiempo.
+3. Arrastrá el texto en el video para moverlo. En **Cuándo** elegís si se ve en **Todo el clip** (lo de por defecto), en los **Primeros 3 s** o en un tramo; también podés estirar sus bordes en la línea de tiempo.
+4. Ajustá el **Tamaño** (también letras chicas), el **Interlineado** (el espacio entre renglones) y la **Letra**: **Clásica**, Montserrat, Serif y más.
+
+Lo que cambiás en el editor manda sobre el Kit de marca: el texto queda con **su propio estilo** y así sale en el video. Para volver al de la marca, tocá **Usar el estilo de la marca**.
 
 ## El estilo del texto
 

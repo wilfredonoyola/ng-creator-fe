@@ -26,7 +26,7 @@ You don't need to keep the page open. The **Episodes** list shows the status:
 ## See the clips
 
 1. Open the episode from **Episodes**.
-2. Under **Clips** you'll see each moment with its time range, hook and score. Click **Listen** to hear it.
+2. Under **Clips**, the **AI picks** tab has each moment the AI picked with its time range, hook and score; **Manual** has the ones you made by hand. Click **Listen** to hear it.
 3. Click **Edit** on the one you like to open it in the editor. See [The clip editor](/ayuda/editor-basico).
 4. If you want a moment the AI didn't pick, click **+ Create clip**, mark the start and end, and go to the editor.
 
