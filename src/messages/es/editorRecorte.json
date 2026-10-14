@@ -51,5 +51,6 @@
     "finalAntes": "Mover el final 5 s antes (el clip se acorta)",
     "finalDespues": "Mover el final 5 s después (el clip se alarga)",
     "conCortes": "{efectiva} de {total}"
-  }
+  },
+  "avisoBeta": "A veces no sigue a quien habla. Revisá los cambios de encuadre en la línea de tiempo y corregí los que no van; si falla en un clip, avisanos."
 }

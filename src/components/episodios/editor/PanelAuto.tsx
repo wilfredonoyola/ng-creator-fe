@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { LoaderCircle, ScanFace } from "lucide-react";
+import { EtiquetaBeta } from "./ui";
 
 /**
  * Auto-encuadre (ng-creator-be#105): mira quién habla y arma los cambios de
@@ -32,6 +33,10 @@ export function PanelAuto({
   return (
     <div className="space-y-4">
       <p className="text-sm text-white/70">{tr("ayudaAuto")}</p>
+      <p className="rounded-ng-md border border-ng-azul/30 bg-ng-azul/5 px-3 py-2 text-xs text-ng-secundario">
+        <EtiquetaBeta className="mr-1.5" />
+        {tr("avisoBeta")}
+      </p>
       {puedeEditar && (
         <button
           type="button"
