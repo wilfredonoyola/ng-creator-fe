@@ -63,7 +63,7 @@
     "empiezaAca": "Start here",
     "terminaAca": "End here",
     "cortes": "Cuts · {n}",
-    "ayuda": "Split cuts the video at the playhead. Tap a segment (or drag) on the timeline and remove it. Striped parts don't play; the ✕ brings them back.",
+    "ayuda": "Split cuts the video at the playhead. To land it exactly: ← → move it one frame (Shift: one second), space plays and S splits. Tap a segment (or drag) on the timeline and remove it. Striped parts don't play; the ✕ brings them back.",
     "enElEpisodio": "In the episode",
     "velocidad": "Speed",
     "duraFinal": "Lasts {antes} → {despues} at {velocidad}",
