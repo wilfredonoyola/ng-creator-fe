@@ -93,6 +93,7 @@
     "zoom": "Zoom · {zoom} %",
     "zoomEtiqueta": "Zoom del recuadro",
     "todoElAlto": "Todo el alto",
+    "todosTodoElAlto": "Todos los tramos con todo el alto",
     "zoomAyuda": "En 100 % el recuadro usa todo el alto del video. Subilo solo si te querés acercar."
   },
   "auto": {
