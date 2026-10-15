@@ -597,7 +597,7 @@ export default function EditorClipPage({
                 pidiendo: pidiendoRender,
                 calidad: clip.calidad,
               },
-              onExportar: () => void exportar(),
+              onExportar: exportar,
             }}
             hrefProgramar={`/episodios/${episodioId}/clips/${clipId}/publicar`}
           />

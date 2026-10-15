@@ -13,10 +13,12 @@ import {
   PROGRAMAR_PUBLICACION,
   PUBLICACIONES_DE_CLIP,
   REINTENTAR_PUBLICACION,
+  RENDERIZAR_CLIP_EPISODIO,
   REPROGRAMAR_PUBLICACION,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { borrarBorradorProgramar, guardarBorradorProgramar, leerBorradorProgramar, type BorradorProgramar } from "@/lib/borrador-programar";
 import { useSesion } from "@/lib/sesion";
 import {
   ESTADOS_PUBLICACION,
@@ -81,8 +83,11 @@ const MARGEN_MS = 60_000;
 /**
  * Programar un clip en las redes de la marca (#70, ng-creator-be#71).
  *
- * No hace falta exportarlo antes: si el MP4 falta o quedó viejo, el backend lo
- * manda a exportar y la publicación espera el video (`esperaVideo`); a la
+ * No hace falta exportarlo antes: si el MP4 falta o quedó viejo, la pantalla
+ * lo manda a exportar al entrar y deja programar recién cuando está listo
+ * (así la portada se elige de entrada). Mientras, se llena el resto. Lo que se
+ * llena queda en el navegador (`borrador-programar`): recargar no lo pierde.
+ * El backend igual espera el video (`esperaVideo`) si se editó después: a la
  * hora sale siempre el MP4 de la última edición.
  *
  * La misma pantalla que la de la app (ng-creator-app, episodio/[id]/publicar),
@@ -116,13 +121,15 @@ export default function ProgramarClipPage({
   const clip = clipQ.data?.clipEpisodio;
   // Mientras se procesa la versión para Facebook, el clip se refresca solo,
   // como en el editor con el render del clip.
+  // Y mientras se exporta el clip, para habilitar Programar apenas termina.
   const versionProcesando = versionEnCurso(clip?.versionFacebook);
+  const videoProcesando = clip?.estadoRender === "EN_COLA" || clip?.estadoRender === "RENDERIZANDO";
   const { startPolling, stopPolling } = clipQ;
   useEffect(() => {
-    if (versionProcesando) startPolling(4000);
+    if (versionProcesando || videoProcesando) startPolling(videoProcesando ? 3000 : 4000);
     else stopPolling();
     return () => stopPolling();
-  }, [versionProcesando, startPolling, stopPolling]);
+  }, [versionProcesando, videoProcesando, startPolling, stopPolling]);
   const pagina = activa?.paginaFacebook;
 
   const volver = (
@@ -216,6 +223,7 @@ function Formulario({
     editadoEn?: string | null;
     renderizadoEn?: string | null;
     estadoRender?: string | null;
+    progresoRender?: number | null;
     urlVideo?: string | null;
     versionFacebook?: VersionCortaClip | null;
     calidad?: CalidadClip | null;
@@ -292,8 +300,35 @@ function Formulario({
     clip.editadoEn &&
     clip.renderizadoEn &&
     new Date(clip.editadoEn).getTime() > new Date(clip.renderizadoEn).getTime() + 1000;
+  // Programar espera el MP4 de la última edición: con él se elige la portada y
+  // se sabe que lo que sale es lo que se ve. Si falta o quedó viejo, se exporta solo.
+  const videoListo = conVideo && !editadoSinProcesar;
+  const exportando = clip.estadoRender === "EN_COLA" || clip.estadoRender === "RENDERIZANDO";
+  const [renderizar] = useMutation(RENDERIZAR_CLIP_EPISODIO);
+  const [pidiendoVideo, setPidiendoVideo] = useState(false);
+  const [errorVideo, setErrorVideo] = useState<string | null>(null);
+  const pidioVideo = useRef(false);
+  async function pedirVideo() {
+    setPidiendoVideo(true);
+    setErrorVideo(null);
+    try {
+      await renderizar({ variables: { id: clip._id, marcaId } });
+    } catch (e) {
+      setErrorVideo(e instanceof Error ? e.message : t("noSePudo"));
+    } finally {
+      setPidiendoVideo(false);
+    }
+  }
+  // Una vez al entrar; si falla, se reintenta con el botón.
+  useEffect(() => {
+    if (!opera || videoListo || exportando || clip.estadoRender === "FALLIDO" || pidioVideo.current) return;
+    pidioVideo.current = true;
+    void pedirVideo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opera, videoListo, exportando, clip.estadoRender]);
+  const esperandoVideo = !videoListo;
   // La portada es un cuadro del MP4 final: solo se elige si el que hay ya es ese.
-  const portadaElegible = conVideo && !editadoSinProcesar ? clip.urlVideo ?? null : null;
+  const portadaElegible = videoListo ? clip.urlVideo ?? null : null;
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
@@ -406,6 +441,62 @@ function Formulario({
     if (fb.length) setColaboradoresFb(new Set(todasLasPersonas.filter((p) => p.facebookPaginaId && fb.includes(p.facebookPaginaId)).map((p) => p._id)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todasLasPersonas.length, inicializado.current, objetivoClave]);
+
+  // ---- Lo que se llenó queda en el navegador ----
+  // Se guarda recién cuando la persona toca algo (`tocado`, desde el
+  // contenedor del formulario): lo que llega del servidor no se pisa con un
+  // borrador que nadie escribió. Se recupera después de leer lo programado.
+  const tocado = useRef(false);
+  const restaurado = useRef<string | null>(null);
+  const [recuperado, setRecuperado] = useState(false);
+  const borrador: BorradorProgramar = {
+    descripcion,
+    hashtagsClip,
+    tituloYoutube,
+    fecha,
+    portadaSeg,
+    cambios: [...cambios],
+    cambiosEtiquetas: [...cambiosEtiquetas],
+    colaboradoresIg: [...colaboradoresIg],
+    colaboradoresFb: [...colaboradoresFb],
+  };
+  const borradorJson = JSON.stringify(borrador);
+  useEffect(() => {
+    if (restaurado.current === objetivoClave) return;
+    if (modoEditar && !inicializado.current) return;
+    restaurado.current = objetivoClave;
+    tocado.current = false;
+    const b = leerBorradorProgramar(clip._id, objetivoClave);
+    setRecuperado(Boolean(b));
+    if (!b) return;
+    tocado.current = true;
+    setDescripcion(b.descripcion);
+    setHashtagsClip(b.hashtagsClip);
+    setTituloYoutube(b.tituloYoutube);
+    // Una hora que ya pasó no se recupera: queda la sugerida.
+    const f = new Date(b.fecha);
+    if (b.fecha && !Number.isNaN(f.getTime()) && f.getTime() > Date.now() + MARGEN_MS) setFecha(b.fecha);
+    setPortadaSeg(b.portadaSeg);
+    setCambios(new Map(b.cambios));
+    setCambiosEtiquetas(new Map(b.cambiosEtiquetas));
+    setColaboradoresIg(new Set(b.colaboradoresIg));
+    setColaboradoresFb(new Set(b.colaboradoresFb));
+    // Ya restaurados, los colaboradores no se vuelven a leer de lo programado.
+    colaboradoresIniciados.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [objetivoClave, inicializado.current, destinos.length]);
+  useEffect(() => {
+    if (!tocado.current || restaurado.current !== objetivoClave) return;
+    guardarBorradorProgramar(clip._id, objetivoClave, JSON.parse(borradorJson) as BorradorProgramar);
+  }, [borradorJson, objetivoClave, clip._id]);
+  function olvidarBorrador() {
+    tocado.current = false;
+    setRecuperado(false);
+    borrarBorradorProgramar(clip._id, objetivoClave);
+  }
+  const marcarTocado = () => {
+    tocado.current = true;
+  };
   const fechaTocada = modoEditar && fecha !== fechaInicial.current;
   // Lo que se cancela al guardar: lo programado en una red que se desmarcó.
   const aCancelar = modoReintento
@@ -540,6 +631,7 @@ function Formulario({
         fallas.push(`${REDES[d.red]?.nombre ?? d.red}: ${e instanceof Error ? e.message : t("noSePudo")}`);
       }
     }
+    if (!fallas.length) olvidarBorrador();
     setEnviando(false);
     refrescar();
     if (fallas.length) {
@@ -652,6 +744,7 @@ function Formulario({
         fallas.push(`${nombre(p.red)}: ${e instanceof Error ? e.message : t("noSePudo")}`);
       }
     }
+    if (!fallas.length) olvidarBorrador();
     setEnviando(false);
     // Lo nuevo se vuelve a leer de lo programado.
     inicializado.current = false;
@@ -768,14 +861,48 @@ function Formulario({
           ) : null}
         </div>
       </div>
-      {!conVideo || editadoSinProcesar ? (
-        <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/60">
-          {conVideo ? t("cambiosSinProcesar") : t("sinVideo")}
+      {esperandoVideo ? (
+        clip.estadoRender === "FALLIDO" && !exportando && !pidiendoVideo ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/[0.06] p-3 text-sm">
+            <TriangleAlert size={18} className="shrink-0 text-red-300" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-white">{t("video.fallo")}</p>
+              <p className="mt-0.5 text-white/60">{errorVideo ?? t("video.falloAyuda")}</p>
+            </div>
+            {opera ? (
+              <button
+                type="button"
+                onClick={() => void pedirVideo()}
+                className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/5"
+              >
+                {t("video.reintentar")}
+              </button>
+            ) : null}
+          </div>
+        ) : (
+          <div role="status" className="flex items-start gap-3 rounded-xl border border-ng-azul/30 bg-ng-azul/[0.06] p-3 text-sm">
+            <Loader2 size={18} className="mt-0.5 shrink-0 animate-spin text-ng-azul" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-white">
+                {clip.estadoRender === "RENDERIZANDO" && clip.progresoRender
+                  ? t("video.preparandoProgreso", { n: Math.round(clip.progresoRender) })
+                  : t("video.preparando")}
+              </p>
+              <p className="mt-0.5 text-white/60">{opera ? t("video.ayuda") : t("video.ayudaSoloMira")}</p>
+              {errorVideo ? <p className="mt-1 text-xs text-red-400">{errorVideo}</p> : null}
+            </div>
+          </div>
+        )
+      ) : null}
+
+      {opera && recuperado ? (
+        <p className="flex flex-wrap items-center gap-x-2 text-xs text-white/50">
+          {t("borrador.recuperado")}
         </p>
       ) : null}
 
       {opera ? (
-        <>
+        <div className="space-y-6" onPointerDownCapture={marcarTocado} onKeyDownCapture={marcarTocado} onInputCapture={marcarTocado}>
           <Seccion titulo={t("secciones.donde")}>
             {destinos.length === 0 ? (
               <p className="text-sm text-white/60">
@@ -977,7 +1104,10 @@ function Formulario({
             {portadaElegible ? (
               <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
             ) : (
-              <p className="text-xs text-white/45">{t("portadaSinVideo")}</p>
+              <p className="flex items-center gap-2 text-xs text-white/45">
+                {exportando || pidiendoVideo ? <Loader2 size={14} className="shrink-0 animate-spin" aria-hidden /> : null}
+                {t("portadaSinVideo")}
+              </p>
             )}
           </Seccion>
 
@@ -1028,6 +1158,7 @@ function Formulario({
                   {conFacebook && facebookEspera ? (
                     <p className="text-xs text-amber-300">{aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}</p>
                   ) : null}
+                  {esperandoVideo ? <p className="text-xs text-ng-azul">{t("video.botonAyuda")}</p> : null}
                   {revision.activa ? (
                     <p className={`text-xs ${revision.soyRevisor ? "text-white/45" : "text-amber-300"}`}>
                       {revision.soyRevisor ? tr("avisoRevisor") : tr("aviso")}
@@ -1038,17 +1169,19 @@ function Formulario({
               <button
                 type="button"
                 onClick={() => void (modoEditar ? guardarCambios() : enviar())}
-                disabled={enviando || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga}
+                disabled={enviando || esperandoVideo || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga}
                 className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
               >
-                {enviando ? (
+                {enviando || esperandoVideo ? (
                   <Loader2 size={16} className="animate-spin" aria-hidden />
                 ) : modoReintento ? (
                   <RotateCcw size={16} aria-hidden />
                 ) : (
                   <CalendarClock size={16} aria-hidden />
                 )}
-                {enviando
+                {esperandoVideo && !enviando
+                  ? t("video.boton")
+                  : enviando
                   ? modoReintento
                     ? t("reintentar.enviando")
                     : modoEditar
@@ -1064,7 +1197,7 @@ function Formulario({
               </button>
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <p className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/50">
           {t("soloMira")}
