@@ -1,7 +1,7 @@
 "use client";
 
 import { cabeceraIdioma, idiomaActual } from "@/i18n/cliente";
-import { haySesion } from "@/lib/auth";
+import { asegurarTokenValido, haySesion } from "@/lib/auth";
 
 /**
  * El chat de soporte (ng-creator-be#186): REST, con o sin sesión. En el sitio
@@ -24,6 +24,7 @@ function cabeceras(): Record<string, string> {
 }
 
 async function pedir<T>(ruta: string, init?: RequestInit): Promise<T> {
+  if (haySesion()) await asegurarTokenValido();
   const res = await fetch(`${API}${ruta}`, { ...init, headers: cabeceras() });
   const datos = await res.json().catch(() => ({}));
   if (!res.ok) {
