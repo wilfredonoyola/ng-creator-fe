@@ -658,7 +658,8 @@ function Formulario({
     if (!aEnviar.length) return;
     setAviso(null);
     if (!confirmarSinDuplicados(aEnviar)) return;
-    if (!cuando || yaPaso) {
+    const envio = horaDeEnvio(cuando);
+    if (!cuando || !envio) {
       setAviso({ tono: "error", texto: t("yaPasoLargo") });
       return;
     }
@@ -698,7 +699,7 @@ function Formulario({
               textoBase: descripcionFinal || undefined,
               ...(personaIds.length ? { personaIds } : {}),
               ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
-              publicarEn: cuando.toISOString(),
+              publicarEn: envio.toISOString(),
             },
           },
           // El clip sale de "Listos para programar" y su tarjeta pasa a "Programado".
@@ -733,7 +734,8 @@ function Formulario({
    */
   async function guardarCambios() {
     setAviso(null);
-    if (faltaFecha) {
+    const envio = horaDeEnvio(cuando);
+    if (faltaFecha && !envio) {
       setAviso({ tono: "error", texto: t("yaPasoLargo") });
       return;
     }
@@ -757,7 +759,7 @@ function Formulario({
       const p = pendienteDe(d);
       try {
         if (!p) {
-          if (!cuando) continue;
+          if (!envio) continue;
           await programar({
             variables: {
               input: {
@@ -778,7 +780,7 @@ function Formulario({
                 textoBase: descripcionFinal || undefined,
                 ...(personaIds.length ? { personaIds } : {}),
                 ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
-                publicarEn: cuando.toISOString(),
+                publicarEn: envio.toISOString(),
               },
             },
             refetchQueries,
@@ -806,11 +808,11 @@ function Formulario({
           refetchQueries,
         });
         if (esReintento) {
-          await reintentarPub({ variables: { marcaId, id: p._id, publicarEn: reintentoYa ? undefined : cuando?.toISOString() }, refetchQueries });
+          await reintentarPub({ variables: { marcaId, id: p._id, publicarEn: reintentoYa ? undefined : envio?.toISOString() }, refetchQueries });
           continue;
         }
-        if (fechaTocada && cuando && Math.abs(new Date(p.publicarEn).getTime() - cuando.getTime()) >= 60_000) {
-          await reprogramar({ variables: { marcaId, id: p._id, publicarEn: cuando.toISOString() }, refetchQueries });
+        if (fechaTocada && envio && Math.abs(new Date(p.publicarEn).getTime() - envio.getTime()) >= 60_000) {
+          await reprogramar({ variables: { marcaId, id: p._id, publicarEn: envio.toISOString() }, refetchQueries });
         }
       } catch (e) {
         fallas.push(`${nombre(d.red)}: ${e instanceof Error ? e.message : t("noSePudo")}`);
@@ -1639,6 +1641,22 @@ function Vacio({ titulo, detalle, children }: { titulo: string; detalle: string;
 }
 
 /** En dos horas, o mañana a las 12 si ya es tarde: un punto de partida razonable. */
+/** Lo que puede pasar entre abrir la confirmación y tocar "Programar". */
+const TOLERANCIA_CONFIRMAR_MS = 5 * 60_000;
+
+/**
+ * La hora que se manda. Se eligió con al menos un minuto de margen, pero
+ * mientras se confirma el reloj sigue: si quedó a menos de un minuto (o pasó
+ * hace menos de 5), sale apenas pueda en vez de rechazarla. Si pasó hace más,
+ * null: hay que elegir otra.
+ */
+function horaDeEnvio(cuando: Date | null): Date | null {
+  if (!cuando || Number.isNaN(cuando.getTime())) return null;
+  const minimo = Date.now() + MARGEN_MS;
+  if (cuando.getTime() >= minimo) return cuando;
+  return cuando.getTime() > Date.now() - TOLERANCIA_CONFIRMAR_MS ? new Date(minimo) : null;
+}
+
 function sugerida(): Date {
   const d = new Date();
   d.setMinutes(0, 0, 0);
