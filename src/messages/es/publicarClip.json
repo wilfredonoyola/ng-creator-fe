@@ -148,5 +148,26 @@
   },
   "borrador": {
     "recuperado": "Recuperamos lo que habías dejado sin programar."
+  },
+  "confirmar": {
+    "titulo": "¿Confirmás la fecha?",
+    "volver": "Volver",
+    "siProgramar": "Sí, programar",
+    "siGuardar": "Sí, guardar",
+    "siReintentar": "Sí, reintentar",
+    "salenEn": "Sale en"
+  },
+  "menu": {
+    "abrir": "Más opciones",
+    "cancelar": "Cancelar programación",
+    "eliminar": "Eliminar publicación",
+    "cancelarTitulo": "¿Cancelar la programación?",
+    "cancelarSi": "Sí, cancelar",
+    "cancelarDetalle": "No va a salir. El clip queda y lo podés volver a programar.",
+    "eliminarTitulo": "¿Eliminar la publicación?",
+    "eliminarSi": "Sí, eliminar",
+    "eliminando": "Eliminando…",
+    "eliminarDetalle": "Se borra de Clipfine lo programado, fallido o cancelado de este clip, y no se puede deshacer. Lo que ya salió en las redes no se toca.",
+    "eliminado": "Publicación eliminada."
   }
 }

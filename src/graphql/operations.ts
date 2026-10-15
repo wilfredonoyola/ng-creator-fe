@@ -743,6 +743,13 @@ export const CANCELAR_PUBLICACION = gql`
   ${CAMPOS_PUBLICACION}
 `;
 
+/** Borra el registro de lo que no salió: programado, fallido o cancelado (be#226). */
+export const ELIMINAR_PUBLICACION = gql`
+  mutation EliminarPublicacion($marcaId: ID!, $id: ID!) {
+    eliminarPublicacion(marcaId: $marcaId, id: $id)
+  }
+`;
+
 export const REPROGRAMAR_PUBLICACION = gql`
   mutation ReprogramarPublicacion(
     $marcaId: ID!
