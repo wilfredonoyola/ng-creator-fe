@@ -148,5 +148,26 @@
   },
   "borrador": {
     "recuperado": "We restored what you'd left unscheduled."
+  },
+  "confirmar": {
+    "titulo": "Is this date right?",
+    "volver": "Back",
+    "siProgramar": "Yes, schedule",
+    "siGuardar": "Yes, save",
+    "siReintentar": "Yes, retry",
+    "salenEn": "Goes out on"
+  },
+  "menu": {
+    "abrir": "More options",
+    "cancelar": "Cancel schedule",
+    "eliminar": "Delete post",
+    "cancelarTitulo": "Cancel the schedule?",
+    "cancelarSi": "Yes, cancel",
+    "cancelarDetalle": "It won't go out. The clip stays and you can schedule it again.",
+    "eliminarTitulo": "Delete the post?",
+    "eliminarSi": "Yes, delete",
+    "eliminando": "Deleting…",
+    "eliminarDetalle": "This clip's scheduled, failed or cancelled posts are deleted from Clipfine, and it can't be undone. What already went out on the networks isn't touched.",
+    "eliminado": "Post deleted."
   }
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarClock, Loader2, PencilLine, RotateCcw, TriangleAlert } from "lucide-react";
+import { CalendarClock, Loader2, MoreHorizontal, PencilLine, RotateCcw, Trash2, TriangleAlert, XCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import {
   CANCELAR_PUBLICACION,
+  ELIMINAR_PUBLICACION,
   CLIP_EPISODIO,
   EDITAR_PUBLICACION,
   PROGRAMAR_PUBLICACION,
@@ -17,6 +18,7 @@ import {
   REPROGRAMAR_PUBLICACION,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { ModalConfirmar } from "@/components/ModalConfirmar";
 import { useMarcaActiva } from "@/lib/marca-activa";
 import { borrarBorradorProgramar, guardarBorradorProgramar, leerBorradorProgramar, type BorradorProgramar } from "@/lib/borrador-programar";
 import { useSesion } from "@/lib/sesion";
@@ -541,9 +543,11 @@ function Formulario({
    */
   const cancelables = programadas.filter((p) => p.estado === "PROGRAMADA");
   const [cancelandoTodo, setCancelandoTodo] = useState(false);
+  // Lo que se confirma en el modal: programar o guardar, cancelar todo, o eliminar.
+  const [confirmando, setConfirmando] = useState<"enviar" | "cancelar" | "eliminar" | null>(null);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  const cuentaDe = (p: { red: string; cuentaNombre?: string | null }) => [nombreRed(p.red), p.cuentaNombre].filter(Boolean).join(" · ");
   async function cancelarTodo() {
-    const redes = cancelables.map((p) => [nombreRed(p.red), p.cuentaNombre].filter(Boolean).join(" · ")).join(", ");
-    if (!window.confirm(t("editar.confirmarCancelarTodo", { redes }))) return;
     setAviso(null);
     setCancelandoTodo(true);
     const fallas: string[] = [];
@@ -558,12 +562,47 @@ function Formulario({
       }
     }
     setCancelandoTodo(false);
+    setConfirmando(null);
     olvidarBorrador();
+    if (modoReintento) salirDelReintento();
     refrescar();
     setAviso(
       fallas.length
         ? { tono: "error", texto: t("editar.fallas", { detalle: fallas.join(" · ") }) }
         : { tono: "ok", texto: t("editar.canceladoTodo") },
+    );
+  }
+
+  /**
+   * Eliminar: borra el registro de lo que no salió (programado, fallido o
+   * cancelado). Lo que ya salió en las redes no se toca (be#226).
+   */
+  const eliminables = publicaciones.filter((p) => ["PROGRAMADA", "FALLIDA", "CANCELADA"].includes(p.estado));
+  const [eliminarPub] = useMutation(ELIMINAR_PUBLICACION);
+  const [eliminando, setEliminando] = useState(false);
+  async function eliminarTodo() {
+    setAviso(null);
+    setEliminando(true);
+    const fallas: string[] = [];
+    for (const p of eliminables) {
+      try {
+        await eliminarPub({
+          variables: { marcaId, id: p._id },
+          refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
+        });
+      } catch (e) {
+        fallas.push(`${nombreRed(p.red)}: ${e instanceof Error ? e.message : t("noSePudo")}`);
+      }
+    }
+    setEliminando(false);
+    setConfirmando(null);
+    olvidarBorrador();
+    if (modoReintento) salirDelReintento();
+    refrescar();
+    setAviso(
+      fallas.length
+        ? { tono: "error", texto: t("editar.fallas", { detalle: fallas.join(" · ") }) }
+        : { tono: "ok", texto: t("menu.eliminado") },
     );
   }
 
@@ -875,7 +914,7 @@ function Formulario({
             {cancelables.length > 0 ? (
               <button
                 type="button"
-                onClick={() => void cancelarTodo()}
+                onClick={() => setConfirmando("cancelar")}
                 disabled={cancelandoTodo || enviando}
                 className="mt-2 rounded-lg border border-red-400/40 px-3 py-1 text-xs font-medium text-red-300 hover:bg-red-400/10 disabled:opacity-50"
               >
@@ -1216,11 +1255,12 @@ function Formulario({
                   ) : null}
                 </div>
               </div>
+              <div className="flex w-full items-stretch gap-2 sm:w-auto sm:shrink-0">
               <button
                 type="button"
-                onClick={() => void (modoEditar ? guardarCambios() : enviar())}
+                onClick={() => setConfirmando("enviar")}
                 disabled={enviando || esperandoVideo || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga}
-                className="flex w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
               >
                 {enviando || esperandoVideo ? (
                   <Loader2 size={16} className="animate-spin" aria-hidden />
@@ -1245,7 +1285,134 @@ function Formulario({
                       ? t("programarEnN", { n: aProgramar.length })
                       : t("programar")}
               </button>
+              {cancelables.length > 0 || eliminables.length > 0 ? (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setMenuAbierto((v) => !v)}
+                    disabled={enviando || cancelandoTodo || eliminando}
+                    aria-label={t("menu.abrir")}
+                    aria-haspopup="menu"
+                    aria-expanded={menuAbierto}
+                    className="flex h-full items-center rounded-xl border border-white/15 px-3 text-white/70 transition hover:bg-white/5 hover:text-white disabled:opacity-40"
+                  >
+                    <MoreHorizontal size={18} aria-hidden />
+                  </button>
+                  {menuAbierto ? (
+                    <>
+                      <button type="button" aria-hidden tabIndex={-1} className="fixed inset-0 z-40 cursor-default" onClick={() => setMenuAbierto(false)} />
+                      <div role="menu" className="absolute bottom-full right-0 z-50 mb-2 w-56 overflow-hidden rounded-xl border border-white/10 bg-ng-superficie py-1 shadow-xl">
+                        {cancelables.length > 0 ? (
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => {
+                              setMenuAbierto(false);
+                              setConfirmando("cancelar");
+                            }}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-white/85 hover:bg-white/5"
+                          >
+                            <XCircle size={15} aria-hidden /> {t("menu.cancelar")}
+                          </button>
+                        ) : null}
+                        {eliminables.length > 0 ? (
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => {
+                              setMenuAbierto(false);
+                              setConfirmando("eliminar");
+                            }}
+                            className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
+                          >
+                            <Trash2 size={15} aria-hidden /> {t("menu.eliminar")}
+                          </button>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+              </div>
             </div>
+            {confirmando === "enviar" ? (
+              <ModalConfirmar
+                titulo={t("confirmar.titulo")}
+                textoVolver={t("confirmar.volver")}
+                textoConfirmar={modoReintento ? t("confirmar.siReintentar") : modoEditar ? t("confirmar.siGuardar") : t("confirmar.siProgramar")}
+                onCerrar={() => setConfirmando(null)}
+                onConfirmar={() => {
+                  setConfirmando(null);
+                  void (modoEditar ? guardarCambios() : enviar());
+                }}
+              >
+                <p className="text-lg font-semibold text-white">
+                  {reintentoYa
+                    ? t("reintentar.saleYa")
+                    : modoEditar && !modoReintento && horasDistintas && !fechaTocada
+                      ? t("editar.horasPorRed")
+                      : cuando
+                        ? diaYHora(cuando, locale)
+                        : ""}
+                </p>
+                {!reintentoYa && !(modoEditar && !modoReintento && horasDistintas && !fechaTocada) ? (
+                  <p className="text-xs text-white/45">{t("horaDe", { zona: zonaHoraria(locale) })}</p>
+                ) : null}
+                {aProgramar.length ? (
+                  <div>
+                    <p className="text-xs text-white/45">{t("confirmar.salenEn")}</p>
+                    <ul className="mt-1 space-y-0.5">
+                      {aProgramar.map((d) => (
+                        <li key={d.clave}>{[nombreRed(d.red), d.nombre].filter(Boolean).join(" · ")}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {modoEditar && aCancelar.length ? (
+                  <p className="text-amber-300">{t("editar.seCancela", { redes: aCancelar.map(cuentaDe).join(", ") })}</p>
+                ) : null}
+              </ModalConfirmar>
+            ) : null}
+            {confirmando === "cancelar" ? (
+              <ModalConfirmar
+                titulo={t("menu.cancelarTitulo")}
+                textoVolver={t("confirmar.volver")}
+                textoConfirmar={cancelandoTodo ? t("editar.cancelandoTodo") : t("menu.cancelarSi")}
+                cargando={cancelandoTodo}
+                peligro
+                onCerrar={() => setConfirmando(null)}
+                onConfirmar={() => void cancelarTodo()}
+              >
+                <ul className="space-y-0.5">
+                  {cancelables.map((p) => (
+                    <li key={p._id}>
+                      {cuentaDe(p)}: {diaYHora(new Date(p.publicarEn), locale)}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-white/55">{t("menu.cancelarDetalle")}</p>
+              </ModalConfirmar>
+            ) : null}
+            {confirmando === "eliminar" ? (
+              <ModalConfirmar
+                titulo={t("menu.eliminarTitulo")}
+                textoVolver={t("confirmar.volver")}
+                textoConfirmar={eliminando ? t("menu.eliminando") : t("menu.eliminarSi")}
+                cargando={eliminando}
+                peligro
+                onCerrar={() => setConfirmando(null)}
+                onConfirmar={() => void eliminarTodo()}
+              >
+                <ul className="space-y-0.5">
+                  {eliminables.map((p) => (
+                    <li key={p._id}>
+                      {cuentaDe(p)}: {t(`estados.${p.estado}`)}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-red-300">{t("menu.eliminarDetalle")}</p>
+              </ModalConfirmar>
+            ) : null}
           </div>
         </div>
       ) : (
