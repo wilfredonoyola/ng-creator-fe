@@ -4,6 +4,7 @@ import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
 import avisoFuente_es from "./es/avisoFuente.json";
 import ayuda_es from "./es/ayuda.json";
+import ayudaPantallas_es from "./es/ayudaPantallas.json";
 import bibliotecaSonidos_es from "./es/bibliotecaSonidos.json";
 import brandKit_es from "./es/brandKit.json";
 import calendario_es from "./es/calendario.json";
@@ -126,6 +127,7 @@ import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import avisoFuente_en from "./en/avisoFuente.json";
 import ayuda_en from "./en/ayuda.json";
+import ayudaPantallas_en from "./en/ayudaPantallas.json";
 import bibliotecaSonidos_en from "./en/bibliotecaSonidos.json";
 import brandKit_en from "./en/brandKit.json";
 import calendario_en from "./en/calendario.json";
@@ -251,6 +253,7 @@ export const mensajes = {
     "analisisBarras": analisisBarras_es,
     "avisoFuente": avisoFuente_es,
     "ayuda": ayuda_es,
+    "ayudaPantallas": ayudaPantallas_es,
     "bibliotecaSonidos": bibliotecaSonidos_es,
     "brandKit": brandKit_es,
     "calendario": calendario_es,
@@ -375,6 +378,7 @@ export const mensajes = {
     "analisisBarras": analisisBarras_en,
     "avisoFuente": avisoFuente_en,
     "ayuda": ayuda_en,
+    "ayudaPantallas": ayudaPantallas_en,
     "bibliotecaSonidos": bibliotecaSonidos_en,
     "brandKit": brandKit_en,
     "calendario": calendario_en,

@@ -14,6 +14,7 @@ import { URL_SITIO } from "@/lib/sitio";
 import { aprobarSolicitud, rechazarSolicitud, verSolicitud } from "@/lib/conectar-mcp";
 import { MIS_CONEXIONES_MCP, REVOCAR_CONEXION_MCP } from "@/graphql/operations";
 import { EstadoConexion, type EstadoConexionMcp } from "@/components/conectar/EstadoConexionMcp";
+import { TarjetaAprobar } from "@/components/conectar/TarjetaAprobar";
 
 /** La guía de la wiki con los pasos para cada app: una sola fuente. */
 const GUIA = `${URL_SITIO}${ENLACE_AYUDA}/conectar-chatgpt-claude`;
@@ -77,44 +78,7 @@ function Aprobar({ solicitud }: { solicitud: string }) {
           </p>
         )}
         {error && <p className="rounded-ng-md bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
-        {datos && (
-          <>
-            <h1 className="text-center text-xl font-bold">{t("aprobar.titulo", { app: datos.app })}</h1>
-            <p className="mt-2 text-center text-sm text-white/60">{t("aprobar.texto", { app: datos.app })}</p>
-            <ul className="mt-5 space-y-2.5 text-sm">
-              {(["marcas", "metricas", "ayuda"] as const).map((k) => (
-                <li key={k} className="flex gap-2.5">
-                  <Eye size={16} className="mt-0.5 shrink-0 text-marca" aria-hidden />
-                  {t(`aprobar.puede.${k}`)}
-                </li>
-              ))}
-              <li className="flex gap-2.5 text-white/60">
-                <ShieldCheck size={16} className="mt-0.5 shrink-0 text-ng-teal" aria-hidden />
-                {t("aprobar.noPuede")}
-              </li>
-            </ul>
-            <p className="mt-5 text-xs text-white/40">{t("aprobar.vuelveA", { host: datos.vuelveA })}</p>
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => void decidir(false)}
-                disabled={!!enviando}
-                className="rounded-ng-md border border-white/15 py-2.5 text-sm font-semibold text-white/80 hover:bg-white/5 disabled:opacity-50"
-              >
-                {enviando === "no" ? t("aprobar.cancelando") : t("aprobar.cancelar")}
-              </button>
-              <button
-                type="button"
-                onClick={() => void decidir(true)}
-                disabled={!!enviando}
-                className="rounded-ng-md bg-marca py-2.5 text-sm font-semibold text-ng-tinta hover:brightness-110 disabled:opacity-50"
-              >
-                {enviando === "si" ? t("aprobar.permitiendo") : t("aprobar.permitir")}
-              </button>
-            </div>
-            <p className="mt-4 text-center text-xs text-white/40">{t("aprobar.revocar")}</p>
-          </>
-        )}
+        {datos && <TarjetaAprobar app={datos.app} vuelveA={datos.vuelveA} enviando={enviando} onDecidir={(si) => void decidir(si)} />}
       </div>
     </main>
   );
