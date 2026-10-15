@@ -21,9 +21,16 @@ With the Clipfine connector, ChatGPT or Claude can look up your brands, their me
 
 ## In ChatGPT
 
-1. Go to **Settings → Apps & Connectors**. If you don't see the option to create one, turn on **developer mode** in the advanced settings.
-2. Create a new connector, paste the URL and choose **OAuth** authentication.
-3. Clipfine opens: sign in with your account and click **Allow**.
+1. On chatgpt.com, go to **Plugins** (in the left menu).
+2. Click **+** and choose **Add custom MCP server**.
+3. Give it a name (for example, Clipfine), paste the connector URL and choose **OAuth** authentication.
+4. Check the box to acknowledge the warning and save. Clipfine opens: sign in with your account and click **Allow**.
+
+If you don't see that option in Plugins:
+
+- Turn on **developer mode** in **Settings → Security and login** (in earlier versions it was under **Settings → Connectors → Advanced**). Then **Create MCP App** shows up in Plugins.
+- Check your plan: adding your own servers needs a paid ChatGPT plan.
+- If your ChatGPT belongs to a company (Business or Enterprise), its admin has to give you permission to create connections.
 
 Menu names may change depending on each app's version.
 

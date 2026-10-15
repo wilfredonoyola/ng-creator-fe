@@ -21,9 +21,16 @@ Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus m
 
 ## En ChatGPT
 
-1. Entrá a **Configuración → Apps y conectores**. Si no ves la opción de crear uno, activá el **modo desarrollador** en las opciones avanzadas.
-2. Creá un conector nuevo, pegá la URL y elegí autenticación **OAuth**.
-3. Se abre Clipfine: entrá con tu cuenta y tocá **Permitir**.
+1. En chatgpt.com, entrá a **Plugins** (en el menú de la izquierda).
+2. Tocá **+** y elegí **Add custom MCP server** (agregar servidor MCP personalizado).
+3. Poné un nombre (por ejemplo, Clipfine), pegá la URL del conector y elegí autenticación **OAuth**.
+4. Marcá la casilla que acepta el aviso y guardá. Se abre Clipfine: entrá con tu cuenta y tocá **Permitir**.
+
+Si en Plugins no aparece esa opción:
+
+- Activá el **modo desarrollador** en **Configuración → Seguridad e inicio de sesión** (en versiones anteriores estaba en **Configuración → Conectores → Avanzado**). Con eso aparece **Create MCP App** en Plugins.
+- Revisá tu plan: agregar servidores propios necesita un plan pago de ChatGPT.
+- Si tu ChatGPT es de una empresa (Business o Enterprise), quien lo administra tiene que darte permiso para crear conexiones.
 
 Los nombres de los menús pueden cambiar según la versión de cada app.
 
