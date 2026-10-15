@@ -42,6 +42,9 @@ const CLASE_ESTADO: Record<EstadoRevision, string> = {
  * La revisión de un clip antes de publicarlo (ng-creator-be#175): el estado,
  * el hilo de comentarios (texto y voz) y lo que puede hacer cada uno.
  *
+ * En la página es una barra corta (estado y último comentario) para no tapar
+ * los pasos de programar; el hilo y los botones se abren en un panel al costado.
+ *
  * - Un revisor aprueba o pide cambios. Si hay publicaciones que se vencieron
  *   esperando, elige si salen ya o a otra hora.
  * - Quien opera la marca manda el clip a revisar (o de nuevo, después de
@@ -85,13 +88,19 @@ export function PanelRevision({
   const [nuevaHora, setNuevaHora] = useState("");
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; texto: string } | null>(null);
 
-  // Al abrir desde un aviso (…/publicar#revision), el panel queda a la vista.
-  const ancla = useRef<HTMLElement>(null);
+  const [abierto, setAbierto] = useState(false);
+
+  // Al llegar desde un aviso (…/publicar#revision), el panel se abre solo.
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash === "#revision") {
-      ancla.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [revision?._id]);
+    if (typeof window !== "undefined" && window.location.hash === "#revision") setAbierto(true);
+  }, []);
+  // Escape cierra.
+  useEffect(() => {
+    if (!abierto) return;
+    const conEsc = (e: KeyboardEvent) => e.key === "Escape" && setAbierto(false);
+    window.addEventListener("keydown", conEsc);
+    return () => window.removeEventListener("keydown", conEsc);
+  }, [abierto]);
 
   if (!activa && !revision) return null;
 
@@ -196,151 +205,223 @@ export function PanelRevision({
   const puedeComentar = !!revision && (opera || soyRevisor);
   const escribe = soyRevisor || puedeMandar || puedeComentar;
 
+  const ultimo = revision?.comentarios.at(-1) ?? null;
+  const ultimoTexto = ultimo ? ultimo.texto || ultimo.transcripcion || (ultimo.audioUrl ? t("notaDeVoz") : null) : null;
+  // Le toca a quien mira: el revisor con algo pendiente, o quien opera con cambios pedidos.
+  const leToca = (soyRevisor && estado === "PENDIENTE") || (puedeMandar && !soyRevisor);
+  const chip = estado ? (
+    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] ${CLASE_ESTADO[estado]}`}>{t(`estado.${estado}`)}</span>
+  ) : null;
+
   return (
-    <section id="revision" ref={ancla} className="scroll-mt-20 space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-      <div className="flex flex-wrap items-center gap-2">
+    <>
+      <section
+        id="revision"
+        className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
+      >
         <h2 className="text-xs font-semibold uppercase tracking-wide text-white/45">{t("titulo")}</h2>
-        {estado && (
-          <span className={`rounded-full px-2 py-0.5 text-[11px] ${CLASE_ESTADO[estado]}`}>{t(`estado.${estado}`)}</span>
-        )}
-        {urlVideo && (
-          <button
-            type="button"
-            onClick={() => setVerVideo((v) => !v)}
-            className="ml-auto text-xs text-ng-celeste hover:underline"
+        {chip}
+        <p className="min-w-0 flex-1 basis-40 truncate text-xs text-white/50">
+          {soyRevisor && vencidas > 0 && estado !== "APROBADA" ? (
+            <span className="text-red-300">{t("vencidasCorto", { n: vencidas })}</span>
+          ) : ultimo ? (
+            <>
+              <span className="text-white/75">{ultimo.autor.nombre}</span> {t(`acciones.${ultimo.accion}`)}
+              {ultimoTexto ? `: ${ultimoTexto}` : ""}
+            </>
+          ) : !revision ? (
+            t("sinRevisionCorto")
+          ) : null}
+        </p>
+        <button
+          type="button"
+          onClick={() => setAbierto(true)}
+          aria-haspopup="dialog"
+          className={
+            leToca
+              ? "shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta transition hover:brightness-110"
+              : "shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/80 transition hover:bg-white/5"
+          }
+        >
+          {soyRevisor && estado === "PENDIENTE"
+            ? t("revisar")
+            : leToca
+              ? estado === "CAMBIOS_PEDIDOS"
+                ? t("verCambios")
+                : t("mandarARevisar")
+              : revision?.comentarios.length
+                ? t("abrirN", { n: revision.comentarios.length })
+                : t("abrir")}
+        </button>
+      </section>
+
+      {/* El hilo y lo que se puede hacer, en un panel al costado (en el teléfono, a pantalla completa). */}
+      {abierto && (
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-black/60"
+          onClick={() => setAbierto(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("titulo")}
+        >
+          <div
+            className="flex h-[100dvh] w-full flex-col border-l border-white/10 bg-ng-elevada shadow-2xl shadow-black/50 sm:max-w-md"
+            onClick={(e) => e.stopPropagation()}
           >
-            {t("verVideo")}
-          </button>
-        )}
-      </div>
-
-      {verVideo && urlVideo && (
-        <video src={urlVideo} controls playsInline className="mx-auto max-h-[60vh] rounded-xl bg-black" />
-      )}
-
-      {!revision && <p className="text-sm text-white/50">{t("sinRevision")}</p>}
-
-      {revision && revision.comentarios.length > 0 && (
-        <ol className="space-y-2">
-          {revision.comentarios.map((c) => (
-            <ItemComentario key={c._id} c={c} />
-          ))}
-        </ol>
-      )}
-
-      {escribe && (
-        <div className="space-y-2 border-t border-white/10 pt-3">
-          <textarea
-            value={texto}
-            onChange={(e) => setTexto(e.target.value)}
-            rows={2}
-            maxLength={2000}
-            placeholder={t("placeholder")}
-            className="w-full resize-y rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-ng-azul"
-          />
-          <GrabadorVoz
-            marcaId={marcaId}
-            voz={voz}
-            onVoz={(v) => {
-              setVoz(v);
-              setTranscripcion(v?.transcripcion ?? "");
-            }}
-          />
-          {voz && (
-            <label className="block">
-              <span className="text-xs text-white/45">{t("transcripcion")}</span>
-              <textarea
-                value={transcripcion}
-                onChange={(e) => setTranscripcion(e.target.value)}
-                rows={2}
-                maxLength={4000}
-                className="mt-1 w-full resize-y rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-ng-azul"
-              />
-              <span className="text-[11px] text-white/35">{t("transcripcionAyuda")}</span>
-            </label>
-          )}
-
-          {soyRevisor && vencidas > 0 && estado !== "APROBADA" && (
-            <div className="space-y-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.05] p-3 text-sm">
-              <p className="text-red-300">{t("vencidas", { n: vencidas })}</p>
-              <label className="flex items-center gap-2">
-                <input type="radio" checked={vencidasAl === "ya"} onChange={() => setVencidasAl("ya")} className="accent-[#FFD400]" />
-                {t("publicarYa")}
-              </label>
-              <label className="flex flex-wrap items-center gap-2">
-                <input
-                  type="radio"
-                  checked={vencidasAl === "otra"}
-                  onChange={() => {
-                    setVencidasAl("otra");
-                    if (!nuevaHora) setNuevaHora(aInputLocal(new Date(Date.now() + 60 * 60_000)));
-                  }}
-                  className="accent-[#FFD400]"
-                />
-                {t("otraHora")}
-                {vencidasAl === "otra" && (
-                  <input
-                    type="datetime-local"
-                    value={nuevaHora}
-                    min={aInputLocal(new Date())}
-                    onChange={(e) => setNuevaHora(e.target.value)}
-                    className="rounded-lg border border-white/15 bg-white/[0.03] px-2 py-1 text-sm [color-scheme:dark]"
-                  />
-                )}
-              </label>
+            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+              <h2 className="text-sm font-semibold">{t("titulo")}</h2>
+              {chip}
+              {urlVideo && (
+                <button
+                  type="button"
+                  onClick={() => setVerVideo((v) => !v)}
+                  className="ml-auto text-xs text-ng-celeste hover:underline"
+                >
+                  {t("verVideo")}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setAbierto(false)}
+                aria-label={t("cerrar")}
+                className={`${urlVideo ? "" : "ml-auto "}rounded-lg p-1.5 text-white/60 transition hover:bg-white/5 hover:text-white`}
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-          )}
+            <div className="flex-1 space-y-3 overflow-y-auto p-4">
 
-          <div className="flex flex-wrap items-center gap-2">
-            {soyRevisor && estado !== "APROBADA" && (
-              <>
-                <button
-                  type="button"
-                  onClick={alAprobar}
-                  disabled={ocupado}
-                  className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
-                >
-                  {aprobando ? t("aprobando") : t("aprobar")}
-                </button>
-                <button
-                  type="button"
-                  onClick={alPedirCambios}
-                  disabled={ocupado}
-                  className="rounded-lg border border-orange-400/40 px-4 py-2 text-sm text-orange-200 transition hover:bg-orange-400/10 disabled:opacity-40"
-                >
-                  {pidiendo ? t("pidiendo") : t("pedirCambios")}
-                </button>
-              </>
-            )}
-            {puedeMandar && !soyRevisor && (
-              <button
-                type="button"
-                onClick={alMandar}
-                disabled={ocupado}
-                className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
-              >
-                {estado === "CAMBIOS_PEDIDOS" ? t("mandarDeNuevo") : t("mandarARevisar")}
-              </button>
-            )}
-            {puedeComentar && (
-              <button
-                type="button"
-                onClick={alComentar}
-                disabled={ocupado}
-                className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5 disabled:opacity-40"
-              >
-                {comentando ? t("comentando") : t("comentar")}
-              </button>
-            )}
+              {verVideo && urlVideo && (
+                <video src={urlVideo} controls playsInline className="mx-auto max-h-[60vh] rounded-xl bg-black" />
+              )}
+
+              {!revision && <p className="text-sm text-white/50">{t("sinRevision")}</p>}
+
+              {revision && revision.comentarios.length > 0 && (
+                <ol className="space-y-2">
+                  {revision.comentarios.map((c) => (
+                    <ItemComentario key={c._id} c={c} />
+                  ))}
+                </ol>
+              )}
+
+              {escribe && (
+                <div className="space-y-2 border-t border-white/10 pt-3">
+                  <textarea
+                    value={texto}
+                    onChange={(e) => setTexto(e.target.value)}
+                    rows={2}
+                    maxLength={2000}
+                    placeholder={t("placeholder")}
+                    className="w-full resize-y rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-ng-azul"
+                  />
+                  <GrabadorVoz
+                    marcaId={marcaId}
+                    voz={voz}
+                    onVoz={(v) => {
+                      setVoz(v);
+                      setTranscripcion(v?.transcripcion ?? "");
+                    }}
+                  />
+                  {voz && (
+                    <label className="block">
+                      <span className="text-xs text-white/45">{t("transcripcion")}</span>
+                      <textarea
+                        value={transcripcion}
+                        onChange={(e) => setTranscripcion(e.target.value)}
+                        rows={2}
+                        maxLength={4000}
+                        className="mt-1 w-full resize-y rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-ng-azul"
+                      />
+                      <span className="text-[11px] text-white/35">{t("transcripcionAyuda")}</span>
+                    </label>
+                  )}
+
+                  {soyRevisor && vencidas > 0 && estado !== "APROBADA" && (
+                    <div className="space-y-1.5 rounded-xl border border-red-500/20 bg-red-500/[0.05] p-3 text-sm">
+                      <p className="text-red-300">{t("vencidas", { n: vencidas })}</p>
+                      <label className="flex items-center gap-2">
+                        <input type="radio" checked={vencidasAl === "ya"} onChange={() => setVencidasAl("ya")} className="accent-[#FFD400]" />
+                        {t("publicarYa")}
+                      </label>
+                      <label className="flex flex-wrap items-center gap-2">
+                        <input
+                          type="radio"
+                          checked={vencidasAl === "otra"}
+                          onChange={() => {
+                            setVencidasAl("otra");
+                            if (!nuevaHora) setNuevaHora(aInputLocal(new Date(Date.now() + 60 * 60_000)));
+                          }}
+                          className="accent-[#FFD400]"
+                        />
+                        {t("otraHora")}
+                        {vencidasAl === "otra" && (
+                          <input
+                            type="datetime-local"
+                            value={nuevaHora}
+                            min={aInputLocal(new Date())}
+                            onChange={(e) => setNuevaHora(e.target.value)}
+                            className="rounded-lg border border-white/15 bg-white/[0.03] px-2 py-1 text-sm [color-scheme:dark]"
+                          />
+                        )}
+                      </label>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {soyRevisor && estado !== "APROBADA" && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={alAprobar}
+                          disabled={ocupado}
+                          className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
+                        >
+                          {aprobando ? t("aprobando") : t("aprobar")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={alPedirCambios}
+                          disabled={ocupado}
+                          className="rounded-lg border border-orange-400/40 px-4 py-2 text-sm text-orange-200 transition hover:bg-orange-400/10 disabled:opacity-40"
+                        >
+                          {pidiendo ? t("pidiendo") : t("pedirCambios")}
+                        </button>
+                      </>
+                    )}
+                    {puedeMandar && !soyRevisor && (
+                      <button
+                        type="button"
+                        onClick={alMandar}
+                        disabled={ocupado}
+                        className="rounded-lg bg-marca px-4 py-2 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
+                      >
+                        {estado === "CAMBIOS_PEDIDOS" ? t("mandarDeNuevo") : t("mandarARevisar")}
+                      </button>
+                    )}
+                    {puedeComentar && (
+                      <button
+                        type="button"
+                        onClick={alComentar}
+                        disabled={ocupado}
+                        className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5 disabled:opacity-40"
+                      >
+                        {comentando ? t("comentando") : t("comentar")}
+                      </button>
+                    )}
+                  </div>
+                  {!soyRevisor && estado === "PENDIENTE" && <p className="text-xs text-white/40">{t("noSoyRevisor")}</p>}
+                </div>
+              )}
+
+              {aviso && aviso.texto && (
+                <p className={`text-xs ${aviso.tono === "ok" ? "text-ng-teal" : "text-red-400"}`}>{aviso.texto}</p>
+              )}
+            </div>
           </div>
-          {!soyRevisor && estado === "PENDIENTE" && <p className="text-xs text-white/40">{t("noSoyRevisor")}</p>}
         </div>
       )}
-
-      {aviso && aviso.texto && (
-        <p className={`text-xs ${aviso.tono === "ok" ? "text-ng-teal" : "text-red-400"}`}>{aviso.texto}</p>
-      )}
-    </section>
+    </>
   );
 }
 

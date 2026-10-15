@@ -72,7 +72,15 @@
       "COMENTARIO": "comentó"
     },
     "transcripcion": "Transcripción",
-    "transcripcionAyuda": "Corregila si hace falta: es lo que lee quien no puede escuchar el audio."
+    "transcripcionAyuda": "Corregila si hace falta: es lo que lee quien no puede escuchar el audio.",
+    "sinRevisionCorto": "Todavía no se mandó a revisar: se manda solo al programarlo.",
+    "vencidasCorto": "{n, plural, one {Una publicación se venció} other {# publicaciones se vencieron}} esperando la revisión",
+    "notaDeVoz": "nota de voz",
+    "revisar": "Revisar",
+    "verCambios": "Ver los cambios",
+    "abrir": "Abrir",
+    "abrirN": "{n, plural, one {Ver # comentario} other {Ver # comentarios}}",
+    "cerrar": "Cerrar"
   },
   "voz": {
     "grabar": "Grabar voz",

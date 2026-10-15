@@ -72,7 +72,15 @@
       "COMENTARIO": "commented"
     },
     "transcripcion": "Transcript",
-    "transcripcionAyuda": "Fix it if needed: it's what people read when they can't listen."
+    "transcripcionAyuda": "Fix it if needed: it's what people read when they can't listen.",
+    "sinRevisionCorto": "Not sent for review yet: it goes automatically when you schedule it.",
+    "vencidasCorto": "{n, plural, one {One post expired} other {# posts expired}} waiting for review",
+    "notaDeVoz": "voice note",
+    "revisar": "Review",
+    "verCambios": "See the changes",
+    "abrir": "Open",
+    "abrirN": "{n, plural, one {See # comment} other {See # comments}}",
+    "cerrar": "Close"
   },
   "voz": {
     "grabar": "Record voice",
