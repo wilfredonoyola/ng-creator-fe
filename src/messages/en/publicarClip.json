@@ -9,10 +9,8 @@
   "fallaAlgunas": "Some weren't scheduled. {detalle}",
   "programado": "Scheduled: goes out {cuando}. You'll see it in the Calendar.",
   "duracionListo": "{seg} s",
-  "cambiosSinProcesar": "It has changes not exported yet: it exports on its own before publishing.",
-  "sinVideo": "Not exported yet: it exports on its own before publishing.",
   "esperaVideo": "Waiting for the video",
-  "portadaSinVideo": "The cover is picked from the exported video. If you don't pick one, each network sets its own.",
+  "portadaSinVideo": "You can pick the cover once the video is ready. If you don't, each network picks its own.",
   "elegiDiaHora": "Pick the day and time",
   "elegiDiaHoraPunto": "Pick the day and time.",
   "yaPaso": "That time has already passed",
@@ -132,5 +130,19 @@
   },
   "errorEtiquetas": "{red} rejected one of the tagged or collaborator accounts (private, missing, not visible or not accepting collaborations).",
   "verDetalle": "Show details",
-  "ocultarDetalle": "Hide details"
+  "ocultarDetalle": "Hide details",
+  "video": {
+    "preparando": "Preparing the final video…",
+    "preparandoProgreso": "Preparing the final video… {n}%",
+    "ayuda": "You can schedule once it's ready (usually a couple of minutes). Meanwhile, fill in the rest: it's kept even if you reload.",
+    "ayudaSoloMira": "It's exporting with the latest edit.",
+    "boton": "Waiting for the video…",
+    "botonAyuda": "Enabled once the video is ready.",
+    "fallo": "The video couldn't be prepared",
+    "falloAyuda": "Try again; if it fails again, check the clip in the editor.",
+    "reintentar": "Try again"
+  },
+  "borrador": {
+    "recuperado": "We restored what you'd left unscheduled."
+  }
 }

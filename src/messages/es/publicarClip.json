@@ -9,10 +9,8 @@
   "fallaAlgunas": "Algunas no se programaron. {detalle}",
   "programado": "Programado: sale el {cuando}. Lo ves en el Calendario.",
   "duracionListo": "{seg} s",
-  "cambiosSinProcesar": "Tiene cambios sin exportar: se exporta solo antes de publicar.",
-  "sinVideo": "Todavía no se exportó: se exporta solo antes de publicar.",
   "esperaVideo": "Esperando el video",
-  "portadaSinVideo": "La portada se elige con el video exportado. Sin elegirla, cada red pone la suya.",
+  "portadaSinVideo": "Vas a poder elegir la portada cuando el video esté listo. Sin elegirla, cada red pone la suya.",
   "elegiDiaHora": "Elegí el día y la hora",
   "elegiDiaHoraPunto": "Elegí el día y la hora.",
   "yaPaso": "Esa hora ya pasó",
@@ -132,5 +130,19 @@
   },
   "errorEtiquetas": "{red} rechazó una de las cuentas etiquetadas o colaboradoras (privada, inexistente, que no se ve o que no acepta colaboraciones).",
   "verDetalle": "Ver detalle",
-  "ocultarDetalle": "Ocultar detalle"
+  "ocultarDetalle": "Ocultar detalle",
+  "video": {
+    "preparando": "Preparando el video final…",
+    "preparandoProgreso": "Preparando el video final… {n} %",
+    "ayuda": "Vas a poder programar cuando esté listo (suele tardar un par de minutos). Mientras, llená el resto: queda guardado aunque recargues.",
+    "ayudaSoloMira": "Se está exportando con la última edición.",
+    "boton": "Esperando el video…",
+    "botonAyuda": "Se habilita cuando el video esté listo.",
+    "fallo": "No se pudo preparar el video",
+    "falloAyuda": "Reintentá; si vuelve a fallar, revisá el clip en el editor.",
+    "reintentar": "Reintentar"
+  },
+  "borrador": {
+    "recuperado": "Recuperamos lo que habías dejado sin programar."
+  }
 }

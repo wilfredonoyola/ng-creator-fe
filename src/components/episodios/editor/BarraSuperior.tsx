@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useMutation } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -79,6 +80,18 @@ export function BarraSuperior({
   const [bajarAlTerminar, setBajarAlTerminar] = useState(false);
   const { fallidas = 0, programadas = 0, proximaEn } = exportar.publicacion ?? {};
   const locale = useLocale();
+  const router = useRouter();
+  const [yendo, setYendo] = useState(false);
+
+  // Programar sin el MP4 al día: primero se exporta (con lo último guardado) y
+  // después se va a Programar, que espera el video antes de dejar programar.
+  async function irAProgramar(e: React.MouseEvent) {
+    if (alDia || procesando) return;
+    e.preventDefault();
+    setYendo(true);
+    await exportar.onExportar();
+    router.push(hrefProgramar);
+  }
 
   // Se pidió "Descargar" sin el MP4 al día: baja solo en cuanto termina. Un
   // FALLIDO de antes no cuenta: solo el del render que se pidió ahora.
@@ -271,10 +284,18 @@ export function BarraSuperior({
         {puedeOperar && (
           <Link
             href={hrefProgramar}
+            onClick={(e) => void irAProgramar(e)}
+            aria-disabled={yendo}
             title={alDia ? undefined : th("exportar.seExportaSolo")}
             className="inline-flex h-10 items-center gap-2 rounded-ng-md bg-ng-azul px-4 text-sm font-bold text-ng-tinta transition hover:brightness-110"
           >
-            {programadas > 0 ? <PencilLine size={16} aria-hidden /> : <Send size={16} aria-hidden />}
+            {yendo ? (
+              <LoaderCircle size={16} className="animate-spin" aria-hidden />
+            ) : programadas > 0 ? (
+              <PencilLine size={16} aria-hidden />
+            ) : (
+              <Send size={16} aria-hidden />
+            )}
             {fallidas ? t("programar.reintentar") : programadas > 0 ? t("programar.editar") : t("programar.programar")}
           </Link>
         )}

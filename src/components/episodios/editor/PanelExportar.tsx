@@ -55,7 +55,7 @@ export function PanelExportar({
   listoPor?: Autoria | null;
   publicacion?: ResumenPublicacionClip | null;
   render: RenderClip;
-  onExportar: () => void;
+  onExportar: () => void | Promise<void>;
   /** La descarga vive en la barra: sigue aunque el panel se cierre. */
   bajada: ReturnType<typeof useDescargarMp4>;
   /** Se pidió "Descargar" sin el MP4 al día: baja solo cuando termina. */
@@ -113,7 +113,7 @@ export function PanelExportar({
         {puedeOperar && (
           <button
             type="button"
-            onClick={onExportar}
+            onClick={() => void onExportar()}
             disabled={mp4.procesando}
             className="flex w-full items-center justify-center gap-2 rounded-ng-md bg-ng-azul px-3 py-2.5 font-semibold text-ng-tinta hover:brightness-110 disabled:opacity-60"
           >

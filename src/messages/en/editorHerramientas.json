@@ -29,7 +29,7 @@
     "alDia": "It already has every change: only if you want to redo it.",
     "equipo": "For the team",
     "listoSinVideo": "Export the video to mark it ready.",
-    "seExportaSolo": "It exports on its own before publishing.",
+    "seExportaSolo": "It exports first: you can schedule once the video is ready.",
     "bajaAlTerminar": "It downloads on its own once the export finishes."
   },
   "escenario": {

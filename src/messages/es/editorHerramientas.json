@@ -29,7 +29,7 @@
     "alDia": "Ya tiene todos los cambios: solo si querés rehacerlo.",
     "equipo": "Para el equipo",
     "listoSinVideo": "Exportá el video para marcarlo listo.",
-    "seExportaSolo": "Se exporta solo antes de publicar.",
+    "seExportaSolo": "Primero se exporta: vas a poder programar cuando el video esté listo.",
     "bajaAlTerminar": "Se descarga solo cuando termine de exportarse."
   },
   "escenario": {
