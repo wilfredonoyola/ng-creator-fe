@@ -527,6 +527,39 @@ function Formulario({
   );
   const nombreRed = (red: string) => REDES[red as Red]?.nombre ?? red;
 
+  /**
+   * Cancelar todo lo programado del clip de un toque (también se puede por
+   * fila o desmarcando). Solo lo PROGRAMADA: lo que se está subiendo o quedó
+   * agendado en la red no se corta desde acá.
+   */
+  const cancelables = programadas.filter((p) => p.estado === "PROGRAMADA");
+  const [cancelandoTodo, setCancelandoTodo] = useState(false);
+  async function cancelarTodo() {
+    const redes = cancelables.map((p) => [nombreRed(p.red), p.cuentaNombre].filter(Boolean).join(" · ")).join(", ");
+    if (!window.confirm(t("editar.confirmarCancelarTodo", { redes }))) return;
+    setAviso(null);
+    setCancelandoTodo(true);
+    const fallas: string[] = [];
+    for (const p of cancelables) {
+      try {
+        await cancelarPub({
+          variables: { marcaId, id: p._id },
+          refetchQueries: ["ClipsListosSinProgramar", "PublicacionesDeMarca", "ClipsDeEpisodio", "ClipEpisodio"],
+        });
+      } catch (e) {
+        fallas.push(`${nombreRed(p.red)}: ${e instanceof Error ? e.message : t("noSePudo")}`);
+      }
+    }
+    setCancelandoTodo(false);
+    olvidarBorrador();
+    refrescar();
+    setAviso(
+      fallas.length
+        ? { tono: "error", texto: t("editar.fallas", { detalle: fallas.join(" · ") }) }
+        : { tono: "ok", texto: t("editar.canceladoTodo") },
+    );
+  }
+
   function salirDelReintento() {
     setReintentandoId(null);
     setAviso(null);
@@ -832,6 +865,16 @@ function Formulario({
                 : t("editar.titulo", { cuando: diaYHora(new Date(pendientes[0].publicarEn), locale), redes: resumenProgramado })}
             </p>
             <p className="mt-0.5 text-white/55">{t("editar.ayuda")}</p>
+            {cancelables.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => void cancelarTodo()}
+                disabled={cancelandoTodo || enviando}
+                className="mt-2 rounded-lg border border-red-400/40 px-3 py-1 text-xs font-medium text-red-300 hover:bg-red-400/10 disabled:opacity-50"
+              >
+                {cancelandoTodo ? t("editar.cancelandoTodo") : t("editar.cancelarTodo")}
+              </button>
+            ) : null}
             {horasDistintas ? (
               <ul className="mt-1.5 space-y-0.5 text-xs text-white/55">
                 {pendientes.map((p) => (

@@ -27,6 +27,7 @@ import {
   type ResumenPublicacionClip,
 } from "@/components/episodios/ListoClip";
 import { useSesion } from "@/lib/sesion";
+import { sePuedeBorrar, useBorrarClip } from "@/components/episodios/useBorrarClip";
 import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
 import { etiquetaDeClip, type EstadoRevision } from "@/lib/revision";
 
@@ -395,6 +396,9 @@ function TarjetaClip({
   const [verTexto, setVerTexto] = useState(false);
   const [viendoFinal, setViendoFinal] = useState(false);
   const tieneVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
+  // Solo uno hecho a mano y sin publicar (be#223); lo programado se cancela con él.
+  const tb = useTranslations("editorBarra.borrar");
+  const borrador = useBorrarClip(marcaId);
   return (
     <li
       className={`rounded-xl border p-3 transition ${
@@ -454,6 +458,7 @@ function TarjetaClip({
             {verTexto ? t("tarjeta.ocultarTexto") : t("tarjeta.verTexto")}
           </button>
           {verTexto && <p className="mt-1 text-sm leading-relaxed text-white/60">{clip.texto}</p>}
+          {borrador.error && <p className="mt-2 text-xs text-red-400">{borrador.error}</p>}
         </div>
         <div className="flex shrink-0 flex-col gap-1.5">
         <Link
@@ -503,6 +508,17 @@ function TarjetaClip({
             className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta"
           >
             {t("tarjeta.escuchar")}
+          </button>
+        )}
+        {sePuedeBorrar(clip, opera) && (
+          <button
+            type="button"
+            onClick={() => void borrador.borrar(clip)}
+            disabled={borrador.borrando}
+            title={tb("ayuda")}
+            className="rounded-lg border border-red-400/30 px-3 py-1.5 text-center text-xs text-red-300 hover:bg-red-400/10 disabled:opacity-50"
+          >
+            {borrador.borrando ? tb("borrando") : tb("boton")}
           </button>
         )}
         </div>

@@ -93,7 +93,11 @@
     "guardado": "Done: the scheduled posts were updated.",
     "fallas": "Couldn't update everything: {detalle}",
     "confirmarCancelar": "The scheduled post on {redes} will be canceled. Continue?",
-    "seCancela": "Saving cancels it on {redes}."
+    "seCancela": "Saving cancels it on {redes}.",
+    "cancelarTodo": "Cancel post",
+    "cancelandoTodo": "Canceling…",
+    "confirmarCancelarTodo": "Cancel the post on {redes}? It won't go out. The clip stays and you can schedule it again.",
+    "canceladoTodo": "Post canceled: it won't go out."
   },
   "reintentar": {
     "titulo": "Retry on {red}",

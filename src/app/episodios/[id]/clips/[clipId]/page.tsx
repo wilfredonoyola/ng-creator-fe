@@ -577,6 +577,7 @@ export default function EditorClipPage({
             clipId={clipId}
             marcaId={marcaId ?? ""}
             hrefVolver={`/episodios/${episodioId}`}
+            hechoAMano={clip.origen === "MANUAL"}
             episodio={ep.titulo}
             titulo={b.titulo}
             onCambiarTitulo={(titulo) => cambiar({ titulo })}

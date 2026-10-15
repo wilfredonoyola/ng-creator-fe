@@ -188,15 +188,29 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
     }
   }
 
+  // Uno ya publicado no se ofrece (be#223 también lo rechaza); si tiene algo
+  // programado, se avisa que se cancela.
   async function quitar(c: ClipSubido) {
-    if (!window.confirm(t("confirmarBorrar", { titulo: c.clip?.titulo ?? c.episodio.titulo }))) return;
+    const programadas = c.clip?.publicacion?.programadas ?? 0;
+    const pregunta = [
+      t("confirmarBorrar", { titulo: c.clip?.titulo ?? c.episodio.titulo }),
+      programadas ? t("seCancelan", { n: programadas }) : null,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+    if (!window.confirm(pregunta)) return;
     if (subiendo?.episodioId === c.episodio._id) {
       control.current?.detener();
       control.current = null;
       setSubiendo(null);
     }
     try {
-      await borrar({ variables: { id: c.episodio._id, marcaId } });
+      await borrar({
+        variables: { id: c.episodio._id, marcaId },
+        refetchQueries: ["PublicacionesDeMarca", "ClipsListosSinProgramar"],
+      });
+    } catch (e) {
+      setAvisos((a) => [...a, `${c.clip?.titulo ?? c.episodio.titulo}: ${e instanceof Error ? e.message : t("errorBorrar")}`]);
     } finally {
       void refetch();
     }
@@ -454,7 +468,11 @@ function TarjetaClipSubido({
               <Pencil size={13} aria-hidden />
             </Link>
           )}
-          {puedeOperar && (
+          {puedeOperar && (clip?.publicacion?.publicadas ?? 0) > 0 ? (
+            <span title={t("noSeBorraPublicado")} className="ml-auto p-1.5 text-white/20" aria-label={t("noSeBorraPublicado")}>
+              <Trash2 size={14} aria-hidden />
+            </span>
+          ) : puedeOperar && (
             <button type="button" onClick={onBorrar} aria-label={t("borrar")} title={t("borrar")} className="ml-auto p-1.5 text-white/40 hover:text-red-400">
               <Trash2 size={14} aria-hidden />
             </button>

@@ -5,7 +5,7 @@
   "muyLargo": "{nombre} dura {dura} s y el máximo es {maximo} s.",
   "errorSubir": "No se pudo subir. Probá de nuevo.",
   "vacio": "Todavía no subiste clips.",
-  "confirmarBorrar": "¿Borrar «{titulo}»? Se borra el video y lo que tenga programado.",
+  "confirmarBorrar": "¿Borrar «{titulo}»? Se borra el video. No se puede deshacer.",
   "subidoPor": "subido por {nombre}",
   "editado": "editado en Clipfine",
   "programar": "Programar",
@@ -55,5 +55,8 @@
   },
   "sinEnFiltro": "No hay clips en este estado.",
   "vacioDetalle": "Soltá un video arriba y en unos segundos queda listo para programar.",
-  "noEsVideo": "{n, plural, one {Un archivo no es un video y se saltó.} other {# archivos no son videos y se saltaron.}}"
+  "noEsVideo": "{n, plural, one {Un archivo no es un video y se saltó.} other {# archivos no son videos y se saltaron.}}",
+  "seCancelan": "Tiene {n, plural, one {# publicación programada} other {# publicaciones programadas}}: se cancelan.",
+  "noSeBorraPublicado": "Ya se publicó: no se puede borrar.",
+  "errorBorrar": "No se pudo borrar."
 }
