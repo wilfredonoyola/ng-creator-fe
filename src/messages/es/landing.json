@@ -26,6 +26,7 @@
     "texto": "Subí el video largo de un cliente y recibí sus mejores momentos como clips verticales con subtítulos. Programalos desde un calendario y mirá qué funciona, para cada cliente que maneja tu agencia.",
     "letraChica": "15 días gratis · Sin tarjeta",
     "publicaEn": "Publicá en",
+    "preguntaEn": "Preguntale desde",
     "maqueta": {
       "alt": "El espacio de Clipfine: un selector de clientes, un episodio largo convertido en clips verticales con subtítulos y un calendario semanal de publicaciones.",
       "cliente": "Cliente {letra}",
@@ -247,6 +248,21 @@
       "vistasPromedio": "Vistas promedio según la puntuación de la IA",
       "mejorClip": "Mejor clip: humor · 10,8K vistas · IA 92"
     }
+  },
+  "mcp": {
+    "etiqueta": "Conector MCP",
+    "titulo": "Preguntale a ChatGPT o Claude por tus clientes.",
+    "texto": "Clipfine tiene su propio conector MCP. Conectalo una vez a ChatGPT, a Claude o a cualquier app compatible con MCP y preguntá por tus marcas, sus métricas y lo que tienen programado, sin abrir el panel.",
+    "directo": "Conexión directa: tu IA lee de Clipfine, con tus permisos.",
+    "compatible": "Y cualquier app con MCP",
+    "ejemplosTitulo": "Lo que podés preguntar",
+    "ejemplos": {
+      "mejores": "¿Qué clips de Café Luna funcionaron mejor este mes?",
+      "reporte": "Armame el reporte de los últimos 30 días para mandarle al cliente.",
+      "semana": "¿Qué tiene programado cada cliente esta semana?"
+    },
+    "soloLectura": "Solo lectura: no publica, no aprueba ni borra nada.",
+    "comoConectar": "Cómo conectarlo"
   },
   "paraQuien": {
     "etiqueta": "Para quién es",

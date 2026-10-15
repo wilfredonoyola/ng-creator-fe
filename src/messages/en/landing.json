@@ -26,6 +26,7 @@
     "texto": "Upload a client's long video and get its best moments as captioned, vertical clips. Schedule them from one calendar and see what works, for every client your agency manages.",
     "letraChica": "15-day free trial · No card required",
     "publicaEn": "Post to",
+    "preguntaEn": "Ask from",
     "maqueta": {
       "alt": "Clipfine workspace: a client switcher, a long episode turned into captioned vertical clips, and a weekly posting calendar.",
       "cliente": "Client {letra}",
@@ -247,6 +248,21 @@
       "vistasPromedio": "Average views by AI score",
       "mejorClip": "Top clip: humor · 10.8K views · AI 92"
     }
+  },
+  "mcp": {
+    "etiqueta": "MCP connector",
+    "titulo": "Ask ChatGPT or Claude about your clients.",
+    "texto": "Clipfine has its own MCP connector. Connect it once to ChatGPT, Claude or any MCP-compatible app and ask about your brands, their analytics and what's scheduled, without opening the dashboard.",
+    "directo": "Direct connection: your AI reads from Clipfine, with your permissions.",
+    "compatible": "And any MCP app",
+    "ejemplosTitulo": "What you can ask",
+    "ejemplos": {
+      "mejores": "Which Café Luna clips did best this month?",
+      "reporte": "Put together the last 30 days report so I can send it to the client.",
+      "semana": "What does each client have scheduled this week?"
+    },
+    "soloLectura": "Read only: it doesn't post, approve or delete anything.",
+    "comoConectar": "How to connect it"
   },
   "paraQuien": {
     "etiqueta": "Who it's for",
