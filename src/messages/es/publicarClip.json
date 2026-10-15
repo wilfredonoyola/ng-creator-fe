@@ -169,5 +169,21 @@
     "eliminando": "Eliminando…",
     "eliminarDetalle": "Se borra de Clipfine lo programado, fallido o cancelado de este clip, y no se puede deshacer. Lo que ya salió en las redes no se toca.",
     "eliminado": "Publicación eliminada."
+  },
+  "pasos": {
+    "titulo": "Pasos para programar",
+    "redes": "Redes",
+    "texto": "Texto",
+    "portada": "Portada",
+    "cuando": "Cuándo",
+    "siguiente": "Siguiente",
+    "atras": "Atrás"
+  },
+  "resumen": {
+    "titulo": "Lo que se va a programar",
+    "cambiar": "Cambiar",
+    "sinTexto": "Sin descripción",
+    "etiquetadas": "{n, plural, one {# persona etiquetada} other {# personas etiquetadas}}",
+    "automatica": "La automática de cada red"
   }
 }
