@@ -21,10 +21,16 @@ Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus m
 
 ## En ChatGPT
 
-1. En chatgpt.com, entrá a **Plugins** (en el menú de la izquierda).
-2. Tocá **+** y elegí **Add custom MCP server** (agregar servidor MCP personalizado).
-3. Poné un nombre (por ejemplo, Clipfine), pegá la URL del conector y elegí autenticación **OAuth**.
-4. Marcá la casilla que acepta el aviso y guardá. Se abre Clipfine: entrá con tu cuenta y tocá **Permitir**.
+1. En chatgpt.com, entrá a **Plugins** (en el menú de la izquierda), tocá **+** y elegí **Add custom MCP server**.
+2. Completá el formulario:
+   - **Icon** (opcional): podés subir el [ícono de Clipfine](https://www.clipfine.io/icons/clipfine-256.png). Pide un PNG de hasta 10 KB.
+   - **Name**: Clipfine.
+   - **Description** (opcional): por ejemplo, "Métricas, clips y publicaciones de mis clientes en Clipfine".
+   - **Connection**: dejá elegido **Server URL** y pegá la URL del conector, **{{mcp}}**.
+   - **Authentication**: **OAuth**. No hace falta tocar **Advanced OAuth settings**: ChatGPT encuentra solo lo que necesita.
+3. Marcá **I understand and want to continue** (el aviso que ChatGPT muestra para cualquier servidor propio) y tocá **Create as a plugin**.
+4. Se abre Clipfine: entrá con tu cuenta y tocá **Permitir**.
+5. En un chat nuevo, elegí el plugin de Clipfine y preguntá.
 
 Si en Plugins no aparece esa opción:
 
