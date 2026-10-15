@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { AtSign, ExternalLink, Plus, Sparkles, Users, X } from "lucide-react";
+import { AlertTriangle, AtSign, ExternalLink, Plus, Sparkles, Users, X } from "lucide-react";
 import { IconoRed } from "@/components/IconoRed";
 import {
   MAXIMO_COLABORADORES_FACEBOOK,
@@ -13,6 +13,7 @@ import {
   RED_DE,
   REDES_PERSONA,
   datosDe,
+  noEtiquetableEnInstagram,
   urlPerfil,
   usuarioEn,
   type DatosPersona,
@@ -75,7 +76,7 @@ export function EtiquetarPublicacion({
   const [nuevo, setNuevo] = useState<string | null>(null);
   const ids = new Set(etiquetadas.map((p) => p._id));
   const porSugerir = sugeridas.filter((s) => !ids.has(s.persona._id));
-  const conIg = etiquetadas.filter((p) => usuarioEn("INSTAGRAM", p));
+  const conIg = etiquetadas.filter((p) => usuarioEn("INSTAGRAM", p) && !noEtiquetableEnInstagram(p));
   const conPagina = etiquetadas.filter((p) => p.facebookPaginaId);
   const deMas = conIg.filter((p) => !colaboradoresIg.has(p._id)).length > MAXIMO_ETIQUETADOS_INSTAGRAM;
 
@@ -138,6 +139,11 @@ export function EtiquetarPublicacion({
                       <IconoRed red={RED_DE[r]} chico />
                     </a>
                   ))}
+                  {noEtiquetableEnInstagram(p) ? (
+                    <span title={t("publicar.noEtiquetableIg")} className="text-amber-300">
+                      <AlertTriangle size={12} aria-label={t("publicar.noEtiquetableIg")} />
+                    </span>
+                  ) : null}
                 </span>
                 {enTexto.has(p._id) ? (
                   <span className="inline-flex items-center gap-0.5 rounded-full bg-ng-azul/20 px-1.5 text-[10px] text-ng-celeste" title={t("publicar.enTexto")}>

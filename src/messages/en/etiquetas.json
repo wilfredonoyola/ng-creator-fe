@@ -47,7 +47,8 @@
     "noEncontrada": "We couldn't find them on {red}: check the username",
     "sinVerificar": "{red} doesn't let us confirm it: check the profile",
     "fbSinId": "To invite them as a Facebook collaborator, paste the link with the page number (profile.php?id=…).",
-    "deEpisodio": "Guest of one episode"
+    "deEpisodio": "Guest of one episode",
+    "noEtiquetable": "{red} won't let us tag them (private, doesn't exist, or doesn't accept tags): they go as an @mention. Fix the username to try again."
   },
   "form": {
     "tituloNueva": "New person",
@@ -132,7 +133,8 @@
     "comoSale": "Instagram: tagged on the Reel and @username in the text. TikTok, YouTube and Facebook: @username (or their name, if they have no username there).",
     "verTodas": "Manage in Tags",
     "verPerfil": "View profile",
-    "verPerfilEn": "View @{usuario} on {red}"
+    "verPerfilEn": "View @{usuario} on {red}",
+    "noEtiquetableIg": "Instagram won't let us tag them: they go as an @mention in the text. Check the username in Tags."
   },
   "enRedes": {
     "titulo": "People to tag",
