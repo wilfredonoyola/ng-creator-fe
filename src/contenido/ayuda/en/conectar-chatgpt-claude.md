@@ -28,9 +28,18 @@ With the Clipfine connector, ChatGPT or Claude can look up your brands, their me
    - **Description** (optional): for example, "My clients' analytics, clips and posts in Clipfine".
    - **Connection**: keep **Server URL** selected and paste the connector URL, **{{mcp}}**.
    - **Authentication**: **OAuth**. You don't need to touch **Advanced OAuth settings**: ChatGPT finds what it needs on its own.
+
+   ![ChatGPT's Add custom MCP server form](/ayuda/chatgpt/1-formulario.png)
+
 3. Check **I understand and want to continue** (the warning ChatGPT shows for any custom server) and click **Create as a plugin**.
 4. ChatGPT shows **Connect Clipfine**, with what it shares with the app (relevant memories and chats, depending on your ChatGPT settings). Click **Continue to Clipfine**.
+
+   ![ChatGPT's Connect Clipfine window](/ayuda/chatgpt/2-connect-clipfine.png)
+
 5. Clipfine opens (if you weren't signed in, sign in with your account). The **"ChatGPT wants to connect to your Clipfine"** screen shows what it will be able to see: your brands, their analytics and what's scheduled, and Clipfine's help center, always **read only**. Click **Allow**.
+
+   ![Clipfine's screen to allow the ChatGPT connection](/ayuda/chatgpt/3-permitir.png)
+
 6. You're back in ChatGPT and Clipfine shows up under **Plugins → Installed**. In a new chat, pick the Clipfine plugin and ask away.
 
 If you don't see that option in Plugins:
