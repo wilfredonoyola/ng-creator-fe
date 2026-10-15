@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarClock, Loader2, MoreHorizontal, PencilLine, RotateCcw, Trash2, TriangleAlert, XCircle } from "lucide-react";
+import { CalendarClock, Check, ChevronLeft, ChevronRight, Loader2, MoreHorizontal, PencilLine, RotateCcw, Trash2, TriangleAlert, XCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
@@ -535,6 +535,8 @@ function Formulario({
         /etiquet|colaborador/i.test(reintentando.error ?? "")),
   );
   const nombreRed = (red: string) => REDES[red as Red]?.nombre ?? red;
+  // El primer paso está listo con alguna red marcada (o, editando, algo que cancelar).
+  const redesListas = elegidosEnOrden.length > 0 || aCancelar.length > 0;
 
   /**
    * Cancelar todo lo programado del clip de un toque (también se puede por
@@ -544,7 +546,7 @@ function Formulario({
   const cancelables = programadas.filter((p) => p.estado === "PROGRAMADA");
   const [cancelandoTodo, setCancelandoTodo] = useState(false);
   // Lo que se confirma en el modal: programar o guardar, cancelar todo, o eliminar.
-  const [confirmando, setConfirmando] = useState<"enviar" | "cancelar" | "eliminar" | null>(null);
+  const [confirmando, setConfirmando] = useState<"cancelar" | "eliminar" | null>(null);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const cuentaDe = (p: { red: string; cuentaNombre?: string | null }) => [nombreRed(p.red), p.cuentaNombre].filter(Boolean).join(" · ");
   async function cancelarTodo() {
@@ -612,9 +614,21 @@ function Formulario({
     if (paramReintentar) window.history.replaceState(null, "", window.location.pathname);
   }
 
+  /**
+   * Programar va por pasos: dónde, qué dice, la portada y cuándo (con el
+   * resumen y el botón). Se puede saltar a cualquiera desde la barra de arriba.
+   */
+  const [paso, setPaso] = useState<Paso>(0);
+  function irA(n: Paso) {
+    setPaso(n);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function empezarReintento(id: string) {
     setReintentandoId(id);
     setAviso(null);
+    // Lo que se corrige al reintentar casi siempre es el texto o las etiquetas.
+    setPaso(1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -994,82 +1008,14 @@ function Formulario({
 
       {opera ? (
         <div className="space-y-6" onPointerDownCapture={marcarTocado} onKeyDownCapture={marcarTocado} onInputCapture={marcarTocado}>
-          <Seccion titulo={t("secciones.donde")}>
-            {destinos.length === 0 ? (
-              <p className="text-sm text-white/60">
-                {t.rich("sinRedes", {
-                  link: (c) => (
-                    <Link href="/admin/facebook" className="text-ng-celeste hover:underline">
-                      {c}
-                    </Link>
-                  ),
-                })}
-              </p>
-            ) : (
-              <div className="flex flex-wrap gap-1.5">
-                {destinos.map((d) => {
-                  const on = elegidos.has(d.clave);
-                  const red = REDES[d.red]?.nombre ?? d.red;
-                  return (
-                    <button
-                      key={d.clave}
-                      type="button"
-                      onClick={() => alternar(d)}
-                      disabled={Boolean(d.motivo)}
-                      aria-pressed={on}
-                      title={
-                        d.motivo
-                          ? t(`motivos.${d.motivo}`)
-                          : esperaVersion(d) && on
-                            ? tv("faltaVersionCorto")
-                            : `${red} · ${d.etiqueta}`
-                      }
-                      className={`flex max-w-full items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-xs transition ${
-                        on
-                          ? "border-white/15 bg-white/10 text-white"
-                          : "border-white/10 text-white/45 hover:border-white/20 hover:text-white/70"
-                      } ${d.motivo ? "cursor-not-allowed opacity-40" : ""}`}
-                    >
-                      <IconoRed url={d.foto} red={d.red} chico />
-                      <span className="truncate">
-                        <span className={on ? "text-white/55" : ""}>{red}</span> {d.nombre}
-                      </span>
-                      {esperaVersion(d) && on ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" /> : null}
-                      {!pendienteDe(d) && yaSalioEn(d) ? (
-                        <span
-                          className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 text-[10px] text-emerald-300"
-                          title={t("duplicado.chipAyuda", {
-                            cuando: diaYHora(new Date(yaSalioEn(d)!.publicadaEn ?? yaSalioEn(d)!.publicarEn), locale),
-                          })}
-                        >
-                          {t("duplicado.chip")}
-                        </span>
-                      ) : null}
-                      {on ? <span className="text-[10px] text-white/70">✓</span> : null}
-                    </button>
-                  );
-                })}
-                {tiktokPronto && (
-                  <span
-                    title={t("pronto")}
-                    className="flex items-center gap-1.5 rounded-full border border-white/10 py-0.5 pl-0.5 pr-2.5 text-xs text-white/30"
-                  >
-                    <IconoRed red="TIKTOK" chico />
-                    TikTok · {t("pronto")}
-                  </span>
-                )}
-              </div>
-            )}
-            {faltaInstagram ? (
-              <p className="text-xs text-white/40">
-                {t("faltaInstagram")}
-              </p>
-            ) : null}
-            {destinos.length > 0 &&
-              faltanUploadPost.map((r) => (
-                <p key={r} className="text-xs text-white/40">
-                  {t.rich("faltaRed", {
-                    red: REDES[r]?.nombre ?? r,
+          <BarraPasos paso={paso} listos={[redesListas, !descripcionLarga, true, !faltaFecha]} onIr={irA} />
+
+          {paso === 0 ? (
+            <>
+            <Seccion titulo={t("secciones.donde")}>
+              {destinos.length === 0 ? (
+                <p className="text-sm text-white/60">
+                  {t.rich("sinRedes", {
                     link: (c) => (
                       <Link href="/admin/facebook" className="text-ng-celeste hover:underline">
                         {c}
@@ -1077,130 +1023,218 @@ function Formulario({
                     ),
                   })}
                 </p>
-              ))}
-          </Seccion>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {destinos.map((d) => {
+                    const on = elegidos.has(d.clave);
+                    const red = REDES[d.red]?.nombre ?? d.red;
+                    return (
+                      <button
+                        key={d.clave}
+                        type="button"
+                        onClick={() => alternar(d)}
+                        disabled={Boolean(d.motivo)}
+                        aria-pressed={on}
+                        title={
+                          d.motivo
+                            ? t(`motivos.${d.motivo}`)
+                            : esperaVersion(d) && on
+                              ? tv("faltaVersionCorto")
+                              : `${red} · ${d.etiqueta}`
+                        }
+                        className={`flex max-w-full items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-xs transition ${
+                          on
+                            ? "border-white/15 bg-white/10 text-white"
+                            : "border-white/10 text-white/45 hover:border-white/20 hover:text-white/70"
+                        } ${d.motivo ? "cursor-not-allowed opacity-40" : ""}`}
+                      >
+                        <IconoRed url={d.foto} red={d.red} chico />
+                        <span className="truncate">
+                          <span className={on ? "text-white/55" : ""}>{red}</span> {d.nombre}
+                        </span>
+                        {esperaVersion(d) && on ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" /> : null}
+                        {!pendienteDe(d) && yaSalioEn(d) ? (
+                          <span
+                            className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 text-[10px] text-emerald-300"
+                            title={t("duplicado.chipAyuda", {
+                              cuando: diaYHora(new Date(yaSalioEn(d)!.publicadaEn ?? yaSalioEn(d)!.publicarEn), locale),
+                            })}
+                          >
+                            {t("duplicado.chip")}
+                          </span>
+                        ) : null}
+                        {on ? <span className="text-[10px] text-white/70">✓</span> : null}
+                      </button>
+                    );
+                  })}
+                  {tiktokPronto && (
+                    <span
+                      title={t("pronto")}
+                      className="flex items-center gap-1.5 rounded-full border border-white/10 py-0.5 pl-0.5 pr-2.5 text-xs text-white/30"
+                    >
+                      <IconoRed red="TIKTOK" chico />
+                      TikTok · {t("pronto")}
+                    </span>
+                  )}
+                </div>
+              )}
+              {faltaInstagram ? (
+                <p className="text-xs text-white/40">
+                  {t("faltaInstagram")}
+                </p>
+              ) : null}
+              {destinos.length > 0 &&
+                faltanUploadPost.map((r) => (
+                  <p key={r} className="text-xs text-white/40">
+                    {t.rich("faltaRed", {
+                      red: REDES[r]?.nombre ?? r,
+                      link: (c) => (
+                        <Link href="/admin/facebook" className="text-ng-celeste hover:underline">
+                          {c}
+                        </Link>
+                      ),
+                    })}
+                  </p>
+                ))}
+            </Seccion>
 
-          <Seccion titulo={tEtq("publicar.titulo")}>
-            <EtiquetarPublicacion
-              sugeridas={sugeridas}
-              personas={todasLasPersonas}
-              etiquetadas={etiquetadas}
-              enTexto={idsEnTexto}
-              onAgregar={(p) => {
-                if (!todasLasPersonas.some((x) => x._id === p._id)) setCreadas((c) => [...c, p]);
-                setCambiosEtiquetas((m) => new Map(m).set(p._id, true));
-              }}
-              onQuitar={(p) => setCambiosEtiquetas((m) => new Map(m).set(p._id, false))}
-              colaboradoresIg={soloEtiquetadas(colaboradoresIg)}
-              onColaboradorIg={alternarEn(setColaboradoresIg)}
-              conInstagram={elegidosEnOrden.some((d) => d.red === "INSTAGRAM")}
-              colaboradoresFb={soloEtiquetadas(colaboradoresFb)}
-              onColaboradorFb={alternarEn(setColaboradoresFb)}
-              conFacebook={elegidosEnOrden.some((d) => d.red === "FACEBOOK")}
-              guardando={accionesPersonas.guardando}
-              marcaId={marcaId}
-              onNuevoInvitado={async (d) => {
-                // Queda como invitado del episodio (y en Global si lo marcó), ya etiquetado.
-                const nueva = await accionesPersonas.crear(d, episodioId);
-                if (nueva) {
-                  setCreadas((c) => [...c, nueva]);
-                  setCambiosEtiquetas((m) => new Map(m).set(nueva._id, true));
-                }
-              }}
-            />
-          </Seccion>
-
-          <Seccion titulo={t("secciones.cuando")}>
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="datetime-local"
-                value={fecha}
-                min={aInputLocal(new Date(Date.now() + MARGEN_MS))}
-                onChange={(e) => setFecha(e.target.value)}
-                required
-                className="rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-ng-azul"
+            {conFacebook && necesitaVersion && conVideo && clip.urlVideo ? (
+              <SeccionVersionFacebook
+                clipId={clip._id}
+                marcaId={marcaId}
+                duracionClip={duracionClip}
+                urlVideoClip={clip.urlVideo}
+                version={clip.versionFacebook}
               />
-              {[12, 18, 20].map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  onClick={() => aLas(h)}
-                  className={`rounded-full border px-3 py-1.5 text-xs ${
-                    cuando && cuando.getHours() === h && cuando.getMinutes() === 0
-                      ? "border-ng-azul bg-ng-azul/15 text-white"
-                      : "border-white/15 text-white/60 hover:bg-white/5"
-                  }`}
-                >
-                  {h}:00
-                </button>
-              ))}
-            </div>
-            <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/40"}`}>
-              {!fecha
-                ? t("elegiDiaHoraPunto")
-                : yaPaso
-                  ? t("yaPasoLargo")
-                  : t("salePunto", { cuando: diaYHora(cuando!, locale) })}{" "}
-              {t("horaDe", { zona: zonaHoraria(locale) })}
-            </p>
-          </Seccion>
+            ) : null}
 
-          {conFacebook && necesitaVersion && conVideo && clip.urlVideo ? (
-            <SeccionVersionFacebook
-              clipId={clip._id}
-              marcaId={marcaId}
-              duracionClip={duracionClip}
-              urlVideoClip={clip.urlVideo}
-              version={clip.versionFacebook}
-            />
-          ) : null}
+            </>
+          ) : paso === 1 ? (
+            <>
+            <Seccion titulo={t("secciones.descripcion")}>
+              <EditorMenciones
+                valor={descripcion}
+                onCambio={setDescripcion}
+                personas={todasLasPersonas}
+                onMencionar={(p) => setCambiosEtiquetas((m) => new Map(m).set(p._id, true))}
+                placeholder={t("descripcionPlaceholder")}
+                maxLength={DESCRIPCION_MAX}
+              />
+              <div className="space-y-1">
+                <span className="block text-xs text-white/45">{t("hashtags")}</span>
+                <HashtagsChips valor={hashtags} onChange={setHashtagsClip} />
+                <p className={`text-xs ${descripcionLarga ? "text-red-400" : "text-white/40"}`}>
+                  {descripcionLarga
+                    ? t("descripcionLarga", { max: DESCRIPCION_MAX })
+                    : hashtags.length
+                      ? t("hashtagsAlFinal")
+                      : t("hashtagsVacio")}
+                </p>
+              </div>
+              <ComoSaleEnCadaRed comoSale={comoSale} />
+              {conYoutube && (
+                <label className="block">
+                  <span className="mb-1 block text-xs text-white/45">{t("tituloYoutube")}</span>
+                  <span className="mb-1 block text-[11px] text-white/35">{t("tituloYoutubeAyuda")}</span>
+                  <input
+                    value={tituloYoutube}
+                    onChange={(e) => setTituloYoutube(e.target.value)}
+                    placeholder={t("tituloYoutube")}
+                    maxLength={TITULO_YOUTUBE_MAX}
+                    className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
+                  />
+                </label>
+              )}
+            </Seccion>
 
-          <Seccion titulo={t("secciones.descripcion")}>
-            <EditorMenciones
-              valor={descripcion}
-              onCambio={setDescripcion}
-              personas={todasLasPersonas}
-              onMencionar={(p) => setCambiosEtiquetas((m) => new Map(m).set(p._id, true))}
-              placeholder={t("descripcionPlaceholder")}
-              maxLength={DESCRIPCION_MAX}
-            />
-            <div className="space-y-1">
-              <span className="block text-xs text-white/45">{t("hashtags")}</span>
-              <HashtagsChips valor={hashtags} onChange={setHashtagsClip} />
-              <p className={`text-xs ${descripcionLarga ? "text-red-400" : "text-white/40"}`}>
-                {descripcionLarga
-                  ? t("descripcionLarga", { max: DESCRIPCION_MAX })
-                  : hashtags.length
-                    ? t("hashtagsAlFinal")
-                    : t("hashtagsVacio")}
-              </p>
-            </div>
-            <ComoSaleEnCadaRed comoSale={comoSale} />
-            {conYoutube && (
-              <label className="block">
-                <span className="mb-1 block text-xs text-white/45">{t("tituloYoutube")}</span>
-                <span className="mb-1 block text-[11px] text-white/35">{t("tituloYoutubeAyuda")}</span>
+            <Seccion titulo={tEtq("publicar.titulo")}>
+              <EtiquetarPublicacion
+                sugeridas={sugeridas}
+                personas={todasLasPersonas}
+                etiquetadas={etiquetadas}
+                enTexto={idsEnTexto}
+                onAgregar={(p) => {
+                  if (!todasLasPersonas.some((x) => x._id === p._id)) setCreadas((c) => [...c, p]);
+                  setCambiosEtiquetas((m) => new Map(m).set(p._id, true));
+                }}
+                onQuitar={(p) => setCambiosEtiquetas((m) => new Map(m).set(p._id, false))}
+                colaboradoresIg={soloEtiquetadas(colaboradoresIg)}
+                onColaboradorIg={alternarEn(setColaboradoresIg)}
+                conInstagram={elegidosEnOrden.some((d) => d.red === "INSTAGRAM")}
+                colaboradoresFb={soloEtiquetadas(colaboradoresFb)}
+                onColaboradorFb={alternarEn(setColaboradoresFb)}
+                conFacebook={elegidosEnOrden.some((d) => d.red === "FACEBOOK")}
+                guardando={accionesPersonas.guardando}
+                marcaId={marcaId}
+                onNuevoInvitado={async (d) => {
+                  // Queda como invitado del episodio (y en Global si lo marcó), ya etiquetado.
+                  const nueva = await accionesPersonas.crear(d, episodioId);
+                  if (nueva) {
+                    setCreadas((c) => [...c, nueva]);
+                    setCambiosEtiquetas((m) => new Map(m).set(nueva._id, true));
+                  }
+                }}
+              />
+            </Seccion>
+
+            </>
+          ) : paso === 2 ? (
+            <Seccion titulo={t("portada.titulo")}>
+              {portadaElegible ? (
+                <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
+              ) : (
+                <p className="flex items-center gap-2 text-xs text-white/45">
+                  {exportando || pidiendoVideo ? <Loader2 size={14} className="shrink-0 animate-spin" aria-hidden /> : null}
+                  {t("portadaSinVideo")}
+                </p>
+              )}
+            </Seccion>
+          ) : (
+            <>
+            <Seccion titulo={t("secciones.cuando")}>
+              <div className="flex flex-wrap items-center gap-2">
                 <input
-                  value={tituloYoutube}
-                  onChange={(e) => setTituloYoutube(e.target.value)}
-                  placeholder={t("tituloYoutube")}
-                  maxLength={TITULO_YOUTUBE_MAX}
-                  className="w-full rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2.5 text-sm outline-none placeholder:text-white/30 focus:border-ng-azul"
+                  type="datetime-local"
+                  value={fecha}
+                  min={aInputLocal(new Date(Date.now() + MARGEN_MS))}
+                  onChange={(e) => setFecha(e.target.value)}
+                  required
+                  className="rounded-xl border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none [color-scheme:dark] focus:border-ng-azul"
                 />
-              </label>
-            )}
-          </Seccion>
-
-          <Seccion titulo={t("portada.titulo")}>
-            {portadaElegible ? (
-              <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
-            ) : (
-              <p className="flex items-center gap-2 text-xs text-white/45">
-                {exportando || pidiendoVideo ? <Loader2 size={14} className="shrink-0 animate-spin" aria-hidden /> : null}
-                {t("portadaSinVideo")}
+                {[12, 18, 20].map((h) => (
+                  <button
+                    key={h}
+                    type="button"
+                    onClick={() => aLas(h)}
+                    className={`rounded-full border px-3 py-1.5 text-xs ${
+                      cuando && cuando.getHours() === h && cuando.getMinutes() === 0
+                        ? "border-ng-azul bg-ng-azul/15 text-white"
+                        : "border-white/15 text-white/60 hover:bg-white/5"
+                    }`}
+                  >
+                    {h}:00
+                  </button>
+                ))}
+              </div>
+              <p className={`text-xs ${fecha && yaPaso ? "text-red-400" : "text-white/40"}`}>
+                {!fecha
+                  ? t("elegiDiaHoraPunto")
+                  : yaPaso
+                    ? t("yaPasoLargo")
+                    : t("salePunto", { cuando: diaYHora(cuando!, locale) })}{" "}
+                {t("horaDe", { zona: zonaHoraria(locale) })}
               </p>
-            )}
-          </Seccion>
+            </Seccion>
+
+              <ResumenProgramar
+                redes={elegidosEnOrden.map((d) => [nombreRed(d.red), d.nombre].filter(Boolean).join(" · "))}
+                texto={descripcionFinal}
+                etiquetadas={etiquetadas.length}
+                portada={portadaSeg != null && portadaElegible ? <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} /> : null}
+                onCambiar={irA}
+              />
+            </>
+          )}
 
           {/* Lo que se va a programar y el botón, fijos abajo como en un
               checkout: se arma de arriba hacia abajo (dónde, cuándo, qué
@@ -1258,20 +1292,37 @@ function Formulario({
                 </div>
               </div>
               <div className="flex w-full items-stretch gap-2 sm:w-auto sm:shrink-0">
+              {paso > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => irA((paso - 1) as Paso)}
+                  aria-label={t("pasos.atras")}
+                  className="flex items-center gap-1 rounded-xl border border-white/15 px-3 text-sm text-white/70 transition hover:bg-white/5 hover:text-white"
+                >
+                  <ChevronLeft size={16} aria-hidden />
+                  <span className="hidden sm:inline">{t("pasos.atras")}</span>
+                </button>
+              ) : null}
               <button
                 type="button"
-                onClick={() => setConfirmando("enviar")}
-                disabled={enviando || esperandoVideo || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga}
+                onClick={() => (paso < 3 ? irA((paso + 1) as Paso) : void (modoEditar ? guardarCambios() : enviar()))}
+                disabled={
+                  paso < 3
+                    ? (paso === 0 && !redesListas) || (paso === 1 && descripcionLarga)
+                    : enviando || esperandoVideo || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga
+                }
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
               >
-                {enviando || esperandoVideo ? (
+                {paso < 3 ? null : enviando || esperandoVideo ? (
                   <Loader2 size={16} className="animate-spin" aria-hidden />
                 ) : modoReintento ? (
                   <RotateCcw size={16} aria-hidden />
                 ) : (
                   <CalendarClock size={16} aria-hidden />
                 )}
-                {esperandoVideo && !enviando
+                {paso < 3
+                  ? t("pasos.siguiente")
+                  : esperandoVideo && !enviando
                   ? t("video.boton")
                   : enviando
                   ? modoReintento
@@ -1286,6 +1337,7 @@ function Formulario({
                     : aProgramar.length > 1
                       ? t("programarEnN", { n: aProgramar.length })
                       : t("programar")}
+                {paso < 3 ? <ChevronRight size={16} aria-hidden /> : null}
               </button>
               {cancelables.length > 0 || eliminables.length > 0 ? (
                 <div className="relative">
@@ -1337,44 +1389,6 @@ function Formulario({
               ) : null}
               </div>
             </div>
-            {confirmando === "enviar" ? (
-              <ModalConfirmar
-                titulo={t("confirmar.titulo")}
-                textoVolver={t("confirmar.volver")}
-                textoConfirmar={modoReintento ? t("confirmar.siReintentar") : modoEditar ? t("confirmar.siGuardar") : t("confirmar.siProgramar")}
-                onCerrar={() => setConfirmando(null)}
-                onConfirmar={() => {
-                  setConfirmando(null);
-                  void (modoEditar ? guardarCambios() : enviar());
-                }}
-              >
-                <p className="text-lg font-semibold text-white">
-                  {reintentoYa
-                    ? t("reintentar.saleYa")
-                    : modoEditar && !modoReintento && horasDistintas && !fechaTocada
-                      ? t("editar.horasPorRed")
-                      : cuando
-                        ? diaYHora(cuando, locale)
-                        : ""}
-                </p>
-                {!reintentoYa && !(modoEditar && !modoReintento && horasDistintas && !fechaTocada) ? (
-                  <p className="text-xs text-white/45">{t("horaDe", { zona: zonaHoraria(locale) })}</p>
-                ) : null}
-                {aProgramar.length ? (
-                  <div>
-                    <p className="text-xs text-white/45">{t("confirmar.salenEn")}</p>
-                    <ul className="mt-1 space-y-0.5">
-                      {aProgramar.map((d) => (
-                        <li key={d.clave}>{[nombreRed(d.red), d.nombre].filter(Boolean).join(" · ")}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {modoEditar && aCancelar.length ? (
-                  <p className="text-amber-300">{t("editar.seCancela", { redes: aCancelar.map(cuentaDe).join(", ") })}</p>
-                ) : null}
-              </ModalConfirmar>
-            ) : null}
             {confirmando === "cancelar" ? (
               <ModalConfirmar
                 titulo={t("menu.cancelarTitulo")}
@@ -1666,4 +1680,86 @@ function sugerida(): Date {
     d.setHours(12);
   }
   return d;
+}
+
+type Paso = 0 | 1 | 2 | 3;
+const PASOS = ["redes", "texto", "portada", "cuando"] as const;
+
+/** Los cuatro pasos arriba: el actual resaltado, los listos con ✓; se puede saltar a cualquiera. */
+function BarraPasos({ paso, listos, onIr }: { paso: Paso; listos: boolean[]; onIr: (n: Paso) => void }) {
+  const t = useTranslations("publicarClip");
+  return (
+    <nav aria-label={t("pasos.titulo")}>
+      <ol className="flex items-center gap-1 sm:gap-2">
+        {PASOS.map((clave, i) => {
+          const actual = i === paso;
+          const listo = listos[i] && i < paso;
+          return (
+            <li key={clave} className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
+              <button
+                type="button"
+                onClick={() => onIr(i as Paso)}
+                aria-current={actual ? "step" : undefined}
+                className={`flex min-w-0 items-center gap-2 rounded-full py-1 pl-1 pr-2.5 text-xs transition sm:text-sm ${
+                  actual ? "bg-white/10 text-white" : "text-white/50 hover:text-white"
+                }`}
+              >
+                <span
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                    actual ? "bg-marca text-ng-tinta" : listo ? "bg-ng-teal/20 text-ng-teal" : "border border-white/20"
+                  }`}
+                >
+                  {listo ? <Check size={13} aria-hidden /> : i + 1}
+                </span>
+                <span className={`truncate ${actual ? "" : "hidden sm:inline"}`}>{t(`pasos.${clave}`)}</span>
+              </button>
+              {i < PASOS.length - 1 ? <span aria-hidden className="h-px min-w-2 flex-1 bg-white/10" /> : null}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+/** Lo que se va a programar, antes del botón: cada parte con su "Cambiar" que vuelve a ese paso. */
+function ResumenProgramar({
+  redes,
+  texto,
+  etiquetadas,
+  portada,
+  onCambiar,
+}: {
+  redes: string[];
+  texto: string;
+  etiquetadas: number;
+  portada: React.ReactNode;
+  onCambiar: (n: Paso) => void;
+}) {
+  const t = useTranslations("publicarClip");
+  const fila = (n: Paso, titulo: string, contenido: React.ReactNode) => (
+    <div className="flex items-start gap-3 py-2.5">
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-white/45">{titulo}</p>
+        <div className="mt-0.5 text-sm text-white">{contenido}</div>
+      </div>
+      <button type="button" onClick={() => onCambiar(n)} className="shrink-0 text-xs font-medium text-ng-celeste hover:underline">
+        {t("resumen.cambiar")}
+      </button>
+    </div>
+  );
+  return (
+    <section aria-label={t("resumen.titulo")} className="divide-y divide-white/10 rounded-xl border border-white/10 bg-white/[0.03] px-3">
+      {fila(0, t("pasos.redes"), redes.length ? redes.join(", ") : <span className="text-amber-300">{t("marcaUnaRed")}</span>)}
+      {fila(
+        1,
+        t("pasos.texto"),
+        <>
+          <p className="line-clamp-2 whitespace-pre-line">{texto || <span className="text-white/45">{t("resumen.sinTexto")}</span>}</p>
+          {etiquetadas ? <p className="mt-0.5 text-xs text-white/45">{t("resumen.etiquetadas", { n: etiquetadas })}</p> : null}
+        </>,
+      )}
+      {fila(2, t("pasos.portada"), portada ?? <span className="text-white/60">{t("resumen.automatica")}</span>)}
+    </section>
+  );
 }
