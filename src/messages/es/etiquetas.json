@@ -47,7 +47,8 @@
     "noEncontrada": "No la encontramos en {red}: revisá el usuario",
     "sinVerificar": "{red} no deja confirmarlo: miralo en el perfil",
     "fbSinId": "Para invitarla como colaboradora en Facebook, pegá el enlace con el número de la página (profile.php?id=…).",
-    "deEpisodio": "Invitado de un episodio"
+    "deEpisodio": "Invitado de un episodio",
+    "noEtiquetable": "{red} no deja etiquetarla (privada, no existe o no acepta etiquetas): va como @mención. Si corregís el usuario, se vuelve a probar."
   },
   "form": {
     "tituloNueva": "Nueva persona",
@@ -132,7 +133,8 @@
     "comoSale": "Instagram: etiqueta en el Reel y @usuario en el texto. TikTok, YouTube y Facebook: @usuario (o su nombre, si no tiene usuario en esa red).",
     "verTodas": "Administrar en Etiquetas",
     "verPerfil": "Ver perfil",
-    "verPerfilEn": "Ver @{usuario} en {red}"
+    "verPerfilEn": "Ver @{usuario} en {red}",
+    "noEtiquetableIg": "Instagram no deja etiquetarla: va como @mención en el texto. Revisá el usuario en Etiquetas."
   },
   "enRedes": {
     "titulo": "Personas para etiquetar",

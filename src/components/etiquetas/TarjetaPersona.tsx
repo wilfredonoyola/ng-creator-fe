@@ -76,6 +76,8 @@ export function TarjetaPersona({
                 ? `${t("tarjeta.verificada", { red: NOMBRE_RED[r] })}${v.nombre ? `: ${v.nombre}` : ""}`
                 : v?.estado === "NO_EXISTE"
                   ? t("tarjeta.noEncontrada", { red: NOMBRE_RED[r] })
+                  : v?.estado === "NO_ETIQUETABLE"
+                    ? t("tarjeta.noEtiquetable", { red: NOMBRE_RED[r] })
                   : t("tarjeta.sinVerificar", { red: NOMBRE_RED[r] });
             return (
               <li key={r}>
@@ -85,13 +87,19 @@ export function TarjetaPersona({
                   rel="noopener noreferrer"
                   title={`${titulo} · ${t("verificar.verPerfil")}`}
                   className={`inline-flex max-w-[14rem] items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition hover:text-white ${
-                    v?.estado === "NO_EXISTE" ? "border-red-500/40 text-red-300" : "border-white/10 text-white/60"
+                    v?.estado === "NO_EXISTE"
+                      ? "border-red-500/40 text-red-300"
+                      : v?.estado === "NO_ETIQUETABLE"
+                        ? "border-amber-400/40 text-amber-200"
+                        : "border-white/10 text-white/60"
                   }`}
                 >
                   <IconoRed red={RED_DE[r]} chico />
                   <span className="truncate">@{p[r]}</span>
                   {v?.estado === "EXISTE" ? <BadgeCheck size={12} className="shrink-0 text-ng-teal" aria-label={titulo} /> : null}
-                  {v?.estado === "NO_EXISTE" ? <AlertTriangle size={11} className="shrink-0" aria-label={titulo} /> : null}
+                  {v?.estado === "NO_EXISTE" || v?.estado === "NO_ETIQUETABLE" ? (
+                    <AlertTriangle size={11} className="shrink-0" aria-label={titulo} />
+                  ) : null}
                   <ExternalLink size={9} className="shrink-0 opacity-0 transition group-hover:opacity-60" aria-hidden />
                 </a>
               </li>

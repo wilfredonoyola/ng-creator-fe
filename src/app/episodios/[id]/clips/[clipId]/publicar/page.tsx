@@ -341,13 +341,16 @@ function Formulario({
   const accionesPersonas = useAccionesPersonas(marcaId);
   const [creadas, setCreadas] = useState<Persona[]>([]);
   const [cambiosEtiquetas, setCambiosEtiquetas] = useState<Map<string, boolean>>(() => new Map());
+  // Editando lo programado, la base es a quién se etiquetó al programar (no
+  // los invitados del episodio): quien se quitó no vuelve a salir marcado.
+  const [etiquetasGuardadas, setEtiquetasGuardadas] = useState<Set<string> | null>(null);
   const [colaboradoresIg, setColaboradoresIg] = useState<Set<string>>(() => new Set());
   const [colaboradoresFb, setColaboradoresFb] = useState<Set<string>>(() => new Set());
   const idsInvitados = new Set(invitados.map((p) => p._id));
   const todasLasPersonas = sinRepetir(invitados, deLaMarca, sugeridas.map((x) => x.persona), creadas);
   const enTexto = mencionadas(descripcion, todasLasPersonas);
   const idsEnTexto = new Set(enTexto.map((p) => p._id));
-  const etiquetadas = todasLasPersonas.filter((p) => idsEnTexto.has(p._id) || (cambiosEtiquetas.get(p._id) ?? idsInvitados.has(p._id)));
+  const etiquetadas = todasLasPersonas.filter((p) => idsEnTexto.has(p._id) || (cambiosEtiquetas.get(p._id) ?? (etiquetasGuardadas ?? idsInvitados).has(p._id)));
   const idsEtiquetadas = new Set(etiquetadas.map((p) => p._id));
   const soloEtiquetadas = (c: Set<string>) => new Set([...c].filter((id) => idsEtiquetadas.has(id)));
   const alternarEn = (set: typeof setColaboradoresIg) => (id: string) =>
@@ -397,7 +400,11 @@ function Formulario({
   // cuentas donde salió. Si no, el botón quedaba listo para publicar otra vez.
   const habiaObjetivo = useRef(objetivoClave !== "");
   useEffect(() => {
-    if (objetivoClave === "" && habiaObjetivo.current) setCambios(new Map());
+    if (objetivoClave === "" && habiaObjetivo.current) {
+      setCambios(new Map());
+      setCambiosEtiquetas(new Map());
+      setEtiquetasGuardadas(null);
+    }
     habiaObjetivo.current = objetivoClave !== "";
   }, [objetivoClave]);
   const colaboradoresIniciados = useRef(false);
@@ -424,8 +431,8 @@ function Formulario({
     if (titulo) setTituloYoutube(titulo);
     const conPortada = pendientes.find((p) => p.portadaSeg != null);
     if (conPortada?.portadaSeg != null) setPortadaSeg(conPortada.portadaSeg);
-    const ids = [...new Set(pendientes.flatMap((p) => p.personaIds ?? []))];
-    if (ids.length) setCambiosEtiquetas(new Map(ids.map((id) => [id, true])));
+    setEtiquetasGuardadas(new Set(pendientes.flatMap((p) => p.personaIds ?? [])));
+    setCambiosEtiquetas(new Map());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [objetivoClave, destinos.length]);
   // Los colaboradores se guardaron como usuario (Instagram) o id de página

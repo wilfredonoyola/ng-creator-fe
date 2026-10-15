@@ -25,7 +25,8 @@ import type { Red } from "@/lib/upload-post";
  * acepta el enlace del perfil y los verifica al guardar.
  */
 export type NivelPersona = "ELENCO" | "GLOBAL" | "EPISODIO";
-export type EstadoUsuario = "EXISTE" | "NO_EXISTE" | "SIN_VERIFICAR";
+/** NO_ETIQUETABLE: Instagram rechazó etiquetarla al publicar; ahí va solo como @mención. */
+export type EstadoUsuario = "EXISTE" | "NO_EXISTE" | "SIN_VERIFICAR" | "NO_ETIQUETABLE";
 
 export interface VerificacionRed {
   red: Red;
@@ -136,6 +137,11 @@ export function verificacionEn(p: Persona, red: RedPersona): VerificacionRed | u
   return p.verificaciones?.find((v) => v.red === RED_DE[red]);
 }
 
+/** Instagram ya rechazó etiquetarla (privada, no existe o no acepta): ahí va como @mención. */
+export function noEtiquetableEnInstagram(p: Persona): boolean {
+  return Boolean(p.instagram) && verificacionEn(p, "instagram")?.estado === "NO_ETIQUETABLE";
+}
+
 /** La foto de la persona: la suya, o la primera que dio una red al verificarla. */
 export function fotoDe(p: Persona): string | null {
   return p.foto || p.verificaciones?.find((v) => v.estado === "EXISTE" && v.foto)?.foto || null;
@@ -183,7 +189,8 @@ export function nombreEnRed(red: Red, p: Persona): string {
  * 1. Cada "@Nombre" del texto se cambia por su usuario en esa red (o su nombre).
  * 2. En TikTok, YouTube y Facebook (que no etiquetan por API), quien se
  *    etiquetó pero no se nombró en el texto va como @mención al final.
- *    Instagram etiqueta de verdad: ahí no se agrega nada.
+ *    Instagram etiqueta de verdad: ahí solo se agrega a quien Instagram ya
+ *    rechazó etiquetar (noEtiquetableEnInstagram).
  */
 export function textoParaRed(texto: string, red: Red, enTexto: Persona[], etiquetadas: Persona[]): string {
   // Los nombres largos primero: "@Ana María" antes que "@Ana".
@@ -191,12 +198,14 @@ export function textoParaRed(texto: string, red: Red, enTexto: Persona[], etique
   for (const p of [...enTexto].sort((a, b) => b.nombre.length - a.nombre.length)) {
     r = r.replace(new RegExp(`${escapar(marcaDe(p))}(?![\\p{L}\\p{N}_])`, "gu"), nombreEnRed(red, p));
   }
-  if (red === "INSTAGRAM") return r;
   const ids = new Set(enTexto.map((p) => p._id));
+  // Instagram etiqueta de verdad: solo se menciona a quien no deja etiquetarse.
+  const aMencionar = red === "INSTAGRAM" ? etiquetadas.filter(noEtiquetableEnInstagram) : etiquetadas;
+  if (!aMencionar.length) return r;
   const ya = r.toLowerCase();
   const extra = [
     ...new Set(
-      etiquetadas
+      aMencionar
         .filter((p) => !ids.has(p._id))
         .map((p) => usuarioEn(red, p))
         .filter((u): u is string => !!u && !ya.includes(`@${u.toLowerCase()}`)),
@@ -208,7 +217,8 @@ export function textoParaRed(texto: string, red: Red, enTexto: Persona[], etique
 
 /** Los `ajustes` de Instagram: a quién etiquetar y a quién invitar como colaborador. */
 export function ajustesInstagram(personas: Persona[], colaboradores: Set<string>) {
-  const conUsuario = personas.filter((p) => usuarioEn("INSTAGRAM", p));
+  // Quien Instagram ya rechazó no se manda: va mencionado en el texto (textoParaRed).
+  const conUsuario = personas.filter((p) => usuarioEn("INSTAGRAM", p) && !noEtiquetableEnInstagram(p));
   const colab = conUsuario.filter((p) => colaboradores.has(p._id)).map((p) => usuarioEn("INSTAGRAM", p)!);
   const etiquetados = [...new Set(conUsuario.filter((p) => !colaboradores.has(p._id)).map((p) => usuarioEn("INSTAGRAM", p)!))];
   return etiquetados.length || colab.length ? { etiquetados, colaboradores: [...new Set(colab)] } : undefined;
