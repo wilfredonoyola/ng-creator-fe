@@ -13,6 +13,9 @@ import {
 
 export const MAXIMO_TEXTOS = 4;
 
+/** Los colores a mano para la letra y las destacadas (los mismos que en la app); el de la marca va al final. */
+const MUESTRAS = ["#FFFFFF", "#000000", "#FFE600", "#FF3B30", "#14D8C4"];
+
 /**
  * Diseños listos para arrancar. Es lo que se elige primero; después se puede
  * cambiar cualquier cosa. El de "Marca" toma el color destacado del estilo de
@@ -224,6 +227,15 @@ export function PanelTextos({
             </div>
           </div>
 
+          <Muestras
+            etiqueta={tr("colorDestacadas")}
+            ayuda={tr("colorDestacadasAyuda")}
+            valor={t.colorDestacado}
+            colorMarca={colorMarca}
+            onCambio={(colorDestacado) => cambiarDiseno(elegido, { colorDestacado })}
+            deshabilitado={deshabilitado}
+          />
+
           {estiloManda && t.estiloPropio && (
             <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-xs text-white/60">
               <span>{tr("estiloPropio.nota")}</span>
@@ -270,18 +282,24 @@ export function PanelTextos({
             ))}
           </Fila>
 
-          <Fila etiqueta={tr("filas.colores")}>
-            <Color etiqueta={tr("colores.texto")} valor={t.color} onCambio={(color) => cambiarDiseno(elegido, { color })} deshabilitado={deshabilitado} />
-            <Color etiqueta={tr("colores.destacado")} valor={t.colorDestacado} onCambio={(colorDestacado) => cambiarDiseno(elegido, { colorDestacado })} deshabilitado={deshabilitado} />
-            {t.efecto !== "NINGUNO" && (
+          <Muestras
+            etiqueta={tr("colorTexto")}
+            valor={t.color}
+            colorMarca={colorMarca}
+            onCambio={(color) => cambiarDiseno(elegido, { color })}
+            deshabilitado={deshabilitado}
+          />
+
+          {t.efecto !== "NINGUNO" && (
+            <Fila etiqueta={tr("filas.colores")}>
               <Color
                 etiqueta={tr(`colores.${t.efecto === "CAJA" ? "caja" : t.efecto === "SOMBRA" ? "sombra" : "contorno"}`)}
                 valor={t.colorEfecto}
                 onCambio={(colorEfecto) => cambiarDiseno(elegido, { colorEfecto })}
                 deshabilitado={deshabilitado}
               />
-            )}
-          </Fila>
+            </Fila>
+          )}
 
           <div className="block text-xs text-white/50">
             <div className="flex items-center justify-between gap-2">
@@ -413,6 +431,70 @@ export function Opcion({
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * Un color elegido con muestras: las de siempre, la de la marca y "otro"
+ * (el selector del navegador). La muestra elegida va marcada.
+ */
+function Muestras({
+  etiqueta,
+  ayuda,
+  valor,
+  colorMarca,
+  onCambio,
+  deshabilitado,
+}: {
+  etiqueta: string;
+  ayuda?: string;
+  valor: string;
+  colorMarca: string;
+  onCambio: (v: string) => void;
+  deshabilitado?: boolean;
+}) {
+  const tr = useTranslations("editorTextos");
+  const muestras = [...new Set([...MUESTRAS, colorMarca.toUpperCase()])];
+  const elegida = valor.toUpperCase();
+  const propio = !muestras.includes(elegida);
+  return (
+    <div>
+      <p className="mb-1.5 text-xs text-white/50">{etiqueta}</p>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {muestras.map((c) => (
+          <button
+            key={c}
+            type="button"
+            disabled={deshabilitado}
+            onClick={() => onCambio(c)}
+            aria-label={`${etiqueta}: ${c}`}
+            aria-pressed={elegida === c}
+            className={`h-7 w-7 rounded-full border border-white/25 transition disabled:opacity-50 ${
+              elegida === c ? "ring-2 ring-marca ring-offset-2 ring-offset-ng-fondo" : "hover:scale-110"
+            }`}
+            style={{ background: c }}
+          />
+        ))}
+        <label
+          title={tr("otroColor")}
+          className={`relative flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-dashed border-white/40 text-xs text-white/70 ${
+            propio ? "ring-2 ring-marca ring-offset-2 ring-offset-ng-fondo" : ""
+          }`}
+          style={propio ? { background: valor } : undefined}
+        >
+          {!propio && "+"}
+          <input
+            type="color"
+            value={valor}
+            disabled={deshabilitado}
+            aria-label={`${etiqueta}: ${tr("otroColor")}`}
+            onChange={(e) => onCambio(e.target.value.toUpperCase())}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </label>
+      </div>
+      {ayuda && <p className="mt-1 text-[11px] text-white/40">{ayuda}</p>}
+    </div>
   );
 }
 

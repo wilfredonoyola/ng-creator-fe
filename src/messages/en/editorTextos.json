@@ -55,5 +55,9 @@
   "estiloPropio": {
     "nota": "This text uses its own style (not the brand’s).",
     "usarMarca": "Use the brand style"
-  }
+  },
+  "colorTexto": "Text color",
+  "colorDestacadas": "Highlighted words color",
+  "colorDestacadasAyuda": "The words you tapped above come out in this color.",
+  "otroColor": "Other color"
 }

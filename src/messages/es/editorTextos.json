@@ -55,5 +55,9 @@
   "estiloPropio": {
     "nota": "Este texto usa su propio estilo (no el de la marca).",
     "usarMarca": "Usar el estilo de la marca"
-  }
+  },
+  "colorTexto": "Color del texto",
+  "colorDestacadas": "Color de las destacadas",
+  "colorDestacadasAyuda": "Las palabras que tocaste arriba salen de este color.",
+  "otroColor": "Otro color"
 }
