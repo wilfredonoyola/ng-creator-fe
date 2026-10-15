@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { estiloDelLogo, type plantillaDelClip } from "@/lib/plantilla-clip";
 import { dibujarSubtitulos, dibujarTexto, ganchoDeLlamada, type Dibujo, type EstiloResuelto } from "@/lib/estilos-texto";
 import { CapaDibujos } from "@/components/estilos/CapaDibujos";
+import { ConEmojis } from "@/components/estilos/ConEmojis";
 import { InterfazPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
 import { aTiempoDeSalida, type Corte } from "@/lib/cortes";
@@ -431,7 +432,7 @@ export function VistaPrevia({
                 {palabrasDelTexto(tx).map((w, j) => (
                   <span key={j} style={w.destacada ? { color: tx.colorDestacado } : undefined}>
                     {j > 0 ? w.salto ? <br /> : " " : ""}
-                    {w.texto}
+                    <ConEmojis texto={w.texto} fuente={tx.fuente} />
                   </span>
                 ))}
               </span>
