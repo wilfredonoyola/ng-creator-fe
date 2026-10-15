@@ -28,9 +28,19 @@ Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus m
    - **Description** (opcional): por ejemplo, "Métricas, clips y publicaciones de mis clientes en Clipfine".
    - **Connection**: dejá elegido **Server URL** y pegá la URL del conector, **{{mcp}}**.
    - **Authentication**: **OAuth**. No hace falta tocar **Advanced OAuth settings**: ChatGPT encuentra solo lo que necesita.
+
+   ![El formulario Add custom MCP server de ChatGPT](/ayuda/chatgpt/1-formulario.png)
+
 3. Marcá **I understand and want to continue** (el aviso que ChatGPT muestra para cualquier servidor propio) y tocá **Create as a plugin**.
-4. Se abre Clipfine: entrá con tu cuenta y tocá **Permitir**.
-5. En un chat nuevo, elegí el plugin de Clipfine y preguntá.
+4. ChatGPT muestra **Connect Clipfine**, con lo que comparte con la app (memorias y chats relevantes, según tu configuración de ChatGPT). Tocá **Continue to Clipfine**.
+
+   ![La ventana Connect Clipfine de ChatGPT](/ayuda/chatgpt/2-connect-clipfine.png)
+
+5. Se abre Clipfine (si no tenías la sesión abierta, entrá con tu cuenta). La pantalla **"ChatGPT quiere conectarse a tu Clipfine"** muestra qué va a poder ver: tus marcas, sus métricas y lo programado, y la ayuda de Clipfine, siempre en **solo lectura**. Tocá **Permitir**.
+
+   ![La pantalla de Clipfine para permitir la conexión de ChatGPT](/ayuda/chatgpt/3-permitir.png)
+
+6. Volvés a ChatGPT y Clipfine aparece en **Plugins → Installed**. En un chat nuevo, elegí el plugin de Clipfine y preguntá.
 
 Si en Plugins no aparece esa opción:
 
