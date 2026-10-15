@@ -93,7 +93,11 @@
     "guardado": "Listo: se actualizó lo programado.",
     "fallas": "No se pudo actualizar todo: {detalle}",
     "confirmarCancelar": "Se va a cancelar lo programado en {redes}. ¿Seguimos?",
-    "seCancela": "Al guardar se cancela en {redes}."
+    "seCancela": "Al guardar se cancela en {redes}.",
+    "cancelarTodo": "Cancelar publicación",
+    "cancelandoTodo": "Cancelando…",
+    "confirmarCancelarTodo": "¿Cancelar la publicación en {redes}? No va a salir. El clip queda y lo podés volver a programar.",
+    "canceladoTodo": "Publicación cancelada: no va a salir."
   },
   "reintentar": {
     "titulo": "Reintentar en {red}",

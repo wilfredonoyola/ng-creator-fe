@@ -83,7 +83,12 @@
     "editarYReintentar": "Edit and retry",
     "intentoAnterior": "An earlier attempt failed; it was published on {red} afterwards.",
     "intentoAnteriorChip": "Earlier attempt",
-    "errorEtiquetas": "{red} rejected one of the tagged or collaborator accounts. Open \"Edit and retry\" for details."
+    "errorEtiquetas": "{red} rejected one of the tagged or collaborator accounts. Open \"Edit and retry\" for details.",
+    "cancelarPublicacion": "Cancel post",
+    "cancelando": "Canceling…",
+    "cancelarAyuda": "It won't go out on any network. The clip stays, and you can schedule it again.",
+    "confirmarCancelar": "Cancel the post on {redes}? It won't go out.",
+    "errorCancelar": "Couldn't cancel"
   },
   "porRevisar": "To review"
 }

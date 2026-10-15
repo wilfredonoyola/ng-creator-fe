@@ -690,10 +690,60 @@ function DetalleAgendada({
                 {todoSalio && <p className="pt-1 text-xs text-white/40">{t("detalle.soloLectura")}</p>}
               </section>
             )}
+            {editable && <CancelarProgramadas programadas={programadas} onCanceladas={onCerrar} />}
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Cancelar todo lo programado de la tarjeta, a la vista (la ✕ de cada logo
+ * quita una red sola). Solo lo PROGRAMADA: lo que ya se está subiendo o quedó
+ * agendado en la red no se corta desde acá.
+ */
+function CancelarProgramadas({ programadas, onCanceladas }: { programadas: PublicacionCalendario[]; onCanceladas: () => void }) {
+  const t = useTranslations("calendario.detalle");
+  const [cancelar, { loading }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries: REFETCH });
+  const [error, setError] = useState<string | null>(null);
+  const redes = programadas
+    .map((x) => [REDES[x.red]?.nombre ?? x.red, x.cuentaNombre].filter(Boolean).join(" · "))
+    .join(", ");
+
+  async function cancelarTodas() {
+    if (!window.confirm(t("confirmarCancelar", { redes }))) return;
+    setError(null);
+    const fallas: string[] = [];
+    // Una por una: si una ya salió a subirse, las otras se cancelan igual.
+    for (const x of programadas) {
+      try {
+        await cancelar({ variables: { marcaId: x.marcaId, id: x._id } });
+      } catch (e) {
+        fallas.push(`${REDES[x.red]?.nombre ?? x.red}: ${e instanceof Error ? e.message : t("errorCancelar")}`);
+      }
+    }
+    if (fallas.length) setError(fallas.join(" · "));
+    else onCanceladas();
+  }
+
+  return (
+    <section className="space-y-1.5 border-t border-white/10 pt-3">
+      <button
+        type="button"
+        onClick={() => void cancelarTodas()}
+        disabled={loading}
+        className="rounded-lg border border-red-400/40 px-3 py-1.5 text-sm text-red-300 hover:bg-red-400/10 disabled:opacity-50"
+      >
+        {loading ? t("cancelando") : t("cancelarPublicacion")}
+      </button>
+      <p className="text-xs text-white/40">{t("cancelarAyuda")}</p>
+      {error && (
+        <p role="alert" className="break-words text-xs text-red-400">
+          {error}
+        </p>
+      )}
+    </section>
   );
 }
 

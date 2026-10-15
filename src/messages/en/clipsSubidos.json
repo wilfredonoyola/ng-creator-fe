@@ -5,7 +5,7 @@
   "muyLargo": "{nombre} is {dura} s long and the limit is {maximo} s.",
   "errorSubir": "Couldn't upload it. Try again.",
   "vacio": "You haven't uploaded any clips yet.",
-  "confirmarBorrar": "Delete “{titulo}”? The video and anything scheduled for it are deleted.",
+  "confirmarBorrar": "Delete “{titulo}”? The video is deleted. This can't be undone.",
   "subidoPor": "uploaded by {nombre}",
   "editado": "edited in Clipfine",
   "programar": "Schedule",
@@ -55,5 +55,8 @@
   },
   "sinEnFiltro": "No clips in this state.",
   "vacioDetalle": "Drop a video above and in a few seconds it's ready to schedule.",
-  "noEsVideo": "{n, plural, one {One file isn't a video and was skipped.} other {# files aren't videos and were skipped.}}"
+  "noEsVideo": "{n, plural, one {One file isn't a video and was skipped.} other {# files aren't videos and were skipped.}}",
+  "seCancelan": "It has {n, plural, one {# scheduled post} other {# scheduled posts}}: they'll be canceled.",
+  "noSeBorraPublicado": "Already published: it can't be deleted.",
+  "errorBorrar": "Couldn't delete it."
 }

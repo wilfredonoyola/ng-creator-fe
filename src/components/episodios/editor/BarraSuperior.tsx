@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useMutation } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
-import { CalendarCheck, ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, PencilLine, Redo2, Send, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
+import { CalendarCheck, ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, PencilLine, Redo2, Send, Trash2, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
 import { diaYHora } from "@/lib/publicaciones";
 import { SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/graphql/operations";
 import { useSesion } from "@/lib/sesion";
@@ -14,6 +14,7 @@ import { Menu } from "@/components/Menu";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
 import { EstadoGuardado, useDescargarMp4 } from "@/components/episodios/ExportarClip";
 import type { Autoria } from "@/components/episodios/TomarClip";
+import { sePuedeBorrar, useBorrarClip } from "@/components/episodios/useBorrarClip";
 import { PanelExportar } from "./PanelExportar";
 import type { EstadoGuardado as Guardado } from "./useGuardado";
 
@@ -32,7 +33,8 @@ const ICONO = "inline-flex h-10 w-10 shrink-0 items-center justify-center rounde
  * - Programar no espera al MP4: si falta o quedó viejo, se exporta solo antes
  *   de publicar (ng-creator-be, `esperaVideo`).
  *
- * En lo angosto, quién lo edita pasa al menú "···".
+ * En lo angosto, quién lo edita pasa al menú "···". Ahí también está Borrar
+ * clip, solo para uno hecho a mano que todavía no se publicó (be#223).
  */
 export function BarraSuperior({
   clipId,
@@ -48,6 +50,7 @@ export function BarraSuperior({
   calidad,
   exportar,
   hrefProgramar,
+  hechoAMano = false,
 }: {
   clipId: string;
   marcaId: string;
@@ -63,6 +66,8 @@ export function BarraSuperior({
   calidad: CalidadClip | null;
   exportar: Omit<ComponentProps<typeof PanelExportar>, "clipId" | "marcaId" | "puedeOperar" | "bajada" | "bajarAlTerminar">;
   hrefProgramar: string;
+  /** Lo armó una persona (origen MANUAL): solo esos se pueden borrar. */
+  hechoAMano?: boolean;
 }) {
   const t = useTranslations("editorBarra");
   const th = useTranslations("editorHerramientas");
@@ -163,6 +168,22 @@ export function BarraSuperior({
         onClick: mio ? liberarlo : tomarlo,
       }
     : null;
+  // Borrar: después de borrarlo no hay editor al que volver, se va al episodio.
+  const borrador = useBorrarClip(marcaId);
+  const clipParaBorrar = { _id: clipId, titulo, origen: hechoAMano ? "MANUAL" : null, publicacion: exportar.publicacion };
+  const opcionBorrar = sePuedeBorrar(clipParaBorrar, puedeOperar)
+    ? {
+        texto: borrador.borrando ? t("borrar.borrando") : t("borrar.boton"),
+        detalle: t("borrar.ayuda"),
+        icono: <Trash2 size={16} />,
+        peligro: true,
+        deshabilitada: borrador.borrando,
+        onClick: () =>
+          void borrador.borrar(clipParaBorrar).then((ok) => {
+            if (ok) router.push(hrefVolver);
+          }),
+      }
+    : null;
   const chipQuien = (
     <span className="inline-flex items-center gap-1.5">
       {tomando || soltando ? <LoaderCircle size={14} className="animate-spin" aria-hidden /> : <UserCheck size={14} aria-hidden />}
@@ -226,15 +247,21 @@ export function BarraSuperior({
         </span>
       )}
 
-      {opcionTomar && (
+      {(opcionTomar || opcionBorrar) && (
         <div className="md:hidden">
           <Menu
             etiqueta={t("masAcciones")}
             claseBoton={ICONO}
-            encabezado={<p className="text-white/70">{quien}</p>}
-            opciones={[opcionTomar]}
+            encabezado={opcionTomar ? <p className="text-white/70">{quien}</p> : undefined}
+            opciones={[opcionTomar, opcionBorrar]}
             boton={<Ellipsis size={20} aria-hidden />}
           />
+        </div>
+      )}
+      {/* Desde md, quién lo edita va en su chip: el "···" queda para borrar. */}
+      {opcionBorrar && (
+        <div className="hidden md:block">
+          <Menu etiqueta={t("masAcciones")} claseBoton={ICONO} opciones={[opcionBorrar]} boton={<Ellipsis size={20} aria-hidden />} />
         </div>
       )}
 
@@ -310,10 +337,13 @@ export function BarraSuperior({
         )}
       </div>
 
-      {error && (
+      {(error ?? borrador.error) && (
         <p role="alert" className="absolute right-2 top-full z-30 mt-1 flex max-w-sm items-start gap-2 rounded-lg border border-red-400/30 bg-ng-elevada px-3 py-2 text-xs text-red-300 shadow-xl">
-          <span className="min-w-0 break-words">{error}</span>
-          <button type="button" onClick={() => setError(null)} aria-label={t("cerrar")} className="shrink-0 text-red-300/70 hover:text-red-200">
+          <span className="min-w-0 break-words">{error ?? borrador.error}</span>
+          <button type="button" onClick={() => {
+              setError(null);
+              borrador.limpiarError();
+            }} aria-label={t("cerrar")} className="shrink-0 text-red-300/70 hover:text-red-200">
             <X size={14} aria-hidden />
           </button>
         </p>
