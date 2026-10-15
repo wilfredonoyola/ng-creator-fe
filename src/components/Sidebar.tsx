@@ -401,7 +401,7 @@ export function Sidebar({
   );
 }
 
-function Titulo({ children, colapsado }: { children: React.ReactNode; colapsado?: boolean }) {
+export function Titulo({ children, colapsado }: { children: React.ReactNode; colapsado?: boolean }) {
   return (
     <>
       <div className={`px-4 pb-1 pt-4 text-[10px] uppercase tracking-wider text-white/25 ${colapsado ? "md:hidden" : ""}`}>{children}</div>
@@ -411,7 +411,7 @@ function Titulo({ children, colapsado }: { children: React.ReactNode; colapsado?
   );
 }
 
-function BotonNav({
+export function BotonNav({
   icon: Icono,
   label,
   activo,

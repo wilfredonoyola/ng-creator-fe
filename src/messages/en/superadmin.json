@@ -7,6 +7,13 @@
     "origenes": "How people found us",
     "sonidos": "Sounds"
   },
+  "grupos": {
+    "general": "General",
+    "clientes": "Customers",
+    "operacion": "Operations"
+  },
+  "abrirMenu": "Open menu",
+  "cerrarMenu": "Close menu",
   "irAlPanel": "Go to dashboard",
   "salir": "Sign out",
   "noEsSuperadmin": "The account {email} doesn't have superadmin access.",
