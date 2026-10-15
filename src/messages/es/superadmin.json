@@ -7,6 +7,13 @@
     "origenes": "Cómo nos conocieron",
     "sonidos": "Sonidos"
   },
+  "grupos": {
+    "general": "General",
+    "clientes": "Clientes",
+    "operacion": "Operación"
+  },
+  "abrirMenu": "Abrir menú",
+  "cerrarMenu": "Cerrar menú",
   "irAlPanel": "Ir al panel",
   "salir": "Salir",
   "noEsSuperadmin": "La cuenta {email} no tiene acceso a superadmin.",
