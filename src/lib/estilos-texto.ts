@@ -6,6 +6,7 @@ import {
   type Texto,
 } from "@/lib/clip-encuadre";
 import { CARACTERES, METRICAS } from "@/lib/metricas-fuentes";
+import { AVANCE_EMOJI, emDe, grafemas, tieneEmoji } from "@/lib/emojis";
 
 /**
  * Los estilos de texto de los clips (ng-creator-be#132): la galería de
@@ -270,6 +271,13 @@ const metrica = (fuente: FuenteEstilo) => METRICAS[fuente] ?? METRICAS.NUNITO;
 export function anchoTexto(texto: string, fuente: FuenteEstilo, cuerpo: number, interletra = 0): number {
   const m = metrica(fuente);
   const escala = cuerpo / (m.ascWin + m.descWin);
+  // Con emojis, por grafema: cada emoji avanza lo mismo que su hueco en el render.
+  if (tieneEmoji(texto)) {
+    return grafemas(texto).reduce(
+      (s, { g, emoji }) => s + (emoji ? emDe(fuente, cuerpo) * AVANCE_EMOJI + interletra : anchoTexto(g, fuente, cuerpo, interletra)),
+      0,
+    );
+  }
   let unidades = 0;
   let letras = 0;
   for (const c of texto) {
