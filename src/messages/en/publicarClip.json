@@ -80,7 +80,13 @@
     "enSeg": "Frame at second {seg}",
     "elegida": "Chosen cover",
     "facebook": "On Facebook it's applied a few minutes after publishing, if the page is also connected through Facebook (Connected networks → bottom).",
-    "youtube": "YouTube only applies it on verified channels."
+    "youtube": "YouTube only applies it on verified channels.",
+    "automaticaDetalle": "Each network picks the frame",
+    "elegirCuadro": "Pick a frame",
+    "elegirCuadroDetalle": "You choose which frame of the clip shows",
+    "cargando": "Loading the frame…",
+    "elegidaEn": "Cover: the frame at second {seg}",
+    "moverAyuda": "Move the bar to the frame you want. It's picked right away, no need to save."
   },
   "editar": {
     "titulo": "Already scheduled · goes out {cuando} on {redes}",
