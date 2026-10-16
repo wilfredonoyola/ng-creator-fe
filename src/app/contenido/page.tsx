@@ -509,8 +509,11 @@ function SinEpisodio({
   );
 }
 
+/** Tarjetas chicas: la portada es para reconocer el clip, no para mirarlo. */
 function Grilla({ children }: { children: React.ReactNode }) {
-  return <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">{children}</ul>;
+  return (
+    <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8">{children}</ul>
+  );
 }
 
 /** Un clip de la IA o hecho a mano, como tarjeta vertical: abre el editor, programa o lleva a revisar. */
@@ -547,20 +550,20 @@ function TarjetaContenido({
           </div>
         )}
         <span
-          className={`absolute left-2 top-2 max-w-[calc(100%-1rem)] truncate rounded-md px-2 py-0.5 text-[11px] font-semibold ${
+          className={`absolute left-1.5 top-1.5 max-w-[calc(100%-0.75rem)] truncate rounded px-1.5 py-0.5 text-[10px] font-semibold ${
             clip.origen === "MANUAL" ? "bg-white text-ng-tinta" : "bg-black/70 text-white"
           }`}
         >
           {origen}
         </span>
         {(clip.estadoRender === "EN_COLA" || clip.estadoRender === "RENDERIZANDO") && (
-          <span className="absolute bottom-2 left-2 rounded bg-sky-400/90 px-1.5 py-0.5 text-[11px] font-semibold text-ng-tinta">
+          <span className="absolute bottom-1.5 left-1.5 rounded bg-sky-400/90 px-1.5 py-0.5 text-[10px] font-semibold text-ng-tinta">
             {t("render.renderizando")}
           </span>
         )}
       </Link>
-      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3">
-        <p className="line-clamp-2 text-sm font-semibold">{clip.titulo}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-2">
+        <p className="line-clamp-2 text-xs font-semibold leading-snug">{clip.titulo}</p>
         <div className="flex flex-wrap items-center gap-1">
           <EtiquetaRevision etiqueta={etiquetaDeClip(clip.estadoRevision)} chica />
           <EstadoPublicacionClip publicacion={clip.publicacion} />
