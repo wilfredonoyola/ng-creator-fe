@@ -1,28 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useQuery } from "@apollo/client";
 import { useTranslations } from "next-intl";
 import { CalendarClock, ChartColumn, CircleCheck, Film, Pencil, Send, Trash2, UploadCloud } from "lucide-react";
-import {
-  BORRAR_EPISODIO,
-  CLIPS_SUBIDOS,
-  CONFIRMAR_SUBIDA_EPISODIO,
-  PREPARAR_SUBIDA_CLIP,
-  RENOVAR_SUBIDA_EPISODIO,
-} from "@/graphql/operations";
-import { iniciarSubidaTus, type CredencialesTus, type SubidaEpisodio } from "@/lib/subida-episodio";
+import { CLIPS_SUBIDOS } from "@/graphql/operations";
 import { reloj } from "@/lib/momentos";
+import { MAXIMO_SEG_CLIP_SUBIDO as MAXIMO_SEG, useSubirClips } from "./useSubirClips";
 
-/** Lo mismo que acepta el backend (CLIP_SUBIDO_MAXIMO_SEG): lo que deja el editor y YouTube Shorts. */
-const MAXIMO_SEG = 180;
-
-interface ClipSubido {
+export interface ClipSubido {
   episodio: {
     _id: string;
     titulo: string;
     estado: "SUBIENDO" | "PROCESANDO" | "LISTO" | "FALLIDO";
+    /** El episodio al que pertenece (be#228); null = de antes, sin episodio. */
+    episodioPadreId?: string | null;
+    createdAt?: string;
     error?: string | null;
     duracionSeg?: number | null;
     miniaturaUrl?: string | null;
@@ -38,14 +32,8 @@ interface ClipSubido {
     usarOriginal: boolean;
     listoPor?: { nombre: string } | null;
     publicacion?: { programadas: number; publicadas: number } | null;
+    estadoRevision?: "PENDIENTE" | "APROBADA" | "CAMBIOS_PEDIDOS" | null;
   } | null;
-}
-
-/** Lo que se está subiendo desde esta pestaña. */
-interface Subiendo {
-  nombre: string;
-  episodioId: string | null;
-  pct: number;
 }
 
 /** En qué anda cada clip, para el filtro y la etiqueta de la tarjeta. */
@@ -53,36 +41,13 @@ type Etapa = "preparando" | "listo" | "programado" | "publicado" | "fallo";
 type Filtro = "todos" | Exclude<Etapa, "fallo">;
 const FILTROS: Filtro[] = ["todos", "preparando", "listo", "programado", "publicado"];
 
-function etapaDe(c: ClipSubido): Etapa {
+export function etapaDe(c: ClipSubido): Etapa {
   if (c.episodio.estado === "FALLIDO" || c.clip?.estadoRender === "FALLIDO") return "fallo";
   if (c.clip?.estadoRender !== "LISTO") return "preparando";
   if (c.clip.publicacion?.publicadas) return "publicado";
   if (c.clip.publicacion?.programadas) return "programado";
   return "listo";
 }
-
-/**
- * Cuánto dura un video del disco, leyendo solo sus metadatos. null si el
- * navegador no lo puede leer (un HEVC en Chrome, por ejemplo): el backend
- * igual lo frena si pasa del máximo.
- */
-function duracionDe(archivo: File): Promise<number | null> {
-  return new Promise((resolve) => {
-    const url = URL.createObjectURL(archivo);
-    const v = document.createElement("video");
-    const fin = (d: number | null) => {
-      URL.revokeObjectURL(url);
-      resolve(d);
-    };
-    v.preload = "metadata";
-    v.onloadedmetadata = () => fin(Number.isFinite(v.duration) ? v.duration : null);
-    v.onerror = () => fin(null);
-    setTimeout(() => fin(null), 8000);
-    v.src = url;
-  });
-}
-
-const esVideo = (f: File) => f.type.startsWith("video/") || /\.(mp4|mov|m4v|webm)$/i.test(f.name);
 
 /**
  * Clips ya editados afuera (CapCut, un recorte de YouTube) que entran al flujo
@@ -93,10 +58,6 @@ const esVideo = (f: File) => f.type.startsWith("video/") || /\.(mp4|mov|m4v|webm
 export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeOperar: boolean }) {
   const t = useTranslations("clipsSubidos");
   const input = useRef<HTMLInputElement>(null);
-  const control = useRef<SubidaEpisodio | null>(null);
-  const [cola, setCola] = useState<File[]>([]);
-  const [subiendo, setSubiendo] = useState<Subiendo | null>(null);
-  const [avisos, setAvisos] = useState<string[]>([]);
   const [arrastrando, setArrastrando] = useState(false);
   const [filtro, setFiltro] = useState<Filtro>("todos");
 
@@ -105,11 +66,7 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
     notifyOnNetworkStatusChange: false,
   });
   const lista: ClipSubido[] = data?.clipsSubidos ?? [];
-
-  const [preparar] = useMutation(PREPARAR_SUBIDA_CLIP);
-  const [renovar] = useMutation(RENOVAR_SUBIDA_EPISODIO);
-  const [confirmar] = useMutation(CONFIRMAR_SUBIDA_EPISODIO);
-  const [borrar] = useMutation(BORRAR_EPISODIO);
+  const { encolar, borrar, subiendo, enCola, avisos } = useSubirClips({ marcaId, alCambiar: () => void refetch() });
 
   // Consultar es lo que hace que el backend le pregunte a Bunny: seguido solo
   // mientras algo no esté listo.
@@ -119,102 +76,6 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
     else stopPolling();
     return () => stopPolling();
   }, [hayPendientes, subiendo, startPolling, stopPolling]);
-
-  useEffect(() => () => control.current?.detener(), []);
-
-  // Los archivos elegidos suben de a uno, en orden.
-  useEffect(() => {
-    if (subiendo || !cola.length) return;
-    const [archivo, ...resto] = cola;
-    setCola(resto);
-    void subir(archivo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cola, subiendo]);
-
-  function encolar(archivos: File[]) {
-    const videos = archivos.filter(esVideo);
-    const otros = archivos.length - videos.length;
-    setAvisos(otros ? [t("noEsVideo", { n: otros })] : []);
-    if (videos.length) setCola((c) => [...c, ...videos]);
-  }
-
-  async function subir(archivo: File) {
-    const dura = await duracionDe(archivo);
-    if (dura !== null && dura > MAXIMO_SEG + 1) {
-      setAvisos((a) => [...a, t("muyLargo", { nombre: archivo.name, dura: Math.round(dura), maximo: MAXIMO_SEG })]);
-      return;
-    }
-    setSubiendo({ nombre: archivo.name, episodioId: null, pct: 0 });
-    let cred: CredencialesTus & { episodio: { _id: string; titulo: string } };
-    try {
-      const r = await preparar({
-        variables: { input: { marcaId, nombreArchivo: archivo.name, tamanoBytes: archivo.size, tipoArchivo: archivo.type || null } },
-      });
-      cred = r.data.prepararSubidaClip;
-    } catch (e) {
-      setAvisos((a) => [...a, `${archivo.name}: ${e instanceof Error ? e.message : t("errorSubir")}`]);
-      setSubiendo(null);
-      return;
-    }
-    const episodioId = cred.episodio._id;
-    setSubiendo({ nombre: archivo.name, episodioId, pct: 0 });
-    void refetch();
-    try {
-      control.current = await iniciarSubidaTus({
-        archivo,
-        titulo: cred.episodio.titulo,
-        credenciales: cred,
-        renovar: async () => (await renovar({ variables: { id: episodioId, marcaId } })).data.renovarSubidaEpisodio as CredencialesTus,
-        onProgreso: (subidos, total) => setSubiendo((s) => s && { ...s, pct: total ? (subidos / total) * 100 : 0 }),
-        onEstado: (estado) => {
-          if (estado === "terminada") {
-            void confirmar({ variables: { id: episodioId, marcaId } })
-              .catch(() => undefined)
-              .finally(() => {
-                control.current = null;
-                setSubiendo(null);
-                void refetch();
-              });
-          } else if (estado === "error") {
-            setAvisos((a) => [...a, `${archivo.name}: ${t("errorSubir")}`]);
-            control.current = null;
-            setSubiendo(null);
-          }
-        },
-      });
-    } catch (e) {
-      setAvisos((a) => [...a, `${archivo.name}: ${e instanceof Error ? e.message : t("errorSubir")}`]);
-      setSubiendo(null);
-    }
-  }
-
-  // Uno ya publicado no se ofrece (be#223 también lo rechaza); si tiene algo
-  // programado, se avisa que se cancela.
-  async function quitar(c: ClipSubido) {
-    const programadas = c.clip?.publicacion?.programadas ?? 0;
-    const pregunta = [
-      t("confirmarBorrar", { titulo: c.clip?.titulo ?? c.episodio.titulo }),
-      programadas ? t("seCancelan", { n: programadas }) : null,
-    ]
-      .filter(Boolean)
-      .join("\n\n");
-    if (!window.confirm(pregunta)) return;
-    if (subiendo?.episodioId === c.episodio._id) {
-      control.current?.detener();
-      control.current = null;
-      setSubiendo(null);
-    }
-    try {
-      await borrar({
-        variables: { id: c.episodio._id, marcaId },
-        refetchQueries: ["PublicacionesDeMarca", "ClipsListosSinProgramar"],
-      });
-    } catch (e) {
-      setAvisos((a) => [...a, `${c.clip?.titulo ?? c.episodio.titulo}: ${e instanceof Error ? e.message : t("errorBorrar")}`]);
-    } finally {
-      void refetch();
-    }
-  }
 
   const cuenta = (f: Filtro) => (f === "todos" ? lista.length : lista.filter((c) => etapaDe(c) === f).length);
   const visibles = filtro === "todos" ? lista : lista.filter((c) => etapaDe(c) === filtro);
@@ -288,7 +149,7 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
                   <div className="h-full rounded-full bg-ng-azul transition-[width]" style={{ width: `${subiendo.pct}%` }} />
                 </div>
                 <p className="mt-2 text-sm tabular-nums text-white/60">{Math.round(subiendo.pct)}%</p>
-                {cola.length > 0 && <p className="mt-1 text-xs text-white/40">{t("enCola", { n: cola.length })}</p>}
+                {enCola > 0 && <p className="mt-1 text-xs text-white/40">{t("enCola", { n: enCola })}</p>}
               </div>
             ) : (
               <>
@@ -366,7 +227,7 @@ export function ClipsSubidos({ marcaId, puedeOperar }: { marcaId: string; puedeO
                 c={c}
                 subiendoPct={subiendo?.episodioId === c.episodio._id ? subiendo.pct : null}
                 puedeOperar={puedeOperar}
-                onBorrar={() => void quitar(c)}
+                onBorrar={() => void borrar(c)}
               />
             ))}
           </ul>
@@ -390,16 +251,19 @@ const ETIQUETA: Record<Etapa, string> = {
   fallo: "bg-red-500 text-white",
 };
 
-function TarjetaClipSubido({
+export function TarjetaClipSubido({
   c,
   subiendoPct,
   puedeOperar,
   onBorrar,
+  extra,
 }: {
   c: ClipSubido;
   subiendoPct: number | null;
   puedeOperar: boolean;
   onBorrar: () => void;
+  /** Algo más al pie de la tarjeta (en Contenido: mover a un episodio). */
+  extra?: ReactNode;
 }) {
   const t = useTranslations("clipsSubidos");
   const { episodio: ep, clip } = c;
@@ -478,6 +342,7 @@ function TarjetaClipSubido({
             </button>
           )}
         </div>
+        {extra}
       </div>
     </li>
   );

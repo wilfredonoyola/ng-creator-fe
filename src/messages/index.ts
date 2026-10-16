@@ -12,6 +12,7 @@ import calidadClip_es from "./es/calidadClip.json";
 import chatSoporte_es from "./es/chatSoporte.json";
 import clipsSubidos_es from "./es/clipsSubidos.json";
 import conectar_es from "./es/conectar.json";
+import contenido_es from "./es/contenido.json";
 import creators_es from "./es/creators.json";
 import editorAudio_es from "./es/editorAudio.json";
 import editorAutoEncuadre_es from "./es/editorAutoEncuadre.json";
@@ -135,6 +136,7 @@ import calidadClip_en from "./en/calidadClip.json";
 import chatSoporte_en from "./en/chatSoporte.json";
 import clipsSubidos_en from "./en/clipsSubidos.json";
 import conectar_en from "./en/conectar.json";
+import contenido_en from "./en/contenido.json";
 import creators_en from "./en/creators.json";
 import editorAudio_en from "./en/editorAudio.json";
 import editorAutoEncuadre_en from "./en/editorAutoEncuadre.json";
@@ -261,6 +263,7 @@ export const mensajes = {
     "chatSoporte": chatSoporte_es,
     "clipsSubidos": clipsSubidos_es,
     "conectar": conectar_es,
+    "contenido": contenido_es,
     "creators": creators_es,
     "editorAudio": editorAudio_es,
     "editorAutoEncuadre": editorAutoEncuadre_es,
@@ -386,6 +389,7 @@ export const mensajes = {
     "chatSoporte": chatSoporte_en,
     "clipsSubidos": clipsSubidos_en,
     "conectar": conectar_en,
+    "contenido": contenido_en,
     "creators": creators_en,
     "editorAudio": editorAudio_en,
     "editorAutoEncuadre": editorAutoEncuadre_en,

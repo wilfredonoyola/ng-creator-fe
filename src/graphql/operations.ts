@@ -1983,12 +1983,13 @@ const RESUMEN_PUBLICACION_CLIP = gql`
 
 /** Los clips subidos de la marca: su episodio (cómo va) y su clip cuando ya está armado. */
 export const CLIPS_SUBIDOS = gql`
-  query ClipsSubidos($marcaId: String!) {
-    clipsSubidos(marcaId: $marcaId) {
+  query ClipsSubidos($marcaId: String!, $episodioId: ID, $sinEpisodio: Boolean) {
+    clipsSubidos(marcaId: $marcaId, episodioId: $episodioId, sinEpisodio: $sinEpisodio) {
       episodio {
         _id
         titulo
         estado
+        episodioPadreId
         error
         duracionSeg
         miniaturaUrl
@@ -2017,6 +2018,16 @@ export const CLIPS_SUBIDOS = gql`
     }
   }
   ${RESUMEN_PUBLICACION_CLIP}
+`;
+
+/** Pasar un clip subido a un episodio, o a ninguno con `episodioId` null (be#228). */
+export const MOVER_CLIP_SUBIDO = gql`
+  mutation MoverClipSubido($id: ID!, $marcaId: String!, $episodioId: ID) {
+    moverClipSubido(id: $id, marcaId: $marcaId, episodioId: $episodioId) {
+      _id
+      episodioPadreId
+    }
+  }
 `;
 
 /** Los clips que propuso la IA, de mejor a peor (ng-creator-be#68). */

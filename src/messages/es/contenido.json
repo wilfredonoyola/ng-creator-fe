@@ -1,0 +1,58 @@
+{
+  "titulo": "Contenido",
+  "descripcion": "Todo lo de un episodio en un lugar: los clips de la IA, los hechos a mano y los que subiste.",
+  "sinMarca": "Elegí una marca para ver su contenido.",
+  "episodio": "Episodio",
+  "elegirEpisodio": "Elegir episodio",
+  "ultimo": "Último",
+  "verEpisodio": "Ver episodio",
+  "crearClip": "Crear clip",
+  "crearClipAyuda": "Armá un clip a mano desde este episodio",
+  "crearNoListo": "Para crear clips, el episodio tiene que estar transcrito.",
+  "subirClip": "Subir clip",
+  "subirAyuda": "Un clip ya editado afuera (CapCut, un recorte): queda en este episodio y no descuenta horas.",
+  "analizando": "La IA está buscando clips en este episodio…",
+  "pestanas": {
+    "etiqueta": "Contenido del episodio",
+    "todo": "Todo",
+    "ia": "De la IA",
+    "manuales": "Hechos a mano",
+    "subidos": "Subidos",
+    "porRevisar": "Por revisar"
+  },
+  "vacio": {
+    "todo": "Este episodio todavía no tiene clips.",
+    "ia": "La IA todavía no propuso clips para este episodio.",
+    "manuales": "Todavía no hay clips hechos a mano en este episodio.",
+    "subidos": "Todavía no subiste clips a este episodio.",
+    "porRevisar": "No hay nada por revisar en este episodio."
+  },
+  "sinEpisodios": {
+    "titulo": "Todavía no hay episodios",
+    "detalle": "Subí o importá un episodio para empezar a sacarle clips.",
+    "ir": "Ir a Episodios"
+  },
+  "sinEpisodio": {
+    "titulo": "Subidos sin episodio",
+    "opcion": "Subidos sin episodio ({n})",
+    "ayuda": "Clips que se subieron antes de poder ponerlos en un episodio. Movelos al que corresponda."
+  },
+  "origen": {
+    "ia": "IA",
+    "manual": "A mano"
+  },
+  "render": {
+    "renderizando": "Renderizando"
+  },
+  "acciones": {
+    "programar": "Programar",
+    "editar": "Editar",
+    "editarClip": "Editar {titulo}",
+    "revisar": "Revisar",
+    "metricas": "Métricas"
+  },
+  "mover": {
+    "etiqueta": "Mover a un episodio…",
+    "error": "No se pudo mover el clip"
+  }
+}
