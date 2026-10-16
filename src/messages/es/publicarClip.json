@@ -80,7 +80,13 @@
     "enSeg": "Cuadro en el segundo {seg}",
     "elegida": "Portada elegida",
     "facebook": "En Facebook se aplica unos minutos después de publicar, si la página está conectada también en Facebook (Redes conectadas → abajo).",
-    "youtube": "YouTube solo la aplica en canales verificados."
+    "youtube": "YouTube solo la aplica en canales verificados.",
+    "automaticaDetalle": "Cada red elige el cuadro",
+    "elegirCuadro": "Elegir un cuadro",
+    "elegirCuadroDetalle": "Vos elegís qué cuadro del clip se ve",
+    "cargando": "Cargando el cuadro…",
+    "elegidaEn": "Portada: el cuadro del segundo {seg}",
+    "moverAyuda": "Mové la barra hasta el cuadro que quieras. Queda elegido solo, no hace falta guardar."
   },
   "editar": {
     "titulo": "Ya está programado · sale el {cuando} en {redes}",
