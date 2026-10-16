@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { CalendarClock, Check, ChevronLeft, ChevronRight, Loader2, MoreHorizontal, PencilLine, RotateCcw, Trash2, TriangleAlert, XCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -295,6 +295,9 @@ function Formulario({
   const conFacebook = elegidosEnOrden.some((d) => d.red === "FACEBOOK");
   const facebookEspera = necesitaVersion && clip.versionFacebook?.estadoRender !== "LISTO";
   const esperaVersion = (d: Destino) => d.red === "FACEBOOK" && facebookEspera;
+  // El aviso de una red (no disponible, o Facebook sin versión corta), en un modal desde su ⚠.
+  const [avisoRed, setAvisoRed] = useState<{ d: Destino; tipo: "motivo" | "version" } | null>(null);
+  const router = useRouter();
   const aProgramar = elegidosEnOrden.filter((d) => !esperaVersion(d));
   const conYoutube = destinos.some((d) => d.red === "YOUTUBE" && elegidos.has(d.clave));
   const conVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
@@ -1008,6 +1011,28 @@ function Formulario({
 
       {opera ? (
         <div className="space-y-6" onPointerDownCapture={marcarTocado} onKeyDownCapture={marcarTocado} onInputCapture={marcarTocado}>
+          {avisoRed ? (
+            <ModalConfirmar
+              titulo={
+                avisoRed.tipo === "version"
+                  ? t("redes.tituloVersion")
+                  : t("redes.tituloMotivo", { red: `${REDES[avisoRed.d.red]?.nombre ?? avisoRed.d.red} ${avisoRed.d.nombre}`.trim() })
+              }
+              textoConfirmar={avisoRed.tipo === "version" ? t("redes.irVersion") : t("redes.irRedes")}
+              textoVolver={t("redes.entendido")}
+              onCerrar={() => setAvisoRed(null)}
+              onConfirmar={() => {
+                const tipo = avisoRed.tipo;
+                setAvisoRed(null);
+                if (tipo === "version") document.getElementById("version-facebook")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                else router.push("/admin/facebook");
+              }}
+            >
+              <p className="text-sm text-white/70">
+                {avisoRed.tipo === "version" ? tv("faltaVersion") : avisoRed.d.motivo ? t(`motivos.${avisoRed.d.motivo}`) : null}
+              </p>
+            </ModalConfirmar>
+          ) : null}
           <BarraPasos paso={paso} listos={[redesListas, !descripcionLarga, true, !faltaFecha]} onIr={irA} />
 
           {paso === 0 ? (
@@ -1028,31 +1053,42 @@ function Formulario({
                   {destinos.map((d) => {
                     const on = elegidos.has(d.clave);
                     const red = REDES[d.red]?.nombre ?? d.red;
+                    // Lo que hay que saber de esta red: no se puede usar, o Facebook espera la versión corta.
+                    const aviso = d.motivo ? ("motivo" as const) : esperaVersion(d) && on ? ("version" as const) : null;
                     return (
-                      <button
+                      <div
                         key={d.clave}
+                        className={`flex max-w-full items-center rounded-full border text-xs transition ${
+                          on
+                            ? "border-marca bg-marca/10 text-white"
+                            : "border-dashed border-white/15 text-white/45 hover:border-white/30 hover:text-white/70"
+                        }`}
+                      >
+                      <button
                         type="button"
                         onClick={() => alternar(d)}
                         disabled={Boolean(d.motivo)}
                         aria-pressed={on}
-                        title={
-                          d.motivo
-                            ? t(`motivos.${d.motivo}`)
-                            : esperaVersion(d) && on
-                              ? tv("faltaVersionCorto")
-                              : `${red} · ${d.etiqueta}`
-                        }
-                        className={`flex max-w-full items-center gap-1.5 rounded-full border py-0.5 pl-0.5 pr-2.5 text-xs transition ${
-                          on
-                            ? "border-white/15 bg-white/10 text-white"
-                            : "border-white/10 text-white/45 hover:border-white/20 hover:text-white/70"
-                        } ${d.motivo ? "cursor-not-allowed opacity-40" : ""}`}
+                        title={d.motivo ? t(`motivos.${d.motivo}`) : `${red} · ${d.etiqueta}`}
+                        className={`flex min-w-0 items-center gap-1.5 py-1 pl-1 ${aviso ? "pr-1.5" : "pr-2.5"} ${
+                          d.motivo ? "cursor-not-allowed opacity-40" : ""
+                        }`}
                       >
-                        <IconoRed url={d.foto} red={d.red} chico />
-                        <span className="truncate">
-                          <span className={on ? "text-white/55" : ""}>{red}</span> {d.nombre}
+                        {/* Marcada: círculo amarillo lleno con ✓. Sin marcar: círculo vacío. */}
+                        <span
+                          aria-hidden
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${
+                            on ? "bg-marca text-ng-tinta" : "border border-white/30"
+                          }`}
+                        >
+                          {on ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
                         </span>
-                        {esperaVersion(d) && on ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" /> : null}
+                        <span className={on ? "" : "opacity-50 grayscale"}>
+                          <IconoRed url={d.foto} red={d.red} chico />
+                        </span>
+                        <span className="truncate">
+                          <span className={on ? "text-white/60" : ""}>{red}</span> {d.nombre}
+                        </span>
                         {!pendienteDe(d) && yaSalioEn(d) ? (
                           <span
                             className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 text-[10px] text-emerald-300"
@@ -1063,8 +1099,19 @@ function Formulario({
                             {t("duplicado.chip")}
                           </span>
                         ) : null}
-                        {on ? <span className="text-[10px] text-white/70">✓</span> : null}
                       </button>
+                      {aviso ? (
+                        <button
+                          type="button"
+                          onClick={() => setAvisoRed({ d, tipo: aviso })}
+                          aria-label={t("redes.verAviso", { red })}
+                          title={d.motivo ? t(`motivos.${d.motivo}`) : tv("faltaVersionCorto")}
+                          className="mr-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-amber-300 transition hover:bg-amber-400/15"
+                        >
+                          <TriangleAlert className="h-3.5 w-3.5" />
+                        </button>
+                      ) : null}
+                      </div>
                     );
                   })}
                   {tiktokPronto && (
@@ -1099,6 +1146,7 @@ function Formulario({
             </Seccion>
 
             {conFacebook && necesitaVersion && conVideo && clip.urlVideo ? (
+              <div id="version-facebook" className="scroll-mt-20">
               <SeccionVersionFacebook
                 clipId={clip._id}
                 marcaId={marcaId}
@@ -1106,6 +1154,7 @@ function Formulario({
                 urlVideoClip={clip.urlVideo}
                 version={clip.versionFacebook}
               />
+              </div>
             ) : null}
 
             </>

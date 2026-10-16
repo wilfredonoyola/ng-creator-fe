@@ -185,5 +185,13 @@
     "sinTexto": "No description",
     "etiquetadas": "{n, plural, one {# person tagged} other {# people tagged}}",
     "automatica": "Each platform's automatic one"
+  },
+  "redes": {
+    "verAviso": "See the {red} warning",
+    "tituloVersion": "Facebook needs the short version",
+    "tituloMotivo": "{red} isn't available",
+    "irVersion": "Go to the short version",
+    "irRedes": "Go to Connected accounts",
+    "entendido": "Got it"
   }
 }
