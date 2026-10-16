@@ -185,5 +185,13 @@
     "sinTexto": "Sin descripción",
     "etiquetadas": "{n, plural, one {# persona etiquetada} other {# personas etiquetadas}}",
     "automatica": "La automática de cada red"
+  },
+  "redes": {
+    "verAviso": "Ver el aviso de {red}",
+    "tituloVersion": "Facebook necesita la versión corta",
+    "tituloMotivo": "{red} no está disponible",
+    "irVersion": "Ir a la versión corta",
+    "irRedes": "Ir a Redes conectadas",
+    "entendido": "Entendido"
   }
 }
