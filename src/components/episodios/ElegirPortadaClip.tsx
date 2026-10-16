@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Loader2 } from "lucide-react";
 
@@ -78,7 +78,7 @@ export function ElegirPortadaClip({
                 src={url}
                 muted
                 playsInline
-                preload="auto"
+                preload="metadata"
                 onLoadedMetadata={(e) => {
                   e.currentTarget.currentTime = seg;
                 }}
@@ -126,23 +126,31 @@ export function ElegirPortadaClip({
 }
 
 /**
- * Un cuadro quieto del video. Se salta al segundo al cargar (el fragmento #t=
- * solo no alcanza en todos los navegadores) y hasta entonces gira un cargando.
+ * Un cuadro quieto del video. Un solo <video> que salta al segundo pedido: al
+ * cambiar la portada se mueve en lo ya cargado, en vez de volver a bajar el
+ * video (antes se rearmaba en cada movimiento del deslizador y tardaba).
+ * Hasta tener el cuadro gira un cargando.
  */
 export function CuadroPortada({ url, seg, className, titulo }: { url: string; seg: number; className: string; titulo: string }) {
+  const video = useRef<HTMLVideoElement>(null);
   const [listo, setListo] = useState(false);
+  useEffect(() => {
+    const v = video.current;
+    // Sin metadatos todavía, el salto lo hace onLoadedMetadata.
+    if (v && v.readyState >= 1 && Math.abs(v.currentTime - seg) > 0.05) v.currentTime = seg;
+  }, [seg]);
   return (
     <span className={`relative block shrink-0 overflow-hidden rounded bg-black ${className}`} title={titulo}>
       <video
-        key={seg}
-        src={`${url}#t=${seg}`}
+        ref={video}
+        src={url}
         muted
         playsInline
-        preload="auto"
-        onLoadStart={() => setListo(false)}
+        preload="metadata"
         onLoadedMetadata={(e) => {
           e.currentTarget.currentTime = seg;
         }}
+        onSeeking={() => setListo(false)}
         onSeeked={() => setListo(true)}
         className="h-full w-full object-cover"
       />
