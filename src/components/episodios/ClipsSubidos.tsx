@@ -289,7 +289,7 @@ export function TarjetaClipSubido({
             <Film size={26} className="text-white/20" aria-hidden />
           </div>
         )}
-        <span className={`absolute left-2 top-2 flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold ${ETIQUETA[etapa]}`}>
+        <span className={`absolute left-1.5 top-1.5 flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold ${ETIQUETA[etapa]}`}>
           {etapa === "publicado" && <CircleCheck size={11} aria-hidden />}
           {etiqueta}
         </span>
@@ -307,8 +307,8 @@ export function TarjetaClipSubido({
           </p>
         )}
       </div>
-      <div className="flex min-w-0 flex-1 flex-col gap-2 p-3">
-        <p className="truncate text-sm font-semibold">{clip?.titulo ?? ep.titulo}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-2">
+        <p className="truncate text-xs font-semibold">{clip?.titulo ?? ep.titulo}</p>
         <p className="truncate text-[11px] text-white/40">
           {clip && !clip.usarOriginal ? t("editado") : ep.subidoPor?.nombre ? t("subidoPor", { nombre: ep.subidoPor.nombre }) : ""}
         </p>
