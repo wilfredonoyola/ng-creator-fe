@@ -1,0 +1,58 @@
+{
+  "titulo": "Content",
+  "descripcion": "Everything from an episode in one place: AI clips, hand-made clips and the ones you uploaded.",
+  "sinMarca": "Pick a brand to see its content.",
+  "episodio": "Episode",
+  "elegirEpisodio": "Pick an episode",
+  "ultimo": "Latest",
+  "verEpisodio": "View episode",
+  "crearClip": "Create clip",
+  "crearClipAyuda": "Make a clip by hand from this episode",
+  "crearNoListo": "The episode has to be transcribed before you can create clips.",
+  "subirClip": "Upload clip",
+  "subirAyuda": "A clip already edited elsewhere (CapCut, a cut): it goes into this episode and doesn't use hours.",
+  "analizando": "The AI is looking for clips in this episode…",
+  "pestanas": {
+    "etiqueta": "Episode content",
+    "todo": "All",
+    "ia": "From AI",
+    "manuales": "Hand-made",
+    "subidos": "Uploaded",
+    "porRevisar": "To review"
+  },
+  "vacio": {
+    "todo": "This episode has no clips yet.",
+    "ia": "The AI hasn't suggested clips for this episode yet.",
+    "manuales": "No hand-made clips in this episode yet.",
+    "subidos": "You haven't uploaded clips to this episode yet.",
+    "porRevisar": "Nothing to review in this episode."
+  },
+  "sinEpisodios": {
+    "titulo": "No episodes yet",
+    "detalle": "Upload or import an episode to start making clips.",
+    "ir": "Go to Episodes"
+  },
+  "sinEpisodio": {
+    "titulo": "Uploaded without episode",
+    "opcion": "Uploaded without episode ({n})",
+    "ayuda": "Clips uploaded before they could go into an episode. Move them to the right one."
+  },
+  "origen": {
+    "ia": "AI",
+    "manual": "Hand-made"
+  },
+  "render": {
+    "renderizando": "Rendering"
+  },
+  "acciones": {
+    "programar": "Schedule",
+    "editar": "Edit",
+    "editarClip": "Edit {titulo}",
+    "revisar": "Review",
+    "metricas": "Metrics"
+  },
+  "mover": {
+    "etiqueta": "Move to an episode…",
+    "error": "Couldn't move the clip"
+  }
+}

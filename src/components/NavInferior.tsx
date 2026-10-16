@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CalendarDays, Clapperboard, House, Menu, Mic, MonitorPlay, type LucideIcon } from "lucide-react";
+import { CalendarDays, Clapperboard, House, LayoutGrid, Menu, Mic, type LucideIcon } from "lucide-react";
 import { useSesion } from "@/lib/sesion";
 
 /**
@@ -17,7 +17,7 @@ interface Tab {
   href: string;
   icon: LucideIcon;
   /** La clave de su nombre en `marcoNavInferior`. */
-  clave: "inicio" | "episodios" | "calendario" | "publicaciones" | "crear";
+  clave: "inicio" | "episodios" | "calendario" | "contenido" | "crear";
   tambien?: string[];
 }
 
@@ -25,7 +25,7 @@ const TABS: Tab[] = [
   { href: "/panel", icon: House, clave: "inicio" },
   { href: "/episodios", icon: Mic, clave: "episodios", tambien: ["/clips-subidos"] },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
-  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
+  { href: "/contenido", icon: LayoutGrid, clave: "contenido", tambien: ["/analisis", "/publicados"] },
 ];
 const TAB_REACCION: Tab = { href: "/crear", icon: Clapperboard, clave: "crear" };
 

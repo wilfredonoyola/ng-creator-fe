@@ -17,7 +17,7 @@ import {
   PanelLeftOpen,
   Stamp,
   Mic,
-  MonitorPlay,
+  LayoutGrid,
   Scissors,
   UserRound,
   Users,
@@ -41,7 +41,7 @@ type ClaveNav =
   | "inicio"
   | "episodios"
   | "calendario"
-  | "publicaciones"
+  | "contenido"
   | "metricas"
   | "crearVideo"
   | "montaje"
@@ -70,7 +70,7 @@ export const NAV_PRINCIPAL: ItemNav[] = [
   { href: "/panel", icon: House, clave: "inicio" },
   { href: "/episodios", icon: Mic, clave: "episodios", tambien: ["/clips-subidos"] },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
-  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
+  { href: "/contenido", icon: LayoutGrid, clave: "contenido", tambien: ["/analisis", "/publicados"] },
   // Cómo le fue a lo publicado, en todas las redes (ng-creator-be#119): es lo
   // que la agencia le muestra al cliente, así que va a la vista y no adentro.
   { href: "/metricas", icon: ChartColumnIncreasing, clave: "metricas" },
