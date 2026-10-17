@@ -14,6 +14,7 @@ import {
   CANCELAR_INVITACION,
   INVITACIONES_DE_PAGINA,
   INVITAR_MIEMBRO,
+  CONTRASENA_TEMPORAL,
   MARCAR_REVISOR,
   MIEMBROS_DE_PAGINA,
   REVOCAR_ACCESO,
@@ -21,6 +22,7 @@ import {
 import { AjustesRevisionMarca } from "@/components/revision/AjustesRevisionMarca";
 import { useRevisionMarca } from "@/lib/revision";
 import { ConexionesMcpDelEquipo } from "@/components/conectar/ConexionesMcpDelEquipo";
+import { ModalContrasenaTemporal } from "@/components/equipo/ModalContrasenaTemporal";
 
 interface Miembro {
   usuarioId: string;
@@ -98,6 +100,15 @@ export default function EquipoPage() {
     refetchQueries: refrescar,
   });
   const [marcarRevisor] = useMutation(MARCAR_REVISOR, { refetchQueries: refrescar });
+  const [pedirTemporal, { loading: creandoTemporal }] = useMutation(CONTRASENA_TEMPORAL);
+  // La contraseña recién creada: se ve una vez, en el modal, para copiarla.
+  const [temporal, setTemporal] = useState<{ email: string; nombre?: string | null; password: string } | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  async function crearTemporal(email: string, nombre?: string | null) {
+    const r = await pedirTemporal({ variables: { marcaId, email } });
+    setTemporal({ email, nombre, password: r.data.contrasenaTemporal });
+  }
   // Quién revisa se ve solo si la marca revisa: si no, sería un dato sin efecto.
   const revision = useRevisionMarca(marcaId);
 
@@ -151,13 +162,35 @@ export default function EquipoPage() {
         </div>
       )}
 
+      {aviso && (
+        <div className="mb-6 rounded-xl border border-ng-teal/30 bg-ng-teal/10 p-4">
+          <p className="text-sm text-ng-teal">{aviso}</p>
+        </div>
+      )}
+
+      {temporal && (
+        <ModalContrasenaTemporal
+          {...temporal}
+          marcaNombre={activa?.nombre}
+          onCerrar={() => setTemporal(null)}
+        />
+      )}
+
       {mando ? (
         <FormularioInvitar
-          invitando={invitando}
-          onInvitar={(email, rol, nombre) =>
-            accion(() =>
-              invitar({ variables: { email, marcaId, rol, nombre: nombre || null } }),
-            )
+          invitando={invitando || creandoTemporal}
+          onInvitar={(email, rol, nombre, sinCorreo) =>
+            accion(async () => {
+              setAviso(null);
+              const r = await invitar({ variables: { email, marcaId, rol, nombre: nombre || null, sinCorreo } });
+              if (!sinCorreo) return;
+              // Ya tenía cuenta: el acceso quedó hecho y entra con su contraseña de siempre.
+              if (r.data?.invitarMiembro?.estado !== "PENDIENTE") {
+                setAviso(t("temporal.yaTieneCuenta", { email }));
+                return;
+              }
+              await crearTemporal(email, nombre || null);
+            })
           }
         />
       ) : (
@@ -192,6 +225,14 @@ export default function EquipoPage() {
                   </p>
                 </div>
                 <ChipRol rol={inv.rol} />
+                <button
+                  onClick={() => accion(() => crearTemporal(inv.email, inv.nombre))}
+                  disabled={creandoTemporal}
+                  title={t("temporal.botonAyuda")}
+                  className="rounded-lg border border-marca/40 px-3 py-1.5 text-xs text-white/80 transition hover:bg-marca/10 disabled:opacity-40"
+                >
+                  {t("temporal.boton")}
+                </button>
                 <button
                   onClick={() =>
                     accion(() =>
@@ -290,18 +331,20 @@ function FormularioInvitar({
   onInvitar,
 }: {
   invitando: boolean;
-  onInvitar: (email: string, rol: RolPagina, nombre: string) => Promise<void>;
+  onInvitar: (email: string, rol: RolPagina, nombre: string, sinCorreo: boolean) => Promise<void>;
 }) {
   const t = useTranslations("equipo.invitar");
   const tRol = useTranslations("marcoRoles");
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
   const [rol, setRol] = useState<RolPagina>("EDITOR");
+  // Cómo le llega: el correo de siempre, o una contraseña para mandar a mano.
+  const [sinCorreo, setSinCorreo] = useState(false);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
-    await onInvitar(email.trim(), rol, nombre.trim());
+    await onInvitar(email.trim(), rol, nombre.trim(), sinCorreo);
     setEmail("");
     setNombre("");
   }
@@ -312,7 +355,31 @@ function FormularioInvitar({
       className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5"
     >
       <h2 className="font-semibold">{t("titulo")}</h2>
-      <p className="mt-1 text-sm text-white/45">{t("detalle")}</p>
+      <p className="mt-1 text-sm text-white/45">{sinCorreo ? t("detalleSinCorreo") : t("detalle")}</p>
+
+      <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={t("comoLlega")}>
+        {([false, true] as const).map((v) => {
+          const on = sinCorreo === v;
+          return (
+            <button
+              key={String(v)}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => setSinCorreo(v)}
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition ${
+                on ? "border-marca bg-marca/10 text-white" : "border-dashed border-white/15 text-white/55 hover:text-white/80"
+              }`}
+            >
+              <span
+                aria-hidden
+                className={`flex h-3.5 w-3.5 items-center justify-center rounded-full ${on ? "bg-marca" : "border border-white/30"}`}
+              />
+              {v ? t("porContrasena") : t("porCorreo")}
+            </button>
+          );
+        })}
+      </div>
 
       {/* En móvil los tres controles van apilados: el correo necesita el ancho
           completo para verse entero mientras se escribe. */}
@@ -352,7 +419,7 @@ function FormularioInvitar({
           disabled={!email.trim() || invitando}
           className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
         >
-          {invitando ? t("enviando") : t("boton")}
+          {invitando ? t("enviando") : sinCorreo ? t("botonSinCorreo") : t("boton")}
         </button>
       </div>
 

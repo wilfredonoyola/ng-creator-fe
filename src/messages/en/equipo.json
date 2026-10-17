@@ -24,7 +24,12 @@
     "boton": "Invite",
     "nombre": "Name",
     "placeholderNombre": "Name (optional)",
-    "correo": "Email"
+    "correo": "Email",
+    "comoLlega": "How they get it",
+    "porCorreo": "By email",
+    "porContrasena": "Password I'll send myself",
+    "detalleSinCorreo": "No email is sent: we show you a temporary password to send by WhatsApp or however you like. They change it when they sign in.",
+    "botonSinCorreo": "Invite and create password"
   },
   "vos": "you",
   "desactivado": "deactivated",
@@ -45,5 +50,20 @@
     "guardando": "Saving…",
     "ayuda": "The name belongs to the person: it changes in every brand they're in.",
     "error": "Couldn't save the name"
+  },
+  "temporal": {
+    "boton": "Temporary password",
+    "botonAyuda": "Create a temporary password to send yourself. Any previous one stops working.",
+    "titulo": "Temporary password",
+    "copiar": "Copy",
+    "copiada": "Copied",
+    "copiarMensaje": "Copy message",
+    "copiado": "Message copied",
+    "whatsapp": "Open WhatsApp",
+    "mensajeTitulo": "Message to send",
+    "mensaje": "Hi{saludo}! I added you to {marca} on Clipfine.\n\nSign in at {url}\nEmail: {email}\nTemporary password: {password}\n\nYou'll be asked to choose a new password when you sign in.",
+    "aviso": "We don't store it: copy it now. If you lose it, create another (the previous one stops working). They'll choose a new one when signing in.",
+    "cerrar": "Close",
+    "yaTieneCuenta": "{email} already had a Clipfine account: they have access now and sign in with their usual password."
   }
 }
