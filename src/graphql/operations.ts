@@ -1167,14 +1167,22 @@ export const INVITACIONES_DE_PAGINA = gql`
   }
 `;
 
+/** Una contraseña temporal para una invitación pendiente, para mandarla a mano. */
+export const CONTRASENA_TEMPORAL = gql`
+  mutation ContrasenaTemporal($marcaId: String!, $email: String!) {
+    contrasenaTemporal(marcaId: $marcaId, email: $email)
+  }
+`;
+
 export const INVITAR_MIEMBRO = gql`
   mutation InvitarMiembro(
     $email: String!
     $marcaId: String!
     $rol: RolPagina!
     $nombre: String
+    $sinCorreo: Boolean
   ) {
-    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol, nombre: $nombre) {
+    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol, nombre: $nombre, sinCorreo: $sinCorreo) {
       _id
       email
       nombre

@@ -24,7 +24,12 @@
     "boton": "Invitar",
     "nombre": "Nombre",
     "placeholderNombre": "Nombre (opcional)",
-    "correo": "Correo"
+    "correo": "Correo",
+    "comoLlega": "Cómo le llega",
+    "porCorreo": "Por correo",
+    "porContrasena": "Contraseña para mandar yo",
+    "detalleSinCorreo": "No le llega ningún correo: te mostramos una contraseña temporal para que se la mandes por WhatsApp o como quieras. La cambia al entrar.",
+    "botonSinCorreo": "Invitar y crear contraseña"
   },
   "vos": "vos",
   "desactivado": "desactivado",
@@ -45,5 +50,20 @@
     "guardando": "Guardando…",
     "ayuda": "El nombre es de la persona: cambia en todas las marcas donde está.",
     "error": "No se pudo guardar el nombre"
+  },
+  "temporal": {
+    "boton": "Contraseña temporal",
+    "botonAyuda": "Crear una contraseña temporal para mandarla a mano. Si ya le mandaste otra, deja de servir.",
+    "titulo": "Contraseña temporal",
+    "copiar": "Copiar",
+    "copiada": "Copiada",
+    "copiarMensaje": "Copiar mensaje",
+    "copiado": "Mensaje copiado",
+    "whatsapp": "Abrir WhatsApp",
+    "mensajeTitulo": "Mensaje para mandar",
+    "mensaje": "Hola{saludo}! Te sumé a {marca} en Clipfine.\n\nEntrá en {url}\nCorreo: {email}\nContraseña temporal: {password}\n\nAl entrar te pide elegir una contraseña nueva.",
+    "aviso": "No la guardamos: copiala ahora. Si la perdés, creá otra (la anterior deja de servir). Al entrar le pide elegir una nueva.",
+    "cerrar": "Cerrar",
+    "yaTieneCuenta": "{email} ya tenía cuenta en Clipfine: ya tiene acceso y entra con su contraseña de siempre."
   }
 }
