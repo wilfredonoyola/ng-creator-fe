@@ -1,6 +1,6 @@
 ---
 titulo: Cómo elige la IA los clips
-descripcion: Qué mira la IA de Clipfine para proponer los momentos de cada episodio, qué significan el puntaje y el motivo, y cómo crear un clip a mano.
+descripcion: Qué mira la IA de Clipfine para proponer los momentos de cada episodio, qué significan el puntaje y el motivo, cómo pedirle momentos (un clip por tema) y cómo crear clips a mano.
 categoria: clips
 orden: 2
 funciones: ia
@@ -35,6 +35,15 @@ Si querés otra tanda, en el episodio tenés **Buscar momentos otra vez** (reemp
 ## Crear un clip a mano
 
 Si el cliente pide un momento puntual, tocá **+ Crear clip** en el episodio: buscás el momento en la transcripción, marcás inicio y fin, y vas al editor. En la app, escribís unas palabras de lo que se dice y la encuentra. Un clip puede durar hasta 3 minutos. Los clips hechos así aparecen como **Hecho a mano**.
+
+## Varios clips de una vez
+
+Para sacar varios clips de un video (por ejemplo, de un webinar), tocá **✨ Varios clips** en el episodio o en **Contenido**:
+
+- **Pedírselo a la IA**: escribí qué querés, como "un clip por cada tema", "los consejos prácticos" o "las preguntas del público con su respuesta". La IA busca esos momentos en todo el video y te los muestra en orden, con su tramo y por qué cumple lo que pediste. Marcá los que querés (podés cambiarles el título) y tocá **Crear**. Si un momento ya es un clip, te avisa.
+- **Pegar los tramos**: un tramo por línea, como `0:05:10 - 0:06:20 Cómo fijar precios`. El título es opcional: si no lo ponés, lo escribe la IA.
+
+Se crean hasta 20 por vez, cada uno de hasta 3 minutos y ajustado para no cortar palabras. Quedan a tu nombre en **Hecho a mano**, listos para editar. También lo podés pedir desde [ChatGPT o Claude](/ayuda/conectar-chatgpt-claude).
 
 Funciona igual en la web y en la app.
 

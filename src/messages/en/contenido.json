@@ -7,6 +7,8 @@
   "ultimo": "Latest",
   "verEpisodio": "View episode",
   "crearClip": "Create clip",
+  "variosClips": "✨ Several clips",
+  "variosClipsAyuda": "Ask the AI for the moments (one clip per topic, for example) or paste a list of time ranges",
   "crearClipAyuda": "Make a clip by hand from this episode",
   "crearNoListo": "The episode has to be transcribed before you can create clips.",
   "subirClip": "Upload clip",

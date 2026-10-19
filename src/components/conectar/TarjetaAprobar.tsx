@@ -26,7 +26,7 @@ export function TarjetaAprobar({
       <h1 className="text-center text-xl font-bold">{t("aprobar.titulo", { app })}</h1>
       <p className="mt-2 text-center text-sm text-white/60">{t("aprobar.texto", { app })}</p>
       <ul className="mt-5 space-y-2.5 text-sm">
-        {(["marcas", "metricas", "ayuda"] as const).map((k) => (
+        {(["marcas", "metricas", "ayuda", "clips"] as const).map((k) => (
           <li key={k} className="flex gap-2.5">
             <Eye size={16} className="mt-0.5 shrink-0 text-marca" aria-hidden />
             {t(`aprobar.puede.${k}`)}

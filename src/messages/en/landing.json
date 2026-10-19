@@ -261,7 +261,7 @@
       "reporte": "Put together the last 30 days report so I can send it to the client.",
       "semana": "What does each client have scheduled this week?"
     },
-    "soloLectura": "Read only: it doesn't post, approve or delete anything.",
+    "soloLectura": "It doesn't post, approve or delete anything: at most, it creates clips for you to finish.",
     "comoConectar": "How to connect it"
   },
   "paraQuien": {

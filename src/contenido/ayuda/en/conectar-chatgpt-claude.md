@@ -1,11 +1,11 @@
 ---
 titulo: Connect Clipfine to ChatGPT or Claude
-descripcion: Add Clipfine as a connector in ChatGPT or Claude and ask how each client's clips are performing, what's scheduled or how to use Clipfine.
+descripcion: Add Clipfine as a connector in ChatGPT or Claude and ask how each client's clips are performing, what's scheduled or how to use Clipfine, or have it cut clips from an episode.
 categoria: app
 orden: 3
 funciones:
 ---
-With the Clipfine connector, ChatGPT or Claude can look up your brands, their metrics and what they have scheduled, and answer with Clipfine's help center. They see the same as you do in the dashboard, with your permissions.
+With the Clipfine connector, ChatGPT or Claude can look up your brands, their metrics and what they have scheduled, answer with Clipfine's help center and cut clips from your episodes. They see the same as you do in the dashboard, with your permissions.
 
 ## What you need
 
@@ -36,7 +36,7 @@ With the Clipfine connector, ChatGPT or Claude can look up your brands, their me
 
 <!-- pantalla:chatgpt-conectar -->
 
-5. Clipfine opens (if you weren't signed in, sign in with your account). The **"ChatGPT wants to connect to your Clipfine"** screen shows what it will be able to see: your brands, their analytics and what's scheduled, and Clipfine's help center, always **read only**. Click **Allow**.
+5. Clipfine opens (if you weren't signed in, sign in with your account). The **"ChatGPT wants to connect to your Clipfine"** screen shows what it will be able to do: see your brands, their analytics and what's scheduled, and Clipfine's help center, and create clips (without posting them). Click **Allow**.
 
 <!-- pantalla:clipfine-permitir -->
 
@@ -56,10 +56,16 @@ Menu names may change depending on each app's version.
 - "Put together the last 30 days report so I can send it to the client."
 - "What does each client have scheduled this week? Is anything waiting for review?"
 - "How do I invite a client so they can only approve?"
+- "From Café Luna's latest webinar, make one clip per topic."
+- "Read the transcript of yesterday's episode and make clips with the best tips."
+
+## Cut clips from an episode
+
+Ask for the moments you want from an episode: Clipfine's AI finds them (or ChatGPT or Claude read the transcript), shows you the time ranges and, once you confirm, creates the clips. They're yours under **Made by hand**, not posted, so you can finish them in the editor. Up to 20 at a time, and only in brands where you're an **owner** or **editor**. It's the same as [Several clips](/ayuda/como-elige-la-ia) in the dashboard.
 
 ## What it can't do
 
-It's **read only**: it doesn't schedule, approve, edit or delete anything. To disconnect it, go to **Profile → Connect to ChatGPT or Claude** and click **Disconnect**.
+Apart from creating clips, it only looks things up: it doesn't schedule, post, approve, edit or delete anything. To disconnect it, go to **Profile → Connect to ChatGPT or Claude** and click **Disconnect**.
 
 ## See what's connected
 

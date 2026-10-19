@@ -22,7 +22,7 @@
     "uso": "último uso {cuando}",
     "desconectar": "Desconectar"
   },
-  "soloLectura": "Las apps conectadas solo pueden leer: no programan, no aprueban ni cambian nada.",
+  "soloLectura": "Las apps conectadas consultan y pueden crear clips sin publicar: no programan, no aprueban ni borran nada.",
   "volverPerfil": "Volver a Perfil",
   "aprobar": {
     "titulo": "{app} quiere conectarse a tu Clipfine",
@@ -30,9 +30,10 @@
     "puede": {
       "marcas": "Las marcas en las que trabajás.",
       "metricas": "Sus métricas y lo que tienen programado.",
-      "ayuda": "La ayuda y las funciones de Clipfine."
+      "ayuda": "La ayuda y las funciones de Clipfine.",
+      "clips": "Crear clips en las marcas donde editás, sin publicarlos."
     },
-    "noPuede": "Solo lectura: no puede programar, aprobar, editar ni borrar nada.",
+    "noPuede": "No puede programar, publicar, aprobar ni borrar nada.",
     "vuelveA": "Después vas a volver a {host}.",
     "cancelar": "Cancelar",
     "cancelando": "Cancelando…",
@@ -50,7 +51,7 @@
   },
   "equipo": {
     "titulo": "ChatGPT y Claude",
-    "texto": "Quiénes del equipo conectaron ChatGPT o Claude: pueden preguntarles por las métricas y lo programado de esta marca, solo para leer.",
+    "texto": "Quiénes del equipo conectaron ChatGPT o Claude: pueden preguntarles por las métricas y lo programado de esta marca y, si editan, crear clips sin publicar.",
     "ninguna": "Nadie del equipo los conectó todavía.",
     "cargando": "Cargando…",
     "nota": "Cada persona desconecta las suyas desde Perfil. Si alguien no tiene que ver más esta marca, sacalo del equipo: el conector usa los mismos permisos que el panel.",

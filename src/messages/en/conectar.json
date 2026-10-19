@@ -22,7 +22,7 @@
     "uso": "last used {cuando}",
     "desconectar": "Disconnect"
   },
-  "soloLectura": "Connected apps can only read: they don't schedule, approve or change anything.",
+  "soloLectura": "Connected apps look things up and can create clips without posting them: they don't schedule, approve or delete anything.",
   "volverPerfil": "Back to Profile",
   "aprobar": {
     "titulo": "{app} wants to connect to your Clipfine",
@@ -30,9 +30,10 @@
     "puede": {
       "marcas": "The brands you work on.",
       "metricas": "Their metrics and what they have scheduled.",
-      "ayuda": "Clipfine's help center and features."
+      "ayuda": "Clipfine's help center and features.",
+      "clips": "Create clips in the brands where you edit, without posting them."
     },
-    "noPuede": "Read only: it can't schedule, approve, edit or delete anything.",
+    "noPuede": "It can't schedule, post, approve or delete anything.",
     "vuelveA": "You'll then go back to {host}.",
     "cancelar": "Cancel",
     "cancelando": "Cancelling…",
@@ -50,7 +51,7 @@
   },
   "equipo": {
     "titulo": "ChatGPT and Claude",
-    "texto": "Who on the team connected ChatGPT or Claude: they can ask them about this brand’s metrics and schedule, read-only.",
+    "texto": "Who on the team connected ChatGPT or Claude: they can ask them about this brand’s metrics and schedule and, if they edit, create clips without posting them.",
     "ninguna": "No one on the team has connected them yet.",
     "cargando": "Loading…",
     "nota": "Each person disconnects their own from Profile. If someone shouldn’t see this brand anymore, remove them from the team: the connector uses the same permissions as the dashboard.",

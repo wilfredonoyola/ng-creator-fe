@@ -20,6 +20,7 @@ import { InvitadosEpisodio } from "@/components/etiquetas/InvitadosEpisodio";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ReimportarDeRestream, reimportando } from "@/components/episodios/ReimportarDeRestream";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
+import { VariosClips } from "@/components/episodios/VariosClips";
 import { TomarClip, type Autoria } from "@/components/episodios/TomarClip";
 import {
   EstadoPublicacionClip,
@@ -75,6 +76,7 @@ export default function DetalleEpisodioPage({
   params: { id: string };
 }) {
   const t = useTranslations("episodioDetalle");
+  const tv = useTranslations("variosClips");
   const locale = useLocale();
   const { id } = params;
   const { activa } = useMarcaActiva();
@@ -85,6 +87,8 @@ export default function DetalleEpisodioPage({
   const [sonando, setSonando] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [creandoClip, setCreandoClip] = useState(false);
+  const [variosClips, setVariosClips] = useState(false);
+  const [creados, setCreados] = useState<number | null>(null);
 
   const variables = { id, marcaId: marcaId ?? "" };
   const episodioQ = useQuery(EPISODIO, { variables, skip: !marcaId, errorPolicy: "all" });
@@ -251,16 +255,50 @@ export default function DetalleEpisodioPage({
         <div>
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 id="clips" className="scroll-mt-6 text-sm font-semibold uppercase tracking-wide text-white/50">{t("clips")}</h2>
-            {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && (
-              <button
-                onClick={() => setCreandoClip(true)}
-                title={t("crearClipAyuda")}
-                className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
-              >
-                {t("crearClip")}
-              </button>
+            {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && !variosClips && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setVariosClips(true);
+                    setCreados(null);
+                  }}
+                  title={t("variosClipsAyuda")}
+                  className="rounded-lg border border-ng-violeta/60 px-3 py-1 text-xs font-medium text-white hover:bg-ng-violeta/10"
+                >
+                  {t("variosClips")}
+                </button>
+                <button
+                  onClick={() => setCreandoClip(true)}
+                  title={t("crearClipAyuda")}
+                  className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
+                >
+                  {t("crearClip")}
+                </button>
+              </div>
             )}
           </div>
+          {variosClips && marcaId && (
+            <div className="mb-4">
+              <VariosClips
+                episodioId={id}
+                marcaId={marcaId}
+                duracionEpisodio={ep.duracionSeg ?? 0}
+                reproductor={reproductor}
+                onCerrar={() => setVariosClips(false)}
+                onCreados={(n) => {
+                  setVariosClips(false);
+                  setCreados(n);
+                  elegirPestana("manuales");
+                  void clipsQ.refetch();
+                }}
+              />
+            </div>
+          )}
+          {creados !== null && (
+            <p className="mb-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+              {tv("creados", { n: creados })}
+            </p>
+          )}
           {creandoClip && marcaId && (
             <div className="mb-4">
               <CrearClipGuiado

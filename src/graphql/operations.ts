@@ -3230,3 +3230,35 @@ export const REVOCAR_CONEXION_MCP = gql`
     revocarConexionMcp(id: $id)
   }
 `;
+
+/**
+ * Los momentos del episodio que cumplen lo que pide la persona (#221): "un
+ * clip por cada tema", "donde habla de precios". No guarda nada. Tarda lo que
+ * tarda la IA (hasta un minuto en un video largo).
+ */
+export const BUSCAR_MOMENTOS_EPISODIO = gql`
+  query BuscarMomentosEpisodio($episodioId: ID!, $marcaId: String!, $instruccion: String!) {
+    buscarMomentosEpisodio(episodioId: $episodioId, marcaId: $marcaId, instruccion: $instruccion) {
+      desdeSeg
+      hastaSeg
+      puntuacion
+      titulo
+      explicacion
+      gancho
+      texto
+      clipId
+    }
+  }
+`;
+
+/** Varios clips de una vez (#221): todos o ninguno. */
+export const CREAR_CLIPS_EPISODIO = gql`
+  mutation CrearClipsEpisodio($input: CrearClipsEpisodioInput!) {
+    crearClipsEpisodio(input: $input) {
+      _id
+      titulo
+      desdeSeg
+      hastaSeg
+    }
+  }
+`;

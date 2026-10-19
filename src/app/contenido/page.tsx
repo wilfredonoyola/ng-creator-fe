@@ -11,6 +11,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { PestanasPublicaciones } from "@/components/PestanasPublicaciones";
 import { ReproductorEpisodio, type ControlReproductor } from "@/components/ReproductorEpisodio";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
+import { VariosClips } from "@/components/episodios/VariosClips";
 import { TarjetaClipSubido, etapaDe, type ClipSubido } from "@/components/episodios/ClipsSubidos";
 import { useSubirClips } from "@/components/episodios/useSubirClips";
 import { EstadoPublicacionClip, type ResumenPublicacionClip } from "@/components/episodios/ListoClip";
@@ -245,6 +246,9 @@ function ContenidoDeEpisodio({
   const input = useRef<HTMLInputElement>(null);
   const reproductor = useRef<ControlReproductor>(null);
   const [creando, setCreando] = useState(false);
+  const [varios, setVarios] = useState(false);
+  const [creados, setCreados] = useState<number | null>(null);
+  const tv = useTranslations("variosClips");
 
   const clipsQ = useQuery(CLIPS_DE_EPISODIO, { variables: { id: episodio._id, marcaId } });
   const subidosQ = useQuery(CLIPS_SUBIDOS, {
@@ -304,7 +308,10 @@ function ContenidoDeEpisodio({
           <>
             <button
               type="button"
-              onClick={() => setCreando((v) => !v)}
+              onClick={() => {
+                setCreando((v) => !v);
+                setVarios(false);
+              }}
               disabled={!transcrito || !episodio.urlReproduccion}
               title={transcrito ? t("crearClipAyuda") : t("crearNoListo")}
               aria-expanded={creando}
@@ -312,6 +319,20 @@ function ContenidoDeEpisodio({
             >
               <Plus size={16} aria-hidden />
               {t("crearClip")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setVarios((v) => !v);
+                setCreando(false);
+                setCreados(null);
+              }}
+              disabled={!transcrito || !episodio.urlReproduccion}
+              title={transcrito ? t("variosClipsAyuda") : t("crearNoListo")}
+              aria-expanded={varios}
+              className="flex items-center gap-1.5 rounded-lg border border-marca/60 px-3.5 py-2 text-sm text-white/90 transition hover:bg-white/5 disabled:opacity-40"
+            >
+              {t("variosClips")}
             </button>
             <button
               type="button"
@@ -373,6 +394,30 @@ function ContenidoDeEpisodio({
             onCerrar={() => setCreando(false)}
           />
         </div>
+      )}
+
+      {varios && episodio.urlReproduccion && (
+        <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <ReproductorEpisodio ref={reproductor} url={episodio.urlReproduccion} poster={episodio.miniaturaUrl} />
+          <VariosClips
+            episodioId={episodio._id}
+            marcaId={marcaId}
+            duracionEpisodio={episodio.duracionSeg ?? 0}
+            reproductor={reproductor}
+            onCerrar={() => setVarios(false)}
+            onCreados={(n) => {
+              setVarios(false);
+              setCreados(n);
+              setPestana("manuales");
+              void clipsQ.refetch();
+            }}
+          />
+        </div>
+      )}
+      {creados !== null && (
+        <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+          {tv("creados", { n: creados })}
+        </p>
       )}
 
       {/* ---- Las pestañas ---- */}

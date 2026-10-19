@@ -1,11 +1,11 @@
 ---
 titulo: Conectar Clipfine a ChatGPT o Claude
-descripcion: Agregá Clipfine como conector en ChatGPT o Claude y preguntá cómo rinden los clips de cada cliente, qué hay programado o cómo usar Clipfine.
+descripcion: Agregá Clipfine como conector en ChatGPT o Claude y preguntá cómo rinden los clips de cada cliente, qué hay programado o cómo usar Clipfine, o pedile que saque clips de un episodio.
 categoria: app
 orden: 3
 funciones:
 ---
-Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus métricas y lo que tienen programado, y contestarte con la ayuda de Clipfine. Ven lo mismo que vos en el panel, con tus permisos.
+Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus métricas y lo que tienen programado, contestarte con la ayuda de Clipfine y sacar clips de tus episodios. Ven lo mismo que vos en el panel, con tus permisos.
 
 ## Qué necesitás
 
@@ -36,7 +36,7 @@ Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus m
 
 <!-- pantalla:chatgpt-conectar -->
 
-5. Se abre Clipfine (si no tenías la sesión abierta, entrá con tu cuenta). La pantalla **"ChatGPT quiere conectarse a tu Clipfine"** muestra qué va a poder ver: tus marcas, sus métricas y lo programado, y la ayuda de Clipfine, siempre en **solo lectura**. Tocá **Permitir**.
+5. Se abre Clipfine (si no tenías la sesión abierta, entrá con tu cuenta). La pantalla **"ChatGPT quiere conectarse a tu Clipfine"** muestra qué va a poder hacer: ver tus marcas, sus métricas y lo programado, y la ayuda de Clipfine, y crear clips (sin publicarlos). Tocá **Permitir**.
 
 <!-- pantalla:clipfine-permitir -->
 
@@ -56,10 +56,16 @@ Los nombres de los menús pueden cambiar según la versión de cada app.
 - "Armame el reporte de los últimos 30 días para mandarle al cliente."
 - "¿Qué tiene programado cada cliente esta semana? ¿Hay algo esperando revisión?"
 - "¿Cómo invito a un cliente para que solo apruebe?"
+- "Del último webinar de Café Luna, sacá un clip por cada tema."
+- "Leé la transcripción del episodio de ayer y armá clips con los mejores consejos."
+
+## Sacar clips de un episodio
+
+Pedile los momentos que querés de un episodio: la IA de Clipfine los busca (o ChatGPT o Claude leen la transcripción), te muestra los tramos y, cuando le confirmás, crea los clips. Quedan a tu nombre en **Hecho a mano**, sin publicar, para que los termines en el editor. Hasta 20 por vez y solo en las marcas donde sos **propietario** o **editor**. Es lo mismo que [Varios clips](/ayuda/como-elige-la-ia) en el panel.
 
 ## Qué no puede hacer
 
-Es de **solo lectura**: no programa, no aprueba, no edita ni borra nada. Para desconectarlo, entrá a **Perfil → Conectar con ChatGPT o Claude** y tocá **Desconectar**.
+Fuera de crear clips, solo consulta: no programa, no publica, no aprueba, no edita ni borra nada. Para desconectarlo, entrá a **Perfil → Conectar con ChatGPT o Claude** y tocá **Desconectar**.
 
 ## Ver qué está conectado
 
