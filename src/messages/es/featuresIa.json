@@ -7,25 +7,78 @@
   "destacado": "una tanda de clips para elegir",
   "bajada": "Clipfine transcribe el episodio de tu cliente y la IA propone los momentos que se entienden solos, con su puntaje y su porqué. Tu editor arranca eligiendo, no buscando.",
   "datos": {
-    "d1": { "cifra": "15 clips", "que": "sugeridos por episodio, como máximo" },
-    "d2": { "cifra": "15 a 90 s", "que": "dura cada momento sugerido" },
-    "d3": { "cifra": "0 a 100", "que": "el puntaje de cada momento, con su motivo" }
+    "d1": {
+      "cifra": "15 clips",
+      "que": "sugeridos por episodio, como máximo"
+    },
+    "d2": {
+      "cifra": "15 a 90 s",
+      "que": "dura cada momento sugerido"
+    },
+    "d3": {
+      "cifra": "0 a 100",
+      "que": "el puntaje de cada momento, con su motivo"
+    }
   },
   "agencia": {
     "momentos": "La hora que tu editor pasaba mirando el episodio entero se va. Empieza por los mejores tramos.",
     "puntaje": "Decidís rápido qué clips salen primero, y le podés explicar al cliente por qué eligieron esos.",
     "sugeridos": "Un título y un gancho de arranque en cada clip: menos tiempo en blanco frente a la pantalla.",
-    "aMano": "Si el cliente pide un momento puntual, lo encontrás leyendo, no adelantando el video."
+    "aMano": "Si el cliente pide un momento puntual, lo encontrás leyendo, no adelantando el video.",
+    "pedirMomentos": "Cuando el cliente manda la lista de minutos del webinar, la pegás y salen todos los clips en un paso.",
+    "desdeChatgpt": "Tu equipo pide clips desde el chat que ya usa, con sus permisos de siempre en cada marca."
   },
   "vistas": {
-    "momentos": { "episodio": "EP-142 · 1:28:40", "listos": "6 momentos", "pie": "listos para editar" },
-    "puntaje": { "escala": "puntaje de 0 a 100", "motivo": "Gancho fuerte", "otro": "Frase citable" },
-    "sugeridos": { "tituloEtiqueta": "Título:", "titulo": "El error que casi nos cuesta el programa", "ganchoEtiqueta": "Gancho:", "gancho": "Nadie te cuenta esto antes de empezar" },
-    "aMano": { "antes": "…y ahí entendimos que", "elegido": "el problema nunca fue el precio, era a quién se lo vendíamos", "despues": "y desde…", "crear": "Crear clip" }
+    "momentos": {
+      "episodio": "EP-142 · 1:28:40",
+      "listos": "6 momentos",
+      "pie": "listos para editar"
+    },
+    "puntaje": {
+      "escala": "puntaje de 0 a 100",
+      "motivo": "Gancho fuerte",
+      "otro": "Frase citable"
+    },
+    "sugeridos": {
+      "tituloEtiqueta": "Título:",
+      "titulo": "El error que casi nos cuesta el programa",
+      "ganchoEtiqueta": "Gancho:",
+      "gancho": "Nadie te cuenta esto antes de empezar"
+    },
+    "aMano": {
+      "antes": "…y ahí entendimos que",
+      "elegido": "el problema nunca fue el precio, era a quién se lo vendíamos",
+      "despues": "y desde…",
+      "crear": "Crear clip"
+    },
+    "pedirMomentos": {
+      "pedido": "Un clip por cada tema del webinar",
+      "t1": "Cómo fijar precios",
+      "t2": "Errores al contratar",
+      "t3": "Preguntas del público",
+      "crear": "Crear 3 clips"
+    },
+    "desdeChatgpt": {
+      "pregunta": "Del último webinar, sacá un clip por tema",
+      "respuesta": "Listo: creé 5 clips en Café Luna, sin publicar."
+    }
   },
   "preguntas": {
-    "p1": { "p": "¿Cuántos clips saca la IA de un episodio?", "r": "Hasta 15 momentos por episodio, de 15 a 90 segundos cada uno, ordenados por puntaje. Elegís cuáles editar y podés sumar clips a mano desde la transcripción." },
-    "p2": { "p": "¿Qué mira la IA para elegir un momento?", "r": "Que se entienda solo y tenga algo que enganche: un gancho fuerte, una opinión polémica, una historia completa, una frase citable, humor, emoción o un dato sorprendente. Cada momento dice cuál de esos es." },
-    "p3": { "p": "¿Mi editor puede cambiar lo que propone la IA?", "r": "Sí. El tramo, el título y el gancho son sugerencias: se ajustan en el editor antes de programar el clip." }
+    "p1": {
+      "p": "¿Cuántos clips saca la IA de un episodio?",
+      "r": "Hasta 15 momentos por episodio, de 15 a 90 segundos cada uno, ordenados por puntaje. Elegís cuáles editar y podés sumar clips a mano desde la transcripción."
+    },
+    "p2": {
+      "p": "¿Qué mira la IA para elegir un momento?",
+      "r": "Que se entienda solo y tenga algo que enganche: un gancho fuerte, una opinión polémica, una historia completa, una frase citable, humor, emoción o un dato sorprendente. Cada momento dice cuál de esos es."
+    },
+    "p3": {
+      "p": "¿Mi editor puede cambiar lo que propone la IA?",
+      "r": "Sí. El tramo, el título y el gancho son sugerencias: se ajustan en el editor antes de programar el clip."
+    },
+    "p4": {
+      "p": "¿Puedo pedirle a la IA momentos puntuales, por ejemplo de un webinar?",
+      "r": "Sí. En el episodio tocás ✨ Varios clips y escribís lo que querés (\"un clip por cada tema\", \"los consejos prácticos\"). La IA busca esos momentos en todo el video, elegís cuáles y se crean juntos, hasta 20 por vez. Si ya tenés los minutos, pegás la lista de tramos. También se puede pedir desde ChatGPT o Claude con el conector de Clipfine."
+    }
   }
 }

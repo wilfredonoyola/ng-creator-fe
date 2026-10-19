@@ -122,6 +122,14 @@
       "titulo": "Clips a mano, desde lo que se dice",
       "texto": "Leé la transcripción, escuchá el tramo, marcá dónde empieza y dónde termina, y al editor."
     },
+    "pedirMomentos": {
+      "titulo": "Pedile los momentos que querés",
+      "texto": "Escribí \"un clip por cada tema del webinar\" o \"las preguntas del público\": la IA los busca en todo el video, elegís cuáles y se crean de una vez. También pegando una lista de tramos."
+    },
+    "desdeChatgpt": {
+      "titulo": "Clips desde ChatGPT o Claude",
+      "texto": "Conectá Clipfine y pedile al chat que lea la transcripción y saque los clips: los crea en tu cuenta, sin publicar, listos para terminar en el editor."
+    },
     "editor": {
       "titulo": "Un editor como CapCut",
       "texto": "Línea de tiempo con cada pista, herramientas a un costado y deshacer o rehacer cualquier cambio."

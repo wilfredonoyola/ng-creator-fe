@@ -4,6 +4,7 @@
  */
 import {
   AudioLines,
+  Bot,
   BellRing,
   Bell,
   Blend,
@@ -91,6 +92,8 @@ export const SECCIONES = [
       { clave: "puntaje", icono: Gauge },
       { clave: "sugeridos", icono: Zap },
       { clave: "aMano", icono: MessageSquareText },
+      { clave: "pedirMomentos", icono: ListChecks },
+      { clave: "desdeChatgpt", icono: Bot },
     ],
   },
   {
