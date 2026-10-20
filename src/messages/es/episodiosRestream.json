@@ -1,6 +1,7 @@
 {
   "horasMinutos": "{h} h {m} min",
   "minutos": "{m} min",
+  "segundos": "{s} s",
   "sinUrl": "El backend no devolvió la URL de autorización",
   "errorConectar": "No se pudo iniciar la conexión",
   "errorImportar": "No se pudo importar",
@@ -20,5 +21,11 @@
   "yaImportado": "✓ Ya importado",
   "pidiendo": "Pidiendo…",
   "importar": "Importar",
-  "sinGrabacion": "Sin grabación"
+  "sinGrabacion": "Sin grabación",
+  "estado": {
+    "fallo": "⚠ Falló",
+    "listo": "{n, plural, =0 {✓ Listo, sin clips sugeridos} one {✓ Listo · # clip} other {✓ Listo · # clips}}",
+    "corta": "⚠ Se trajo {trajo} de {dura}",
+    "cortaQueHacer": "Borrá el episodio e importalo de nuevo"
+  }
 }

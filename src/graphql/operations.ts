@@ -2822,6 +2822,26 @@ export const RESTREAM_EVENTOS = gql`
       archivo
       grabacionVenceEn
       episodioId
+      episodio {
+        _id
+        estado
+        error
+        duracionSeg
+        progresoBunny
+        estadoImportacion
+        progresoImportacion
+        errorImportacion
+        estadoTranscripcion
+        progresoTranscripcion
+        errorTranscripcion
+        estadoMomentos
+        errorMomentos
+        clipsSugeridos
+        reimportacion {
+          estado
+          progreso
+        }
+      }
     }
   }
 `;
