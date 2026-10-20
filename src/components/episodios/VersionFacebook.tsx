@@ -10,6 +10,9 @@ import { IndicadorCalidad } from "./IndicadorCalidad";
 
 /** Lo más largo que acepta un Reel de Facebook; el backend valida lo mismo. */
 export const REEL_FACEBOOK_MAX_SEG = 90;
+
+/** Un Short de YouTube dura hasta 3 min; más largo, YouTube lo deja como video común. */
+export const SHORT_YOUTUBE_MAX_SEG = 180;
 /** Lo más corto que acepta el backend para la versión corta. */
 const VERSION_MINIMA_SEG = 3;
 
@@ -36,10 +39,18 @@ export function AvisoVersionFacebook({ duracion }: { duracion: number }) {
   const t = useTranslations("versionFacebook");
   if (duracion <= REEL_FACEBOOK_MAX_SEG) return null;
   return (
-    <p className="mt-1.5 flex items-start gap-1.5 text-xs text-amber-200/80">
-      <Info size={14} className="mt-px shrink-0" aria-hidden />
-      <span>{t("avisoEditor")}</span>
-    </p>
+    <>
+      <p className="mt-1.5 flex items-start gap-1.5 text-xs text-amber-200/80">
+        <Info size={14} className="mt-px shrink-0" aria-hidden />
+        <span>{t("avisoEditor")}</span>
+      </p>
+      {duracion > SHORT_YOUTUBE_MAX_SEG + 0.05 && (
+        <p className="mt-1 flex items-start gap-1.5 text-xs text-amber-200/80">
+          <Info size={14} className="mt-px shrink-0" aria-hidden />
+          <span>{t("avisoYoutube")}</span>
+        </p>
+      )}
+    </>
   );
 }
 

@@ -30,7 +30,7 @@
     "errores": {
       "formato": "no entiendo los tiempos. Escribilo como 1:02:30 - 1:03:40.",
       "alReves": "el final tiene que ser después del inicio.",
-      "largo": "un clip puede durar hasta 3 minutos.",
+      "largo": "un clip puede durar hasta 5 minutos.",
       "fuera": "empieza después del final del video."
     },
     "corregir": "Corregí las líneas en rojo para crear los clips."

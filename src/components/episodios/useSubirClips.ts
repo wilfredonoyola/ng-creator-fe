@@ -11,8 +11,8 @@ import {
 } from "@/graphql/operations";
 import { iniciarSubidaTus, type CredencialesTus, type SubidaEpisodio } from "@/lib/subida-episodio";
 
-/** Lo mismo que acepta el backend (CLIP_SUBIDO_MAXIMO_SEG): lo que deja el editor y YouTube Shorts. */
-export const MAXIMO_SEG_CLIP_SUBIDO = 180;
+/** Lo mismo que acepta el backend (CLIP_SUBIDO_MAXIMO_SEG): lo que deja el editor, 5 min. */
+export const MAXIMO_SEG_CLIP_SUBIDO = 300;
 
 /** Lo que se está subiendo. */
 export interface SubiendoClip {

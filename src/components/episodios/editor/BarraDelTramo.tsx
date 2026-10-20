@@ -6,8 +6,8 @@ import { Info } from "lucide-react";
 import { Pista } from "@/components/Pista";
 import { reloj } from "./tipos";
 
-/** Tope de un clip a mano, el mismo que valida el backend. */
-const CLIP_MAXIMO_SEG = 180;
+/** Tope de un clip a mano, el mismo que valida el backend (5 min). */
+const CLIP_MAXIMO_SEG = 300;
 
 /**
  * El tramo del clip dentro del episodio, para extenderlo o acortarlo
