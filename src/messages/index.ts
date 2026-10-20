@@ -122,6 +122,7 @@ import revisionClip_es from "./es/revisionClip.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import superadmin_es from "./es/superadmin.json";
+import variosClips_es from "./es/variosClips.json";
 import versionFacebook_es from "./es/versionFacebook.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
@@ -246,6 +247,7 @@ import revisionClip_en from "./en/revisionClip.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
 import revisionVideoCard_en from "./en/revisionVideoCard.json";
 import superadmin_en from "./en/superadmin.json";
+import variosClips_en from "./en/variosClips.json";
 import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
@@ -373,6 +375,7 @@ export const mensajes = {
     "revisionTarjeta": revisionTarjeta_es,
     "revisionVideoCard": revisionVideoCard_es,
     "superadmin": superadmin_es,
+    "variosClips": variosClips_es,
     "versionFacebook": versionFacebook_es,
   },
   en: {
@@ -499,6 +502,7 @@ export const mensajes = {
     "revisionTarjeta": revisionTarjeta_en,
     "revisionVideoCard": revisionVideoCard_en,
     "superadmin": superadmin_en,
+    "variosClips": variosClips_en,
     "versionFacebook": versionFacebook_en,
   },
 };

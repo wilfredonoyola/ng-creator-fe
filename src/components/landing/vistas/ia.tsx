@@ -69,9 +69,46 @@ function AMano() {
   );
 }
 
+function PedirMomentos() {
+  const t = useTranslations("featuresIa.vistas.pedirMomentos");
+  return (
+    <Vista className="gap-1.5">
+      <Campo>
+        <span className="text-[#FFD400]">✨</span> {t("pedido")}
+      </Campo>
+      {(["t1", "t2", "t3"] as const).map((k, i) => (
+        <Fila key={k}>
+          <span className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[3px] bg-[#FFD400] text-[9px] text-[#0A0A0A]">✓</span>
+          <span className="min-w-0 flex-1 truncate">{t(k)}</span>
+          <span className="tabular-nums text-[#8A8983]">{["4:10", "18:32", "41:05"][i]}</span>
+        </Fila>
+      ))}
+      <Fila>
+        <Chip tono="amarillo">{t("crear")}</Chip>
+      </Fila>
+    </Vista>
+  );
+}
+
+function DesdeChatgpt() {
+  const t = useTranslations("featuresIa.vistas.desdeChatgpt");
+  return (
+    <Vista>
+      <Fila className="justify-end">
+        <span className="rounded-lg bg-white/10 px-2 py-1">{t("pregunta")}</span>
+      </Fila>
+      <Fila>
+        <span className="rounded-lg border border-[#FFD400]/40 px-2 py-1">{t("respuesta")}</span>
+      </Fila>
+    </Vista>
+  );
+}
+
 export const VISTAS_IA = {
   momentos: Momentos,
   puntaje: Puntaje,
   sugeridos: Sugeridos,
   aMano: AMano,
+  pedirMomentos: PedirMomentos,
+  desdeChatgpt: DesdeChatgpt,
 };

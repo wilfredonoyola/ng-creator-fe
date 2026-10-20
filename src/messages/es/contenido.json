@@ -7,6 +7,8 @@
   "ultimo": "Último",
   "verEpisodio": "Ver episodio",
   "crearClip": "Crear clip",
+  "variosClips": "✨ Varios clips",
+  "variosClipsAyuda": "Pedile a la IA los momentos (un clip por tema, por ejemplo) o pegá una lista de tramos",
   "crearClipAyuda": "Armá un clip a mano desde este episodio",
   "crearNoListo": "Para crear clips, el episodio tiene que estar transcrito.",
   "subirClip": "Subir clip",

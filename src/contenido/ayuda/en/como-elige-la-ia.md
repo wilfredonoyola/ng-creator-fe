@@ -1,6 +1,6 @@
 ---
 titulo: How the AI picks clips
-descripcion: What Clipfine's AI looks for when it suggests moments from each episode, what the score and reason mean, and how to create a clip by hand.
+descripcion: What Clipfine's AI looks for when it suggests moments from each episode, what the score and reason mean, and how to create a clip by hand, and how to ask it for moments (one clip per topic).
 categoria: clips
 orden: 2
 funciones: ia
@@ -35,6 +35,15 @@ If you want a fresh batch, the episode has **Find moments again** (it replaces t
 ## Create a clip by hand
 
 If the client asks for a specific moment, click **+ Create clip** on the episode: find the moment in the transcript, mark the start and end, and go to the editor. In the app, you type a few words of what's said and it finds the spot. A clip can be up to 3 minutes long. Clips made this way are labeled **Made by hand**.
+
+## Several clips at once
+
+To get several clips out of one video (a webinar, for example), click **✨ Several clips** on the episode or in **Content**:
+
+- **Ask the AI**: write what you want, like "one clip per topic", "the practical tips" or "audience questions with their answers". The AI looks for those moments across the whole video and shows them in order, with their time range and why they match what you asked for. Check the ones you want (you can change their titles) and click **Create**. If a moment is already a clip, it tells you.
+- **Paste the time ranges**: one per line, like `0:05:10 - 0:06:20 How to set prices`. The title is optional: if you leave it out, the AI writes one.
+
+You can create up to 20 at a time, each up to 3 minutes long and adjusted so no word gets cut. They're yours under **Made by hand**, ready to edit. You can also ask for them from [ChatGPT or Claude](/ayuda/conectar-chatgpt-claude).
 
 It works the same on the web and in the app.
 

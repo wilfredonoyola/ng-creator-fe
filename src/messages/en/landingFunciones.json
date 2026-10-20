@@ -122,6 +122,14 @@
       "titulo": "Manual clips, from what's said",
       "texto": "Read the transcript, play the part, mark where it starts and ends, and open it in the editor."
     },
+    "pedirMomentos": {
+      "titulo": "Ask for the moments you want",
+      "texto": "Write \"one clip per webinar topic\" or \"the audience questions\": the AI finds them across the whole video, you pick which ones and they're created at once. You can also paste a list of time ranges."
+    },
+    "desdeChatgpt": {
+      "titulo": "Clips from ChatGPT or Claude",
+      "texto": "Connect Clipfine and ask the chat to read the transcript and cut the clips: it creates them in your account, not posted, ready to finish in the editor."
+    },
     "editor": {
       "titulo": "A CapCut-style editor",
       "texto": "A timeline with every track, tools on the side, and undo or redo for any change."

@@ -13,6 +13,8 @@
   "clips": "Clips",
   "crearClipAyuda": "Buscá el momento, marcá inicio y fin, y al editor",
   "crearClip": "+ Crear clip",
+  "variosClips": "✨ Varios clips",
+  "variosClipsAyuda": "Pedile a la IA los momentos (un clip por tema, por ejemplo) o pegá una lista de tramos",
   "analisis": {
     "transcribiendo": "Transcribiendo el episodio ({p}%). Después la IA busca los momentos.",
     "falloTranscripcion": "La transcripción falló: {error}. Reintentala desde Episodios.",

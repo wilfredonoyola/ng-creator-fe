@@ -13,6 +13,8 @@
   "clips": "Clips",
   "crearClipAyuda": "Find the moment, mark the start and end, and off to the editor",
   "crearClip": "+ Create clip",
+  "variosClips": "✨ Several clips",
+  "variosClipsAyuda": "Ask the AI for the moments (one clip per topic, for example) or paste a list of time ranges",
   "analisis": {
     "transcribiendo": "Transcribing the episode ({p}%). Then the AI looks for moments.",
     "falloTranscripcion": "The transcription failed: {error}. Retry it from Episodes.",
