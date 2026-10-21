@@ -25,6 +25,6 @@
     "p1": { "p": "¿Tengo que transcribir el episodio?", "r": "No. Clipfine transcribe el episodio solo cuando lo subís, y a partir de esa transcripción elige los momentos y arma los subtítulos." },
     "p2": { "p": "¿Cómo traigo un live de mi cliente?", "r": "Conectás el Restream del cliente a su marca en Clipfine y elegís la grabación del live. No hace falta bajarla ni esperar a que YouTube la procese." },
     "p3": { "p": "¿Cada cliente tiene su propio Restream?", "r": "Sí. La conexión de Restream es de cada marca, así que los lives de un cliente nunca se mezclan con los de otro." },
-    "p4": { "p": "¿Puedo subir clips que ya edité en CapCut?", "r": "Sí. En Publicaciones, Subir clips. Cada uno sale tal cual o lo abrís en el editor, y sigue el mismo camino que los demás: revisión, programar en las cuatro redes y métricas. Hasta 3 minutos por clip y no descuentan horas." }
+    "p4": { "p": "¿Puedo subir clips que ya edité en CapCut?", "r": "Sí. En Publicaciones, Subir clips. Cada uno sale tal cual o lo abrís en el editor, y sigue el mismo camino que los demás: revisión, programar en las cuatro redes y métricas. Hasta 5 minutos por clip y no descuentan horas." }
   }
 }

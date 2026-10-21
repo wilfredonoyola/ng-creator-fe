@@ -26,7 +26,7 @@ import { EtiquetaBeta } from "@/components/episodios/editor/ui";
 type Palabra = { texto: string; desde: number; hasta: number };
 type Coincidencia = { desdeSeg: number; hastaSeg: number; antes: string; frase: string; despues: string };
 
-const MAXIMO_SEG = 180;
+const MAXIMO_SEG = 300;
 const DURACIONES = [15, 30, 45, 60];
 const FORMATOS: { valor: FormatoClip; etiqueta: string; detalle: "vertical" | "cuadrado" | "horizontal" }[] = [
   { valor: "VERTICAL", etiqueta: "9:16", detalle: "vertical" },
