@@ -1,0 +1,45 @@
+{
+  "titulo": "Brand cover",
+  "activa": "On new posts",
+  "ayuda": "Every cover with the same design: a clean frame from the clip, the title and your logo. Your profile looks consistent on TikTok, Instagram, YouTube and Facebook.",
+  "estilo": "Title style",
+  "estilos": {
+    "DOS_COLORES": {
+      "nombre": "Two colors",
+      "detalle": "First line in white and the rest in your color, with an outline."
+    },
+    "CAJA": {
+      "nombre": "Box",
+      "detalle": "Each line on a box in your color."
+    },
+    "LIMPIO": {
+      "nombre": "Clean",
+      "detalle": "All white, no outline, with a soft shadow."
+    }
+  },
+  "fuente": "Font",
+  "mayusculas": "Uppercase",
+  "posicion": "Title height",
+  "arriba": "Top",
+  "centro": "Center",
+  "abajo": "Bottom",
+  "tamano": "Title size",
+  "logo": "Logo",
+  "conLogo": "On the cover",
+  "sinLogo": "Upload the brand logo above so it shows on the cover.",
+  "guardar": "Save cover",
+  "errorGuardar": "Couldn't save the cover.",
+  "vista": {
+    "alt": "Cover preview",
+    "cargando": "Building the preview",
+    "error": "Couldn't build the preview.",
+    "ayuda": "This is how it looks, on the brand's latest ready clip. Each post's title is the clip's hook, and you can change it when scheduling."
+  },
+  "editor": {
+    "texto": "Cover title",
+    "textoAyuda": "Empty: the clip's hook. Enter for a new line.",
+    "cuadro": "Frame",
+    "cuadroEn": "Frame at {seg} s",
+    "sinCuadros": "This clip was exported before brand covers: the frame includes the clip's text. Export it again to pick from clean frames."
+  }
+}

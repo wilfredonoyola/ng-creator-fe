@@ -88,7 +88,8 @@
     "cancelando": "Canceling…",
     "cancelarAyuda": "It won't go out on any network. The clip stays, and you can schedule it again.",
     "confirmarCancelar": "Cancel the post on {redes}? It won't go out.",
-    "errorCancelar": "Couldn't cancel"
+    "errorCancelar": "Couldn't cancel",
+    "portadaDeMarca": "Brand cover"
   },
   "porRevisar": "To review"
 }

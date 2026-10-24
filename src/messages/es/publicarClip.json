@@ -86,7 +86,9 @@
     "elegirCuadroDetalle": "Vos elegís qué cuadro del clip se ve",
     "cargando": "Cargando el cuadro…",
     "elegidaEn": "Portada: el cuadro del segundo {seg}",
-    "moverAyuda": "Mové la barra hasta el cuadro que quieras. Queda elegido solo, no hace falta guardar."
+    "moverAyuda": "Mové la barra hasta el cuadro que quieras. Queda elegido solo, no hace falta guardar.",
+    "deMarca": "Portada de marca",
+    "deMarcaAyuda": "con el diseño de Brand Kit"
   },
   "editar": {
     "titulo": "Ya está programado · sale el {cuando} en {redes}",

@@ -12,6 +12,7 @@ import {
   CLIP_EPISODIO,
   EDITAR_PUBLICACION,
   PROGRAMAR_PUBLICACION,
+  PLANTILLA_PORTADA_MARCA,
   PUBLICACIONES_DE_CLIP,
   REINTENTAR_PUBLICACION,
   RENDERIZAR_CLIP_EPISODIO,
@@ -71,6 +72,8 @@ import {
 import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 import { CuadroPortada, ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
+import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
+import { useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
 import { MetricasClip } from "@/components/metricas/MetricasClip";
 import { PanelRevision } from "@/components/revision/PanelRevision";
 import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
@@ -215,7 +218,10 @@ function Formulario({
   clip: {
     _id: string;
     titulo: string;
+    gancho?: string | null;
     urlPoster?: string | null;
+    /** Cuadros sin textos encima, para la portada de marca (be#239). */
+    cuadrosPortada?: CuadroLimpio[] | null;
     hastaSeg: number;
     /** Ya sin los cortes del medio. */
     duracionEfectivaSeg?: number | null;
@@ -334,6 +340,30 @@ function Formulario({
   const esperandoVideo = !videoListo;
   // La portada es un cuadro del MP4 final: solo se elige si el que hay ya es ese.
   const portadaElegible = videoListo ? clip.urlVideo ?? null : null;
+
+  // La portada de marca (be#239): sale prendida si la marca la tiene activa en
+  // Brand Kit. Null = lo que diga la plantilla; al tocarla, queda lo elegido.
+  const plantillaPortadaQ = useQuery(PLANTILLA_PORTADA_MARCA, { variables: { marcaId }, skip: !marcaId });
+  const portadaMarcaActiva = plantillaPortadaQ.data?.plantillaPortadaMarca?.activa === true;
+  const [portadaMarcaElegida, setPortadaMarcaElegida] = useState<boolean | null>(null);
+  const conPortadaMarca = portadaMarcaElegida ?? portadaMarcaActiva;
+  const [portadaTexto, setPortadaTexto] = useState("");
+  const cuadrosLimpios = videoListo ? clip.cuadrosPortada ?? [] : [];
+  const vistaPortada = useVistaPortada(
+    { marcaId, clipId: clip._id, texto: portadaTexto.trim() || null, seg: portadaSeg },
+    !conPortadaMarca || !videoListo,
+  );
+  /** Lo que la portada de marca agrega al programar. */
+  const camposPortadaMarca = conPortadaMarca
+    ? { portadaMarca: true, ...(portadaTexto.trim() ? { portadaTexto: portadaTexto.trim() } : {}) }
+    : {};
+  const miniPortada =
+    conPortadaMarca && vistaPortada.imagen ? (
+      // eslint-disable-next-line @next/next/no-img-element -- data URL armada por el backend
+      <img src={vistaPortada.imagen} alt={t("portada.elegida")} className="h-12 w-[27px] rounded object-cover" />
+    ) : portadaSeg != null && portadaElegible ? (
+      <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
+    ) : null;
   const cuando = fecha ? new Date(fecha) : null;
   const yaPaso = !cuando || Number.isNaN(cuando.getTime()) || cuando.getTime() < Date.now() + MARGEN_MS;
 
@@ -436,6 +466,10 @@ function Formulario({
     if (titulo) setTituloYoutube(titulo);
     const conPortada = pendientes.find((p) => p.portadaSeg != null);
     if (conPortada?.portadaSeg != null) setPortadaSeg(conPortada.portadaSeg);
+    // Lo programado manda: sin portada de marca no se prende sola al editar.
+    const deMarca = pendientes.find((p) => p.portadaMarca);
+    setPortadaMarcaElegida(Boolean(deMarca));
+    setPortadaTexto(deMarca?.portadaTexto ?? "");
     setEtiquetasGuardadas(new Set(pendientes.flatMap((p) => p.personaIds ?? [])));
     setCambiosEtiquetas(new Map());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -467,6 +501,8 @@ function Formulario({
     tituloYoutube,
     fecha,
     portadaSeg,
+    portadaMarca: portadaMarcaElegida,
+    portadaTexto,
     cambios: [...cambios],
     cambiosEtiquetas: [...cambiosEtiquetas],
     colaboradoresIg: [...colaboradoresIg],
@@ -489,6 +525,8 @@ function Formulario({
     const f = new Date(b.fecha);
     if (b.fecha && !Number.isNaN(f.getTime()) && f.getTime() > Date.now() + MARGEN_MS) setFecha(b.fecha);
     setPortadaSeg(b.portadaSeg);
+    if (b.portadaMarca !== undefined) setPortadaMarcaElegida(b.portadaMarca);
+    setPortadaTexto(b.portadaTexto ?? "");
     setCambios(new Map(b.cambios));
     setCambiosEtiquetas(new Map(b.cambiosEtiquetas));
     setColaboradoresIg(new Set(b.colaboradoresIg));
@@ -716,6 +754,7 @@ function Formulario({
               textoBase: descripcionFinal || undefined,
               ...(personaIds.length ? { personaIds } : {}),
               ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
+              ...camposPortadaMarca,
               publicarEn: envio.toISOString(),
             },
           },
@@ -797,6 +836,7 @@ function Formulario({
                 textoBase: descripcionFinal || undefined,
                 ...(personaIds.length ? { personaIds } : {}),
                 ...(portadaSeg != null && portadaElegible ? { portadaSeg } : {}),
+                ...camposPortadaMarca,
                 publicarEn: envio.toISOString(),
               },
             },
@@ -821,6 +861,8 @@ function Formulario({
               : portadaSeg == null && p.portadaSeg != null
                 ? { quitarPortada: true }
                 : {}),
+            ...(conPortadaMarca !== Boolean(p.portadaMarca) ? { portadaMarca: conPortadaMarca } : {}),
+            ...(conPortadaMarca && portadaTexto.trim() !== (p.portadaTexto ?? "") ? { portadaTexto: portadaTexto.trim() } : {}),
           },
           refetchQueries,
         });
@@ -1229,7 +1271,33 @@ function Formulario({
             </>
           ) : paso === 2 ? (
             <Seccion titulo={t("portada.titulo")}>
-              {portadaElegible ? (
+              {(portadaMarcaActiva || conPortadaMarca) && (
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={conPortadaMarca}
+                    onChange={(e) => setPortadaMarcaElegida(e.target.checked)}
+                  />
+                  {t("portada.deMarca")}
+                  <span className="text-xs text-white/40">{t("portada.deMarcaAyuda")}</span>
+                </label>
+              )}
+              {portadaElegible && conPortadaMarca ? (
+                <EditorPortadaMarca
+                  texto={portadaTexto}
+                  onTexto={setPortadaTexto}
+                  textoPorDefecto={clip.gancho?.trim() || clip.titulo}
+                  cuadros={cuadrosLimpios}
+                  seg={portadaSeg}
+                  onSeg={setPortadaSeg}
+                  imagen={vistaPortada.imagen}
+                  cargando={vistaPortada.cargando}
+                  error={vistaPortada.error}
+                  sinCuadros={
+                    <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
+                  }
+                />
+              ) : portadaElegible ? (
                 <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
               ) : (
                 <p className="flex items-center gap-2 text-xs text-white/45">
@@ -1279,7 +1347,7 @@ function Formulario({
                 redes={elegidosEnOrden.map((d) => [nombreRed(d.red), d.nombre].filter(Boolean).join(" · "))}
                 texto={descripcionFinal}
                 etiquetadas={etiquetadas.length}
-                portada={portadaSeg != null && portadaElegible ? <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} /> : null}
+                portada={miniPortada}
                 onCambiar={irA}
               />
             </>
@@ -1307,9 +1375,7 @@ function Formulario({
             )}
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-ng-fondo/95 p-3 shadow-[0_-8px_24px_rgba(0,0,0,0.35)] backdrop-blur sm:flex-row sm:items-center">
               <div className="flex min-w-0 flex-1 items-center gap-3">
-                {portadaSeg != null && portadaElegible ? (
-                  <CuadroPortada url={portadaElegible} seg={portadaSeg} className="h-12 w-[27px]" titulo={t("portada.elegida")} />
-                ) : null}
+                {miniPortada}
                 <div className="min-w-0 flex-1 space-y-1">
                   <p className={`text-sm font-medium ${fecha && faltaFecha ? "text-red-400" : "text-white"}`}>
                     {!fecha

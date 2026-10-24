@@ -11,6 +11,9 @@ export type BorradorProgramar = {
   tituloYoutube: string;
   fecha: string;
   portadaSeg: number | null;
+  /** Null = lo que diga la plantilla de la marca. Opcionales: los borradores de antes no los traen. */
+  portadaMarca?: boolean | null;
+  portadaTexto?: string;
   cambios: [string, boolean][];
   cambiosEtiquetas: [string, boolean][];
   colaboradoresIg: string[];

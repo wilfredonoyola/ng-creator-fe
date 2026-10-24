@@ -86,7 +86,9 @@
     "elegirCuadroDetalle": "You choose which frame of the clip shows",
     "cargando": "Loading the frame…",
     "elegidaEn": "Cover: the frame at second {seg}",
-    "moverAyuda": "Move the bar to the frame you want. It's picked right away, no need to save."
+    "moverAyuda": "Move the bar to the frame you want. It's picked right away, no need to save.",
+    "deMarca": "Brand cover",
+    "deMarcaAyuda": "with your Brand Kit design"
   },
   "editar": {
     "titulo": "Already scheduled · goes out {cuando} on {redes}",

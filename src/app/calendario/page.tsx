@@ -33,6 +33,8 @@ import type { Red } from "@/lib/upload-post";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 import type { Autoria } from "@/components/episodios/TomarClip";
 import { ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
+import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
+import { useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { DESCRIPCION_MAX, TITULO_YOUTUBE_MAX, comoSaleEnCadaRed } from "@/lib/destinos";
 import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
@@ -44,6 +46,9 @@ interface PublicacionCalendario extends Publicacion {
   mediaUrl?: string | null;
   /** El cuadro de portada elegido; null = la automática de cada red. */
   portadaSeg?: number | null;
+  /** Sale con la portada de marca (be#239) y su título (vacío = el del clip). */
+  portadaMarca?: boolean | null;
+  portadaTexto?: string | null;
   /** Lo propio de la red: en YouTube, `titulo`. */
   ajustes?: { titulo?: string } | null;
   /** El clip de la publicación; null en las de expedientes o si se borró. */
@@ -51,8 +56,10 @@ interface PublicacionCalendario extends Publicacion {
     _id: string;
     episodioId: string;
     titulo: string;
+    gancho?: string | null;
     urlPoster?: string | null;
     urlVideo?: string | null;
+    cuadrosPortada?: CuadroLimpio[] | null;
     desdeSeg?: number | null;
     hastaSeg?: number | null;
     duracionEfectivaSeg?: number | null;
@@ -677,6 +684,7 @@ function DetalleAgendada({
               <EditarAgendada
                 programadas={programadas}
                 videoUrl={videoUrl}
+                clip={clip ?? null}
                 duracionClip={clip ? clip.duracionFinalSeg ?? clip.duracionEfectivaSeg ?? (clip.hastaSeg ?? 0) - (clip.desdeSeg ?? 0) : 0}
                 enlaceClip={enlaceClip}
                 onMover={onMover}
@@ -821,12 +829,14 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
 function EditarAgendada({
   programadas,
   videoUrl,
+  clip,
   duracionClip,
   enlaceClip,
   onMover,
 }: {
   programadas: PublicacionCalendario[];
   videoUrl: string | null;
+  clip: PublicacionCalendario["clip"];
   duracionClip: number;
   enlaceClip: string | null;
   onMover: () => void;
@@ -838,6 +848,12 @@ function EditarAgendada({
   const [descripcion, setDescripcion] = useState(inicial.descripcion ?? "");
   const [tituloYoutube, setTituloYoutube] = useState(youtube?.ajustes?.titulo ?? "");
   const [portadaSeg, setPortadaSeg] = useState<number | null>(inicial.portadaSeg ?? null);
+  const [portadaMarca, setPortadaMarca] = useState(Boolean(inicial.portadaMarca));
+  const [portadaTexto, setPortadaTexto] = useState(inicial.portadaTexto ?? "");
+  const vistaPortada = useVistaPortada(
+    { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg },
+    !portadaMarca || !clip,
+  );
   const [duracionVideo, setDuracionVideo] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; textos: string[] } | null>(null);
@@ -861,6 +877,8 @@ function EditarAgendada({
       if (portadaSeg == null) v.quitarPortada = true;
       else v.portadaSeg = portadaSeg;
     }
+    if (clip && portadaMarca !== Boolean(x.portadaMarca)) v.portadaMarca = portadaMarca;
+    if (portadaMarca && portadaTexto.trim() !== (x.portadaTexto ?? "")) v.portadaTexto = portadaTexto.trim();
     return Object.keys(v).length ? v : null;
   }
 
@@ -919,7 +937,28 @@ function EditarAgendada({
       {videoUrl && (
         <div className="space-y-1.5">
           <span className="block text-xs text-white/45">{t("portada")}</span>
-          {duracion > 0 ? (
+          {clip && (
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={portadaMarca} onChange={(e) => setPortadaMarca(e.target.checked)} />
+              {t("portadaDeMarca")}
+            </label>
+          )}
+          {portadaMarca && clip ? (
+            <EditorPortadaMarca
+              texto={portadaTexto}
+              onTexto={setPortadaTexto}
+              textoPorDefecto={clip.gancho?.trim() || clip.titulo}
+              cuadros={clip.cuadrosPortada ?? []}
+              seg={portadaSeg}
+              onSeg={setPortadaSeg}
+              imagen={vistaPortada.imagen}
+              cargando={vistaPortada.cargando}
+              error={vistaPortada.error}
+              sinCuadros={
+                duracion > 0 ? <ElegirPortadaClip url={videoUrl} duracion={duracion} valor={portadaSeg} onCambiar={setPortadaSeg} /> : null
+              }
+            />
+          ) : duracion > 0 ? (
             <ElegirPortadaClip url={videoUrl} duracion={duracion} valor={portadaSeg} onCambiar={setPortadaSeg} />
           ) : (
             <video
