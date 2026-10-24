@@ -99,6 +99,7 @@ import panel_es from "./es/panel.json";
 import panelSubirClip_es from "./es/panelSubirClip.json";
 import perfil_es from "./es/perfil.json";
 import pestanasEpisodios_es from "./es/pestanasEpisodios.json";
+import portadaMarca_es from "./es/portadaMarca.json";
 import proveedorPublicacion_es from "./es/proveedorPublicacion.json";
 import prueba_es from "./es/prueba.json";
 import publicados_es from "./es/publicados.json";
@@ -224,6 +225,7 @@ import panel_en from "./en/panel.json";
 import panelSubirClip_en from "./en/panelSubirClip.json";
 import perfil_en from "./en/perfil.json";
 import pestanasEpisodios_en from "./en/pestanasEpisodios.json";
+import portadaMarca_en from "./en/portadaMarca.json";
 import proveedorPublicacion_en from "./en/proveedorPublicacion.json";
 import prueba_en from "./en/prueba.json";
 import publicados_en from "./en/publicados.json";
@@ -352,6 +354,7 @@ export const mensajes = {
     "panelSubirClip": panelSubirClip_es,
     "perfil": perfil_es,
     "pestanasEpisodios": pestanasEpisodios_es,
+    "portadaMarca": portadaMarca_es,
     "proveedorPublicacion": proveedorPublicacion_es,
     "prueba": prueba_es,
     "publicados": publicados_es,
@@ -479,6 +482,7 @@ export const mensajes = {
     "panelSubirClip": panelSubirClip_en,
     "perfil": perfil_en,
     "pestanasEpisodios": pestanasEpisodios_en,
+    "portadaMarca": portadaMarca_en,
     "proveedorPublicacion": proveedorPublicacion_en,
     "prueba": prueba_en,
     "publicados": publicados_en,

@@ -88,7 +88,8 @@
     "cancelando": "Cancelando…",
     "cancelarAyuda": "No sale en ninguna red. El clip queda, y lo podés volver a programar.",
     "confirmarCancelar": "¿Cancelar la publicación en {redes}? No va a salir.",
-    "errorCancelar": "No se pudo cancelar"
+    "errorCancelar": "No se pudo cancelar",
+    "portadaDeMarca": "Portada de marca"
   },
   "porRevisar": "Por revisar"
 }

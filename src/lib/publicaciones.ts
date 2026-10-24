@@ -48,6 +48,10 @@ export interface Publicacion {
   /** Lo propio de la red: título de YouTube, etiquetas y colaboradores. */
   ajustes?: Record<string, unknown> | null;
   portadaSeg?: number | null;
+  /** Sale con la portada de marca (ng-creator-be#239). */
+  portadaMarca?: boolean | null;
+  /** El título de la portada de marca; vacío, el del clip. */
+  portadaTexto?: string | null;
   /** Salió, pero con algo menos de lo pedido (p. ej. sin etiquetas que Instagram rechazó). */
   aviso?: string | null;
   /** Falló y se puede volver a mandar la misma ("Editar y reintentar"). */

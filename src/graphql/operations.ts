@@ -779,6 +779,8 @@ export const EDITAR_PUBLICACION = gql`
     $textoBase: String
     $personaIds: [ID!]
     $etiquetas: JSON
+    $portadaMarca: Boolean
+    $portadaTexto: String
   ) {
     editarPublicacion(
       marcaId: $marcaId
@@ -790,10 +792,14 @@ export const EDITAR_PUBLICACION = gql`
       textoBase: $textoBase
       personaIds: $personaIds
       etiquetas: $etiquetas
+      portadaMarca: $portadaMarca
+      portadaTexto: $portadaTexto
     ) {
       ...CamposPublicacion
       descripcion
       portadaSeg
+      portadaMarca
+      portadaTexto
       ajustes
     }
   }
@@ -818,6 +824,8 @@ export const PUBLICACIONES_DE_CLIP = gql`
       # Para abrir "Programar" en modo editar con lo que ya está programado.
       descripcion
       portadaSeg
+      portadaMarca
+      portadaTexto
       ajustes
       textoBase
       personaIds
@@ -861,13 +869,20 @@ export const PUBLICACIONES_DE_MARCA = gql`
       portadaUrl
       mediaUrl
       portadaSeg
+      portadaMarca
+      portadaTexto
       ajustes
       clip {
         _id
         episodioId
         titulo
+        gancho
         urlPoster
         urlVideo
+        cuadrosPortada {
+          seg
+          url
+        }
         desdeSeg
         hastaSeg
         duracionEfectivaSeg
@@ -2326,6 +2341,10 @@ const CAMPOS_CLIP_EDITOR = gql`
     errorRender
     urlVideo
     urlPoster
+    cuadrosPortada {
+      seg
+      url
+    }
     renderizadoEn
     editadoEn
     calidad {
@@ -2416,6 +2435,48 @@ export const PLANTILLA_CLIP_MARCA = gql`
     estiloClipMarca(marcaId: $marcaId) {
       ...CamposEstiloClipMarca
     }
+  }
+`;
+
+// ---- Portada de marca (ng-creator-be#239) ----
+
+const CAMPOS_PLANTILLA_PORTADA = `
+  activa
+  estilo
+  fuente
+  posicionY
+  tamano
+  mayusculas
+  logoActivo
+  logoPosicion
+  logoTamano
+`;
+
+/** El diseño de las portadas de la marca; el de por defecto (apagado) si nunca lo guardó. */
+export const PLANTILLA_PORTADA_MARCA = gql`
+  query PlantillaPortadaMarca($marcaId: ID!) {
+    plantillaPortadaMarca(marcaId: $marcaId) {
+      ${CAMPOS_PLANTILLA_PORTADA}
+    }
+  }
+`;
+
+export const GUARDAR_PLANTILLA_PORTADA = gql`
+  mutation GuardarPlantillaPortada($marcaId: ID!, $plantilla: PlantillaPortadaInput!) {
+    guardarPlantillaPortada(marcaId: $marcaId, plantilla: $plantilla) {
+      _id
+    }
+  }
+`;
+
+/**
+ * La portada tal cual sale (JPG en data URL, 540 de ancho): la dibuja el
+ * backend con el mismo render que publica. Sin `clipId`, sobre el último clip
+ * listo de la marca; con `plantilla`, una que todavía no se guardó.
+ */
+export const VISTA_PORTADA_MARCA = gql`
+  query VistaPortadaMarca($marcaId: ID!, $clipId: ID, $texto: String, $seg: Float, $plantilla: PlantillaPortadaInput) {
+    vistaPortadaMarca(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, plantilla: $plantilla)
   }
 `;
 

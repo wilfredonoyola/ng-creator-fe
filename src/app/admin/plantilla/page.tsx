@@ -32,6 +32,7 @@ import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { TemaDeMarca, temaCompleto } from "@/components/estilos/TemaDeMarca";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
+import { SeccionPortadaMarca } from "@/components/portada/SeccionPortadaMarca";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
 const ANCHO_VISTA = 216;
@@ -324,6 +325,8 @@ export default function PlantillaClipsPage() {
                 {guardadoEn && <span className="text-sm text-ng-teal">{t("guardado")}</span>}
               </div>
             )}
+
+            <SeccionPortadaMarca marcaId={marcaId} opera={opera} tieneLogo={Boolean(logoUrl)} />
           </div>
 
           <VistaPrevia
