@@ -1,3 +1,5 @@
+import type { DisenoPortada } from "@/lib/diseno-portada";
+
 /**
  * Lo que se va llenando en Programar (redes, texto, hashtags, fecha, portada,
  * etiquetas) queda en este navegador: al recargar la página no se pierde.
@@ -14,6 +16,8 @@ export type BorradorProgramar = {
   /** Null = lo que diga la plantilla de la marca. Opcionales: los borradores de antes no los traen. */
   portadaMarca?: boolean | null;
   portadaTexto?: string;
+  /** Un diseño propio para la portada de este clip (be#244); null = el de la marca. */
+  portadaDiseno?: DisenoPortada | null;
   cambios: [string, boolean][];
   cambiosEtiquetas: [string, boolean][];
   colaboradoresIg: string[];

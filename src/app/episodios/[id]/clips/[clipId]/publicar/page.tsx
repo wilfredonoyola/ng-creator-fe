@@ -74,6 +74,7 @@ import { CuadroPortada, ElegirPortadaClip } from "@/components/episodios/ElegirP
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
 import { useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
+import { claveDiseno, disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
 import { MetricasClip } from "@/components/metricas/MetricasClip";
 import { PanelRevision } from "@/components/revision/PanelRevision";
 import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
@@ -348,14 +349,20 @@ function Formulario({
   const [portadaMarcaElegida, setPortadaMarcaElegida] = useState<boolean | null>(null);
   const conPortadaMarca = portadaMarcaElegida ?? portadaMarcaActiva;
   const [portadaTexto, setPortadaTexto] = useState("");
+  /** Un diseño propio para esta portada, armado en el editor (be#244); null = el de la marca. */
+  const [portadaDiseno, setPortadaDiseno] = useState<DisenoPortada | null>(null);
   const cuadrosLimpios = videoListo ? clip.cuadrosPortada ?? [] : [];
   const vistaPortada = useVistaPortada(
-    { marcaId, clipId: clip._id, texto: portadaTexto.trim() || null, seg: portadaSeg },
+    { marcaId, clipId: clip._id, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
     !conPortadaMarca || !videoListo,
   );
   /** Lo que la portada de marca agrega al programar. */
   const camposPortadaMarca = conPortadaMarca
-    ? { portadaMarca: true, ...(portadaTexto.trim() ? { portadaTexto: portadaTexto.trim() } : {}) }
+    ? {
+        portadaMarca: true,
+        ...(portadaTexto.trim() ? { portadaTexto: portadaTexto.trim() } : {}),
+        ...(portadaDiseno ? { portadaDiseno } : {}),
+      }
     : {};
   const miniPortada =
     conPortadaMarca && vistaPortada.imagen ? (
@@ -470,6 +477,7 @@ function Formulario({
     const deMarca = pendientes.find((p) => p.portadaMarca);
     setPortadaMarcaElegida(Boolean(deMarca));
     setPortadaTexto(deMarca?.portadaTexto ?? "");
+    setPortadaDiseno(deMarca?.portadaDiseno ? disenoParaEnviar(deMarca.portadaDiseno) : null);
     setEtiquetasGuardadas(new Set(pendientes.flatMap((p) => p.personaIds ?? [])));
     setCambiosEtiquetas(new Map());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -503,6 +511,7 @@ function Formulario({
     portadaSeg,
     portadaMarca: portadaMarcaElegida,
     portadaTexto,
+    portadaDiseno,
     cambios: [...cambios],
     cambiosEtiquetas: [...cambiosEtiquetas],
     colaboradoresIg: [...colaboradoresIg],
@@ -527,6 +536,7 @@ function Formulario({
     setPortadaSeg(b.portadaSeg);
     if (b.portadaMarca !== undefined) setPortadaMarcaElegida(b.portadaMarca);
     setPortadaTexto(b.portadaTexto ?? "");
+    if (b.portadaDiseno !== undefined) setPortadaDiseno(b.portadaDiseno);
     setCambios(new Map(b.cambios));
     setCambiosEtiquetas(new Map(b.cambiosEtiquetas));
     setColaboradoresIg(new Set(b.colaboradoresIg));
@@ -863,6 +873,11 @@ function Formulario({
                 : {}),
             ...(conPortadaMarca !== Boolean(p.portadaMarca) ? { portadaMarca: conPortadaMarca } : {}),
             ...(conPortadaMarca && portadaTexto.trim() !== (p.portadaTexto ?? "") ? { portadaTexto: portadaTexto.trim() } : {}),
+            ...(conPortadaMarca && claveDiseno(portadaDiseno) !== claveDiseno(p.portadaDiseno)
+              ? portadaDiseno
+                ? { portadaDiseno }
+                : { quitarPortadaDiseno: true }
+              : {}),
           },
           refetchQueries,
         });
@@ -1293,6 +1308,11 @@ function Formulario({
                   imagen={vistaPortada.imagen}
                   cargando={vistaPortada.cargando}
                   error={vistaPortada.error}
+                  marcaId={marcaId}
+                  clipId={clip._id}
+                  diseno={portadaDiseno}
+                  onDiseno={opera ? setPortadaDiseno : undefined}
+                  posterUrl={clip.urlPoster}
                   sinCuadros={
                     <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
                   }

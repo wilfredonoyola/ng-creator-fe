@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { VISTA_PORTADA_MARCA } from "@/graphql/operations";
 import type { PosicionLogo } from "@/lib/plantilla-clip";
+import { disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
 
 /**
  * La portada de marca (ng-creator-be#239): todas las portadas de una marca con
@@ -24,6 +25,11 @@ export interface PlantillaPortada {
   logoPosicion: PosicionLogo;
   /** Ancho del logo en fracción del ancho (0,08–0,4). */
   logoTamano: number;
+  /**
+   * El diseño del editor (be#244). Sin el campo, el servidor conserva el
+   * guardado; null lo borra y vuelve al diseño simple de arriba.
+   */
+  diseno?: DisenoPortada | null;
 }
 
 export const PLANTILLA_PORTADA_POR_DEFECTO: PlantillaPortada = {
@@ -52,10 +58,18 @@ export interface CuadroPortada {
   url: string;
 }
 
-/** Lo que llega de GraphQL, sin `__typename`: tal cual para el input. */
+/**
+ * Lo que llega de GraphQL, sin `__typename` y sin el diseño: tal cual para el
+ * input. El diseño va aparte (`disenoDePlantilla`) y se manda solo al cambiarlo.
+ */
 export function plantillaParaGuardar(p: PlantillaPortada & { __typename?: string }): PlantillaPortada {
-  const { __typename: _, ...resto } = p;
+  const { __typename: _, diseno: _d, ...resto } = p;
   return resto;
+}
+
+/** El diseño guardado en la plantilla, listo para mandar; null si usa el simple. */
+export function disenoDePlantilla(p: PlantillaPortada | null | undefined): DisenoPortada | null {
+  return p?.diseno ? disenoParaEnviar(p.diseno) : null;
 }
 
 /** El cuadro más cerca del segundo elegido (el backend arma con ese). */
@@ -70,7 +84,15 @@ export function cuadroMasCerca(cuadros: CuadroPortada[], seg: number | null): Cu
  * segundo). Mientras llega la nueva queda la anterior.
  */
 export function useVistaPortada(
-  variables: { marcaId: string; clipId?: string | null; texto?: string | null; seg?: number | null; plantilla?: PlantillaPortada | null },
+  variables: {
+    marcaId: string;
+    clipId?: string | null;
+    texto?: string | null;
+    seg?: number | null;
+    plantilla?: PlantillaPortada | null;
+    /** Un diseño propio (el de la publicación): manda sobre la plantilla. */
+    diseno?: DisenoPortada | null;
+  },
   skip = false,
 ): { imagen: string | null; cargando: boolean; error: boolean } {
   const clave = JSON.stringify(variables);

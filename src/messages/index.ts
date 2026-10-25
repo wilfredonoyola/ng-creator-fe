@@ -25,6 +25,7 @@ import editorHerramientas_es from "./es/editorHerramientas.json";
 import editorImagenes_es from "./es/editorImagenes.json";
 import editorInspector_es from "./es/editorInspector.json";
 import editorListo_es from "./es/editorListo.json";
+import editorPortada_es from "./es/editorPortada.json";
 import editorRecorte_es from "./es/editorRecorte.json";
 import editorTextos_es from "./es/editorTextos.json";
 import editorTomar_es from "./es/editorTomar.json";
@@ -151,6 +152,7 @@ import editorHerramientas_en from "./en/editorHerramientas.json";
 import editorImagenes_en from "./en/editorImagenes.json";
 import editorInspector_en from "./en/editorInspector.json";
 import editorListo_en from "./en/editorListo.json";
+import editorPortada_en from "./en/editorPortada.json";
 import editorRecorte_en from "./en/editorRecorte.json";
 import editorTextos_en from "./en/editorTextos.json";
 import editorTomar_en from "./en/editorTomar.json";
@@ -280,6 +282,7 @@ export const mensajes = {
     "editorImagenes": editorImagenes_es,
     "editorInspector": editorInspector_es,
     "editorListo": editorListo_es,
+    "editorPortada": editorPortada_es,
     "editorRecorte": editorRecorte_es,
     "editorTextos": editorTextos_es,
     "editorTomar": editorTomar_es,
@@ -408,6 +411,7 @@ export const mensajes = {
     "editorImagenes": editorImagenes_en,
     "editorInspector": editorInspector_en,
     "editorListo": editorListo_en,
+    "editorPortada": editorPortada_en,
     "editorRecorte": editorRecorte_en,
     "editorTextos": editorTextos_en,
     "editorTomar": editorTomar_en,

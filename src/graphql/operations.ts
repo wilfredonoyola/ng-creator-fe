@@ -679,6 +679,46 @@ export const FACEBOOK_DESCONECTAR = gql`
 // ---- Publicar: la cola de publicaciones (ng-creator-be#59) ----
 
 /**
+ * El diseño del editor de portadas (ng-creator-be#244). Va como texto y no
+ * como fragment: se lee dentro de la plantilla y de las publicaciones. Las
+ * capas no son entidades (apollo.ts, `keyFields: false`): repiten id entre diseños.
+ */
+export const CAMPOS_DISENO_PORTADA = `
+  fondo {
+    tipo
+    url
+    color
+    mejorar
+    oscurecer
+    desenfoque
+  }
+  capas {
+    id
+    tipo
+    x
+    y
+    ancho
+    alto
+    rotacion
+    opacidad
+    texto
+    titulo
+    estilo
+    fuente
+    tamano
+    mayusculas
+    color
+    color2
+    url
+    cuadro
+    sinFondo
+    contorno
+    mejorar
+    radio
+  }
+`;
+
+/**
  * Lo que se lee de cada publicación. Igual para las de la cola y para las de
  * antes, que el backend traduce: la tarjeta no tiene que saber de dónde vienen.
  */
@@ -781,6 +821,8 @@ export const EDITAR_PUBLICACION = gql`
     $etiquetas: JSON
     $portadaMarca: Boolean
     $portadaTexto: String
+    $portadaDiseno: DisenoPortadaInput
+    $quitarPortadaDiseno: Boolean
   ) {
     editarPublicacion(
       marcaId: $marcaId
@@ -794,12 +836,17 @@ export const EDITAR_PUBLICACION = gql`
       etiquetas: $etiquetas
       portadaMarca: $portadaMarca
       portadaTexto: $portadaTexto
+      portadaDiseno: $portadaDiseno
+      quitarPortadaDiseno: $quitarPortadaDiseno
     ) {
       ...CamposPublicacion
       descripcion
       portadaSeg
       portadaMarca
       portadaTexto
+      portadaDiseno {
+        ${CAMPOS_DISENO_PORTADA}
+      }
       ajustes
     }
   }
@@ -826,6 +873,9 @@ export const PUBLICACIONES_DE_CLIP = gql`
       portadaSeg
       portadaMarca
       portadaTexto
+      portadaDiseno {
+        ${CAMPOS_DISENO_PORTADA}
+      }
       ajustes
       textoBase
       personaIds
@@ -871,6 +921,9 @@ export const PUBLICACIONES_DE_MARCA = gql`
       portadaSeg
       portadaMarca
       portadaTexto
+      portadaDiseno {
+        ${CAMPOS_DISENO_PORTADA}
+      }
       ajustes
       clip {
         _id
@@ -2450,6 +2503,9 @@ const CAMPOS_PLANTILLA_PORTADA = `
   logoActivo
   logoPosicion
   logoTamano
+  diseno {
+    ${CAMPOS_DISENO_PORTADA}
+  }
 `;
 
 /** El diseño de las portadas de la marca; el de por defecto (apagado) si nunca lo guardó. */
@@ -2475,8 +2531,55 @@ export const GUARDAR_PLANTILLA_PORTADA = gql`
  * listo de la marca; con `plantilla`, una que todavía no se guardó.
  */
 export const VISTA_PORTADA_MARCA = gql`
-  query VistaPortadaMarca($marcaId: ID!, $clipId: ID, $texto: String, $seg: Float, $plantilla: PlantillaPortadaInput) {
-    vistaPortadaMarca(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, plantilla: $plantilla)
+  query VistaPortadaMarca(
+    $marcaId: ID!
+    $clipId: ID
+    $texto: String
+    $seg: Float
+    $plantilla: PlantillaPortadaInput
+    $diseno: DisenoPortadaInput
+  ) {
+    vistaPortadaMarca(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, plantilla: $plantilla, diseno: $diseno)
+  }
+`;
+
+/** El diseño de la marca para abrir el editor: el guardado o el que sale de la plantilla simple. */
+export const DISENO_PORTADA_MARCA = gql`
+  query DisenoPortadaMarca($marcaId: ID!) {
+    disenoPortadaMarca(marcaId: $marcaId) {
+      ${CAMPOS_DISENO_PORTADA}
+    }
+  }
+`;
+
+/**
+ * "Ver cómo queda" en el editor: el diseño dibujado por el backend (540 de
+ * ancho), con las capas cuyo recorte (quitar fondo) todavía no terminó o falló.
+ */
+export const VISTA_DISENO_PORTADA = gql`
+  query VistaDisenoPortada($marcaId: ID!, $diseno: DisenoPortadaInput!, $clipId: ID, $texto: String, $seg: Float) {
+    vistaDisenoPortada(marcaId: $marcaId, diseno: $diseno, clipId: $clipId, texto: $texto, seg: $seg) {
+      imagen
+      recortesPendientes
+      recortesFallidos
+    }
+  }
+`;
+
+/** La grilla del perfil: el diseño sobre los últimos clips listos (hasta 9). */
+export const PORTADAS_PERFIL = gql`
+  query PortadasPerfil($marcaId: ID!, $diseno: DisenoPortadaInput, $plantilla: PlantillaPortadaInput, $cantidad: Int) {
+    portadasPerfil(marcaId: $marcaId, diseno: $diseno, plantilla: $plantilla, cantidad: $cantidad) {
+      clipId
+      imagen
+    }
+  }
+`;
+
+/** Títulos para la portada de un clip: los de la IA y, después, el gancho y el título. */
+export const TITULOS_PORTADA = gql`
+  query TitulosPortada($marcaId: ID!, $clipId: ID!) {
+    titulosPortada(marcaId: $marcaId, clipId: $clipId)
   }
 `;
 
