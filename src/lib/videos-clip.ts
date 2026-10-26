@@ -44,7 +44,7 @@ export const VIDEO_ANCHO_MAX = 1;
 export const VOLUMEN_VIDEO_MAX = 2;
 
 /** Lo que acepta POST /uploads/clip-video. */
-export const TOPE_VIDEO_CLIP_MB = 200;
+export const TOPE_VIDEO_CLIP_MB = 500;
 export const EXTENSIONES_VIDEO_CLIP = ["mp4", "mov", "webm", "m4v"];
 export const FORMATOS_VIDEO_CLIP = ["video/mp4", "video/quicktime", "video/webm", "video/x-m4v"];
 

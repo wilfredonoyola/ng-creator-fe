@@ -5,12 +5,12 @@ categoria: editor
 orden: 7
 funciones: imagenes
 ---
-Con los videos sumás encima del clip un B-roll, una reacción o el producto en movimiento, como con las imágenes. Por ahora está en la web.
+Con los videos sumás encima del clip un B-roll, una reacción o el producto en movimiento, como con las imágenes.
 
 ## Agregar un video
 
 1. En el editor, abrí la herramienta **Superposición**.
-2. En **Videos**, tocá **Video** y elegí un MP4, MOV o WebM de hasta 200 MB y 2 minutos. También podés soltarlo en el panel o en la vista previa.
+2. En **Videos**, tocá **Video** y elegí un MP4, MOV o WebM de hasta 500 MB y 10 minutos. También podés soltarlo en el panel o en la vista previa.
 3. Podés sumar hasta 3 videos por clip. Si el video es vertical, entra a **Pantalla completa** y cubre todo el clip.
 
 ## Ubicarlo y elegir cuándo aparece

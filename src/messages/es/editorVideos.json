@@ -3,7 +3,7 @@
   "agregar": "Video",
   "subiendo": "Subiendo… {n} %",
   "midiendo": "Revisando el video…",
-  "ayudaAgregar": "Subí un video desde el equipo (MP4, MOV o WebM, hasta {mb} MB y 2 minutos) o soltalo acá",
+  "ayudaAgregar": "Subí un video desde el equipo (MP4, MOV o WebM, hasta {mb} MB y 10 minutos) o soltalo acá",
   "maximo": "Hasta {max} videos por clip",
   "vacio": "Sumá un video encima del clip: un B-roll, una reacción o el producto. Si es vertical, entra a pantalla completa.",
   "sinVideos": "Este clip no tiene videos.",

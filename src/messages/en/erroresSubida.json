@@ -48,7 +48,7 @@
   "errorVozRevision": "Couldn't upload the voice note ({status})",
   "sesionVideoClip": "You need to be signed in to upload videos",
   "videoClipFormato": "The video has to be MP4, MOV or WebM",
-  "videoClipMuyPesado": "The video must be under 200 MB",
+  "videoClipMuyPesado": "The video must be under 500 MB",
   "errorVideoClip": "Couldn't upload the video ({status})",
   "seCortoVideoClip": "The connection dropped while the video was uploading"
 }
