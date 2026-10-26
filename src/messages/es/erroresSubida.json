@@ -48,7 +48,7 @@
   "errorVozRevision": "No se pudo subir la nota de voz ({status})",
   "sesionVideoClip": "Sesión requerida para subir videos",
   "videoClipFormato": "El video tiene que ser MP4, MOV o WebM",
-  "videoClipMuyPesado": "El video debe pesar menos de 200 MB",
+  "videoClipMuyPesado": "El video debe pesar menos de 500 MB",
   "errorVideoClip": "No se pudo subir el video ({status})",
   "seCortoVideoClip": "Se cortó la conexión mientras se subía el video"
 }

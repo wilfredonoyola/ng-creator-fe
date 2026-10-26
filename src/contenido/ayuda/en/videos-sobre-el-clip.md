@@ -5,12 +5,12 @@ categoria: editor
 orden: 7
 funciones: imagenes
 ---
-Videos let you put B-roll, a reaction or the product in motion on top of the clip, just like images. For now it's on the web.
+Videos let you put B-roll, a reaction or the product in motion on top of the clip, just like images.
 
 ## Add a video
 
 1. In the editor, open the **Overlay** tool.
-2. Under **Videos**, tap **Video** and pick an MP4, MOV or WebM file up to 200 MB and 2 minutes. You can also drop it on the panel or on the preview.
+2. Under **Videos**, tap **Video** and pick an MP4, MOV or WebM file up to 500 MB and 10 minutes. You can also drop it on the panel or on the preview.
 3. You can add up to 3 videos per clip. If the video is vertical, it goes **Full screen** and covers the whole clip.
 
 ## Place it and choose when it shows

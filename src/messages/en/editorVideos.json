@@ -3,7 +3,7 @@
   "agregar": "Video",
   "subiendo": "Uploading… {n}%",
   "midiendo": "Checking the video…",
-  "ayudaAgregar": "Upload a video from your computer (MP4, MOV or WebM, up to {mb} MB and 2 minutes) or drop it here",
+  "ayudaAgregar": "Upload a video from your computer (MP4, MOV or WebM, up to {mb} MB and 10 minutes) or drop it here",
   "maximo": "Up to {max} videos per clip",
   "vacio": "Add a video on top of the clip: B-roll, a reaction or the product. If it's vertical, it goes full screen.",
   "sinVideos": "This clip has no videos.",
