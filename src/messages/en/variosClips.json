@@ -30,7 +30,7 @@
     "errores": {
       "formato": "I can't read the times. Write it like 1:02:30 - 1:03:40.",
       "alReves": "the end has to come after the start.",
-      "largo": "a clip can be up to 3 minutes long.",
+      "largo": "a clip can be up to 5 minutes long.",
       "fuera": "it starts after the end of the video."
     },
     "corregir": "Fix the lines in red to create the clips."

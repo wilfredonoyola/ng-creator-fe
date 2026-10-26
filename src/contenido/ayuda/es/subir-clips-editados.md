@@ -21,7 +21,7 @@ Si el clip ya está editado (un reel de CapCut, un tip grabado con el celular, u
 
 ## Qué tenés que saber
 
-- Formatos: MP4 o MOV, de hasta 3 minutos cada uno.
+- Formatos: MP4 o MOV, de hasta 5 minutos cada uno.
 - **No descuentan horas** de tu plan. Las horas son para los episodios que Clipfine transcribe y corta.
 - Si no lo tocás, sale tal cual. Si el video ya está en H.264 se publica sin recomprimir; si viene en otro formato, como el HEVC del iPhone, se convierte una vez en alta calidad.
 - Si lo abrís en el editor podés sumarle subtítulos, el estilo de la marca, un gancho o música. La tarjeta lo marca como **editado en Clipfine**. Mirá [El editor de clips](/ayuda/editor-basico).

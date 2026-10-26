@@ -30,5 +30,6 @@
   "noSePudo": "No se pudo. Probá de nuevo.",
   "faltaVersion": "Facebook espera la versión corta: procesala abajo.",
   "faltaVersionCorto": "falta versión corta",
-  "soloFacebook": "Para Facebook falta la versión corta; procesala o desmarcá Facebook."
+  "soloFacebook": "Para Facebook falta la versión corta; procesala o desmarcá Facebook.",
+  "avisoYoutube": "Más de 3 min: en YouTube sale como video común, no como Short."
 }

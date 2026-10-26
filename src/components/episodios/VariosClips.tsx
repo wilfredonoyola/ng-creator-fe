@@ -33,7 +33,7 @@ type Momento = {
 };
 
 export const MAXIMO_CLIPS = 20;
-const MAXIMO_SEG = 180;
+const MAXIMO_SEG = 300;
 const EJEMPLOS = ["porTema", "consejos", "preguntas", "frases"] as const;
 const FORMATOS: { valor: FormatoClip; etiqueta: string }[] = [
   { valor: "VERTICAL", etiqueta: "9:16" },

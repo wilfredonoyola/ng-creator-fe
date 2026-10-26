@@ -8,7 +8,7 @@
   "bajada": "No todo sale de un episodio largo. Reels, tips o cortes que tu equipo ya editó afuera entran a Clipfine y siguen el mismo camino que los demás clips: se programan en cuatro redes, el cliente los aprueba y se miden.",
   "datos": {
     "d1": {
-      "cifra": "3 min",
+      "cifra": "5 min",
       "que": "por clip, en MP4 o MOV, varios a la vez"
     },
     "d2": {
@@ -78,7 +78,7 @@
   "preguntas": {
     "p1": {
       "p": "¿Qué clips puedo subir?",
-      "r": "Cualquier video ya editado: lo que armaste en CapCut, Premiere o el celular, o un recorte de YouTube. MP4 o MOV de hasta 3 minutos, varios a la vez."
+      "r": "Cualquier video ya editado: lo que armaste en CapCut, Premiere o el celular, o un recorte de YouTube. MP4 o MOV de hasta 5 minutos, varios a la vez."
     },
     "p2": {
       "p": "¿Pierde calidad al subirlo?",
