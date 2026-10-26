@@ -42,6 +42,9 @@ export const apolloClient = new ApolloClient({
       DisenoPortada: { keyFields: false },
       FondoPortada: { keyFields: false },
       CapaPortada: { keyFields: false },
+      // Los videos de un clip (be#246) llevan un id del cliente, que se
+      // repite si el clip se copia: van dentro del clip, no son entidades.
+      VideoClip: { keyFields: false },
     },
   }),
 });

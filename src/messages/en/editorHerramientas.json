@@ -43,10 +43,12 @@
     "textos": "Text",
     "subtitulos": "Captions",
     "imagenes": "Images",
+    "superposicion": "Overlay",
     "textoVacio": "(empty)",
     "llamada": "Call to action",
     "logo": "Brand logo",
     "imagen": "Image {n}",
+    "videoN": "Video {n}",
     "agregarTexto": "Text",
     "agregarImagen": "Image",
     "subtitulosActivos": "Word by word",
@@ -82,7 +84,8 @@
     "cambiarEstilo": "Change the style"
   },
   "superposicion": {
-    "ayuda": "Drag the image on the video to move it; the corner resizes it. Its edges on the timeline set when it shows."
+    "ayuda": "Drag the image on the video to move it; the corner resizes it. Its edges on the timeline set when it shows.",
+    "ayudaVideos": "Drag the video on the preview to move it, or make it full screen. It goes over the video and the images, under the texts and captions."
   },
   "formato": {
     "proporcion": "Aspect ratio",

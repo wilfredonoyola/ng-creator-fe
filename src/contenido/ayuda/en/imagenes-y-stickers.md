@@ -11,7 +11,7 @@ Images let you put the client's product, a logo or a cut-out person on top of th
 
 1. In the editor, open the **Overlay** tool.
 2. Tap **Image** and pick a JPG, PNG or WebP file up to 15 MB. On the web you can also drop it on the panel or right on the preview.
-3. You can add up to 3 images per clip. Each one shows up on the **Images** track of the timeline.
+3. You can add up to 3 images per clip. Each one shows up on the **Overlay** track of the timeline.
 
 ## Cut it out and turn it into a sticker
 

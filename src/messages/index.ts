@@ -29,6 +29,7 @@ import editorPortada_es from "./es/editorPortada.json";
 import editorRecorte_es from "./es/editorRecorte.json";
 import editorTextos_es from "./es/editorTextos.json";
 import editorTomar_es from "./es/editorTomar.json";
+import editorVideos_es from "./es/editorVideos.json";
 import episodioDetalle_es from "./es/episodioDetalle.json";
 import episodioReimportar_es from "./es/episodioReimportar.json";
 import episodios_es from "./es/episodios.json";
@@ -156,6 +157,7 @@ import editorPortada_en from "./en/editorPortada.json";
 import editorRecorte_en from "./en/editorRecorte.json";
 import editorTextos_en from "./en/editorTextos.json";
 import editorTomar_en from "./en/editorTomar.json";
+import editorVideos_en from "./en/editorVideos.json";
 import episodioDetalle_en from "./en/episodioDetalle.json";
 import episodioReimportar_en from "./en/episodioReimportar.json";
 import episodios_en from "./en/episodios.json";
@@ -286,6 +288,7 @@ export const mensajes = {
     "editorRecorte": editorRecorte_es,
     "editorTextos": editorTextos_es,
     "editorTomar": editorTomar_es,
+    "editorVideos": editorVideos_es,
     "episodioDetalle": episodioDetalle_es,
     "episodioReimportar": episodioReimportar_es,
     "episodios": episodios_es,
@@ -415,6 +418,7 @@ export const mensajes = {
     "editorRecorte": editorRecorte_en,
     "editorTextos": editorTextos_en,
     "editorTomar": editorTomar_en,
+    "editorVideos": editorVideos_en,
     "episodioDetalle": episodioDetalle_en,
     "episodioReimportar": episodioReimportar_en,
     "episodios": episodios_en,

@@ -2369,6 +2369,23 @@ const CAMPOS_CLIP_EDITOR = gql`
       estadoRecorte
       urlFinal
     }
+    videos {
+      id
+      url
+      centroX
+      centroY
+      ancho
+      pantallaCompleta
+      desdeSeg
+      hastaSeg
+      inicioSeg
+      sonido
+      volumen
+      duracionSeg
+      anchoVideo
+      altoVideo
+      tieneAudio
+    }
     volumenClip
     velocidad
     musica {

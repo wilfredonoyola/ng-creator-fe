@@ -45,5 +45,10 @@
   "seCortoSonido": "Se cortó la conexión mientras se subía el sonido",
   "sesionVozRevision": "Iniciá sesión de nuevo para mandar la nota de voz",
   "vozRevisionMuyPesada": "La nota de voz debe pesar menos de 25 MB",
-  "errorVozRevision": "No se pudo subir la nota de voz ({status})"
+  "errorVozRevision": "No se pudo subir la nota de voz ({status})",
+  "sesionVideoClip": "Sesión requerida para subir videos",
+  "videoClipFormato": "El video tiene que ser MP4, MOV o WebM",
+  "videoClipMuyPesado": "El video debe pesar menos de 200 MB",
+  "errorVideoClip": "No se pudo subir el video ({status})",
+  "seCortoVideoClip": "Se cortó la conexión mientras se subía el video"
 }
