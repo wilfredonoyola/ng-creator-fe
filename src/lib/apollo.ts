@@ -35,5 +35,13 @@ const authLink = setContext(async (_, { headers }) => {
 
 export const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      // El diseño de una portada (be#244) va dentro de la plantilla o de la
+      // publicación: sus capas repiten id entre diseños y no son entidades.
+      DisenoPortada: { keyFields: false },
+      FondoPortada: { keyFields: false },
+      CapaPortada: { keyFields: false },
+    },
+  }),
 });

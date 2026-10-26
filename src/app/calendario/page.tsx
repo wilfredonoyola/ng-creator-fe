@@ -35,6 +35,7 @@ import type { Autoria } from "@/components/episodios/TomarClip";
 import { ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
 import { useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
+import { claveDiseno, disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { DESCRIPCION_MAX, TITULO_YOUTUBE_MAX, comoSaleEnCadaRed } from "@/lib/destinos";
 import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
@@ -850,8 +851,12 @@ function EditarAgendada({
   const [portadaSeg, setPortadaSeg] = useState<number | null>(inicial.portadaSeg ?? null);
   const [portadaMarca, setPortadaMarca] = useState(Boolean(inicial.portadaMarca));
   const [portadaTexto, setPortadaTexto] = useState(inicial.portadaTexto ?? "");
+  /** La portada propia de la publicación (be#244); null = el diseño de la marca. */
+  const [portadaDiseno, setPortadaDiseno] = useState<DisenoPortada | null>(() =>
+    inicial.portadaDiseno ? disenoParaEnviar(inicial.portadaDiseno) : null,
+  );
   const vistaPortada = useVistaPortada(
-    { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg },
+    { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
     !portadaMarca || !clip,
   );
   const [duracionVideo, setDuracionVideo] = useState(0);
@@ -879,6 +884,10 @@ function EditarAgendada({
     }
     if (clip && portadaMarca !== Boolean(x.portadaMarca)) v.portadaMarca = portadaMarca;
     if (portadaMarca && portadaTexto.trim() !== (x.portadaTexto ?? "")) v.portadaTexto = portadaTexto.trim();
+    if (portadaMarca && claveDiseno(portadaDiseno) !== claveDiseno(x.portadaDiseno)) {
+      if (portadaDiseno) v.portadaDiseno = portadaDiseno;
+      else v.quitarPortadaDiseno = true;
+    }
     return Object.keys(v).length ? v : null;
   }
 
@@ -954,6 +963,11 @@ function EditarAgendada({
               imagen={vistaPortada.imagen}
               cargando={vistaPortada.cargando}
               error={vistaPortada.error}
+              marcaId={inicial.marcaId}
+              clipId={clip._id}
+              diseno={portadaDiseno}
+              onDiseno={setPortadaDiseno}
+              posterUrl={clip.urlPoster}
               sinCuadros={
                 duracion > 0 ? <ElegirPortadaClip url={videoUrl} duracion={duracion} valor={portadaSeg} onCambiar={setPortadaSeg} /> : null
               }

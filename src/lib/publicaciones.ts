@@ -1,3 +1,5 @@
+import type { DisenoPortada } from "@/lib/diseno-portada";
+
 /**
  * Una publicación de la cola (ng-creator-be#59), o una de antes que el backend
  * lee con la misma forma.
@@ -52,6 +54,8 @@ export interface Publicacion {
   portadaMarca?: boolean | null;
   /** El título de la portada de marca; vacío, el del clip. */
   portadaTexto?: string | null;
+  /** Un diseño propio armado en el editor para esta publicación (be#244); null = el de la marca. */
+  portadaDiseno?: DisenoPortada | null;
   /** Salió, pero con algo menos de lo pedido (p. ej. sin etiquetas que Instagram rechazó). */
   aviso?: string | null;
   /** Falló y se puede volver a mandar la misma ("Editar y reintentar"). */

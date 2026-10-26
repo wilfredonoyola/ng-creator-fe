@@ -3,16 +3,21 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useTranslations } from "next-intl";
-import { GUARDAR_PLANTILLA_PORTADA, PLANTILLA_PORTADA_MARCA } from "@/graphql/operations";
-import { FUENTES_ESTILO } from "@/lib/estilos-texto";
+import { Loader2, Paintbrush, Undo2 } from "lucide-react";
+import { GUARDAR_PLANTILLA_PORTADA, PLANTILLA_CLIP_MARCA, PLANTILLA_PORTADA_MARCA, PORTADAS_PERFIL } from "@/graphql/operations";
+import { FUENTES_ESTILO, legibleSobre, temaValido, type Tema } from "@/lib/estilos-texto";
 import { POSICIONES_LOGO } from "@/lib/plantilla-clip";
+import type { DisenoPortada } from "@/lib/diseno-portada";
 import {
   ESTILOS_PORTADA,
   FUENTES_PORTADA,
+  disenoDePlantilla,
   plantillaParaGuardar,
   useVistaPortada,
+  type EstiloPortada,
   type PlantillaPortada,
 } from "@/lib/portada-marca";
+import { EditorPortada } from "./EditorPortada";
 import { VistaPortada } from "./VistaPortada";
 
 /**
@@ -20,6 +25,11 @@ import { VistaPortada } from "./VistaPortada";
  * salen las portadas de las publicaciones nuevas. Se guarda aparte del resto
  * de la plantilla, con su botón, y la vista previa es la imagen que arma el
  * backend sobre el último clip listo de la marca.
+ *
+ * Con el editor (be#244), "Editar diseño" arma la portada estándar de la
+ * marca con capas; mientras haya uno, manda sobre el diseño simple, al que se
+ * vuelve con un botón (`diseno: null`). La grilla del perfil muestra el diseño
+ * sobre los últimos clips, como se vería la cuadrícula en la red.
  */
 export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: string; opera: boolean; tieneLogo: boolean }) {
   const t = useTranslations("portadaMarca");
@@ -28,7 +38,11 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
   const [guardar, { loading: guardando }] = useMutation(GUARDAR_PLANTILLA_PORTADA, {
     refetchQueries: [{ query: PLANTILLA_PORTADA_MARCA, variables: { marcaId } }],
   });
+  const estiloQ = useQuery(PLANTILLA_CLIP_MARCA, { variables: { marcaId } });
+  const tema = temaValido(estiloQ.data?.estiloClipMarca?.tema);
   const [p, setP] = useState<PlantillaPortada | null>(null);
+  const [diseno, setDiseno] = useState<DisenoPortada | null>(null);
+  const [editando, setEditando] = useState(false);
   const [guardada, setGuardada] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,9 +53,22 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
     if (!guardadaAhi || cargadaPara.current === marcaId) return;
     cargadaPara.current = marcaId;
     setP(plantillaParaGuardar(guardadaAhi));
+    setDiseno(disenoDePlantilla(guardadaAhi));
   }, [q.data, marcaId]);
 
-  const vista = useVistaPortada({ marcaId, plantilla: p ? { ...p, activa: true } : null }, !p);
+  // Con diseño propio va en la plantilla; sin él, el servidor arma el simple.
+  const plantillaVista = p ? { ...p, activa: true, diseno } : null;
+  const vista = useVistaPortada({ marcaId, plantilla: plantillaVista }, !p);
+
+  // La grilla del perfil se pide a mano (arma hasta 9 portadas) y se rehace al guardar.
+  const [perfilPedido, setPerfilPedido] = useState<string | null>(null);
+  const perfilQ = useQuery(PORTADAS_PERFIL, {
+    variables: perfilPedido ? (JSON.parse(perfilPedido) as Record<string, unknown>) : undefined,
+    skip: !perfilPedido,
+    fetchPolicy: "cache-first",
+  });
+  const pedirPerfil = (pl = plantillaVista) => pl && setPerfilPedido(JSON.stringify({ marcaId, plantilla: pl, cantidad: 9 }));
+  const perfil: { clipId: string; imagen: string }[] = perfilQ.data?.portadasPerfil ?? [];
 
   const cambiar = (c: Partial<PlantillaPortada>) => {
     setP((x) => (x ? { ...x, ...c } : x));
@@ -52,8 +79,29 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
     if (!p) return;
     setError(null);
     try {
+      // Sin `diseno`: el servidor conserva el que ya tiene.
       await guardar({ variables: { marcaId, plantilla: p } });
       setGuardada(true);
+      if (perfilPedido) pedirPerfil();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("errorGuardar"));
+    }
+  }
+
+  /** Guarda el diseño del editor como el estándar de la marca (o null: vuelve al simple). */
+  async function guardarDiseno(d: DisenoPortada | null) {
+    if (!p) return;
+    setError(null);
+    await guardar({ variables: { marcaId, plantilla: { ...p, diseno: d } } });
+    setDiseno(d);
+    setGuardada(true);
+    if (perfilPedido) pedirPerfil({ ...p, activa: true, diseno: d });
+  }
+
+  async function volverAlSimple() {
+    if (!window.confirm(t("disenoPropio.confirmarSimple"))) return;
+    try {
+      await guardarDiseno(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errorGuardar"));
     }
@@ -82,12 +130,43 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
       ) : (
         <div className="mt-4 flex flex-col gap-5 sm:flex-row">
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-medium uppercase tracking-wide text-white/50">{t("estilo")}</p>
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <p className="text-sm font-medium">{diseno ? t("disenoPropio.titulo") : t("disenoPropio.tituloSimple")}</p>
+              <p className="mt-0.5 text-xs text-white/45">{diseno ? t("disenoPropio.ayuda") : t("disenoPropio.ayudaSimple")}</p>
+              {opera && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setEditando(true)}
+                    className="flex items-center gap-1.5 rounded-lg bg-marca px-3 py-1.5 text-sm font-semibold text-ng-tinta hover:brightness-110"
+                  >
+                    <Paintbrush className="h-4 w-4" />
+                    {t("disenoPropio.editar")}
+                  </button>
+                  {diseno && (
+                    <button
+                      onClick={() => void volverAlSimple()}
+                      disabled={guardando}
+                      className="flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/70 hover:bg-white/5 disabled:opacity-50"
+                    >
+                      <Undo2 className="h-3.5 w-3.5" />
+                      {t("disenoPropio.volverSimple")}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {!diseno && (
+            <>
+            <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">{t("estilo")}</p>
             <div className="mt-2 grid gap-2 sm:grid-cols-3">
               {ESTILOS_PORTADA.map((e) => (
-                <button key={e} onClick={() => cambiar({ estilo: e })} disabled={!opera} className={opcion(p.estilo === e)}>
-                  <span className="block font-medium">{t(`estilos.${e}.nombre`)}</span>
-                  <span className="block text-[11px] text-white/45">{t(`estilos.${e}.detalle`)}</span>
+                <button key={e} onClick={() => cambiar({ estilo: e })} disabled={!opera} className={`${opcion(p.estilo === e)} flex items-start gap-2.5`}>
+                  <MiniEstilo estilo={e} tema={tema} fuente={p.fuente} />
+                  <span className="min-w-0">
+                    <span className="block font-medium">{t(`estilos.${e}.nombre`)}</span>
+                    <span className="block text-[11px] text-white/45">{t(`estilos.${e}.detalle`)}</span>
+                  </span>
                 </button>
               ))}
             </div>
@@ -165,6 +244,8 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
                 />
               </>
             )}
+            </>
+            )}
 
             {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
             {opera && (
@@ -186,7 +267,98 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
           </div>
         </div>
       )}
+
+      {p && (
+        <div className="mt-6 border-t border-white/10 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-medium">{t("perfil.titulo")}</p>
+              <p className="text-xs text-white/45">{t("perfil.ayuda")}</p>
+            </div>
+            <button
+              onClick={() => pedirPerfil()}
+              disabled={perfilQ.loading}
+              className="flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white/80 hover:bg-white/5 disabled:opacity-50"
+            >
+              {perfilQ.loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              {perfilPedido ? t("perfil.actualizar") : t("perfil.ver")}
+            </button>
+          </div>
+          {perfilPedido && (
+            <div className="mt-3 grid max-w-[360px] grid-cols-3 gap-1">
+              {perfilQ.loading && !perfil.length
+                ? Array.from({ length: 9 }, (_, i) => <div key={i} className="aspect-[9/16] animate-pulse rounded bg-white/5" />)
+                : perfil.map((x) => (
+                    // eslint-disable-next-line @next/next/no-img-element -- data URL armada por el backend
+                    <img key={x.clipId} src={x.imagen} alt="" className="aspect-[9/16] w-full rounded object-cover" />
+                  ))}
+            </div>
+          )}
+          {perfilPedido && !perfilQ.loading && !perfil.length && (
+            <p className="mt-2 text-xs text-white/45">{perfilQ.error ? t("perfil.error") : t("perfil.vacio")}</p>
+          )}
+        </div>
+      )}
+
+      {editando && (
+        <EditorPortada
+          marcaId={marcaId}
+          inicial={diseno ?? undefined}
+          tituloEjemplo={t("disenoPropio.tituloEjemplo")}
+          titulo={t("disenoPropio.tituloEditor")}
+          textoGuardar={t("disenoPropio.guardar")}
+          onGuardar={async (d) => {
+            await guardarDiseno(d);
+            setEditando(false);
+          }}
+          onCerrar={() => setEditando(false)}
+        />
+      )}
     </section>
+  );
+}
+
+/** Una miniatura del estilo del título, con los colores de la marca. */
+function MiniEstilo({ estilo, tema, fuente }: { estilo: EstiloPortada; tema: Tema; fuente: string }) {
+  const def = FUENTES_ESTILO[fuente as keyof typeof FUENTES_ESTILO] ?? FUENTES_ESTILO.ANTON;
+  const letra: React.CSSProperties = {
+    fontFamily: `"${def.familiaCss}", sans-serif`,
+    fontWeight: def.peso,
+    fontSize: 9,
+    lineHeight: 1.15,
+    textTransform: "uppercase",
+  };
+  const renglon = (texto: string, i: number) => {
+    if (estilo === "CAJA") {
+      return (
+        <span key={i} className="rounded-[2px] px-1" style={{ ...letra, background: tema.colorPrimario, color: legibleSobre(tema.colorPrimario, tema) }}>
+          {texto}
+        </span>
+      );
+    }
+    const color = estilo === "DOS_COLORES" && i > 0 ? tema.colorPrimario : tema.colorTexto;
+    return (
+      <span
+        key={i}
+        style={{
+          ...letra,
+          color,
+          WebkitTextStroke: estilo === "LIMPIO" ? undefined : "0.6px #000",
+          textShadow: estilo === "LIMPIO" ? "0 1px 3px rgba(0,0,0,.9)" : "0 1px 1px rgba(0,0,0,.5)",
+        }}
+      >
+        {texto}
+      </span>
+    );
+  };
+  return (
+    <span
+      aria-hidden
+      className="flex h-[64px] w-9 shrink-0 flex-col items-center justify-end gap-0.5 overflow-hidden rounded-md pb-3"
+      style={{ background: "linear-gradient(160deg,#4b5563,#1f2937)" }}
+    >
+      {["Tu", "título"].map(renglon)}
+    </span>
   );
 }
 
