@@ -24,6 +24,6 @@
   "de": "from",
   "a": "to",
   "eliminar": "Delete this image",
-  "soltaAca": "Drop the image to add it",
+  "soltaAca": "Drop the image or video to add it",
   "confirmarRender": "Some images are still having their background removed. If you export now they may come out without the cut-out. Export anyway?"
 }

@@ -32,8 +32,10 @@ import {
   type SubtituloClip,
   type Texto,
 } from "@/lib/clip-encuadre";
+import { VIDEO_ANCHO_MAX, VIDEO_ANCHO_MIN, type VideoClip } from "@/lib/videos-clip";
 import type { EstiloClip, LineaSubtitulo } from "./tipos";
 import { useTiempo, type Reproductor } from "./reproductor";
+import { VideoEncima } from "./VideoEncima";
 
 const redondo3 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -43,8 +45,9 @@ const redondo3 = (n: number) => Math.round(n * 1000) / 1000;
  * encima. Los recuadros salen de `posicionesEfectivas`, la misma cuenta que
  * usa el render: lo que se ve es lo que sale en el MP4.
  *
- * Los textos, las imágenes y el subtítulo se arrastran acá mismo; tocar uno lo
- * elige y abre su herramienta. Un archivo soltado encima se suma como imagen.
+ * Los textos, las imágenes, los videos y el subtítulo se arrastran acá mismo;
+ * tocar uno lo elige y abre su herramienta. Un archivo soltado encima se suma
+ * como imagen o como video, según lo que sea.
  */
 export function VistaPrevia({
   reproductor,
@@ -67,6 +70,12 @@ export function VistaPrevia({
   imagenElegida,
   onElegirImagen,
   onSoltarImagen,
+  videos,
+  onCambiarVideos,
+  videoElegido,
+  onElegirVideo,
+  onSoltarVideo,
+  velocidad,
   estilo,
   estiloTexto,
   plantilla,
@@ -99,6 +108,15 @@ export function VistaPrevia({
   onElegirImagen: (i: number) => void;
   /** Sin esto, no se puede soltar un archivo. */
   onSoltarImagen?: (file: File) => void;
+  /** Encima del video y de las imágenes, debajo de los textos y el subtítulo (be#246). */
+  videos: VideoClip[];
+  onCambiarVideos: (videos: VideoClip[]) => void;
+  videoElegido: number | null;
+  onElegirVideo: (i: number) => void;
+  /** Sin esto, no se puede soltar un video. */
+  onSoltarVideo?: (file: File) => void;
+  /** La del clip: los videos de encima corren a la misma. */
+  velocidad: number;
   estilo: EstiloClip;
   /** El estilo de texto ya con el tema de la marca, si no es KARAOKE. Null = como siempre. */
   estiloTexto: EstiloResuelto | null;
@@ -256,7 +274,23 @@ export function VistaPrevia({
     });
   }
 
-  const aceptaSoltar = puedeEditar && !!onSoltarImagen;
+  /** Mover un video, o agrandarlo desde la esquina con el centro quieto. */
+  function arrastrarVideo(e: React.PointerEvent, i: number, modo: "mover" | "agrandar") {
+    e.stopPropagation();
+    onElegirVideo(i);
+    if (!puedeEditar) return;
+    const inicial = videos[i];
+    arrastrar(e, (dx, dy) => {
+      const cambio =
+        modo === "mover"
+          ? { centroX: redondo3(Math.min(1, Math.max(0, inicial.centroX + dx))), centroY: redondo3(Math.min(1, Math.max(0, inicial.centroY + dy))) }
+          : { ancho: redondo3(Math.min(VIDEO_ANCHO_MAX, Math.max(VIDEO_ANCHO_MIN, inicial.ancho + 2 * dx))) };
+      onCambiarVideos(videos.map((v, j) => (j === i ? { ...v, ...cambio } : v)));
+    });
+  }
+
+  const esVideo = (f: File) => f.type.startsWith("video/") || /\.(mp4|mov|webm|m4v)$/i.test(f.name);
+  const aceptaSoltar = puedeEditar && (!!onSoltarImagen || !!onSoltarVideo);
   const zona = (c: Dibujo["caja"]) => ({ left: c.x * k, top: c.y * k, width: c.ancho * k, height: c.alto * k });
   const manija = "absolute right-2 top-1/2 hidden h-4 w-4 -translate-y-1/2 cursor-ew-resize rounded-full border-2 border-ng-tinta bg-ng-azul group-hover:block";
 
@@ -275,7 +309,7 @@ export function VistaPrevia({
         if (!aceptaSoltar) return;
         e.preventDefault();
         const f = e.dataTransfer.files[0];
-        if (f) onSoltarImagen?.(f);
+        if (f) (esVideo(f) ? onSoltarVideo : onSoltarImagen)?.(f);
       }}
       className="relative mx-auto w-full cursor-pointer overflow-hidden rounded-md bg-black"
       style={{
@@ -326,6 +360,22 @@ export function VistaPrevia({
           </div>
         );
       })}
+      {videos.map((v, i) => (
+        <VideoEncima
+          key={v.id}
+          video={v}
+          indice={i}
+          reproductor={reproductor}
+          clip={{ desde, hasta, cortes, efectiva }}
+          velocidad={velocidad}
+          anchoVista={anchoVista}
+          altoVista={altoVista}
+          elegido={videoElegido === i}
+          puedeEditar={puedeEditar}
+          onMover={(e) => arrastrarVideo(e, i, "mover")}
+          onAgrandar={(e) => arrastrarVideo(e, i, "agrandar")}
+        />
+      ))}
       {plantilla.logo && (
         // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca, tal cual va al render
         <img src={plantilla.logo.url} alt="" style={estiloDelLogo(plantilla.logo.plantilla, anchoVista)} />

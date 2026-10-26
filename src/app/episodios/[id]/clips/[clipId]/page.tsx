@@ -27,7 +27,8 @@ import {
   type Region,
 } from "@/lib/clip-encuadre";
 import { imagenNueva } from "@/components/episodios/PanelImagenes";
-import { ErrorDeSubida, uploadImagenClip } from "@/lib/upload";
+import { ErrorDeSubida, uploadImagenClip, uploadVideoClip } from "@/lib/upload";
+import { MAXIMO_VIDEOS, videoNuevo } from "@/lib/videos-clip";
 import { useRecortesImagen } from "@/lib/use-recortes-imagen";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces } from "@/components/episodios/TomarClip";
@@ -81,6 +82,7 @@ export default function EditorClipPage({
   const tr = useTranslations("editorClip");
   const tn = useTranslations("estilosNombres");
   const ti = useTranslations("editorImagenes");
+  const tv = useTranslations("editorVideos");
   const tTextos = useTranslations("editorTextos");
   const te = useTranslations("erroresSubida");
   const th = useTranslations("editorHerramientas");
@@ -128,6 +130,7 @@ export default function EditorClipPage({
   const [modo, setModo] = useState<ModoTranscripcion>("inicio");
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
   const [imagenElegida, setImagenElegida] = useState<number | null>(null);
+  const [videoElegido, setVideoElegido] = useState<number | null>(null);
   const [efectoElegido, setEfectoElegido] = useState<string | null>(null);
   const [seleccion, setSeleccion] = useState<SeleccionCortes>(SIN_SELECCION);
 
@@ -228,6 +231,7 @@ export default function EditorClipPage({
     musica: b?.musica ?? null,
     efectos: b?.efectos ?? SIN_EFECTOS,
     palabras,
+    videos: b?.videos ?? SIN_VIDEOS,
   });
 
   // ---- Lo que se procesa en el servidor: render, auto-encuadre, recortes ----
@@ -385,7 +389,30 @@ export default function EditorClipPage({
       prev.imagenes.length < MAXIMO_IMAGENES ? { ...prev, imagenes: [...prev.imagenes, imagenNueva(url, prev.imagenes, conHorizontal)] } : prev,
     );
     setTextoElegido(null);
+    setVideoElegido(null);
     setImagenElegida(b.imagenes.length);
+    elegirHerramienta("superposicion");
+  }
+
+  /**
+   * Sube un video y lo suma al clip, ya elegido. Uno vertical entra a
+   * pantalla completa (videoNuevo). Rechaza con el error en el idioma de la
+   * pantalla.
+   */
+  async function subirVideo(file: File, onAvance?: (porcentaje: number) => void) {
+    if (!marcaId || !b || b.videos.length >= MAXIMO_VIDEOS) return;
+    let subido: Awaited<ReturnType<typeof uploadVideoClip>>;
+    try {
+      subido = await uploadVideoClip(file, marcaId, onAvance);
+    } catch (e) {
+      throw new Error(e instanceof ErrorDeSubida ? te(e.clave, e.datos) : e instanceof Error ? e.message : tv("errorSubir"));
+    }
+    cambiarCon((prev) =>
+      prev.videos.length < MAXIMO_VIDEOS ? { ...prev, videos: [...prev.videos, videoNuevo(subido, prev.videos)] } : prev,
+    );
+    setTextoElegido(null);
+    setImagenElegida(null);
+    setVideoElegido(b.videos.length);
     elegirHerramienta("superposicion");
   }
 
@@ -401,17 +428,31 @@ export default function EditorClipPage({
     const nuevo = textoNuevo(disenosDeTexto(estilo.colorResaltado)[0].estilo, tTextos("textoNuevo"), centroY);
     cambiar({ textos: [...b.textos, nuevo] });
     setImagenElegida(null);
+    setVideoElegido(null);
     setTextoElegido(i);
     elegirHerramienta("texto");
   }
 
   const elegirTexto = (i: number | null) => {
     setTextoElegido(i);
-    if (i !== null) setImagenElegida(null);
+    if (i !== null) {
+      setImagenElegida(null);
+      setVideoElegido(null);
+    }
   };
   const elegirImagen = (i: number | null) => {
     setImagenElegida(i);
-    if (i !== null) setTextoElegido(null);
+    if (i !== null) {
+      setTextoElegido(null);
+      setVideoElegido(null);
+    }
+  };
+  const elegirVideo = (i: number | null) => {
+    setVideoElegido(i);
+    if (i !== null) {
+      setTextoElegido(null);
+      setImagenElegida(null);
+    }
   };
 
   // El estilo con que sale (estiloTextoEfectivo): el del clip, el de la marca o
@@ -494,6 +535,11 @@ export default function EditorClipPage({
         elegida={imagenElegida}
         onElegir={elegirImagen}
         onSubir={subirImagen}
+        videos={b.videos}
+        onCambiarVideos={(videos) => cambiar({ videos })}
+        videoElegido={videoElegido}
+        onElegirVideo={elegirVideo}
+        onSubirVideo={subirVideo}
         duracion={duracion}
         estilo={estilo}
         plantillaActiva={b.plantillaActiva}
@@ -674,6 +720,18 @@ export default function EditorClipPage({
                   ? (file) => void subirImagen(file).catch((e) => setError(e instanceof Error ? e.message : ti("errorSubir")))
                   : undefined
               }
+              videos={b.videos}
+              onCambiarVideos={(videos) => cambiar({ videos })}
+              videoElegido={videoElegido}
+              onElegirVideo={(i) => {
+                elegirVideo(i);
+                elegirHerramienta("superposicion");
+              }}
+              onSoltarVideo={
+                b.videos.length < MAXIMO_VIDEOS
+                  ? (file) => void subirVideo(file).catch((e) => setError(e instanceof Error ? e.message : tv("errorSubir")))
+                  : undefined
+              }
               estilo={estilo}
               estiloTexto={conEstilo}
               plantilla={plantilla}
@@ -708,6 +766,10 @@ export default function EditorClipPage({
             onCambiarImagenes={(imagenes) => cambiar({ imagenes })}
             imagenElegida={imagenElegida}
             onElegirImagen={elegirImagen}
+            videos={b.videos}
+            onCambiarVideos={(videos) => cambiar({ videos })}
+            videoElegido={videoElegido}
+            onElegirVideo={elegirVideo}
             subtitulosActivos={b.subtitulosActivos}
             plantilla={plantilla}
             musica={b.musica}
@@ -729,4 +791,5 @@ export default function EditorClipPage({
 const SIN_CORTES: Corte[] = [];
 const SIN_IMAGENES: never[] = [];
 const SIN_EFECTOS: never[] = [];
+const SIN_VIDEOS: never[] = [];
 const SIN_PALABRAS: Palabra[] = [];

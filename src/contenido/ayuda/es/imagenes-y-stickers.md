@@ -11,7 +11,7 @@ Con las imágenes sumás encima del clip el producto del cliente, un logo o a un
 
 1. En el editor, abrí la herramienta **Superposición**.
 2. Tocá **Imagen** y elegí un archivo JPG, PNG o WebP de hasta 15 MB. En la web también podés soltarlo en el panel o directamente en la vista previa.
-3. Podés sumar hasta 3 imágenes por clip. Cada una aparece en la pista **Imágenes** de la línea de tiempo.
+3. Podés sumar hasta 3 imágenes por clip. Cada una aparece en la pista **Superposición** de la línea de tiempo.
 
 ## Recortar y convertir en sticker
 

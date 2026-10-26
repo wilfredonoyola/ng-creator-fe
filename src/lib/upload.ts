@@ -5,6 +5,7 @@
  */
 
 import { CABECERA_IDIOMA, cabeceraIdioma, idiomaActual } from "@/i18n/cliente";
+import { EXTENSIONES_VIDEO_CLIP, FORMATOS_VIDEO_CLIP, TOPE_VIDEO_CLIP_MB, type VideoSubido } from "@/lib/videos-clip";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_GRAPHQL_URL?.replace(/\/graphql\/?$/, "") ??
@@ -33,7 +34,8 @@ export type ClaveErrorSubida =
   | "errorPortada" | "sesionVideo" | "errorVideo" | "seCorto" | "seCancelo" | "sesionLogo"
   | "logoNoImagen" | "logoMuyPesado" | "errorLogo" | "imagenClipFormato" | "imagenClipMuyPesada"
   | "sesionSonido" | "sonidoNoAudio" | "sonidoMuyPesado" | "errorSonido" | "seCortoSonido"
-  | "sesionVozRevision" | "vozRevisionMuyPesada" | "errorVozRevision";
+  | "sesionVozRevision" | "vozRevisionMuyPesada" | "errorVozRevision"
+  | "sesionVideoClip" | "videoClipFormato" | "videoClipMuyPesado" | "errorVideoClip" | "seCortoVideoClip";
 
 export class ErrorDeSubida extends Error {
   constructor(
@@ -554,6 +556,65 @@ export async function uploadImagenClip(file: File, marcaId: string): Promise<str
   const url = (await response.json()).url as string | undefined;
   if (!url) throw new ErrorDeSubida("errorImagen", "Error al subir la imagen", { status: response.status });
   return url;
+}
+
+/**
+ * Sube un video para poner sobre un clip (be#246). El servidor lo mide
+ * (duración, tamaño de pie, si tiene audio) y lo guarda tal cual; la url se
+ * guarda en el clip sin tocarla. Con XHR, como la cámara, para mostrar el
+ * avance: 200 MB tardan.
+ */
+export function uploadVideoClip(
+  file: File,
+  marcaId: string,
+  onAvance?: (porcentaje: number) => void,
+): Promise<VideoSubido> {
+  const token = getAuthToken();
+  if (!token) return Promise.reject(new ErrorDeSubida("sesionVideoClip", "Sesión requerida para subir videos"));
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  if (!FORMATOS_VIDEO_CLIP.includes(file.type) && !EXTENSIONES_VIDEO_CLIP.includes(ext)) {
+    return Promise.reject(new ErrorDeSubida("videoClipFormato", "El video tiene que ser MP4, MOV o WebM"));
+  }
+  if (file.size > TOPE_VIDEO_CLIP_MB * 1024 * 1024) {
+    return Promise.reject(new ErrorDeSubida("videoClipMuyPesado", `El video debe pesar menos de ${TOPE_VIDEO_CLIP_MB} MB`));
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("marcaId", marcaId);
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE_URL}/uploads/clip-video`);
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader(CABECERA_IDIOMA, idiomaActual());
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onAvance?.(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => {
+      let json: any = {};
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch {
+        // Sin JSON: decide el status.
+      }
+      if (xhr.status < 200 || xhr.status >= 300 || !json.url) {
+        const mensaje = Array.isArray(json.message) ? json.message.join(". ") : json.message;
+        reject(fallo(mensaje, "errorVideoClip", `No se pudo subir el video (${xhr.status})`, xhr.status));
+        return;
+      }
+      resolve({
+        url: json.url,
+        duracionSeg: Number(json.duracionSeg) || 0,
+        anchoVideo: Number(json.anchoVideo) || 16,
+        altoVideo: Number(json.altoVideo) || 9,
+        tieneAudio: Boolean(json.tieneAudio),
+      });
+    };
+    xhr.onerror = () => reject(new ErrorDeSubida("seCortoVideoClip", "Se cortó la conexión mientras se subía el video"));
+    xhr.onabort = () => reject(new ErrorDeSubida("seCancelo", "Se canceló la subida"));
+    xhr.send(formData);
+  });
 }
 
 /** Los campos de POST /uploads/sonido, además del archivo. */

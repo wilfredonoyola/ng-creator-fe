@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { aTiempoDeSalida, estaCortado, type Corte } from "@/lib/cortes";
+import { aTiempoDeSalida, duracionEfectiva, estaCortado, type Corte } from "@/lib/cortes";
+import { momentoDelVideo, type VideoClip } from "@/lib/videos-clip";
 import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
 import type { Reproductor } from "./reproductor";
 import type { Palabra } from "./tipos";
@@ -64,6 +65,9 @@ function hablando(palabras: readonly Palabra[], t: number): boolean {
  *   corte. Con "bajar cuando hablan", baja donde hay palabras.
  * - Cada efecto suena cuando el cabezal pasa por su segundo (tiempo original;
  *   en un corte no suena).
+ * - Mientras se ve un video de encima con "Solo el video", la voz del clip se
+ *   calla, como en el render. El sonido del video lo maneja su `<video>`
+ *   (VideoEncima).
  *
  * Un solo bucle mira el `<video>` y corrige todo: por eso no se desfasa al
  * cambiar de herramienta ni si el HLS se vuelve a enganchar. Vive en la página
@@ -79,6 +83,7 @@ export function useAudioDeVista(o: {
   musica: MusicaClip | null;
   efectos: EfectoClip[];
   palabras: Palabra[];
+  videos: VideoClip[];
 }) {
   const ultimo = useRef(o);
   ultimo.current = o;
@@ -150,7 +155,12 @@ export function useAudioDeVista(o: {
         // Cargando (buffering) no cuenta como pausado: el cuadro se congela pero
         // `paused` sigue en false. La música y los efectos esperan al video.
         const sonando = !v.paused && !v.ended && v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
-        const voz = Math.max(0, e.volumenClip);
+        const soloVideo = e.videos.some(
+          (x) =>
+            x.sonido === "SOLO_VIDEO" &&
+            momentoDelVideo(x, v.currentTime, { desde: e.desde, hasta: e.hasta, cortes: e.cortes, efectiva: duracionEfectiva(e.desde, e.hasta, e.cortes) }) !== null,
+        );
+        const voz = soloVideo ? 0 : Math.max(0, e.volumenClip);
         if (!amp && !sinAmplificar && voz > 1 && sonando && sePuedeAmplificar(v)) {
           amp = amplificar(v);
           sinAmplificar = !amp;

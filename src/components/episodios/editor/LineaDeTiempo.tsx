@@ -7,6 +7,7 @@ import { aTiempoDelEpisodio, pedazosDelClip, siguienteTiempoVisible, type Corte 
 import type { plantillaDelClip } from "@/lib/plantilla-clip";
 import type { ImagenClip, PosicionEfectiva, Texto } from "@/lib/clip-encuadre";
 import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
+import { finDeVideo, type VideoClip } from "@/lib/videos-clip";
 import { useTiempo, type Reproductor } from "./reproductor";
 import { reloj, relojFino, type Herramienta, type SeleccionCortes } from "./tipos";
 
@@ -65,6 +66,10 @@ export function LineaDeTiempo({
   onCambiarImagenes,
   imagenElegida,
   onElegirImagen,
+  videos,
+  onCambiarVideos,
+  videoElegido,
+  onElegirVideo,
   subtitulosActivos,
   plantilla,
   musica,
@@ -94,6 +99,11 @@ export function LineaDeTiempo({
   onCambiarImagenes: (im: ImagenClip[]) => void;
   imagenElegida: number | null;
   onElegirImagen: (i: number) => void;
+  /** Van en la misma pista que las imágenes (Superposición). */
+  videos: VideoClip[];
+  onCambiarVideos: (v: VideoClip[]) => void;
+  videoElegido: number | null;
+  onElegirVideo: (i: number) => void;
   subtitulosActivos: boolean;
   plantilla: ReturnType<typeof plantillaDelClip>;
   musica: MusicaClip | null;
@@ -204,6 +214,29 @@ export function LineaDeTiempo({
     },
     alMover: puedeEditar ? (d, h) => onCambiarImagenes(imagenes.map((x, j) => (j === i ? conTiempo(x, d, h) : x))) : undefined,
   }));
+  // Un video sin final propio llega hasta que se le acaba el archivo (no hace
+  // loop): la barra muestra eso. Arrastrar el borde hasta ahí lo deja sin tope.
+  videos.forEach((v, i) => {
+    barrasImagenes.push({
+      clave: `v-${v.id}`,
+      etiqueta: tr("linea.videoN", { n: i + 1 }),
+      desde: v.desdeSeg,
+      hasta: finDeVideo(v, duracion),
+      elegida: videoElegido === i,
+      alTocar: () => {
+        onElegirVideo(i);
+        onAbrir("superposicion");
+      },
+      alMover: puedeEditar
+        ? (d, h) => {
+            const natural = finDeVideo({ ...v, desdeSeg: d, hastaSeg: null }, duracion);
+            onCambiarVideos(
+              videos.map((x, j) => (j === i ? { ...x, desdeSeg: decimas(d), hastaSeg: h >= natural - 0.05 ? null : decimas(h) } : x)),
+            );
+          }
+        : undefined,
+    });
+  });
   if (plantilla.logo) {
     barrasImagenes.push({ clave: "logo", etiqueta: tr("linea.logo"), desde: 0, hasta: duracion, elegida: false, fija: true, alTocar: () => onAbrir("superposicion") });
   }
@@ -362,7 +395,7 @@ export function LineaDeTiempo({
         </Fila>
 
         {/* Imágenes */}
-        <Fila etiqueta={tr("linea.imagenes")} activa={herramienta === "superposicion"}>
+        <Fila etiqueta={tr("linea.superposicion")} activa={herramienta === "superposicion"}>
           <Pista
             barras={barrasImagenes}
             duracion={duracion}

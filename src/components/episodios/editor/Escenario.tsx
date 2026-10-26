@@ -58,7 +58,7 @@ export function Escenario({
           puedeEditar={puedeEditar}
         />
         <div className={conCuadro ? "w-[34%] max-w-[18rem] shrink-0" : "flex w-full min-w-0 justify-center"}>
-          <VistaPrevia {...vista} plataforma={formato === "VERTICAL" ? plataforma : null} />
+          <VistaPrevia {...vista} velocidad={velocidad} plataforma={formato === "VERTICAL" ? plataforma : null} />
         </div>
       </div>
 
