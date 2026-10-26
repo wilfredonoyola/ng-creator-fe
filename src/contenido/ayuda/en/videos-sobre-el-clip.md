@@ -1,6 +1,6 @@
 ---
 titulo: Videos on the clip
-descripcion: How to add up to 3 videos on top of the clip, make them full screen, choose when they show and whether you hear them.
+descripcion: How to add up to 3 videos on top of the clip, make them full screen, trim them, choose when they show and whether you hear them.
 categoria: editor
 orden: 7
 funciones: imagenes
@@ -16,8 +16,17 @@ Videos let you put B-roll, a reaction or the product in motion on top of the cli
 ## Place it and choose when it shows
 
 1. When it's not full screen, drag it on the preview to move it and use the corner to resize it, or adjust the **Size**.
-2. Under **When**, choose the second it appears and the second it leaves, or drag its edges on the **Overlay** track of the timeline. It doesn't loop: it leaves when the video ends.
+2. Under **When**, choose the second it appears and the second it leaves. It doesn't loop: it leaves when the video ends.
 3. Under **Starts at**, choose which second of the video it starts from.
+
+## Trim it
+
+Like in CapCut, you can keep just a piece of the video:
+
+- **On the timeline**: on the **Overlay** track the video shows its frames. Drag the middle to change when it appears. The left edge trims the start (the video starts further in and appears later) and the right edge trims the end. It can't stretch past the length of the video or the end of the clip.
+- **In the panel**: under **Trim**, the bar is the whole video. Move the two handles to choose the part you use; while dragging you see the frame at the handle. The striped part doesn't fit because the clip ends first. **Use all** goes back to the full video.
+
+Changes save on their own when you let go, and you can undo them with Cmd/Ctrl + Z like everything else.
 
 ## With or without sound
 

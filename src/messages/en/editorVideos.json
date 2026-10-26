@@ -21,6 +21,13 @@
   "sinLoop": "It doesn't loop: it leaves when the video ends, at the second you choose or at the end of the clip.",
   "empiezaEn": "Starts at",
   "delVideo": "s of the video (it lasts {dura})",
+  "recortar": "Trim",
+  "usarTodo": "Use all",
+  "manijaInicio": "Start of the video segment",
+  "manijaFin": "End of the video segment",
+  "tramo": "Using {dura} of {total}",
+  "noEntra": "Doesn't fit: the clip ends first",
+  "noEntraAyuda": "The striped part doesn't fit: the clip ends first. To show it, make the video appear earlier.",
   "sonido": "Sound",
   "sonidos": {
     "SIN_SONIDO": "No sound",

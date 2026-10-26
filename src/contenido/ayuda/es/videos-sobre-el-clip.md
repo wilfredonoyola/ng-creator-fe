@@ -1,6 +1,6 @@
 ---
 titulo: Videos sobre el clip
-descripcion: Cómo sumar hasta 3 videos encima del clip, ponerlos a pantalla completa, elegir cuándo aparecen y si se escuchan.
+descripcion: Cómo sumar hasta 3 videos encima del clip, ponerlos a pantalla completa, recortarlos, elegir cuándo aparecen y si se escuchan.
 categoria: editor
 orden: 7
 funciones: imagenes
@@ -16,8 +16,17 @@ Con los videos sumás encima del clip un B-roll, una reacción o el producto en 
 ## Ubicarlo y elegir cuándo aparece
 
 1. Sin pantalla completa, arrastralo en la vista previa para moverlo y usá la esquina para agrandarlo, o ajustá el **Tamaño**.
-2. En **Cuándo** elegí el segundo en que aparece y en el que se va, o mové sus bordes en la pista **Superposición** de la línea de tiempo. No se repite: se va cuando termina el video.
+2. En **Cuándo** elegí el segundo en que aparece y en el que se va. No se repite: se va cuando termina el video.
 3. En **Empieza en** elegí desde qué segundo del video arranca.
+
+## Recortarlo
+
+Como en CapCut, podés quedarte con un pedazo del video:
+
+- **En la línea de tiempo**: en la pista **Superposición** el video se ve con sus cuadros. Arrastrá el medio para cambiar cuándo aparece. El borde izquierdo recorta el principio (el video arranca más adelante y aparece más tarde) y el derecho recorta el final. No se puede estirar más allá de lo que dura el video ni del final del clip.
+- **En el panel**: en **Recortar**, la barra es el video entero. Mové las dos manijas para elegir el tramo que se usa; mientras arrastrás ves el cuadro donde está la manija. Lo rayado es lo que no entra porque el clip termina antes. **Usar todo** vuelve al video completo.
+
+Los cambios se guardan solos al soltar, y se deshacen con Cmd/Ctrl + Z como todo lo demás.
 
 ## Con sonido o sin sonido
 
