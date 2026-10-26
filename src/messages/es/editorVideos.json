@@ -21,6 +21,13 @@
   "sinLoop": "No se repite: se va cuando termina el video, en el segundo que elijas o al final del clip.",
   "empiezaEn": "Empieza en",
   "delVideo": "s del video (dura {dura})",
+  "recortar": "Recortar",
+  "usarTodo": "Usar todo",
+  "manijaInicio": "Inicio del tramo del video",
+  "manijaFin": "Fin del tramo del video",
+  "tramo": "Usás {dura} de {total}",
+  "noEntra": "No entra: el clip termina antes",
+  "noEntraAyuda": "Lo rayado no entra: el clip termina antes. Para que se vea, hacé que aparezca antes.",
   "sonido": "Sonido",
   "sonidos": {
     "SIN_SONIDO": "Sin sonido",

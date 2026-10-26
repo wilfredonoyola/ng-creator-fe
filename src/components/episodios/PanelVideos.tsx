@@ -6,6 +6,7 @@ import { Film } from "lucide-react";
 import { Fila, Opcion, Segundos } from "@/components/episodios/PanelTextos";
 import { Interruptor } from "@/components/episodios/editor/ui";
 import { relojFino } from "@/components/episodios/editor/tipos";
+import { RecortarVideo } from "@/components/episodios/editor/RecortarVideo";
 import {
   EXTENSIONES_VIDEO_CLIP,
   FORMATOS_VIDEO_CLIP,
@@ -15,8 +16,10 @@ import {
   VIDEO_ANCHO_MIN,
   VOLUMEN_VIDEO_MAX,
   esVertical,
-  finDeVideo,
+  finDelArchivo,
+  finVisible,
   type SonidoVideoClip,
+  type TramoDelClip,
   type VideoClip,
 } from "@/lib/videos-clip";
 
@@ -34,7 +37,7 @@ export function PanelVideos({
   elegido,
   onElegir,
   onSubir,
-  duracion,
+  tramo,
   deshabilitado,
 }: {
   videos: VideoClip[];
@@ -43,8 +46,8 @@ export function PanelVideos({
   onElegir: (i: number | null) => void;
   /** Sube el archivo y agrega el video; rechaza con el error para mostrar. */
   onSubir: (file: File, onAvance: (porcentaje: number) => void) => Promise<void>;
-  /** Del clip, en segundos. */
-  duracion: number;
+  /** El clip en el episodio, con sus cortes: para pasar los tiempos del video a la salida. */
+  tramo: TramoDelClip;
   deshabilitado?: boolean;
 }) {
   const tr = useTranslations("editorVideos");
@@ -53,6 +56,7 @@ export function PanelVideos({
   const [error, setError] = useState<string | null>(null);
   const [encima, setEncima] = useState(false);
   const subiendo = avance !== null;
+  const duracion = Math.max(0, tramo.hasta - tramo.desde);
   const llenos = videos.length >= MAXIMO_VIDEOS;
   const puedeAgregar = !deshabilitado && !llenos && !subiendo;
 
@@ -194,11 +198,11 @@ export function PanelVideos({
               />
               {tr("a")}
               <Segundos
-                valor={finDeVideo(v, duracion)}
+                valor={finVisible(v, tramo)}
                 max={duracion}
                 onCambio={(h) => {
                   // Hasta donde llega solo (el final del archivo o del clip): sin tope propio.
-                  const natural = finDeVideo({ ...v, hastaSeg: null }, duracion);
+                  const natural = Math.min(finDelArchivo({ ...v, hastaSeg: null }, tramo), duracion);
                   cambiar(elegido, { hastaSeg: h >= natural - 0.05 || h <= v.desdeSeg + 0.1 ? null : decimas(h) });
                 }}
                 deshabilitado={deshabilitado}
@@ -207,6 +211,8 @@ export function PanelVideos({
             </span>
           </Fila>
           <p className="text-[11px] text-white/35">{tr("sinLoop")}</p>
+
+          <RecortarVideo video={v} tramo={tramo} onCambiar={(n) => cambiar(elegido, n)} deshabilitado={deshabilitado} />
 
           <Fila etiqueta={tr("empiezaEn")}>
             <span className="flex items-center gap-1 text-[11px] text-white/50">

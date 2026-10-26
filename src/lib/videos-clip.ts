@@ -1,4 +1,4 @@
-import { aTiempoDeSalida, type Corte } from "@/lib/cortes";
+import { aTiempoDeSalida, aTiempoDelEpisodio, duracionEfectiva, type Corte } from "@/lib/cortes";
 
 /**
  * Los videos sobre un clip (be#246): como las imágenes, pero con movimiento
@@ -123,6 +123,118 @@ export function momentoDelVideo(
   const ts = aTiempoDeSalida(Math.min(Math.max(t, clip.desde), clip.hasta), clip.desde, clip.cortes);
   if (ts < desdeSal || ts >= fin) return null;
   return v.inicioSeg + (ts - desdeSal);
+}
+
+/**
+ * El tramo del clip en el episodio (segundos del episodio) con sus cortes:
+ * con eso se pasa del tiempo original del clip a la salida y de vuelta.
+ */
+export interface TramoDelClip {
+  desde: number;
+  hasta: number;
+  cortes: readonly Corte[];
+}
+
+/** Lo mínimo que puede durar un video recortado (en la línea de tiempo o en el panel). */
+export const MINIMO_VIDEO_SEG = 0.3;
+
+type TiemposVideo = Pick<VideoClip, "desdeSeg" | "hastaSeg" | "inicioSeg" | "duracionSeg">;
+
+const decimas = (n: number) => Math.round(n * 10) / 10;
+const largoDe = (c: TramoDelClip) => Math.max(0, c.hasta - c.desde);
+/** Segundo del clip original → segundo de la salida (sin los cortes). */
+const aSalida = (segClip: number, c: TramoDelClip) => aTiempoDeSalida(c.desde + Math.max(0, segClip), c.desde, c.cortes);
+/** La inversa: segundo de la salida → segundo del clip original. */
+const aClip = (segSalida: number, c: TramoDelClip) => aTiempoDelEpisodio(segSalida, c.desde, c.hasta, c.cortes) - c.desde;
+
+/**
+ * Dónde se le acaba el archivo, en segundos del clip original. El video corre
+ * de corrido en la salida (como en `momentoDelVideo`): si hay un corte en el
+ * medio, termina más tarde en el tiempo original. Puede quedar después del
+ * final del clip. La velocidad no cambia la cuenta: el video de encima va a la
+ * misma velocidad que el clip.
+ */
+export function finDelArchivo(v: TiemposVideo, c: TramoDelClip): number {
+  const efectiva = duracionEfectiva(c.desde, c.hasta, c.cortes);
+  const fin = aSalida(v.desdeSeg, c) + Math.max(0, v.duracionSeg - v.inicioSeg);
+  return fin >= efectiva ? largoDe(c) + (fin - efectiva) : aClip(fin, c);
+}
+
+/** Hasta dónde se ve, en segundos del clip original, con los cortes: lo que dibuja la línea de tiempo. */
+export function finVisible(v: TiemposVideo, c: TramoDelClip): number {
+  const pedido = v.hastaSeg && v.hastaSeg > v.desdeSeg ? v.hastaSeg : Infinity;
+  return Math.min(finDelArchivo(v, c), pedido, largoDe(c));
+}
+
+/** Sin tope propio si llega (casi) a donde llegaría solo: así no queda un `hastaSeg` de más. */
+function conFin<T extends TiemposVideo>(v: T, hasta: number, c: TramoDelClip): T {
+  const natural = Math.min(finDelArchivo({ ...v, hastaSeg: null }, c), largoDe(c));
+  return { ...v, hastaSeg: hasta >= natural - 0.05 ? null : decimas(hasta) };
+}
+
+export type ModoRecorte = "mover" | "inicio" | "fin";
+
+/**
+ * Un arrastre en la línea de tiempo, como en CapCut. `corrida` son los
+ * segundos del clip que se movió el puntero desde que se agarró (`v` es como
+ * estaba al agarrarlo).
+ *
+ * - mover: corre `desdeSeg` (y `hastaSeg` si tiene) sin tocar `inicioSeg`.
+ * - inicio: recorta el principio: `desdeSeg` e `inicioSeg` se mueven juntos
+ *   (el final queda donde estaba); no va antes del 0 del archivo ni del clip.
+ * - fin: recorta el final (`hastaSeg`); no pasa del final del archivo ni del clip.
+ */
+export function recortarVideo<T extends TiemposVideo>(v: T, modo: ModoRecorte, corrida: number, c: TramoDelClip): T {
+  const largo = largoDe(c);
+  const fin = finVisible(v, c);
+  if (modo === "mover") {
+    const d = decimas(Math.min(Math.max(0, v.desdeSeg + corrida), Math.max(0, largo - MINIMO_VIDEO_SEG)));
+    const d0 = v.desdeSeg;
+    return { ...v, desdeSeg: d, hastaSeg: v.hastaSeg && v.hastaSeg > d0 ? decimas(v.hastaSeg + (d - d0)) : null };
+  }
+  if (modo === "inicio") {
+    const sal0 = aSalida(v.desdeSeg, c);
+    // Lo más atrás que puede ir: donde el archivo está en su segundo 0.
+    const minimo = sal0 - v.inicioSeg <= 0 ? 0 : aClip(sal0 - v.inicioSeg, c);
+    // Si cae en un corte, va adonde ese corte termina: ahí es donde se empieza a ver.
+    const pedido = decimas(v.desdeSeg + corrida);
+    const visible = aClip(aSalida(pedido, c), c);
+    const d = Math.min(Math.max(minimo, Math.abs(visible - pedido) > 0.001 ? visible : pedido), fin - MINIMO_VIDEO_SEG);
+    const inicioSeg = Math.max(0, Math.round((v.inicioSeg + aSalida(d, c) - sal0) * 1000) / 1000);
+    // El final no se mueve: si no tenía tope, sigue siendo el del archivo (que corre igual que el inicio).
+    return { ...v, desdeSeg: Math.max(0, d), inicioSeg };
+  }
+  const tope = Math.min(finDelArchivo(v, c), largo);
+  const h = Math.max(Math.min(tope, fin + corrida), v.desdeSeg + MINIMO_VIDEO_SEG);
+  return conFin(v, h, c);
+}
+
+/**
+ * El tramo del archivo que se usa (segundos del archivo): desde `inicioSeg`
+ * hasta donde se deja de ver.
+ */
+export function tramoDelArchivo(v: TiemposVideo, c: TramoDelClip): { inicio: number; fin: number } {
+  const salDesde = aSalida(v.desdeSeg, c);
+  const salFin = aSalida(finVisible(v, c), c);
+  return { inicio: v.inicioSeg, fin: Math.min(v.duracionSeg, v.inicioSeg + Math.max(0, salFin - salDesde)) };
+}
+
+/** Cuánto del archivo entra en el clip desde donde aparece (segundos de salida). */
+export function lugarEnElClip(v: TiemposVideo, c: TramoDelClip): number {
+  return Math.max(0, duracionEfectiva(c.desde, c.hasta, c.cortes) - aSalida(v.desdeSeg, c));
+}
+
+/**
+ * Del panel: usar del archivo de `inicio` a `fin` (segundos del archivo). El
+ * video sigue apareciendo en el mismo `desdeSeg`; el final pasa al tiempo
+ * del clip (hastaSeg = desdeSeg + (fin − inicio), en la salida).
+ */
+export function conTramoDelArchivo<T extends TiemposVideo>(v: T, inicio: number, fin: number, c: TramoDelClip): T {
+  const i = Math.min(Math.max(0, Math.round(inicio * 1000) / 1000), Math.max(0, v.duracionSeg - MINIMO_VIDEO_SEG));
+  const f = Math.min(v.duracionSeg, Math.max(fin, i + MINIMO_VIDEO_SEG));
+  const conInicio = { ...v, inicioSeg: i };
+  if (f >= v.duracionSeg - 0.05) return { ...conInicio, hastaSeg: null };
+  return conFin(conInicio, aClip(aSalida(v.desdeSeg, c) + (f - i), c), c);
 }
 
 /** Cómo viene del servidor (Apollo, sin tipos generados). */

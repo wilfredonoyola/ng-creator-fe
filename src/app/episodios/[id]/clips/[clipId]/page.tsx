@@ -289,6 +289,7 @@ export default function EditorClipPage({
   }
 
   const duracion = b.hastaSeg - b.desdeSeg;
+  const tramoVideos = { desde: b.desdeSeg, hasta: b.hastaSeg, cortes: b.cortes };
   const efectiva = duracionEfectiva(b.desdeSeg, b.hastaSeg, b.cortes);
   const redondo = (n: number) => Math.round(n * 1000) / 1000;
   const posiciones: PosicionEfectiva[] = posicionesEfectivas(
@@ -540,6 +541,7 @@ export default function EditorClipPage({
         videoElegido={videoElegido}
         onElegirVideo={elegirVideo}
         onSubirVideo={subirVideo}
+        tramo={tramoVideos}
         duracion={duracion}
         estilo={estilo}
         plantillaActiva={b.plantillaActiva}

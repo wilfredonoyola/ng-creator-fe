@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { PanelImagenes } from "@/components/episodios/PanelImagenes";
 import { PanelVideos } from "@/components/episodios/PanelVideos";
 import type { EstadoRecorte, ImagenClip } from "@/lib/clip-encuadre";
-import type { VideoClip } from "@/lib/videos-clip";
+import type { TramoDelClip, VideoClip } from "@/lib/videos-clip";
 import type { EstiloClip } from "./tipos";
 import { Interruptor, Seccion } from "./ui";
 
@@ -27,6 +27,7 @@ export function PanelSuperposicion({
   videoElegido,
   onElegirVideo,
   onSubirVideo,
+  tramo,
   duracion,
   estilo,
   plantillaActiva,
@@ -46,6 +47,8 @@ export function PanelSuperposicion({
   videoElegido: number | null;
   onElegirVideo: (i: number | null) => void;
   onSubirVideo: (file: File, onAvance: (porcentaje: number) => void) => Promise<void>;
+  /** El clip en el episodio con sus cortes (los videos pasan sus tiempos a la salida). */
+  tramo: TramoDelClip;
   duracion: number;
   estilo: EstiloClip;
   plantillaActiva: boolean;
@@ -88,7 +91,7 @@ export function PanelSuperposicion({
           elegido={videoElegido}
           onElegir={onElegirVideo}
           onSubir={onSubirVideo}
-          duracion={duracion}
+          tramo={tramo}
           deshabilitado={!puedeEditar}
         />
         <p className="text-xs text-ng-tenue">{tr("superposicion.ayudaVideos")}</p>
