@@ -34,7 +34,7 @@ type Pestana = (typeof PESTANAS)[number]["clave"];
 /**
  * Los tickets de soporte: las conversaciones del chat que la persona le pasó
  * al equipo ("Hablar con el equipo", que además manda el correo a
- * support@clipfine.io). Se leen enteras, se responden por correo y se mueven
+ * miguel@clipfine.io). Se leen enteras, se responden por correo y se mueven
  * de abierto a en progreso y a cerrado.
  */
 export default function SoporteSuperadmin() {

@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Eye,
   Hand,
+  Hourglass,
   MessageSquareWarning,
   Send,
   Sparkles,
@@ -32,7 +33,9 @@ export type TipoNotificacion =
   | "CLIP_APROBADO"
   | "CAMBIOS_PEDIDOS"
   | "REVISION_POR_VENCER"
-  | "REVISION_VENCIDA";
+  | "REVISION_VENCIDA"
+  // Cómo va un episodio (empezó, va por la mitad): por defecto solo por correo, en el resumen.
+  | "AVANCE_VIDEO";
 
 export interface Notificacion {
   _id: string;
@@ -60,6 +63,7 @@ export interface PreferenciaNotificacion {
 
 /** El orden en que se muestran, que es el del trabajo: del episodio a la red. */
 export const TIPOS_NOTIFICACION: TipoNotificacion[] = [
+  "AVANCE_VIDEO",
   "CLIPS_LISTOS",
   "CLIP_TOMADO",
   "REVISION_PEDIDA",
@@ -94,6 +98,7 @@ export const ESTILO_NOTIFICACION: Record<TipoNotificacion, { icono: LucideIcon; 
   CAMBIOS_PEDIDOS: { icono: MessageSquareWarning, clase: "bg-orange-400/15 text-orange-300" },
   REVISION_POR_VENCER: { icono: AlarmClock, clase: "bg-amber-400/15 text-amber-300" },
   REVISION_VENCIDA: { icono: CalendarX, clase: "bg-red-500/15 text-red-300" },
+  AVANCE_VIDEO: { icono: Hourglass, clase: "bg-ng-azul/15 text-ng-celeste" },
 };
 
 /** Adónde lleva un aviso: al editor del clip si hay uno, si no al episodio. */
