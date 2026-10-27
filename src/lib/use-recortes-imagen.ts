@@ -18,21 +18,29 @@ export interface RecorteLocal {
   lento: boolean;
 }
 
-/** `mejorar` (editor de portada, be#255): la versión mejorada con IA; solo cuenta sin "Quitar fondo" ni contorno. */
-type Opciones = Pick<ImagenClip, "url" | "sinFondo" | "contorno"> & { mejorar?: boolean };
+/**
+ * `mejorar` (editor de portada, be#255): la versión mejorada con IA; solo cuenta
+ * sin "Quitar fondo" ni contorno. `separar` (be#249): la persona separada del
+ * cuadro, del tamaño del cuadro (mejorada también, con `mejorar`).
+ */
+type Opciones = Pick<ImagenClip, "url" | "sinFondo" | "contorno"> & { mejorar?: boolean; separar?: boolean };
 
 /** Pide la mejorada con IA y no un recorte (con quitar fondo o contorno, el servidor ignora `mejorar`). */
-export const esMejora = (im: Opciones) => !!im.mejorar && !im.sinFondo && !im.contorno;
+export const esMejora = (im: Opciones) => !im.separar && !!im.mejorar && !im.sinFondo && !im.contorno;
 
-/** Hay algo que pedir al servidor: un recorte o la mejorada. */
-const pideAlgo = (im: Opciones) => im.sinFondo || im.contorno || esMejora(im);
+/** Pide la persona separada ("Separar a la persona"): manda sobre lo demás. */
+export const esSeparar = (im: Opciones) => !!im.separar;
+
+/** Hay algo que pedir al servidor: un recorte, la mejorada o la separada. */
+const pideAlgo = (im: Opciones) => esSeparar(im) || im.sinFondo || im.contorno || esMejora(im);
 
 const variablesDe = (marcaId: string, im: Opciones) => ({
   marcaId,
   url: im.url,
   sinFondo: im.sinFondo,
   contorno: im.contorno,
-  mejorar: esMejora(im),
+  mejorar: esSeparar(im) ? !!im.mejorar : esMejora(im),
+  separar: esSeparar(im),
 });
 
 interface Entrada {
@@ -43,7 +51,8 @@ interface Entrada {
 }
 
 /** Un recorte por url y opciones: es la clave del trabajo en el servidor. */
-export const claveRecorte = (im: Opciones) => `${im.sinFondo ? 1 : 0}${im.contorno ? 1 : 0}${esMejora(im) ? "m" : ""} ${im.url}`;
+export const claveRecorte = (im: Opciones) =>
+  esSeparar(im) ? `s${im.mejorar ? "m" : ""} ${im.url}` : `${im.sinFondo ? 1 : 0}${im.contorno ? 1 : 0}${esMejora(im) ? "m" : ""} ${im.url}`;
 
 /**
  * Los recortes de las imágenes del borrador, sin esperar a guardar el clip:
@@ -53,7 +62,8 @@ export const claveRecorte = (im: Opciones) => `${im.sinFondo ? 1 : 0}${im.contor
  *
  * Con `mejorar` (y sin quitar fondo ni contorno) pide la versión mejorada con
  * IA (~40 s): el editor de portada la usa para el cuadro del clip, el fondo y
- * las imágenes subidas. El editor de clips no la usa.
+ * las imágenes subidas. El editor de clips no la usa. Con `separar`, la
+ * persona separada del cuadro limpio (be#249, ~1 min con `mejorar`).
  *
  * `activo` en false (quien solo mira) no pide nada: se queda con lo guardado.
  */

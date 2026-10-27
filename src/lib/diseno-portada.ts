@@ -11,6 +11,10 @@ import type { EstiloPortada } from "@/lib/portada-marca";
 
 export type TipoFondoPortada = "CUADRO" | "IMAGEN" | "COLOR";
 export type TipoCapaPortada = "TEXTO" | "IMAGEN" | "LOGO" | "FORMA";
+/** Lo que va detrás de la persona separada (`FondoPortada.separar`, be#249). */
+export type TelonPortada = "DEGRADADO" | "DESENFOQUE" | "IMAGEN";
+/** El borde alrededor de la persona separada: una luz difusa o una línea sólida. */
+export type EstiloBordePortada = "LUZ" | "LINEA";
 
 export interface FondoPortada {
   tipo: TipoFondoPortada;
@@ -26,6 +30,21 @@ export interface FondoPortada {
    * tamaño y a la misma altura en todas las portadas (`ventanaDeCara`).
    */
   centrarCara?: boolean | null;
+  /**
+   * Fondo CUADRO limpio (be#249): separa a la persona de su fondo (sin moverla)
+   * y pone detrás el `telon`, con una sombra suave y su borde.
+   */
+  separar?: boolean | null;
+  /** Sin valor, DEGRADADO. */
+  telon?: TelonPortada | null;
+  /** El telón IMAGEN: una imagen subida para la marca. */
+  telonUrl?: string | null;
+  /** El grosor del borde, de 0 (sin borde) a 1; sin valor, `BORDE_POR_DEFECTO`. */
+  borde?: number | null;
+  /** Sin valor, LUZ. */
+  bordeEstilo?: EstiloBordePortada | null;
+  /** Sin color, el primario de la marca. */
+  bordeColor?: string | null;
 }
 
 export interface CapaPortada {
@@ -68,6 +87,29 @@ export interface DisenoPortada {
 }
 
 export const MAXIMO_CAPAS_PORTADA = 15;
+
+/**
+ * "Separar a la persona" (be#249), en fracción del ANCHO del lienzo: las
+ * mismas medidas que `SEPARAR` del backend (diseno-portada.ts).
+ */
+export const SEPARAR = {
+  /** Con `borde` 1: el grosor de la LINEA, o el desvío del desenfoque de la LUZ. */
+  bordeMaximo: 0.02,
+  /** La sombra suave debajo de la persona: desvío, corrimiento hacia abajo y opacidad. */
+  sombraDesvio: 0.015,
+  sombraAbajo: 0.01,
+  sombraOpacidad: 0.45,
+  /** El telón DESENFOQUE: desvío del desenfoque y velo negro. */
+  telonDesvio: 0.025,
+  telonVelo: 0.35,
+  /** El brillo del telón DEGRADADO: una elipse del primario, en fracción del lienzo. */
+  brilloX: 0.5,
+  brilloY: 0.38,
+  brilloRadio: 0.7,
+  brilloOpacidad: 0.55,
+} as const;
+/** El borde de la persona si nadie lo tocó. */
+export const BORDE_POR_DEFECTO = 0.35;
 export const ANCHO_PORTADA = 1080;
 export const ALTO_PORTADA = 1920;
 /** El cuerpo del título de la plantilla vieja con tamaño 1, en fracción del ancho. */

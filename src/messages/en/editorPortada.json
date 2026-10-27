@@ -86,5 +86,28 @@
   "centrarCara": "Center on the face",
   "centrarCaraAyuda": "The face comes out the same size and at the same height on every cover.",
   "zonaGrilla": "Grid area",
-  "zonaGrillaAyuda": "Darkens what doesn't show in the profile grid (TikTok and Instagram show the center 3:4)."
+  "zonaGrillaAyuda": "Darkens what doesn't show in the profile grid (TikTok and Instagram show the center 3:4).",
+  "separar": "Cut out the person",
+  "separarAyuda": "Removes the frame's background and puts your brand's backdrop behind.",
+  "separarSinCuadro": "This clip has no clean frames: the person won't be cut out on its cover.",
+  "separando": "Cutting out the person…",
+  "separarLento": "Cutting out the person is taking longer than usual.",
+  "separarFallo": "Couldn't cut out the person: the cover uses the frame as is.",
+  "telon": "Backdrop",
+  "telones": {
+    "DEGRADADO": "Brand gradient",
+    "DESENFOQUE": "Blurred",
+    "IMAGEN": "Image"
+  },
+  "bordePersona": "Outline",
+  "grosor": "Thickness",
+  "sinBorde": "No outline",
+  "estilosBorde": {
+    "LUZ": "Glow",
+    "LINEA": "Line"
+  },
+  "colorBorde": "Color",
+  "colorMarca": "Brand",
+  "colorBlanco": "White",
+  "colorOtro": "Other color"
 }
