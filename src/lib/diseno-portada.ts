@@ -150,7 +150,7 @@ export const claveDiseno = (d: DisenoPortada | null | undefined) => (d ? JSON.st
 
 /** El diseño sin nada: el cuadro del clip y el título abajo. */
 export const DISENO_INICIAL: DisenoPortada = {
-  fondo: { tipo: "CUADRO", mejorar: false, oscurecer: 0, desenfoque: 0 },
+  fondo: { tipo: "CUADRO", mejorar: true, oscurecer: 0, desenfoque: 0 },
   capas: [],
 };
 
