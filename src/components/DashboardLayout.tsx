@@ -9,6 +9,7 @@ import { useMenuColapsado } from "@/lib/menu-colapsado";
 import { useNotificacionesSinLeer } from "@/lib/notificaciones";
 import { useSesion } from "@/lib/sesion";
 import { Campanita } from "./Campanita";
+import { MenuUsuario } from "./MenuUsuario";
 import { Sidebar } from "./Sidebar";
 import { NavInferior } from "./NavInferior";
 import { EnCurso } from "./EnCurso";
@@ -123,7 +124,8 @@ export function DashboardLayout({
 
         {/* En el teléfono la campanita va acá, a la vista: adentro del cajón
             nadie se enteraría de que llegó algo. */}
-        <Campanita sinLeer={avisos.sinLeer} onCambio={avisos.refrescar} abreHacia="abajo" className="-mr-1" />
+        <Campanita sinLeer={avisos.sinLeer} onCambio={avisos.refrescar} abreHacia="abajo" />
+        <MenuUsuario />
       </header>
 
       {/* Fondo oscuro que cierra el cajón al tocarlo */}
@@ -140,13 +142,27 @@ export function DashboardLayout({
         onCerrar={() => setAbierto(false)}
         colapsado={menu.colapsado}
         onAlternarColapso={menuColapsable ? menu.alternar : undefined}
-        avisos={avisos}
+        // El editor no tiene la barra de arriba (gana alto): ahí la campanita y
+        // la cuenta siguen en el menú.
+        avisos={menuColapsable ? avisos : undefined}
+        conCuenta={Boolean(menuColapsable)}
       />
 
       <main className={`transition-[padding] duration-200 ${menuColapsable ? (menu.colapsado ? "md:pl-16" : "md:pl-64") : "lg:pl-64"}`}>
         {/* pb-24 en móvil: la barra inferior es fija y taparía el final del
             contenido, que suele ser justo el botón de la acción. */}
-        <div className={`min-h-screen p-4 pb-24 sm:p-6 sm:pb-24 ${margenChico ? "md:p-4" : "lg:p-8"}`}>
+        {/* Escritorio: las notificaciones y la cuenta, arriba a la derecha. */}
+        {!menuColapsable && (
+          <header className="hidden items-center justify-end gap-1 px-8 pt-4 lg:flex">
+            <Campanita sinLeer={avisos.sinLeer} onCambio={avisos.refrescar} abreHacia="abajo" />
+            <MenuUsuario conNombre />
+          </header>
+        )}
+        <div
+          className={`min-h-screen p-4 pb-24 sm:p-6 sm:pb-24 ${
+            margenChico ? "md:p-4" : menuColapsable ? "lg:p-8" : "lg:min-h-[calc(100vh-3.5rem)] lg:p-8 lg:pt-2"
+          }`}
+        >
           {children}
         </div>
       </main>

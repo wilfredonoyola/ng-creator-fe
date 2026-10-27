@@ -134,6 +134,7 @@ export function Sidebar({
   colapsado = false,
   onAlternarColapso,
   avisos,
+  conCuenta = false,
 }: {
   abierto?: boolean;
   onCerrar?: () => void;
@@ -146,6 +147,12 @@ export function Sidebar({
    * falta, porque la barra de arriba ya tiene la suya.
    */
   avisos?: { sinLeer: number; refrescar: () => void };
+  /**
+   * La cuenta (perfil, ayuda, salir) al pie del menú. Lo normal es que vaya
+   * arriba a la derecha (MenuUsuario, en DashboardLayout); el editor, que no
+   * tiene esa barra para ganar alto, la deja acá.
+   */
+  conCuenta?: boolean;
 }) {
   const t = useTranslations("marcoSidebar");
   const tRol = useTranslations("marcoRoles");
@@ -312,61 +319,63 @@ export function Sidebar({
       </nav>
 
       {/* Usuario */}
-      <div
-        className={`border-t border-white/10 p-4 ${c ? "md:hidden" : ""}`}
-        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
-      >
-        {/* Lleva al perfil: ahí están los datos de la cuenta y eliminarla (be#95). */}
-        <button
-          onClick={() => ir("/perfil")}
-          className={`mb-3 flex w-full items-center gap-3 rounded-lg p-1 text-left transition hover:bg-white/5 ${
-            pathname.startsWith("/perfil") ? "bg-white/5" : ""
-          }`}
+      {conCuenta && (
+        <div
+          className={`border-t border-white/10 p-4 ${c ? "md:hidden" : ""}`}
+          style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
-            <span className="text-sm">👤</span>
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">
-              {usuario?.nombre || usuario?.email || "…"}
-            </p>
-            {/* El rol que importa es el de la página activa: el mismo usuario
-                puede ser propietario de una y lector de otra. */}
-            <p className="truncate text-xs text-white/40">
-              {rolAqui
-                ? t("rolDe", { rol: tRol(`${rolAqui}.etiqueta`), marca: activa?.nombre ?? t("laPagina") })
-                : esAdmin
-                  ? t("administrador")
-                  : t("sinAcceso")}
-            </p>
-          </div>
-          <span className="shrink-0 text-xs text-white/30">{t("perfil")}</span>
-        </button>
-        {/* La wiki vive en el sitio público: se abre aparte para no perder lo que se está haciendo. */}
-        <a
-          href={`${URL_SITIO}${ENLACE_AYUDA}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mb-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:bg-white/5 hover:text-white"
-        >
-          <CircleHelp size={14} aria-hidden />
-          {t("ayuda")}
-        </a>
-        <a
-          href={`mailto:${CONTACTO}`}
-          title={t("soporte")}
-          className="mb-3 block truncate text-center text-[11px] text-white/40 transition hover:text-white"
-        >
-          {t("soporte")}: <span className="text-ng-celeste">{CONTACTO}</span>
-        </a>
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
-        >
-          <span>🚪</span>
-          {t("cerrarSesion")}
-        </button>
-      </div>
+          {/* Lleva al perfil: ahí están los datos de la cuenta y eliminarla (be#95). */}
+          <button
+            onClick={() => ir("/perfil")}
+            className={`mb-3 flex w-full items-center gap-3 rounded-lg p-1 text-left transition hover:bg-white/5 ${
+              pathname.startsWith("/perfil") ? "bg-white/5" : ""
+            }`}
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
+              <span className="text-sm">👤</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">
+                {usuario?.nombre || usuario?.email || "…"}
+              </p>
+              {/* El rol que importa es el de la página activa: el mismo usuario
+                  puede ser propietario de una y lector de otra. */}
+              <p className="truncate text-xs text-white/40">
+                {rolAqui
+                  ? t("rolDe", { rol: tRol(`${rolAqui}.etiqueta`), marca: activa?.nombre ?? t("laPagina") })
+                  : esAdmin
+                    ? t("administrador")
+                    : t("sinAcceso")}
+              </p>
+            </div>
+            <span className="shrink-0 text-xs text-white/30">{t("perfil")}</span>
+          </button>
+          {/* La wiki vive en el sitio público: se abre aparte para no perder lo que se está haciendo. */}
+          <a
+            href={`${URL_SITIO}${ENLACE_AYUDA}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:bg-white/5 hover:text-white"
+          >
+            <CircleHelp size={14} aria-hidden />
+            {t("ayuda")}
+          </a>
+          <a
+            href={`mailto:${CONTACTO}`}
+            title={t("soporte")}
+            className="mb-3 block truncate text-center text-[11px] text-white/40 transition hover:text-white"
+          >
+            {t("soporte")}: <span className="text-ng-celeste">{CONTACTO}</span>
+          </a>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
+          >
+            <span>🚪</span>
+            {t("cerrarSesion")}
+          </button>
+        </div>
+      )}
 
       {/* Colapsado: perfil y salir como íconos. */}
       {c && (
