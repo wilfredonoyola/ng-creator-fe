@@ -33,7 +33,8 @@
   "maximoCapas": "You reached the maximum of {n} layers.",
   "capas": "Layers",
   "sinCapas": "No layers yet: add a text, the title or an image.",
-  "atajos": "Drag to move. Delete removes, Ctrl+D duplicates, arrow keys nudge and Ctrl+Z undoes.",
+  "atajos": "Drag to move; in the list, drag the handle to change the order. Delete removes, Ctrl+D duplicates, Ctrl+] and Ctrl+[ bring forward and send backward (with Shift, all the way), arrow keys nudge and Ctrl+Z undoes.",
+  "arrastrarCapa": "Drag to reorder: {nombre}",
   "delTema": "From theme",
   "fondo": "Background",
   "fondos": {

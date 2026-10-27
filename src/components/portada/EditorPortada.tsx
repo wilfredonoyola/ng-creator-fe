@@ -18,6 +18,7 @@ import {
   Undo2,
   X,
   Film,
+  GripVertical,
   Heading,
   BadgeCheck,
 } from "lucide-react";
@@ -389,15 +390,28 @@ function Editor({
     },
     [cambiar],
   );
-  const mover = (id: string, paso: -1 | 1) =>
-    cambiar((d) => {
-      const i = d.capas.findIndex((x) => x.id === id);
-      const j = i + paso;
-      if (i < 0 || j < 0 || j >= d.capas.length) return d;
-      const capas = [...d.capas];
-      [capas[i], capas[j]] = [capas[j], capas[i]];
-      return { ...d, capas };
-    });
+  /** Lleva la capa a la posición `destino` del orden de dibujo (0 = la de más atrás). */
+  const moverA = useCallback(
+    (id: string, destino: number) =>
+      cambiar((d) => {
+        const i = d.capas.findIndex((x) => x.id === id);
+        const j = entre(destino, 0, d.capas.length - 1);
+        if (i < 0 || i === j) return d;
+        const capas = d.capas.filter((x) => x.id !== id);
+        capas.splice(j, 0, d.capas[i]);
+        return { ...d, capas };
+      }),
+    [cambiar],
+  );
+  /** Un paso adelante (1) o atrás (-1); `alFinal` la lleva hasta adelante o hasta atrás. */
+  const mover = useCallback(
+    (id: string, paso: -1 | 1, alFinal = false) => {
+      const i = disenoRef.current.capas.findIndex((x) => x.id === id);
+      if (i < 0) return;
+      moverA(id, alFinal ? (paso > 0 ? disenoRef.current.capas.length - 1 : 0) : i + paso);
+    },
+    [moverA],
+  );
 
   // ---- Gestos ----
   const gesto = useRef<Gesto | null>(null);
@@ -528,6 +542,13 @@ function Editor({
       } else if (mod && e.key.toLowerCase() === "d") {
         e.preventDefault();
         duplicar(id);
+      } else if (mod && (e.key === "]" || e.key === "}" || e.code === "BracketRight")) {
+        // Ctrl/Cmd+] adelante; con Mayús, hasta adelante (como Canva y Figma).
+        e.preventDefault();
+        mover(id, 1, e.shiftKey);
+      } else if (mod && (e.key === "[" || e.key === "{" || e.code === "BracketLeft")) {
+        e.preventDefault();
+        mover(id, -1, e.shiftKey);
       } else if (e.key.startsWith("Arrow")) {
         e.preventDefault();
         const c = disenoRef.current.capas.find((x) => x.id === id);
@@ -540,7 +561,7 @@ function Editor({
     };
     window.addEventListener("keydown", tecla, true);
     return () => window.removeEventListener("keydown", tecla, true);
-  }, [borrar, duplicar, cambiarCapa, deshacer, rehacer]);
+  }, [borrar, duplicar, mover, cambiarCapa, deshacer, rehacer]);
   // ---- Subir imágenes ----
   const archivoCapa = useRef<HTMLInputElement>(null);
   const archivoFondo = useRef<HTMLInputElement>(null);
@@ -787,19 +808,7 @@ function Editor({
 
                 <Seccion titulo={t("capas")}>
                   {diseno.capas.length ? (
-                    <ul className="space-y-1">
-                      {[...diseno.capas].reverse().map((c) => (
-                        <li key={c.id}>
-                          <button
-                            onClick={() => setElegida(c.id)}
-                            className="flex w-full items-center gap-2 rounded-lg border border-white/10 px-2.5 py-1.5 text-left text-xs text-white/75 hover:bg-white/5"
-                          >
-                            <IconoCapa capa={c} />
-                            <span className="min-w-0 flex-1 truncate">{nombreCapa(c, t)}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    <ListaCapas capas={diseno.capas} onElegir={setElegida} onMoverA={moverA} />
                   ) : (
                     <p className="text-xs text-white/40">{t("sinCapas")}</p>
                   )}
@@ -1195,6 +1204,132 @@ function OpcionesSeparar({
         </>
       )}
     </div>
+  );
+}
+
+type ArrastreLista = { id: string; desde: number; y0: number; dy: number; hueco: number; puntero: number };
+
+/**
+ * La lista de capas del panel, de adelante (arriba) hacia atrás (abajo), como
+ * en Canva y Figma: es `capas` al revés, sin tocar el orden de dibujo. Se
+ * reordena arrastrando el asa (mouse o dedo) o, con el asa enfocada, con las
+ * flechas arriba/abajo.
+ */
+function ListaCapas({
+  capas,
+  onElegir,
+  onMoverA,
+}: {
+  capas: CapaPortada[];
+  onElegir: (id: string) => void;
+  onMoverA: (id: string, destino: number) => void;
+}) {
+  const t = useTranslations("editorPortada");
+  const vista = [...capas].reverse();
+  const n = vista.length;
+  const filas = useRef(new Map<string, HTMLLIElement>());
+  const [arrastre, setArrastre] = useState<ArrastreLista | null>(null);
+  // Índice en la vista → índice en el orden de dibujo.
+  const aDibujo = (v: number) => n - 1 - v;
+
+  /** El hueco (0..n, entre filas) donde caería con el puntero en `y`. */
+  const huecoEn = (y: number) => {
+    let h = 0;
+    vista.forEach((c, v) => {
+      const r = filas.current.get(c.id)?.getBoundingClientRect();
+      if (r && y > r.top + r.height / 2) h = v + 1;
+    });
+    return h;
+  };
+
+  const empezar = (e: React.PointerEvent, id: string, desde: number) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setArrastre({ id, desde, y0: e.clientY, dy: 0, hueco: desde, puntero: e.pointerId });
+  };
+  const moverPuntero = (e: React.PointerEvent) => {
+    if (!arrastre || e.pointerId !== arrastre.puntero) return;
+    setArrastre({ ...arrastre, dy: e.clientY - arrastre.y0, hueco: huecoEn(e.clientY) });
+  };
+  const soltar = (e: React.PointerEvent) => {
+    if (!arrastre || e.pointerId !== arrastre.puntero) return;
+    const { id, desde } = arrastre;
+    const hueco = huecoEn(e.clientY);
+    setArrastre(null);
+    const hasta = hueco > desde ? hueco - 1 : hueco;
+    if (hasta !== desde) onMoverA(id, aDibujo(hasta));
+  };
+  const cancelar = () => setArrastre(null);
+
+  const teclaAsa = (e: React.KeyboardEvent, id: string, v: number) => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    // Las flechas son del asa: no mueven la capa en el lienzo.
+    e.preventDefault();
+    e.stopPropagation();
+    const hasta = e.key === "ArrowUp" ? v - 1 : v + 1;
+    if (hasta >= 0 && hasta < n) onMoverA(id, aDibujo(hasta));
+  };
+
+  // La línea va en el hueco donde cae, salvo que caiga donde ya estaba.
+  const linea = arrastre && arrastre.hueco !== arrastre.desde && arrastre.hueco !== arrastre.desde + 1 ? arrastre.hueco : null;
+
+  return (
+    <ul className="relative space-y-1">
+      {vista.map((c, v) => {
+        const arrastrando = arrastre?.id === c.id;
+        const nombre = nombreCapa(c, t);
+        return (
+          <li
+            key={c.id}
+            ref={(el) => {
+              if (el) filas.current.set(c.id, el);
+              else filas.current.delete(c.id);
+            }}
+            className="relative"
+            style={arrastrando ? { transform: `translateY(${arrastre.dy}px)`, zIndex: 10 } : undefined}
+          >
+            {linea === v && <div className="pointer-events-none absolute inset-x-0 -top-[3px] h-0.5 rounded-full bg-[#FFD400]" aria-hidden />}
+            <div
+              className={`flex w-full items-center rounded-lg border text-xs text-white/75 ${
+                arrastrando ? "border-[#FFD400]/60 bg-[#0b0b0b] shadow-lg" : "border-white/10"
+              }`}
+            >
+              <button
+                type="button"
+                aria-label={t("arrastrarCapa", { nombre })}
+                title={t("arrastrarCapa", { nombre })}
+                onPointerDown={(e) => empezar(e, c.id, v)}
+                onPointerMove={moverPuntero}
+                onPointerUp={soltar}
+                onPointerCancel={cancelar}
+                onLostPointerCapture={cancelar}
+                onKeyDown={(e) => teclaAsa(e, c.id, v)}
+                className={`flex shrink-0 items-center self-stretch rounded-l-lg px-1.5 text-white/35 hover:bg-white/5 hover:text-white/70 ${
+                  arrastrando ? "cursor-grabbing" : "cursor-grab"
+                }`}
+                style={{ touchAction: "none" }}
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onElegir(c.id)}
+                className="flex min-w-0 flex-1 items-center gap-2 rounded-r-lg py-1.5 pl-1 pr-2.5 text-left hover:bg-white/5"
+              >
+                <IconoCapa capa={c} />
+                <span className="min-w-0 flex-1 truncate">{nombre}</span>
+              </button>
+            </div>
+          </li>
+        );
+      })}
+      {linea === n && (
+        <li className="relative h-0" aria-hidden>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-0.5 rounded-full bg-[#FFD400]" />
+        </li>
+      )}
+    </ul>
   );
 }
 
