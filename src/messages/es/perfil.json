@@ -53,7 +53,7 @@
   },
   "avisos": {
     "titulo": "Notificaciones",
-    "detalle": "Los avisos le llegan a todo el equipo de la marca, menos a quien hizo la acción. Elegí cuáles querés recibir y por dónde.",
+    "detalle": "Los avisos le llegan a todo el equipo de la marca, menos a quien hizo la acción. Elegí cuáles querés recibir y por dónde. Por correo, lo que pide que hagas algo (una revisión) llega al momento; lo demás llega junto en un resumen cada 30 minutos, así no se llena tu bandeja.",
     "cargando": "Cargando…",
     "errorTraer": "No pudimos traer tus preferencias: {error}",
     "aviso": "Aviso",

@@ -124,7 +124,7 @@
   },
   "soporte": {
     "titulo": "Support",
-    "subtitulo": "Chat conversations the person handed to the team (they also arrive by email at support@clipfine.io). Reply by email and move them to in progress or closed.",
+    "subtitulo": "Chat conversations the person handed to the team (they also arrive by email at miguel@clipfine.io). Reply by email and move them to in progress or closed.",
     "pestanas": {
       "abiertos": "Open",
       "enProgreso": "In progress",
