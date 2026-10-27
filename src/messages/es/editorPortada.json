@@ -86,5 +86,10 @@
   "radio": "Puntas redondeadas",
   "ajustes": "Ajustes",
   "opacidad": "Opacidad",
-  "rotacion": "Rotación"
+  "rotacion": "Rotación",
+  "centrarCara": "Centrar en la cara",
+  "centrarCaraAyuda": "La cara sale del mismo tamaño y a la misma altura en todas las portadas.",
+  "zonaGrilla": "Zona de la grilla",
+  "zonaGrillaAyuda": "Oscurece lo que no se ve en la grilla del perfil (TikTok e Instagram muestran el centro 3:4).",
+  "revisarConVista": "La revisión sale al tocar «Ver cómo queda»."
 }

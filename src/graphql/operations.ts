@@ -691,6 +691,7 @@ export const CAMPOS_DISENO_PORTADA = `
     mejorar
     oscurecer
     desenfoque
+    centrarCara
   }
   capas {
     id
@@ -935,7 +936,17 @@ export const PUBLICACIONES_DE_MARCA = gql`
         cuadrosPortada {
           seg
           url
+          puntaje
+          caras
+          cara {
+            x
+            y
+            ancho
+            alto
+            ojosY
+          }
         }
+        titulosPortada
         desdeSeg
         hastaSeg
         duracionEfectivaSeg
@@ -2414,7 +2425,17 @@ const CAMPOS_CLIP_EDITOR = gql`
     cuadrosPortada {
       seg
       url
+      puntaje
+      caras
+      cara {
+        x
+        y
+        ancho
+        alto
+        ojosY
+      }
     }
+    titulosPortada
     renderizadoEn
     editadoEn
     calidad {
@@ -2579,6 +2600,26 @@ export const VISTA_DISENO_PORTADA = gql`
       imagen
       recortesPendientes
       recortesFallidos
+      avisos {
+        codigo
+        grave
+        capaId
+      }
+    }
+  }
+`;
+
+/**
+ * La revisión de la portada sin dibujarla (ng-creator-be#249): lo que hace que
+ * el perfil se vea disparejo o que algo no se lea en la grilla. Con `diseno`,
+ * el propio de la publicación; sin él, el de la marca.
+ */
+export const AVISOS_PORTADA = gql`
+  query AvisosPortada($marcaId: ID!, $clipId: ID!, $texto: String, $seg: Float, $diseno: DisenoPortadaInput) {
+    avisosPortada(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, diseno: $diseno) {
+      codigo
+      grave
+      capaId
     }
   }
 `;
@@ -2593,10 +2634,14 @@ export const PORTADAS_PERFIL = gql`
   }
 `;
 
-/** Títulos para la portada de un clip: los de la IA y, después, el gancho y el título. */
+/**
+ * Títulos para la portada de un clip: los de la IA y, después, el gancho y el
+ * título. Cada uno puede traer un Enter: el renglón de arriba y el de abajo.
+ * `nuevos` pide otros a la IA y reemplaza los guardados ("Otros", be#249).
+ */
 export const TITULOS_PORTADA = gql`
-  query TitulosPortada($marcaId: ID!, $clipId: ID!) {
-    titulosPortada(marcaId: $marcaId, clipId: $clipId)
+  query TitulosPortada($marcaId: ID!, $clipId: ID!, $nuevos: Boolean) {
+    titulosPortada(marcaId: $marcaId, clipId: $clipId, nuevos: $nuevos)
   }
 `;
 

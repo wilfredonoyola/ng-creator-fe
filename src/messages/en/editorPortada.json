@@ -86,5 +86,10 @@
   "radio": "Rounded corners",
   "ajustes": "Settings",
   "opacidad": "Opacity",
-  "rotacion": "Rotation"
+  "rotacion": "Rotation",
+  "centrarCara": "Center on the face",
+  "centrarCaraAyuda": "The face comes out the same size and at the same height on every cover.",
+  "zonaGrilla": "Grid area",
+  "zonaGrillaAyuda": "Darkens what doesn't show in the profile grid (TikTok and Instagram show the center 3:4).",
+  "revisarConVista": "The check shows up when you tap “See how it looks”."
 }

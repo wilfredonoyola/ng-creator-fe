@@ -1,0 +1,16 @@
+{
+  "titulo": "Cover check",
+  "revisando": "Checking…",
+  "todoBien": "Looks good in the profile grid.",
+  "bloquea": "Fix what's marked in red to schedule with the brand cover.",
+  "verCapa": "Tap to select that layer",
+  "codigos": {
+    "TITULO_VACIO": "The title is empty: type one or pick a suggested one.",
+    "TITULO_FUERA_GRILLA": "The title goes outside the area shown in the profile grid: move it toward the center.",
+    "TEXTO_FUERA_GRILLA": "A text goes outside the area shown in the profile grid.",
+    "LOGO_FUERA_GRILLA": "The logo is outside the grid area: it won't show on the profile.",
+    "TITULO_LARGO": "The title is long: more than two lines or 8 words can't be read in a thumbnail.",
+    "CARA_CHICA": "The face is small: try another frame or “Center on the face” in the design.",
+    "SIN_CARA": "No face shows in this frame: try another one."
+  }
+}

@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { DISENO_PORTADA_MARCA, PLANTILLA_CLIP_MARCA, VISTA_DISENO_PORTADA } from "@/graphql/operations";
 import { FUENTES_ESTILO, temaValido, type FuenteEstilo, type Tema } from "@/lib/estilos-texto";
-import { ESTILOS_PORTADA, FUENTES_PORTADA } from "@/lib/portada-marca";
+import { ESTILOS_PORTADA, FUENTES_PORTADA, useAvisosPortada, type AvisoPortada } from "@/lib/portada-marca";
 import { ErrorDeSubida, FORMATOS_IMAGEN_CLIP, uploadImagenClip } from "@/lib/upload";
 import { useRecortesImagen } from "@/lib/use-recortes-imagen";
 import {
@@ -33,14 +33,17 @@ import {
   claveDiseno,
   disenoParaEnviar,
   entre,
+  franjaDeGrilla,
   lienzoDe,
   medirTexto,
   nuevoIdCapa,
   type CapaPortada,
+  type CaraDeCuadro,
   type DisenoPortada,
   type FondoPortada,
   type TipoFondoPortada,
 } from "@/lib/diseno-portada";
+import { AvisosPortada } from "./AvisosPortada";
 import { DibujoDiseno, cajaDeCapa, useAspectos, type RecursosDibujo } from "./DibujoDiseno";
 
 /**
@@ -53,6 +56,10 @@ import { DibujoDiseno, cajaDeCapa, useAspectos, type RecursosDibujo } from "./Di
  * una publicación (Programar, calendario): quien lo abre dice qué hacer con el
  * diseño al guardar. La vista es en vivo en el navegador; "Ver cómo queda"
  * pide el dibujo exacto al backend.
+ *
+ * Debajo del lienzo (be#249): la zona de la grilla del perfil y la revisión
+ * de la portada. Con un clip se revisa sola al cambiar; sin clip (Brand Kit),
+ * la trae "Ver cómo queda".
  */
 export function EditorPortada({
   marcaId,
@@ -61,6 +68,7 @@ export function EditorPortada({
   seg,
   texto,
   cuadroUrl,
+  cara,
   tituloEjemplo,
   titulo,
   textoGuardar,
@@ -77,6 +85,8 @@ export function EditorPortada({
   texto?: string | null;
   /** El cuadro del clip que se ve en vivo (fondo CUADRO y capas de cuadro). */
   cuadroUrl?: string | null;
+  /** La cara de ese cuadro, para "Centrar en la cara" en vivo (be#249). */
+  cara?: CaraDeCuadro | null;
   /** Lo que se ve en las capas del título. */
   tituloEjemplo: string;
   titulo: string;
@@ -112,6 +122,7 @@ export function EditorPortada({
           seg={seg}
           texto={texto}
           cuadroUrl={cuadroUrl}
+          cara={cara}
           tituloEjemplo={tituloEjemplo}
           titulo={titulo}
           textoGuardar={textoGuardar}
@@ -202,6 +213,7 @@ function Editor({
   seg,
   texto,
   cuadroUrl,
+  cara,
   tituloEjemplo,
   titulo,
   textoGuardar,
@@ -216,6 +228,7 @@ function Editor({
   seg?: number | null;
   texto?: string | null;
   cuadroUrl?: string | null;
+  cara?: CaraDeCuadro | null;
   tituloEjemplo: string;
   titulo: string;
   textoGuardar: string;
@@ -232,6 +245,7 @@ function Editor({
   const [error, setError] = useState<string | null>(null);
   const [subiendo, setSubiendo] = useState<"capa" | "fondo" | "reemplazo" | null>(null);
   const [guia, setGuia] = useState<{ v: boolean; h: boolean }>({ v: false, h: false });
+  const [zonaGrilla, setZonaGrilla] = useState(false);
   const claveInicial = useRef(claveDiseno(inicial));
   const cambiado = claveDiseno(diseno) !== claveInicial.current;
   const capa = diseno.capas.find((c) => c.id === elegida) ?? null;
@@ -265,6 +279,7 @@ function Editor({
     tema,
     titulo: tituloEjemplo,
     cuadroUrl,
+    caraCuadro: cara,
     logoUrl,
     aspectos,
     srcDeCapa,
@@ -495,10 +510,13 @@ function Editor({
   // ---- Ver cómo queda (el dibujo del servidor) ----
   const cliente = useApolloClient();
   const [vista, setVista] = useState<{ imagen: string | null; pendientes: number; fallidos: number; cargando: boolean; error: boolean } | null>(null);
+  /** Los avisos del último "Ver cómo queda", con el diseño que revisó (sin clip es la única revisión). */
+  const [avisosVista, setAvisosVista] = useState<{ clave: string; avisos: AvisoPortada[] } | null>(null);
   const pedido = useRef(0);
   const verComoQueda = useCallback(
     async (intento = 0, n?: number) => {
       const yo = n ?? ++pedido.current;
+      const clave = claveDiseno(disenoRef.current);
       setVista((v) => ({ imagen: v?.imagen ?? null, pendientes: v?.pendientes ?? 0, fallidos: v?.fallidos ?? 0, cargando: true, error: false }));
       try {
         const r = await cliente.query({
@@ -515,6 +533,7 @@ function Editor({
         if (yo !== pedido.current) return;
         const v = r.data?.vistaDisenoPortada;
         setVista({ imagen: v?.imagen ?? null, pendientes: v?.recortesPendientes ?? 0, fallidos: v?.recortesFallidos ?? 0, cargando: false, error: !v });
+        if (v) setAvisosVista({ clave, avisos: v.avisos ?? [] });
         // Mientras falten recortes se vuelve a pedir sola, un rato.
         if (v?.recortesPendientes && intento < 12) setTimeout(() => void verComoQueda(intento + 1, yo), 5000);
       } catch {
@@ -528,6 +547,16 @@ function Editor({
     pedido.current++;
     setVista(null);
   };
+
+  // ---- La revisión (be#249) ----
+  // Con clip, sola y sin dibujar; sin clip, la del último "Ver cómo queda" (vale hasta el próximo cambio).
+  const revision = useAvisosPortada({ marcaId, clipId, texto: texto?.trim() || null, seg: seg ?? null, diseno }, !clipId);
+  const revisadaConVista = !clipId && avisosVista?.clave === claveDiseno(diseno);
+  const avisos = clipId ? revision.avisos : revisadaConVista ? avisosVista!.avisos : [];
+  const elegirCapaDeAviso = (id: string) => {
+    if (diseno.capas.some((c) => c.id === id)) setElegida(id);
+  };
+  const franja = franjaDeGrilla(lienzo);
 
   async function guardar() {
     setError(null);
@@ -581,119 +610,148 @@ function Editor({
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
-        {/* El lienzo */}
-        <div
-          ref={area}
-          className="relative flex h-[58vh] shrink-0 items-center justify-center md:h-auto md:min-h-0 md:flex-1"
-          onPointerDown={() => setElegida(null)}
-        >
+        {/* El lienzo y, debajo, la zona de la grilla y la revisión */}
+        <div className="flex shrink-0 flex-col md:min-h-0 md:flex-1">
           <div
-            ref={lienzoRef}
-            className="relative select-none overflow-hidden rounded-lg shadow-2xl ring-1 ring-white/10"
-            style={{ width: anchoPantalla, height: altoPantalla, touchAction: "none" }}
+            ref={area}
+            className="relative flex h-[58vh] shrink-0 items-center justify-center md:h-auto md:min-h-0 md:flex-1"
+            onPointerDown={() => setElegida(null)}
           >
-            <DibujoDiseno diseno={diseno} lienzo={lienzo} recursos={recursos} className="absolute inset-0 h-full w-full" />
-            {/* Las cajas para elegir y mover, en el mismo orden que las capas */}
-            {diseno.capas.map((c) => {
-              const caja = cajaDeCapa(c, lienzo, recursos);
-              const recorte = recorteDeCapa(c);
-              return (
+            <div
+              ref={lienzoRef}
+              className="relative select-none overflow-hidden rounded-lg shadow-2xl ring-1 ring-white/10"
+              style={{ width: anchoPantalla, height: altoPantalla, touchAction: "none" }}
+            >
+              <DibujoDiseno diseno={diseno} lienzo={lienzo} recursos={recursos} className="absolute inset-0 h-full w-full" />
+              {/* Las cajas para elegir y mover, en el mismo orden que las capas */}
+              {diseno.capas.map((c) => {
+                const caja = cajaDeCapa(c, lienzo, recursos);
+                const recorte = recorteDeCapa(c);
+                return (
+                  <div
+                    key={c.id}
+                    onPointerDown={(e) => empezar(e, "mover", c)}
+                    className="absolute cursor-move"
+                    style={{
+                      left: pct(caja.cx - caja.ancho / 2, lienzo.ancho),
+                      top: pct(caja.cy - caja.alto / 2, lienzo.alto),
+                      width: pct(caja.ancho, lienzo.ancho),
+                      height: pct(caja.alto, lienzo.alto),
+                      transform: c.rotacion ? `rotate(${c.rotacion}deg)` : undefined,
+                      touchAction: "none",
+                    }}
+                  >
+                    {recorte?.estadoRecorte === "PENDIENTE" && (
+                      <span className="absolute left-1 top-1 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white/80">
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        {t("quitandoFondo")}
+                      </span>
+                    )}
+                    {recorte?.estadoRecorte === "FALLIDO" && (
+                      <span className="absolute left-1 top-1 rounded bg-red-900/80 px-1.5 py-0.5 text-[10px] text-white">{t("recorteFallo")}</span>
+                    )}
+                  </div>
+                );
+              })}
+              {/* Lo que no se ve en la grilla del perfil, oscurecido */}
+              {zonaGrilla && franja.desde > 0 && (
+                <>
+                  <div
+                    className="pointer-events-none absolute inset-x-0 top-0 border-b border-dashed border-white/60 bg-black/60"
+                    style={{ height: pct(franja.desde, 1) }}
+                  />
+                  <div
+                    className="pointer-events-none absolute inset-x-0 bottom-0 border-t border-dashed border-white/60 bg-black/60"
+                    style={{ height: pct(1 - franja.hasta, 1) }}
+                  />
+                </>
+              )}
+              {/* Guías del centro */}
+              {guia.v && <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-fuchsia-400/80" />}
+              {guia.h && <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-fuchsia-400/80" />}
+              {/* La capa elegida: marco y manijas */}
+              {capa && cajaElegida && (
                 <div
-                  key={c.id}
-                  onPointerDown={(e) => empezar(e, "mover", c)}
-                  className="absolute cursor-move"
+                  className="pointer-events-none absolute outline outline-2 outline-offset-2 outline-sky-400"
                   style={{
-                    left: pct(caja.cx - caja.ancho / 2, lienzo.ancho),
-                    top: pct(caja.cy - caja.alto / 2, lienzo.alto),
-                    width: pct(caja.ancho, lienzo.ancho),
-                    height: pct(caja.alto, lienzo.alto),
-                    transform: c.rotacion ? `rotate(${c.rotacion}deg)` : undefined,
-                    touchAction: "none",
+                    left: pct(cajaElegida.cx - cajaElegida.ancho / 2, lienzo.ancho),
+                    top: pct(cajaElegida.cy - cajaElegida.alto / 2, lienzo.alto),
+                    width: pct(cajaElegida.ancho, lienzo.ancho),
+                    height: pct(cajaElegida.alto, lienzo.alto),
+                    transform: capa.rotacion ? `rotate(${capa.rotacion}deg)` : undefined,
                   }}
                 >
-                  {recorte?.estadoRecorte === "PENDIENTE" && (
-                    <span className="absolute left-1 top-1 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white/80">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      {t("quitandoFondo")}
-                    </span>
+                  <Manija className="-bottom-3 -right-3 cursor-nwse-resize" etiqueta={t("escalar")} onPointerDown={(e) => empezar(e, "escalar", capa)} />
+                  {(capa.tipo === "TEXTO" || capa.tipo === "FORMA") && (
+                    <Manija
+                      className="-right-3 top-1/2 -translate-y-1/2 cursor-ew-resize"
+                      chica
+                      etiqueta={capa.tipo === "TEXTO" ? t("anchoTexto") : t("ancho")}
+                      onPointerDown={(e) => empezar(e, "lado", capa, "ancho")}
+                    />
                   )}
-                  {recorte?.estadoRecorte === "FALLIDO" && (
-                    <span className="absolute left-1 top-1 rounded bg-red-900/80 px-1.5 py-0.5 text-[10px] text-white">{t("recorteFallo")}</span>
+                  {capa.tipo === "FORMA" && (
+                    <Manija className="-bottom-3 left-1/2 -translate-x-1/2 cursor-ns-resize" chica etiqueta={t("alto")} onPointerDown={(e) => empezar(e, "lado", capa, "alto")} />
                   )}
+                  <button
+                    type="button"
+                    aria-label={t("girar")}
+                    title={t("girar")}
+                    onPointerDown={(e) => empezar(e, "girar", capa)}
+                    className="pointer-events-auto absolute -top-10 left-1/2 flex h-7 w-7 -translate-x-1/2 cursor-grab items-center justify-center rounded-full bg-sky-400 text-ng-tinta shadow"
+                    style={{ touchAction: "none" }}
+                  >
+                    <RotateCw className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              );
-            })}
-            {/* Guías del centro */}
-            {guia.v && <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-fuchsia-400/80" />}
-            {guia.h && <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-fuchsia-400/80" />}
-            {/* La capa elegida: marco y manijas */}
-            {capa && cajaElegida && (
-              <div
-                className="pointer-events-none absolute outline outline-2 outline-offset-2 outline-sky-400"
-                style={{
-                  left: pct(cajaElegida.cx - cajaElegida.ancho / 2, lienzo.ancho),
-                  top: pct(cajaElegida.cy - cajaElegida.alto / 2, lienzo.alto),
-                  width: pct(cajaElegida.ancho, lienzo.ancho),
-                  height: pct(cajaElegida.alto, lienzo.alto),
-                  transform: capa.rotacion ? `rotate(${capa.rotacion}deg)` : undefined,
-                }}
-              >
-                <Manija className="-bottom-3 -right-3 cursor-nwse-resize" etiqueta={t("escalar")} onPointerDown={(e) => empezar(e, "escalar", capa)} />
-                {(capa.tipo === "TEXTO" || capa.tipo === "FORMA") && (
-                  <Manija
-                    className="-right-3 top-1/2 -translate-y-1/2 cursor-ew-resize"
-                    chica
-                    etiqueta={capa.tipo === "TEXTO" ? t("anchoTexto") : t("ancho")}
-                    onPointerDown={(e) => empezar(e, "lado", capa, "ancho")}
-                  />
-                )}
-                {capa.tipo === "FORMA" && (
-                  <Manija className="-bottom-3 left-1/2 -translate-x-1/2 cursor-ns-resize" chica etiqueta={t("alto")} onPointerDown={(e) => empezar(e, "lado", capa, "alto")} />
-                )}
-                <button
-                  type="button"
-                  aria-label={t("girar")}
-                  title={t("girar")}
-                  onPointerDown={(e) => empezar(e, "girar", capa)}
-                  className="pointer-events-auto absolute -top-10 left-1/2 flex h-7 w-7 -translate-x-1/2 cursor-grab items-center justify-center rounded-full bg-sky-400 text-ng-tinta shadow"
-                  style={{ touchAction: "none" }}
-                >
-                  <RotateCw className="h-3.5 w-3.5" />
-                </button>
+              )}
+            </div>
+
+            {/* Ver cómo queda */}
+            {vista && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/80 p-4" onPointerDown={(e) => e.stopPropagation()}>
+                <div className="flex max-h-full w-full max-w-sm flex-col gap-3 rounded-2xl border border-white/10 bg-[#13151b] p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">{t("asiQueda")}</p>
+                    <button onClick={cerrarVista} className="rounded p-1 text-white/60 hover:bg-white/10" aria-label={t("cerrar")}>
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="relative mx-auto aspect-[9/16] max-h-[60vh] overflow-hidden rounded-lg bg-white/5">
+                    {vista.imagen ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- data URL armada por el backend
+                      <img src={vista.imagen} alt={t("asiQueda")} className="h-full w-full object-contain" />
+                    ) : (
+                      !vista.error && <div className="h-full w-full animate-pulse" />
+                    )}
+                    {vista.cargando && (
+                      <span className="absolute right-2 top-2 rounded-full bg-black/60 p-1">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </span>
+                    )}
+                  </div>
+                  {vista.error && <p className="text-xs text-red-400">{t("errorVista")}</p>}
+                  {vista.pendientes > 0 && <p className="text-xs text-amber-300">{t("recortesPendientes", { n: vista.pendientes })}</p>}
+                  {vista.fallidos > 0 && <p className="text-xs text-red-400">{t("recortesFallidos", { n: vista.fallidos })}</p>}
+                  <p className="text-[11px] text-white/40">{clipId ? t("vistaDelClip") : t("vistaUltimoClip")}</p>
+                </div>
               </div>
             )}
           </div>
-
-          {/* Ver cómo queda */}
-          {vista && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/80 p-4" onPointerDown={(e) => e.stopPropagation()}>
-              <div className="flex max-h-full w-full max-w-sm flex-col gap-3 rounded-2xl border border-white/10 bg-[#13151b] p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">{t("asiQueda")}</p>
-                  <button onClick={cerrarVista} className="rounded p-1 text-white/60 hover:bg-white/10" aria-label={t("cerrar")}>
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="relative mx-auto aspect-[9/16] max-h-[60vh] overflow-hidden rounded-lg bg-white/5">
-                  {vista.imagen ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- data URL armada por el backend
-                    <img src={vista.imagen} alt={t("asiQueda")} className="h-full w-full object-contain" />
-                  ) : (
-                    !vista.error && <div className="h-full w-full animate-pulse" />
-                  )}
-                  {vista.cargando && (
-                    <span className="absolute right-2 top-2 rounded-full bg-black/60 p-1">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    </span>
-                  )}
-                </div>
-                {vista.error && <p className="text-xs text-red-400">{t("errorVista")}</p>}
-                {vista.pendientes > 0 && <p className="text-xs text-amber-300">{t("recortesPendientes", { n: vista.pendientes })}</p>}
-                {vista.fallidos > 0 && <p className="text-xs text-red-400">{t("recortesFallidos", { n: vista.fallidos })}</p>}
-                <p className="text-[11px] text-white/40">{clipId ? t("vistaDelClip") : t("vistaUltimoClip")}</p>
-              </div>
-            </div>
-          )}
+          <div className="shrink-0 space-y-2 border-t border-white/10 px-4 py-3">
+            <Interruptor etiqueta={t("zonaGrilla")} ayuda={t("zonaGrillaAyuda")} valor={zonaGrilla} onCambio={setZonaGrilla} />
+            {clipId || revisadaConVista ? (
+              <AvisosPortada
+                avisos={avisos}
+                revisando={clipId ? revision.revisando : false}
+                conTodoBien
+                onElegirCapa={elegirCapaDeAviso}
+                className="max-h-40 overflow-y-auto"
+              />
+            ) : (
+              <p className="text-[11px] text-white/40">{t("revisarConVista")}</p>
+            )}
+          </div>
         </div>
 
         {/* El panel */}
@@ -967,6 +1025,9 @@ function PanelFondo({
       )}
       {fondo.tipo === "COLOR" && (
         <ColorTema etiqueta={t("color")} valor={fondo.color} porDefecto={tema.colorFondo} onCambio={(v) => onCambiar({ color: v })} />
+      )}
+      {fondo.tipo === "CUADRO" && (
+        <Interruptor etiqueta={t("centrarCara")} ayuda={t("centrarCaraAyuda")} valor={!!fondo.centrarCara} onCambio={(v) => onCambiar({ centrarCara: v })} />
       )}
       {fondo.tipo !== "COLOR" && (
         <>

@@ -2,7 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { FUENTES_ESTILO, type Tema } from "@/lib/estilos-texto";
-import { entre, medirTexto, type CapaPortada, type DisenoPortada, type Lienzo, type TextoDibujado } from "@/lib/diseno-portada";
+import {
+  entre,
+  medirTexto,
+  ventanaDeCara,
+  type CapaPortada,
+  type CaraDeCuadro,
+  type DisenoPortada,
+  type Lienzo,
+  type TextoDibujado,
+} from "@/lib/diseno-portada";
 
 /**
  * El diseño de una portada dibujado en el navegador, en un SVG del tamaño del
@@ -41,6 +50,8 @@ export interface RecursosDibujo {
   /** El título del clip (o uno de ejemplo): va en las capas `titulo`. */
   titulo: string;
   cuadroUrl?: string | null;
+  /** La cara del cuadro, para `fondo.centrarCara` (be#249); sin ella, el cuadro entero. */
+  caraCuadro?: CaraDeCuadro | null;
   logoUrl?: string | null;
   aspectos: Record<string, number>;
   /** La imagen que se ve de una capa IMAGEN (con su recorte, si ya está). */
@@ -93,6 +104,10 @@ export function DibujoDiseno({
   const desenfoque = entre(fondo.desenfoque ?? 0, 0, 1);
   const oscurecer = entre(fondo.oscurecer ?? 0, 0, 0.7);
   const filtroFondo = fondoUrl && (desenfoque > 0 || fondo.mejorar) ? "dp-fondo" : undefined;
+  // Centrar en la cara: la ventana del cuadro (en px de la imagen) estirada al lienzo, como el backend.
+  const aspectoCuadro = recursos.cuadroUrl ? recursos.aspectos[recursos.cuadroUrl] : undefined;
+  const ventana =
+    fondo.tipo === "CUADRO" && fondo.centrarCara && recursos.caraCuadro && aspectoCuadro ? ventanaDeCara(recursos.caraCuadro) : null;
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className={className} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -123,7 +138,20 @@ export function DibujoDiseno({
       </defs>
 
       {/* El fondo */}
-      {fondoUrl ? (
+      {fondoUrl && ventana && aspectoCuadro ? (
+        <g filter={filtroFondo ? `url(#${filtroFondo})` : undefined}>
+          <svg
+            x={0}
+            y={0}
+            width={W}
+            height={H}
+            viewBox={`${ventana.x * 1000} ${ventana.y * 1000 * aspectoCuadro} ${ventana.ancho * 1000} ${ventana.alto * 1000 * aspectoCuadro}`}
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <image href={fondoUrl} x={0} y={0} width={1000} height={1000 * aspectoCuadro} />
+          </svg>
+        </g>
+      ) : fondoUrl ? (
         <image href={fondoUrl} x={0} y={0} width={W} height={H} preserveAspectRatio="xMidYMid slice" filter={filtroFondo ? `url(#${filtroFondo})` : undefined} />
       ) : fondo.tipo === "CUADRO" ? (
         <SinCuadro x={0} y={0} ancho={W} alto={H} texto={recursos.textoSinCuadro} />

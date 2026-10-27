@@ -34,7 +34,7 @@ import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 import type { Autoria } from "@/components/episodios/TomarClip";
 import { ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
-import { useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
+import { textoPorDefectoPortada, useAvisosPortada, useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
 import { claveDiseno, disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { DESCRIPCION_MAX, TITULO_YOUTUBE_MAX, comoSaleEnCadaRed } from "@/lib/destinos";
@@ -61,6 +61,8 @@ interface PublicacionCalendario extends Publicacion {
     urlPoster?: string | null;
     urlVideo?: string | null;
     cuadrosPortada?: CuadroLimpio[] | null;
+    /** Los títulos de portada de la IA (be#249): el primero es el de por defecto. */
+    titulosPortada?: string[] | null;
     desdeSeg?: number | null;
     hastaSeg?: number | null;
     duracionEfectivaSeg?: number | null;
@@ -859,6 +861,13 @@ function EditarAgendada({
     { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
     !portadaMarca || !clip,
   );
+  // La revisión de la portada (be#249): un aviso grave no deja guardar con la portada de marca.
+  const revisionPortada = useAvisosPortada(
+    { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
+    !portadaMarca || !clip,
+  );
+  const portadaConGraves = portadaMarca && !!clip && revisionPortada.graves.length > 0;
+  const ta = useTranslations("avisosPortada");
   const [duracionVideo, setDuracionVideo] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; textos: string[] } | null>(null);
@@ -956,7 +965,7 @@ function EditarAgendada({
             <EditorPortadaMarca
               texto={portadaTexto}
               onTexto={setPortadaTexto}
-              textoPorDefecto={clip.gancho?.trim() || clip.titulo}
+              textoPorDefecto={textoPorDefectoPortada(clip)}
               cuadros={clip.cuadrosPortada ?? []}
               seg={portadaSeg}
               onSeg={setPortadaSeg}
@@ -968,6 +977,8 @@ function EditarAgendada({
               diseno={portadaDiseno}
               onDiseno={setPortadaDiseno}
               posterUrl={clip.urlPoster}
+              avisos={revisionPortada.avisos}
+              revisando={revisionPortada.revisando}
               sinCuadros={
                 duracion > 0 ? <ElegirPortadaClip url={videoUrl} duracion={duracion} valor={portadaSeg} onCambiar={setPortadaSeg} /> : null
               }
@@ -996,10 +1007,12 @@ function EditarAgendada({
         </div>
       )}
 
+      {portadaConGraves && <p className="text-xs text-red-400">{ta("bloquea")}</p>}
+
       <div className="flex flex-wrap items-center gap-2 pt-1">
         <button
           onClick={() => void guardar()}
-          disabled={guardando || descripcionLarga || tituloVacio}
+          disabled={guardando || descripcionLarga || tituloVacio || portadaConGraves}
           className="rounded-lg bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
         >
           {guardando ? t("guardando") : t("guardar")}

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
-import { VISTA_PORTADA_MARCA } from "@/graphql/operations";
+import { AVISOS_PORTADA, VISTA_PORTADA_MARCA } from "@/graphql/operations";
 import type { PosicionLogo } from "@/lib/plantilla-clip";
-import { disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
+import { disenoParaEnviar, type CaraDeCuadro, type DisenoPortada } from "@/lib/diseno-portada";
 
 /**
  * La portada de marca (ng-creator-be#239): todas las portadas de una marca con
@@ -56,6 +56,12 @@ export const TEXTO_PORTADA_MAX = 120;
 export interface CuadroPortada {
   seg: number;
   url: string;
+  /** Cuánto sirve de portada, de 0 a 1 (be#249); null en los clips de antes. */
+  puntaje?: number | null;
+  /** Cuántas caras se encontraron; null si no se midió. */
+  caras?: number | null;
+  /** La cara principal, para centrar en ella. */
+  cara?: CaraDeCuadro | null;
 }
 
 /**
@@ -72,11 +78,77 @@ export function disenoDePlantilla(p: PlantillaPortada | null | undefined): Disen
   return p?.diseno ? disenoParaEnviar(p.diseno) : null;
 }
 
-/** El cuadro más cerca del segundo elegido (el backend arma con ese). */
-export function cuadroMasCerca(cuadros: CuadroPortada[], seg: number | null): CuadroPortada | null {
+/** El de más puntaje (be#249); null si ninguno se midió (los clips de antes). */
+export function mejorCuadro<T extends CuadroPortada>(cuadros: T[]): T | null {
+  const medidos = cuadros.filter((c) => c.puntaje != null);
+  if (!medidos.length) return null;
+  return medidos.reduce((mejor, c) => (c.puntaje! > mejor.puntaje! ? c : mejor));
+}
+
+/**
+ * El cuadro más cerca del segundo elegido (el backend arma con ese). Sin
+ * segundo, el de más puntaje o, en los clips de antes, uno del medio: igual
+ * que `cuadroMasCerca` del backend (portada-marca.ts).
+ */
+export function cuadroMasCerca<T extends CuadroPortada>(cuadros: T[], seg: number | null): T | null {
   if (!cuadros.length) return null;
-  if (seg == null) return cuadros[Math.floor((cuadros.length - 1) / 2)];
+  if (seg == null) return mejorCuadro(cuadros) ?? cuadros[Math.floor((cuadros.length - 1) / 2)];
   return cuadros.reduce((mejor, c) => (Math.abs(c.seg - seg) < Math.abs(mejor.seg - seg) ? c : mejor));
+}
+
+/**
+ * El título de la portada si no se escribe otro: el primero de la IA (be#249),
+ * el gancho o el título del clip. Igual que `textoDePortada` del backend.
+ */
+export function textoPorDefectoPortada(clip: { titulo: string; gancho?: string | null; titulosPortada?: string[] | null }): string {
+  return clip.titulosPortada?.[0]?.trim() || clip.gancho?.trim() || clip.titulo;
+}
+
+/** Lo que la revisión de la portada encuentra (be#249); los graves no dejan programar. */
+export type CodigoAvisoPortada =
+  | "TITULO_VACIO"
+  | "TITULO_FUERA_GRILLA"
+  | "TEXTO_FUERA_GRILLA"
+  | "LOGO_FUERA_GRILLA"
+  | "TITULO_LARGO"
+  | "CARA_CHICA"
+  | "SIN_CARA";
+
+export interface AvisoPortada {
+  codigo: CodigoAvisoPortada;
+  grave: boolean;
+  /** La capa del aviso, para elegirla en el editor. */
+  capaId?: string | null;
+}
+
+/**
+ * La revisión de la portada de una publicación, pedida 600 ms después del
+ * último cambio (no dibuja: es rápida). Mientras llega la nueva quedan los
+ * avisos anteriores, para que el botón no parpadee.
+ */
+export function useAvisosPortada(
+  variables: {
+    marcaId: string;
+    clipId?: string | null;
+    texto?: string | null;
+    seg?: number | null;
+    diseno?: DisenoPortada | null;
+  },
+  skip = false,
+): { avisos: AvisoPortada[]; graves: AvisoPortada[]; revisando: boolean } {
+  const clave = JSON.stringify({ ...variables, diseno: variables.diseno ? disenoParaEnviar(variables.diseno) : null });
+  const [pedidas, setPedidas] = useState(clave);
+  useEffect(() => {
+    const id = setTimeout(() => setPedidas(clave), 600);
+    return () => clearTimeout(id);
+  }, [clave]);
+  const q = useQuery(AVISOS_PORTADA, {
+    variables: JSON.parse(pedidas) as typeof variables,
+    skip: skip || !variables.marcaId || !variables.clipId,
+    fetchPolicy: "cache-first",
+  });
+  const avisos: AvisoPortada[] = skip ? [] : (q.data?.avisosPortada ?? q.previousData?.avisosPortada ?? []);
+  return { avisos, graves: avisos.filter((a) => a.grave), revisando: !skip && (q.loading || pedidas !== clave) };
 }
 
 /**

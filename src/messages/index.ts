@@ -4,6 +4,7 @@ import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
 import avisoFuente_es from "./es/avisoFuente.json";
+import avisosPortada_es from "./es/avisosPortada.json";
 import ayuda_es from "./es/ayuda.json";
 import ayudaPantallas_es from "./es/ayudaPantallas.json";
 import bibliotecaSonidos_es from "./es/bibliotecaSonidos.json";
@@ -134,6 +135,7 @@ import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import avisoFuente_en from "./en/avisoFuente.json";
+import avisosPortada_en from "./en/avisosPortada.json";
 import ayuda_en from "./en/ayuda.json";
 import ayudaPantallas_en from "./en/ayudaPantallas.json";
 import bibliotecaSonidos_en from "./en/bibliotecaSonidos.json";
@@ -267,6 +269,7 @@ export const mensajes = {
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
     "avisoFuente": avisoFuente_es,
+    "avisosPortada": avisosPortada_es,
     "ayuda": ayuda_es,
     "ayudaPantallas": ayudaPantallas_es,
     "bibliotecaSonidos": bibliotecaSonidos_es,
@@ -399,6 +402,7 @@ export const mensajes = {
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
     "avisoFuente": avisoFuente_en,
+    "avisosPortada": avisosPortada_en,
     "ayuda": ayuda_en,
     "ayudaPantallas": ayudaPantallas_en,
     "bibliotecaSonidos": bibliotecaSonidos_en,

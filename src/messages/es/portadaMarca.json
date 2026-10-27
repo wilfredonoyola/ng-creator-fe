@@ -37,11 +37,14 @@
   },
   "editor": {
     "texto": "Título de la portada",
-    "textoAyuda": "Vacío: el gancho del clip. Enter para otro renglón.",
+    "textoAyuda": "Vacío: el primer título sugerido (o el gancho). Enter para otro renglón.",
     "cuadro": "Cuadro",
     "cuadroEn": "Cuadro en {seg} s",
     "sinCuadros": "Este clip se exportó antes de la portada de marca: el cuadro trae los textos del clip. Vuelve a exportarlo para elegir entre cuadros limpios.",
-    "sugeridos": "Títulos sugeridos"
+    "sugeridos": "Títulos sugeridos",
+    "otros": "Otros",
+    "otrosAyuda": "Pedir otros títulos a la IA",
+    "mejorCuadro": "Mejor cuadro"
   },
   "personalizar": {
     "boton": "Personalizar esta portada",
