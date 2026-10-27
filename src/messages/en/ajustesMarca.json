@@ -1,0 +1,30 @@
+{
+  "titulo": "Settings",
+  "sinMarca": "Pick a brand above to see its settings.",
+  "deLaMarca": "What's on and off for",
+  "nav": {
+    "titulo": "Settings sections",
+    "grupos": {
+      "publicacion": "Publishing",
+      "funciones": "Features"
+    },
+    "por-defecto": "Defaults",
+    "revision": "Review",
+    "numeracion": "Numbering",
+    "funciones": "Reaction videos"
+  },
+  "funciones": {
+    "titulo": "Menu features",
+    "ayuda": "Sections you can show or hide in the left menu.",
+    "videosReaccion": "Reaction videos",
+    "videosReaccionAyuda": "Create video, Editing, Review and Creators: the creator clip with narration flow.",
+    "visible": "In the menu",
+    "oculta": "Hidden",
+    "soloEsteNavegador": "Remembered in this browser. The pages still work while hidden."
+  },
+  "movido": {
+    "por-defecto": "The hashtags and accounts preselected when posting are now in Settings.",
+    "revision": "Review before posting is now in Settings. Who reviews is still set here, on each team member.",
+    "ir": "Go to Settings →"
+  }
+}

@@ -1,4 +1,5 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
+import ajustesMarca_es from "./es/ajustesMarca.json";
 import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
@@ -128,6 +129,7 @@ import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import superadmin_es from "./es/superadmin.json";
 import variosClips_es from "./es/variosClips.json";
 import versionFacebook_es from "./es/versionFacebook.json";
+import ajustesMarca_en from "./en/ajustesMarca.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
@@ -260,6 +262,7 @@ import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
+    "ajustesMarca": ajustesMarca_es,
     "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
@@ -391,6 +394,7 @@ export const mensajes = {
     "versionFacebook": versionFacebook_es,
   },
   en: {
+    "ajustesMarca": ajustesMarca_en,
     "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,

@@ -19,6 +19,7 @@ import {
   Mic,
   LayoutGrid,
   Scissors,
+  Settings,
   UserRound,
   Users,
   type LucideIcon,
@@ -34,6 +35,7 @@ import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
 import { Campanita } from "./Campanita";
+import { useFuncion } from "@/lib/funciones";
 
 // Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
 // sola familia de íconos, no emojis.
@@ -49,6 +51,7 @@ type ClaveNav =
   | "creators"
   | "equipo"
   | "brandKit"
+  | "ajustes"
   | "etiquetas"
   | "redesConectadas"
   | "superadmin";
@@ -99,6 +102,8 @@ const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo"
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
 /** Las personas que se etiquetan al publicar: elenco, Global y los invitados de cada episodio. */
+/** Lo que se prende y apaga en la marca: por defecto al publicar, revisión, numeración y funciones. */
+const navAjustes: ItemNav = { href: "/admin/ajustes", icon: Settings, clave: "ajustes" };
 const navEtiquetas: ItemNav = { href: "/etiquetas", icon: AtSign, clave: "etiquetas" };
 /** El panel de quienes administran Clipfine: aparte, con su propio login. */
 const navSuperadmin: ItemNav = { href: "/superadmin", icon: ShieldCheck, clave: "superadmin" };
@@ -150,6 +155,8 @@ export function Sidebar({
   const { soy: soySuperadmin } = useSoySuperadmin();
   const { activa } = useMarcaActiva();
   const rolAqui = rolEn(activa?._id);
+  // Videos de reacción se prende en Ajustes → Funciones; apagado no ocupa el menú.
+  const [videosReaccion] = useFuncion("videosReaccion");
 
   function handleLogout() {
     cerrarSesion();
@@ -231,7 +238,7 @@ export function Sidebar({
           </div>
         )}
 
-        {esAdmin && (
+        {esAdmin && videosReaccion && (
           <>
             <Titulo colapsado={c}>{t("videosReaccion")}</Titulo>
             {NAV_REACCION.map((item) => (
@@ -259,6 +266,15 @@ export function Sidebar({
                 colapsado={c}
                 activo={pathname.startsWith(navPlantilla.href)}
                 onClick={() => ir(navPlantilla.href)}
+              />
+            )}
+            {rolAqui && (
+              <BotonNav
+                {...navAjustes}
+                label={t(`nav.${navAjustes.clave}`)}
+                colapsado={c}
+                activo={pathname.startsWith(navAjustes.href)}
+                onClick={() => ir(navAjustes.href)}
               />
             )}
             {rolAqui && (

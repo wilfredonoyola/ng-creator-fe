@@ -9,7 +9,7 @@ Review makes sure nothing goes out on a client's networks until someone approves
 
 ## How to turn it on
 
-1. Pick the brand in the sidebar and go to **Team**.
+1. Pick the brand in the sidebar and go to **Settings** → **Review**.
 2. Under **Review before publishing**, turn on **Review clips before they go out**.
 3. Under **If the time comes and nobody reviewed it**, choose **Don't publish** or **Publish anyway** (see [Overdue review](/ayuda/revision-vencida)).
 4. Click **Save**.

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Brush, Hash, ImageIcon, Megaphone, Palette, Type, type LucideIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Brush, ImageIcon, Megaphone, Palette, Type } from "lucide-react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -34,7 +34,7 @@ import { TemaDeMarca, temaCompleto } from "@/components/estilos/TemaDeMarca";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
 import { SeccionPortadaMarca } from "@/components/portada/SeccionPortadaMarca";
-import { SeccionNumeracion } from "@/components/SeccionNumeracion";
+import { MenuSecciones, useSeccionHash } from "@/components/MenuSecciones";
 import { Interruptor } from "@/components/Interruptor";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
@@ -53,8 +53,8 @@ const ANCHO_VISTA = 216;
  */
 /**
  * Las secciones de Brand Kit, en el menú de la izquierda. Las de `clips` van
- * en la plantilla de clips y se guardan juntas (la barra de abajo); las de
- * `publicar` tienen su propio botón. Cada una tiene su enlace: #logo, #portada…
+ * en la plantilla de clips y se guardan juntas (la barra de abajo); la portada
+ * tiene su propio botón. Cada una tiene su enlace: #logo, #portada…
  */
 const SECCIONES = [
   { id: "colores", grupo: "clips", icono: Palette },
@@ -62,29 +62,9 @@ const SECCIONES = [
   { id: "logo", grupo: "clips", icono: ImageIcon },
   { id: "llamada", grupo: "clips", icono: Megaphone },
   { id: "portada", grupo: "publicar", icono: Brush },
-  { id: "numeracion", grupo: "publicar", icono: Hash },
-] as const satisfies readonly { id: string; grupo: "clips" | "publicar"; icono: LucideIcon }[];
+] as const;
 type IdSeccion = (typeof SECCIONES)[number]["id"];
-const esSeccion = (x: string): x is IdSeccion => SECCIONES.some((s) => s.id === x);
-
-/** La sección elegida, en el hash de la URL: se puede compartir y volver atrás no la pierde. */
-function useSeccion(): [IdSeccion, (s: IdSeccion) => void] {
-  const [seccion, setSeccion] = useState<IdSeccion>("colores");
-  useEffect(() => {
-    const leer = () => {
-      const h = window.location.hash.slice(1);
-      if (esSeccion(h)) setSeccion(h);
-    };
-    leer();
-    window.addEventListener("hashchange", leer);
-    return () => window.removeEventListener("hashchange", leer);
-  }, []);
-  const elegir = (s: IdSeccion) => {
-    setSeccion(s);
-    window.history.replaceState(null, "", `#${s}`);
-  };
-  return [seccion, elegir];
-}
+const IDS_SECCIONES = SECCIONES.map((x) => x.id);
 
 export default function PlantillaClipsPage() {
   const t = useTranslations("brandKit");
@@ -112,7 +92,7 @@ export default function PlantillaClipsPage() {
   const [error, setError] = useState<string | null>(null);
   const [guardadoEn, setGuardadoEn] = useState<Date | null>(null);
   const archivo = useRef<HTMLInputElement>(null);
-  const [seccion, elegirSeccion] = useSeccion();
+  const [seccion, elegirSeccion] = useSeccionHash<IdSeccion>(IDS_SECCIONES, "colores");
   const deClips = SECCIONES.find((x) => x.id === seccion)?.grupo === "clips";
   /** La plantilla como se guardó la última vez: para saber si hay cambios sin guardar. */
   const plantillaGuardada = useRef<string | null>(null);
@@ -209,7 +189,17 @@ export default function PlantillaClipsPage() {
         <p className="text-sm text-white/50">{t("cargando")}</p>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[13rem_minmax(0,1fr)]">
-          <MenuSecciones actual={seccion} onElegir={elegirSeccion} sinGuardar={sinGuardar} />
+          <MenuSecciones
+            secciones={SECCIONES.map((x) => ({ ...x, etiqueta: t(`nav.${x.id}`), aviso: sinGuardar && x.grupo === "clips" }))}
+            grupos={[
+              { id: "clips", etiqueta: t("nav.grupos.clips") },
+              { id: "publicar", etiqueta: t("nav.grupos.publicar") },
+            ]}
+            actual={seccion}
+            onElegir={elegirSeccion}
+            titulo={t("nav.titulo")}
+            avisoTitulo={t("nav.sinGuardar")}
+          />
 
           <div className={`grid min-w-0 gap-8 ${deClips ? "xl:grid-cols-[minmax(0,1fr)_auto]" : ""}`}>
             <div className="min-w-0 space-y-6">
@@ -363,9 +353,6 @@ export default function PlantillaClipsPage() {
               <div hidden={seccion !== "portada"}>
                 <SeccionPortadaMarca marcaId={marcaId} opera={opera} tieneLogo={Boolean(logoUrl)} />
               </div>
-              <div hidden={seccion !== "numeracion"}>
-                <SeccionNumeracion marcaId={marcaId} opera={opera} />
-              </div>
 
               {deClips && opera && (
                 <div className="sticky bottom-4 z-10 flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-ng-tinta/95 p-3 shadow-lg backdrop-blur">
@@ -403,56 +390,6 @@ export default function PlantillaClipsPage() {
         </div>
       )}
     </DashboardLayout>
-  );
-}
-
-/** El menú de Brand Kit: a la izquierda en pantallas grandes, pestañas arriba en el teléfono. */
-function MenuSecciones({
-  actual,
-  onElegir,
-  sinGuardar,
-}: {
-  actual: IdSeccion;
-  onElegir: (s: IdSeccion) => void;
-  sinGuardar: boolean;
-}) {
-  const t = useTranslations("brandKit.nav");
-  const grupos = ["clips", "publicar"] as const;
-  const boton = (x: (typeof SECCIONES)[number], chico: boolean): ReactNode => {
-    const Icono = x.icono;
-    const activa = actual === x.id;
-    return (
-      <button
-        key={x.id}
-        type="button"
-        onClick={() => onElegir(x.id)}
-        aria-current={activa ? "page" : undefined}
-        className={`flex shrink-0 items-center gap-2.5 rounded-lg text-left text-sm transition ${
-          chico ? "px-3 py-1.5" : "w-full px-3 py-2"
-        } ${activa ? "bg-white/10 font-medium text-white" : "text-white/60 hover:bg-white/5 hover:text-white"}`}
-      >
-        <Icono size={16} className={activa ? "text-marca" : "text-white/40"} aria-hidden />
-        <span className="min-w-0 flex-1 truncate">{t(x.id)}</span>
-        {sinGuardar && x.grupo === "clips" && (
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-300" title={t("sinGuardar")} />
-        )}
-      </button>
-    );
-  };
-  return (
-    <nav aria-label={t("titulo")} className="min-w-0">
-      {/* Teléfono y tablet: una fila de pestañas que se desliza. */}
-      <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1 lg:hidden">{SECCIONES.map((x) => boton(x, true))}</div>
-      {/* Escritorio: el menú a la izquierda, fijo al bajar. */}
-      <div className="sticky top-6 hidden space-y-5 lg:block">
-        {grupos.map((g) => (
-          <div key={g}>
-            <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-white/35">{t(`grupos.${g}`)}</p>
-            <div className="space-y-0.5">{SECCIONES.filter((x) => x.grupo === g).map((x) => boton(x, false))}</div>
-          </div>
-        ))}
-      </div>
-    </nav>
   );
 }
 
