@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useTranslations } from "next-intl";
 import {
   ArrowDown,
   ArrowUp,
   Copy,
-  Eye,
   Image as IconoImagen,
   Loader2,
   Redo2,
@@ -22,9 +21,9 @@ import {
   Heading,
   BadgeCheck,
 } from "lucide-react";
-import { DISENO_PORTADA_MARCA, PLANTILLA_CLIP_MARCA, VISTA_DISENO_PORTADA } from "@/graphql/operations";
+import { DISENO_PORTADA_MARCA, PLANTILLA_CLIP_MARCA } from "@/graphql/operations";
 import { FUENTES_ESTILO, temaValido, type FuenteEstilo, type Tema } from "@/lib/estilos-texto";
-import { ESTILOS_PORTADA, FUENTES_PORTADA, useAvisosPortada, type AvisoPortada } from "@/lib/portada-marca";
+import { ESTILOS_PORTADA, FUENTES_PORTADA, useAvisosPortada } from "@/lib/portada-marca";
 import { ErrorDeSubida, FORMATOS_IMAGEN_CLIP, uploadImagenClip } from "@/lib/upload";
 import { esMejora, useRecortesImagen, type RecorteLocal } from "@/lib/use-recortes-imagen";
 import {
@@ -54,12 +53,12 @@ import { DibujoDiseno, cajaDeCapa, useAspectos, type RecursosDibujo } from "./Di
  *
  * Lo mismo sirve para el diseño de la marca (Brand Kit) y para la portada de
  * una publicación (Programar, calendario): quien lo abre dice qué hacer con el
- * diseño al guardar. La vista es en vivo en el navegador; "Ver cómo queda"
- * pide el dibujo exacto al backend.
+ * diseño al guardar. Como en Canva, lo que se ve en el lienzo es lo que sale:
+ * los recortes y lo mejorado con IA se piden al servidor y aparecen en vivo.
  *
  * Debajo del lienzo (be#249): la zona de la grilla del perfil y la revisión
- * de la portada. Con un clip se revisa sola al cambiar; sin clip (Brand Kit),
- * la trae "Ver cómo queda".
+ * de la portada, que se pide sola al cambiar; sin clip (Brand Kit), sobre el
+ * último clip listo de la marca.
  */
 export function EditorPortada({
   marcaId,
@@ -79,7 +78,7 @@ export function EditorPortada({
   marcaId: string;
   /** El diseño con que abre; sin él, el de la marca. */
   inicial?: DisenoPortada | null;
-  /** Para "Ver cómo queda" sobre un clip; sin él, sobre el último clip listo. */
+  /** Para revisar la portada sobre un clip; sin él, sobre el último clip listo. */
   clipId?: string | null;
   seg?: number | null;
   /** El título escrito para la portada (vacío = el gancho del clip). */
@@ -293,13 +292,16 @@ function Editor({
   };
   const recorteFondo = opcionesFondo ? recorteDe(opcionesFondo) : undefined;
   const fondoMejorado = recorteFondo?.estadoRecorte === "LISTO" ? recorteFondo.urlFinal : null;
+  // Con el fondo CUADRO mejorado, el cuadro tal cual de las capas también es el mejorado (como el backend).
+  const cuadroMejorado = diseno.fondo.tipo === "CUADRO" ? fondoMejorado : null;
   const listoDe = useCallback(
     (c: CapaPortada) => {
+      if (c.tipo === "IMAGEN" && c.cuadro && !c.sinFondo && !c.contorno && cuadroMejorado) return { url: cuadroMejorado, mejora: true };
       const o = opcionesDeCapa(c);
       const r = o ? recorteDe(o) : undefined;
       return r?.estadoRecorte === "LISTO" && r.urlFinal ? { url: r.urlFinal, mejora: esMejora(o!) } : null;
     },
-    [opcionesDeCapa, recorteDe],
+    [opcionesDeCapa, recorteDe, cuadroMejorado],
   );
   const srcDeCapa = useCallback(
     (c: CapaPortada): string | null => listoDe(c)?.url ?? (c.cuadro ? (cuadroUrl ?? null) : (c.url ?? null)),
@@ -544,52 +546,9 @@ function Editor({
     }
   }
 
-  // ---- Ver cómo queda (el dibujo del servidor) ----
-  const cliente = useApolloClient();
-  const [vista, setVista] = useState<{ imagen: string | null; pendientes: number; fallidos: number; cargando: boolean; error: boolean } | null>(null);
-  /** Los avisos del último "Ver cómo queda", con el diseño que revisó (sin clip es la única revisión). */
-  const [avisosVista, setAvisosVista] = useState<{ clave: string; avisos: AvisoPortada[] } | null>(null);
-  const pedido = useRef(0);
-  const verComoQueda = useCallback(
-    async (intento = 0, n?: number) => {
-      const yo = n ?? ++pedido.current;
-      const clave = claveDiseno(disenoRef.current);
-      setVista((v) => ({ imagen: v?.imagen ?? null, pendientes: v?.pendientes ?? 0, fallidos: v?.fallidos ?? 0, cargando: true, error: false }));
-      try {
-        const r = await cliente.query({
-          query: VISTA_DISENO_PORTADA,
-          variables: {
-            marcaId,
-            diseno: disenoParaEnviar(disenoRef.current),
-            clipId: clipId ?? null,
-            texto: texto?.trim() || null,
-            seg: seg ?? null,
-          },
-          fetchPolicy: "no-cache",
-        });
-        if (yo !== pedido.current) return;
-        const v = r.data?.vistaDisenoPortada;
-        setVista({ imagen: v?.imagen ?? null, pendientes: v?.recortesPendientes ?? 0, fallidos: v?.recortesFallidos ?? 0, cargando: false, error: !v });
-        if (v) setAvisosVista({ clave, avisos: v.avisos ?? [] });
-        // Mientras falten recortes se vuelve a pedir sola, un rato.
-        if (v?.recortesPendientes && intento < 12) setTimeout(() => void verComoQueda(intento + 1, yo), 5000);
-      } catch {
-        if (yo !== pedido.current) return;
-        setVista((x) => ({ imagen: x?.imagen ?? null, pendientes: 0, fallidos: 0, cargando: false, error: true }));
-      }
-    },
-    [cliente, marcaId, clipId, texto, seg],
-  );
-  const cerrarVista = () => {
-    pedido.current++;
-    setVista(null);
-  };
-
   // ---- La revisión (be#249) ----
-  // Con clip, sola y sin dibujar; sin clip, la del último "Ver cómo queda" (vale hasta el próximo cambio).
-  const revision = useAvisosPortada({ marcaId, clipId, texto: texto?.trim() || null, seg: seg ?? null, diseno }, !clipId);
-  const revisadaConVista = !clipId && avisosVista?.clave === claveDiseno(diseno);
-  const avisos = clipId ? revision.avisos : revisadaConVista ? avisosVista!.avisos : [];
+  // Sola, sin dibujar, al dejar de cambiar el diseño; sin clip (Brand Kit), sobre el último clip listo.
+  const revision = useAvisosPortada({ marcaId, clipId, texto: texto?.trim() || null, seg: seg ?? null, diseno });
   const elegirCapaDeAviso = (id: string) => {
     if (diseno.capas.some((c) => c.id === id)) setElegida(id);
   };
@@ -618,7 +577,7 @@ function Editor({
 
   return (
     <>
-      {/* Arriba: título, deshacer, ver y guardar */}
+      {/* Arriba: título, deshacer y guardar */}
       <header className="flex h-14 shrink-0 items-center gap-2 border-b border-white/10 px-3 sm:px-4">
         <button onClick={cerrar} className="rounded-lg p-2 text-white/70 hover:bg-white/10" aria-label={t("cerrar")}>
           <X className="h-5 w-5" />
@@ -629,13 +588,6 @@ function Editor({
         </button>
         <button onClick={rehacer} disabled={!puedeRehacer} className="rounded-lg p-2 text-white/70 hover:bg-white/10 disabled:opacity-30" aria-label={t("rehacer")} title={t("rehacer")}>
           <Redo2 className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => void verComoQueda()}
-          className="hidden items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-sm text-white/80 hover:bg-white/5 sm:flex"
-        >
-          <Eye className="h-4 w-4" />
-          {t("verComoQueda")}
         </button>
         <button
           onClick={() => void guardar()}
@@ -741,63 +693,22 @@ function Editor({
               )}
             </div>
 
-            {/* Ver cómo queda */}
-            {vista && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/80 p-4" onPointerDown={(e) => e.stopPropagation()}>
-                <div className="flex max-h-full w-full max-w-sm flex-col gap-3 rounded-2xl border border-white/10 bg-[#13151b] p-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">{t("asiQueda")}</p>
-                    <button onClick={cerrarVista} className="rounded p-1 text-white/60 hover:bg-white/10" aria-label={t("cerrar")}>
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="relative mx-auto aspect-[9/16] max-h-[60vh] overflow-hidden rounded-lg bg-white/5">
-                    {vista.imagen ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- data URL armada por el backend
-                      <img src={vista.imagen} alt={t("asiQueda")} className="h-full w-full object-contain" />
-                    ) : (
-                      !vista.error && <div className="h-full w-full animate-pulse" />
-                    )}
-                    {vista.cargando && (
-                      <span className="absolute right-2 top-2 rounded-full bg-black/60 p-1">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      </span>
-                    )}
-                  </div>
-                  {vista.error && <p className="text-xs text-red-400">{t("errorVista")}</p>}
-                  {vista.pendientes > 0 && <p className="text-xs text-amber-300">{t("recortesPendientes", { n: vista.pendientes })}</p>}
-                  {vista.fallidos > 0 && <p className="text-xs text-red-400">{t("recortesFallidos", { n: vista.fallidos })}</p>}
-                  <p className="text-[11px] text-white/40">{clipId ? t("vistaDelClip") : t("vistaUltimoClip")}</p>
-                </div>
-              </div>
-            )}
           </div>
           <div className="shrink-0 space-y-2 border-t border-white/10 px-4 py-3">
             <Interruptor etiqueta={t("zonaGrilla")} ayuda={t("zonaGrillaAyuda")} valor={zonaGrilla} onCambio={setZonaGrilla} />
-            {clipId || revisadaConVista ? (
-              <AvisosPortada
-                avisos={avisos}
-                revisando={clipId ? revision.revisando : false}
-                conTodoBien
-                onElegirCapa={elegirCapaDeAviso}
-                className="max-h-40 overflow-y-auto"
-              />
-            ) : (
-              <p className="text-[11px] text-white/40">{t("revisarConVista")}</p>
-            )}
+            <AvisosPortada
+              avisos={revision.avisos}
+              revisando={revision.revisando}
+              conTodoBien
+              onElegirCapa={elegirCapaDeAviso}
+              className="max-h-40 overflow-y-auto"
+            />
           </div>
         </div>
 
         {/* El panel */}
         <aside className="shrink-0 border-t border-white/10 md:w-[360px] md:overflow-y-auto md:border-l md:border-t-0">
           <div className="space-y-5 p-4">
-            <button
-              onClick={() => void verComoQueda()}
-              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 hover:bg-white/5 sm:hidden"
-            >
-              <Eye className="h-4 w-4" />
-              {t("verComoQueda")}
-            </button>
             {error && <p className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">{error}</p>}
 
             {capa ? (
@@ -809,7 +720,7 @@ function Editor({
                 lleno={lleno}
                 subiendo={subiendo === "reemplazo"}
                 recorte={recorteDeCapa(capa)}
-                cuadroRecortable={!!cuadroRecortable}
+                cuadroSinRecorte={!!cuadroUrl && !cuadroRecortable}
                 onReintentarRecorte={() => reintentarCapa(capa)}
                 onCambiar={(c, juntar) => cambiarCapa(capa.id, c, juntar)}
                 onBorrar={() => borrar(capa.id)}
@@ -1166,7 +1077,7 @@ function PanelCapa({
   lleno,
   subiendo,
   recorte,
-  cuadroRecortable,
+  cuadroSinRecorte,
   onReintentarRecorte,
   onCambiar,
   onBorrar,
@@ -1183,8 +1094,8 @@ function PanelCapa({
   lleno: boolean;
   subiendo: boolean;
   recorte?: RecorteDeCapa;
-  /** El cuadro del clip es uno limpio: su recorte se ve en vivo. */
-  cuadroRecortable: boolean;
+  /** El cuadro del clip no es limpio (poster del MP4): no se le puede quitar el fondo. */
+  cuadroSinRecorte: boolean;
   onReintentarRecorte: () => void;
   onCambiar: (c: Partial<CapaPortada>, juntar?: string) => void;
   onBorrar: () => void;
@@ -1313,7 +1224,7 @@ function PanelCapa({
             onCambio={(v) => onCambiar({ contorno: v })}
           />
           <Interruptor etiqueta={t("mejorar")} ayuda={t("mejorarAyuda")} valor={!!capa.mejorar} onCambio={(v) => onCambiar({ mejorar: v })} />
-          {capa.cuadro && !cuadroRecortable && (capa.sinFondo || capa.contorno) && (
+          {capa.cuadro && cuadroSinRecorte && (capa.sinFondo || capa.contorno) && (
             <p className="mt-2 text-[11px] text-amber-300/90">{t("cuadroRecorteAyuda")}</p>
           )}
           <EstadoRecorte recorte={recorte} onReintentar={onReintentarRecorte} />

@@ -123,7 +123,8 @@ export interface AvisoPortada {
 
 /**
  * La revisión de la portada de una publicación, pedida 600 ms después del
- * último cambio (no dibuja: es rápida). Mientras llega la nueva quedan los
+ * último cambio (no dibuja: es rápida). Sin clip (Brand Kit), sobre el último
+ * clip listo de la marca. Mientras llega la nueva quedan los
  * avisos anteriores, para que el botón no parpadee.
  */
 export function useAvisosPortada(
@@ -144,7 +145,7 @@ export function useAvisosPortada(
   }, [clave]);
   const q = useQuery(AVISOS_PORTADA, {
     variables: JSON.parse(pedidas) as typeof variables,
-    skip: skip || !variables.marcaId || !variables.clipId,
+    skip: skip || !variables.marcaId,
     fetchPolicy: "cache-first",
   });
   const avisos: AvisoPortada[] = skip ? [] : (q.data?.avisosPortada ?? q.previousData?.avisosPortada ?? []);

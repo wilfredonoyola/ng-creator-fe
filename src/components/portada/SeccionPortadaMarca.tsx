@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useTranslations } from "next-intl";
 import { Loader2, Paintbrush, Undo2 } from "lucide-react";
-import { GUARDAR_PLANTILLA_PORTADA, PLANTILLA_CLIP_MARCA, PLANTILLA_PORTADA_MARCA, PORTADAS_PERFIL } from "@/graphql/operations";
+import {
+  CUADRO_MUESTRA_PORTADA,
+  GUARDAR_PLANTILLA_PORTADA,
+  PLANTILLA_CLIP_MARCA,
+  PLANTILLA_PORTADA_MARCA,
+  PORTADAS_PERFIL,
+} from "@/graphql/operations";
 import { FUENTES_ESTILO, legibleSobre, temaValido, type Tema } from "@/lib/estilos-texto";
 import { POSICIONES_LOGO } from "@/lib/plantilla-clip";
 import type { DisenoPortada } from "@/lib/diseno-portada";
@@ -14,6 +20,7 @@ import {
   disenoDePlantilla,
   plantillaParaGuardar,
   useVistaPortada,
+  type CuadroPortada,
   type EstiloPortada,
   type PlantillaPortada,
 } from "@/lib/portada-marca";
@@ -44,6 +51,10 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
   const [p, setP] = useState<PlantillaPortada | null>(null);
   const [diseno, setDiseno] = useState<DisenoPortada | null>(null);
   const [editando, setEditando] = useState(false);
+  // El cuadro que ve el editor: el mejor cuadro limpio del último clip listo
+  // (be#249), con su recorte y lo mejorado en vivo. Sin clips, el marcador.
+  const muestraQ = useQuery(CUADRO_MUESTRA_PORTADA, { variables: { marcaId }, skip: !editando });
+  const muestra: CuadroPortada | null = muestraQ.data?.cuadroMuestraPortada ?? null;
   const [guardada, setGuardada] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -302,6 +313,9 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
         <EditorPortada
           marcaId={marcaId}
           inicial={diseno ?? undefined}
+          cuadroUrl={muestra?.url ?? null}
+          cuadroLimpio={!!muestra}
+          cara={muestra?.cara ?? null}
           tituloEjemplo={t("disenoPropio.tituloEjemplo")}
           titulo={t("disenoPropio.tituloEditor")}
           textoGuardar={t("disenoPropio.guardar")}

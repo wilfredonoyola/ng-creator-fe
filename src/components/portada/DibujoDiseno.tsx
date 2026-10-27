@@ -17,8 +17,8 @@ import {
  * El diseño de una portada dibujado en el navegador, en un SVG del tamaño del
  * lienzo (1080 de ancho): la vista en vivo del editor. Los textos se miden y
  * se parten como en el backend (diseno-portada.ts), así lo que se ve es lo
- * que sale; los filtros (mejorar, desenfoque, sombras) son una aproximación,
- * y "Ver cómo queda" muestra el dibujo exacto del servidor.
+ * que sale. Los recortes y lo mejorado con IA llegan del servidor (be#255);
+ * mientras tanto, y para desenfoque y sombras, los filtros son una aproximación.
  */
 
 /** Alto/ancho de cada imagen, cuando ya cargó. */
