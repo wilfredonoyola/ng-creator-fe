@@ -35,6 +35,7 @@ import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/Int
 import type { Plataforma } from "@/lib/plataformas";
 import { SeccionPortadaMarca } from "@/components/portada/SeccionPortadaMarca";
 import { SeccionNumeracion } from "@/components/SeccionNumeracion";
+import { Interruptor } from "@/components/Interruptor";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
 const ANCHO_VISTA = 216;
@@ -243,15 +244,12 @@ export default function PlantillaClipsPage() {
                 <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
                   <div className="flex items-center justify-between gap-3">
                     <h2 className="font-semibold">{t("logo.titulo")}</h2>
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={p.logoActivo}
-                        onChange={(e) => cambiar({ logoActivo: e.target.checked })}
-                        disabled={!opera}
-                      />
-                      {t("enLosClips")}
-                    </label>
+                    <Interruptor
+                      valor={p.logoActivo}
+                      onCambio={(v) => cambiar({ logoActivo: v })}
+                      etiqueta={t("enLosClips")}
+                      deshabilitado={!opera}
+                    />
                   </div>
                   <div className="mt-4 flex items-center gap-4">
                     <div className="flex h-16 w-28 items-center justify-center rounded-lg border border-white/10 bg-[repeating-conic-gradient(#ffffff10_0_25%,transparent_0_50%)] bg-[length:16px_16px] p-2">
@@ -329,15 +327,12 @@ export default function PlantillaClipsPage() {
                 <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
                   <div className="flex items-center justify-between gap-3">
                     <h2 className="font-semibold">{t("cta.titulo")}</h2>
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={p.ctaActivo}
-                        onChange={(e) => cambiar({ ctaActivo: e.target.checked })}
-                        disabled={!opera}
-                      />
-                      {t("enLosClips")}
-                    </label>
+                    <Interruptor
+                      valor={p.ctaActivo}
+                      onCambio={(v) => cambiar({ ctaActivo: v })}
+                      etiqueta={t("enLosClips")}
+                      deshabilitado={!opera}
+                    />
                   </div>
                   <input
                     value={p.ctaTexto}
