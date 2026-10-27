@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CalendarClock, Check, ChevronLeft, ChevronRight, Loader2, MoreHorizontal, PencilLine, RotateCcw, Trash2, TriangleAlert, XCircle } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useApolloClient, useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import {
   CANCELAR_PUBLICACION,
@@ -60,6 +60,8 @@ import {
 } from "@/lib/destinos";
 import { conHashtags, useAjustesPublicacion } from "@/lib/ajustes-publicacion";
 import { HashtagsChips } from "@/components/HashtagsChips";
+import { NumeracionDelClip } from "@/components/NumeracionDelClip";
+import { cambiarEncabezado, conEncabezado, useNumeracionClip, type NumeracionClip } from "@/lib/numeracion";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
 import type { CalidadClip } from "@/lib/calidad";
 import { IconoRed, Poster } from "@/components/IconoRed";
@@ -285,6 +287,9 @@ function Formulario({
   const hashtags = hashtagsClip ?? hashtagsMarca;
   // Arranca con el título del clip (nunca con el gancho): se revisa y se programa.
   const [descripcion, setDescripcion] = useState(clip.titulo);
+  // "Programa 31 | Video 2" (Brand Kit → Numeración): va al inicio del texto si la marca lo pide.
+  const { numeracion } = useNumeracionClip(marcaId || undefined, clip._id);
+  const apollo = useApolloClient();
   const [tituloYoutube, setTituloYoutube] = useState(clip.titulo.slice(0, TITULO_YOUTUBE_MAX));
   const [fecha, setFecha] = useState(() => aInputLocal(sugerida()));
   /** El segundo del MP4 final que va de portada; null = la automática de cada red. */
@@ -557,6 +562,19 @@ function Formulario({
   const marcarTocado = () => {
     tocado.current = true;
   };
+  // El encabezado se pone una vez, al abrir para programar: no sobre lo ya
+  // programado (trae su texto) ni sobre un borrador recuperado.
+  const encabezadoTexto = numeracion?.enTexto ? numeracion.encabezado : null;
+  const encabezadoPuesto = useRef(false);
+  useEffect(() => {
+    if (encabezadoPuesto.current || !encabezadoTexto || modoEditar || tocado.current) return;
+    encabezadoPuesto.current = true;
+    setDescripcion((d) => conEncabezado(d, encabezadoTexto));
+  }, [encabezadoTexto, modoEditar]);
+  function numerosCambiados(antes: string | null, nueva: NumeracionClip | null) {
+    if (nueva?.enTexto) setDescripcion((d) => cambiarEncabezado(d, antes, nueva.encabezado));
+    void apollo.refetchQueries({ include: ["NumeracionDeClip", "VistaPortadaMarca"] });
+  }
   const fechaTocada = modoEditar && fecha !== fechaInicial.current;
   // Lo que se cancela al guardar: lo programado en una red que se desmarcó.
   const aCancelar = modoReintento
@@ -1218,6 +1236,15 @@ function Formulario({
           ) : paso === 1 ? (
             <>
             <Seccion titulo={t("secciones.descripcion")}>
+              {numeracion && (
+                <NumeracionDelClip
+                  marcaId={marcaId}
+                  clipId={clip._id}
+                  numeracion={numeracion}
+                  opera={opera}
+                  onCambio={numerosCambiados}
+                />
+              )}
               <EditorMenciones
                 valor={descripcion}
                 onCambio={setDescripcion}

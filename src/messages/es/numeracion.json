@@ -1,0 +1,39 @@
+{
+  "titulo": "Numeración",
+  "activa": "Numerar los videos",
+  "ayuda": "Un correlativo como \"Programa 31 | Video 2\" en cada publicación. El programa sube con cada episodio y el video vuelve a 1 en cada programa.",
+  "cargando": "Cargando…",
+  "errorCargar": "No se pudo cargar la numeración.",
+  "formato": "Formato",
+  "variables": "Variables:",
+  "asiQueda": "Así queda:",
+  "formatoInvalido": "Usa al menos una variable: '{programa}', '{video}' o '{publicacion}'.",
+  "donde": "Dónde va",
+  "dondeOpciones": {
+    "texto": "Al inicio del texto",
+    "portada": "En la portada",
+    "ambos": "En los dos"
+  },
+  "portadaAyuda": "Va como primer renglón del título de la portada de marca (tiene que estar activada).",
+  "siguientePrograma": "Próximo programa",
+  "siguienteProgramaAyuda": "Lo toma el próximo episodio que se programe.",
+  "siguientePublicacion": "Próxima publicación",
+  "siguientePublicacionAyuda": "Un contador de toda la marca: '{publicacion}'.",
+  "videoAyuda": "El número de video se fija al programar: el primero que sale de cada programa es el 1. Al programar podés cambiar los números de ese clip.",
+  "guardar": "Guardar numeración",
+  "guardando": "Guardando…",
+  "guardado": "Guardado",
+  "errorGuardar": "No se pudo guardar",
+  "delClip": {
+    "seFijaAlProgramar": "Se fija al programar",
+    "cambiar": "Cambiar números",
+    "programa": "Programa",
+    "video": "Video",
+    "publicacion": "Publicación",
+    "programaAyuda": "Cambia el de todos los clips de este episodio.",
+    "aplicar": "Aplicar",
+    "cancelar": "Cancelar",
+    "sinPrograma": "Este clip no tiene episodio: el formato no se puede armar.",
+    "error": "No se pudieron cambiar los números"
+  }
+}

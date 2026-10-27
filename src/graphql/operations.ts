@@ -3463,3 +3463,51 @@ export const CREAR_CLIPS_EPISODIO = gql`
     }
   }
 `;
+
+// ---- Numeración: "Programa 31 | Video 2" (ng-creator-be, NumeracionService) ----
+
+const CAMPOS_AJUSTES_NUMERACION = `
+  activa
+  formato
+  enTexto
+  enPortada
+  siguientePrograma
+  siguientePublicacion
+`;
+
+const CAMPOS_NUMERACION_CLIP = `
+  programa
+  video
+  publicacion
+  encabezado
+  asignada
+  enTexto
+  enPortada
+`;
+
+/** Los de la marca, o los de por defecto (apagada) si nunca se guardaron. */
+export const AJUSTES_NUMERACION = gql`
+  query AjustesNumeracion($marcaId: ID!) {
+    ajustesNumeracion(marcaId: $marcaId) {${CAMPOS_AJUSTES_NUMERACION}}
+  }
+`;
+
+export const GUARDAR_AJUSTES_NUMERACION = gql`
+  mutation GuardarAjustesNumeracion($marcaId: ID!, $ajustes: AjustesNumeracionInput!) {
+    guardarAjustesNumeracion(marcaId: $marcaId, ajustes: $ajustes) {${CAMPOS_AJUSTES_NUMERACION}}
+  }
+`;
+
+/** Los números del clip: fijados, o los que va a tomar al programarlo. Null si la marca no numera. */
+export const NUMERACION_DE_CLIP = gql`
+  query NumeracionDeClip($marcaId: ID!, $clipId: ID!) {
+    numeracionDeClip(marcaId: $marcaId, clipId: $clipId) {${CAMPOS_NUMERACION_CLIP}}
+  }
+`;
+
+/** El de programa es del episodio: cambia el de todos sus clips. */
+export const CORREGIR_NUMERACION_CLIP = gql`
+  mutation CorregirNumeracionClip($marcaId: ID!, $clipId: ID!, $numeros: NumerosClipInput!) {
+    corregirNumeracionClip(marcaId: $marcaId, clipId: $clipId, numeros: $numeros) {${CAMPOS_NUMERACION_CLIP}}
+  }
+`;
