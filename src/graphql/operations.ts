@@ -2591,35 +2591,39 @@ export const DISENO_PORTADA_MARCA = gql`
 `;
 
 /**
- * "Ver cómo queda" en el editor: el diseño dibujado por el backend (540 de
- * ancho), con las capas cuyo recorte (quitar fondo) todavía no terminó o falló.
+ * La revisión de la portada sin dibujarla (ng-creator-be#249): lo que hace que
+ * el perfil se vea disparejo o que algo no se lea en la grilla. Con `diseno`,
+ * el propio de la publicación; sin él, el de la marca. Sin `clipId` (Brand
+ * Kit), sobre el último clip listo de la marca.
  */
-export const VISTA_DISENO_PORTADA = gql`
-  query VistaDisenoPortada($marcaId: ID!, $diseno: DisenoPortadaInput!, $clipId: ID, $texto: String, $seg: Float) {
-    vistaDisenoPortada(marcaId: $marcaId, diseno: $diseno, clipId: $clipId, texto: $texto, seg: $seg) {
-      imagen
-      recortesPendientes
-      recortesFallidos
-      avisos {
-        codigo
-        grave
-        capaId
-      }
+export const AVISOS_PORTADA = gql`
+  query AvisosPortada($marcaId: ID!, $clipId: ID, $texto: String, $seg: Float, $diseno: DisenoPortadaInput) {
+    avisosPortada(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, diseno: $diseno) {
+      codigo
+      grave
+      capaId
     }
   }
 `;
 
 /**
- * La revisión de la portada sin dibujarla (ng-creator-be#249): lo que hace que
- * el perfil se vea disparejo o que algo no se lea en la grilla. Con `diseno`,
- * el propio de la publicación; sin él, el de la marca.
+ * El mejor cuadro limpio del último clip listo de la marca (be#249): el que
+ * ve el editor del diseño de la marca (Brand Kit). null sin clips listos.
  */
-export const AVISOS_PORTADA = gql`
-  query AvisosPortada($marcaId: ID!, $clipId: ID!, $texto: String, $seg: Float, $diseno: DisenoPortadaInput) {
-    avisosPortada(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, diseno: $diseno) {
-      codigo
-      grave
-      capaId
+export const CUADRO_MUESTRA_PORTADA = gql`
+  query CuadroMuestraPortada($marcaId: ID!) {
+    cuadroMuestraPortada(marcaId: $marcaId) {
+      seg
+      url
+      puntaje
+      caras
+      cara {
+        x
+        y
+        ancho
+        alto
+        ojosY
+      }
     }
   }
 `;
@@ -2766,18 +2770,18 @@ export const CREAR_CLIP_EPISODIO = gql`
  * uno FALLIDO se reintenta. Es el mismo trabajo que usa el guardado.
  */
 export const PREPARAR_RECORTE_IMAGEN = gql`
-  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
-    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean) {
+    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar) {
       estadoRecorte
       urlFinal
     }
   }
 `;
 
-/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. */
+/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. `mejorar`: la mejorada con IA (be#255). */
 export const RECORTE_IMAGEN = gql`
-  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
-    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean) {
+    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar) {
       estadoRecorte
       urlFinal
     }
