@@ -54,8 +54,12 @@ export interface RecursosDibujo {
   caraCuadro?: CaraDeCuadro | null;
   logoUrl?: string | null;
   aspectos: Record<string, number>;
-  /** La imagen que se ve de una capa IMAGEN (con su recorte, si ya está). */
+  /** La imagen que se ve de una capa IMAGEN (con su recorte o su mejorada con IA, si ya está). */
   srcDeCapa: (capa: CapaPortada) => string | null;
+  /** La capa ya se ve con la mejorada con IA (be#255): sin el filtro aproximado. */
+  capaMejorada?: (capa: CapaPortada) => boolean;
+  /** El fondo mejorado con IA, si ya está (be#255): va en lugar del cuadro o la imagen, sin el filtro. */
+  fondoMejorado?: string | null;
   /** Lo que se escribe donde falta el cuadro del clip (Brand Kit sin clip). */
   textoSinCuadro: string;
 }
@@ -100,10 +104,13 @@ export function DibujoDiseno({
   const { tema } = recursos;
   const W = lienzo.ancho;
   const H = lienzo.alto;
-  const fondoUrl = fondo.tipo === "CUADRO" ? recursos.cuadroUrl : fondo.tipo === "IMAGEN" ? fondo.url : null;
+  const original = fondo.tipo === "CUADRO" ? recursos.cuadroUrl : fondo.tipo === "IMAGEN" ? fondo.url : null;
+  const fondoUrl = original && fondo.mejorar && recursos.fondoMejorado ? recursos.fondoMejorado : original;
+  // Ya mejorado con IA no lleva el filtro aproximado (como en el backend).
+  const mejorarFondo = !!fondo.mejorar && fondoUrl === original;
   const desenfoque = entre(fondo.desenfoque ?? 0, 0, 1);
   const oscurecer = entre(fondo.oscurecer ?? 0, 0, 0.7);
-  const filtroFondo = fondoUrl && (desenfoque > 0 || fondo.mejorar) ? "dp-fondo" : undefined;
+  const filtroFondo = fondoUrl && (desenfoque > 0 || mejorarFondo) ? "dp-fondo" : undefined;
   // Centrar en la cara: la ventana del cuadro (en px de la imagen) estirada al lienzo, como el backend.
   const aspectoCuadro = recursos.cuadroUrl ? recursos.aspectos[recursos.cuadroUrl] : undefined;
   const ventana =
@@ -122,7 +129,7 @@ export function DibujoDiseno({
         </filter>
         {filtroFondo && (
           <filter id="dp-fondo" x="0" y="0" width="100%" height="100%">
-            {fondo.mejorar ? (
+            {mejorarFondo ? (
               <>
                 <feComponentTransfer result="niveles">
                   <feFuncR type="linear" slope="1.12" intercept="-0.04" />
@@ -216,8 +223,9 @@ function Capa({ capa, lienzo, recursos }: { capa: CapaPortada; lienzo: Lienzo; r
       </g>
     ) : null;
   }
-  // Un cuadro tal cual (sin recortar) con contorno: el servidor le pone un marco blanco.
-  const marco = capa.tipo === "IMAGEN" && capa.contorno && !capa.sinFondo && capa.cuadro;
+  // Un cuadro tal cual (sin recortar) con contorno: el servidor le pone un marco
+  // blanco. Si ya llegó su recorte (cuadro limpio, be#255), el marco viene en él.
+  const marco = capa.tipo === "IMAGEN" && capa.contorno && !capa.sinFondo && capa.cuadro && src === recursos.cuadroUrl;
   return (
     <g transform={giro} opacity={opacidad}>
       <image
@@ -227,7 +235,7 @@ function Capa({ capa, lienzo, recursos }: { capa: CapaPortada; lienzo: Lienzo; r
         width={caja.ancho}
         height={caja.alto}
         preserveAspectRatio="none"
-        filter={capa.tipo === "IMAGEN" && capa.mejorar ? `url(#${FILTRO_MEJORAR})` : undefined}
+        filter={capa.tipo === "IMAGEN" && capa.mejorar && !recursos.capaMejorada?.(capa) ? `url(#${FILTRO_MEJORAR})` : undefined}
       />
       {marco && (
         <rect x={x} y={y} width={caja.ancho} height={caja.alto} fill="none" stroke="#fff" strokeWidth={Math.max(4, caja.ancho * 0.02)} />

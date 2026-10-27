@@ -234,6 +234,7 @@ export function EditorPortadaMarca({
           seg={seg}
           texto={texto}
           cuadroUrl={elegido?.url ?? posterUrl ?? null}
+          cuadroLimpio={!!elegido}
           cara={elegido?.cara ?? null}
           tituloEjemplo={textoEnUso}
           titulo={t("personalizar.tituloEditor")}

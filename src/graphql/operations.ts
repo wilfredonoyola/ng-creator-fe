@@ -2766,18 +2766,18 @@ export const CREAR_CLIP_EPISODIO = gql`
  * uno FALLIDO se reintenta. Es el mismo trabajo que usa el guardado.
  */
 export const PREPARAR_RECORTE_IMAGEN = gql`
-  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
-    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean) {
+    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar) {
       estadoRecorte
       urlFinal
     }
   }
 `;
 
-/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. */
+/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. `mejorar`: la mejorada con IA (be#255). */
 export const RECORTE_IMAGEN = gql`
-  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
-    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean) {
+    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar) {
       estadoRecorte
       urlFinal
     }

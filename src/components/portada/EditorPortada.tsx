@@ -26,7 +26,7 @@ import { DISENO_PORTADA_MARCA, PLANTILLA_CLIP_MARCA, VISTA_DISENO_PORTADA } from
 import { FUENTES_ESTILO, temaValido, type FuenteEstilo, type Tema } from "@/lib/estilos-texto";
 import { ESTILOS_PORTADA, FUENTES_PORTADA, useAvisosPortada, type AvisoPortada } from "@/lib/portada-marca";
 import { ErrorDeSubida, FORMATOS_IMAGEN_CLIP, uploadImagenClip } from "@/lib/upload";
-import { useRecortesImagen } from "@/lib/use-recortes-imagen";
+import { esMejora, useRecortesImagen, type RecorteLocal } from "@/lib/use-recortes-imagen";
 import {
   MAXIMO_CAPAS_PORTADA,
   capaNueva,
@@ -68,6 +68,7 @@ export function EditorPortada({
   seg,
   texto,
   cuadroUrl,
+  cuadroLimpio,
   cara,
   tituloEjemplo,
   titulo,
@@ -85,6 +86,11 @@ export function EditorPortada({
   texto?: string | null;
   /** El cuadro del clip que se ve en vivo (fondo CUADRO y capas de cuadro). */
   cuadroUrl?: string | null;
+  /**
+   * `cuadroUrl` es un cuadro limpio del clip (`cuadrosPortada`): se le quita
+   * el fondo y se mejora con IA en vivo (be#255). El poster del MP4 no se puede.
+   */
+  cuadroLimpio?: boolean;
   /** La cara de ese cuadro, para "Centrar en la cara" en vivo (be#249). */
   cara?: CaraDeCuadro | null;
   /** Lo que se ve en las capas del título. */
@@ -122,6 +128,7 @@ export function EditorPortada({
           seg={seg}
           texto={texto}
           cuadroUrl={cuadroUrl}
+          cuadroLimpio={cuadroLimpio}
           cara={cara}
           tituloEjemplo={tituloEjemplo}
           titulo={titulo}
@@ -213,6 +220,7 @@ function Editor({
   seg,
   texto,
   cuadroUrl,
+  cuadroLimpio,
   cara,
   tituloEjemplo,
   titulo,
@@ -228,6 +236,7 @@ function Editor({
   seg?: number | null;
   texto?: string | null;
   cuadroUrl?: string | null;
+  cuadroLimpio?: boolean;
   cara?: CaraDeCuadro | null;
   tituloEjemplo: string;
   titulo: string;
@@ -255,22 +264,48 @@ function Editor({
   const elegidaRef = useRef(elegida);
   elegidaRef.current = elegida;
 
-  // Los recortes de las imágenes subidas (quitar fondo, contorno), como en el editor de clips.
-  const imagenesRecorte = diseno.capas
-    .filter((c) => c.tipo === "IMAGEN" && !c.cuadro && c.url)
-    .map((c) => ({ url: c.url!, sinFondo: !!c.sinFondo, contorno: !!c.contorno }));
-  const { recorteDe, reintentar } = useRecortesImagen(marcaId, imagenesRecorte, true);
-  const recorteDeCapa = (c: CapaPortada) =>
-    c.tipo === "IMAGEN" && !c.cuadro && c.url ? recorteDe({ url: c.url, sinFondo: !!c.sinFondo, contorno: !!c.contorno }) : undefined;
-  const srcDeCapa = useCallback(
-    (c: CapaPortada): string | null => {
-      if (c.cuadro) return cuadroUrl ?? null;
-      if (!c.url) return null;
-      const r = c.sinFondo || c.contorno ? recorteDe({ url: c.url, sinFondo: !!c.sinFondo, contorno: !!c.contorno }) : undefined;
-      return r?.estadoRecorte === "LISTO" && r.urlFinal ? r.urlFinal : c.url;
+  // Los recortes (quitar fondo, contorno) y lo mejorado con IA, en vivo como en
+  // el editor de clips (be#255): de las imágenes subidas, del cuadro del clip
+  // (solo si es un cuadro limpio) y del fondo. Mientras no está, la original.
+  const cuadroRecortable = cuadroLimpio && cuadroUrl ? cuadroUrl : null;
+  const opcionesDeCapa = useCallback(
+    (c: CapaPortada) => {
+      const url = c.tipo !== "IMAGEN" ? null : c.cuadro ? cuadroRecortable : c.url;
+      return url ? { url, sinFondo: !!c.sinFondo, contorno: !!c.contorno, mejorar: !!c.mejorar } : null;
     },
-    [cuadroUrl, recorteDe],
+    [cuadroRecortable],
   );
+  const urlFondo = diseno.fondo.tipo === "CUADRO" ? cuadroRecortable : diseno.fondo.tipo === "IMAGEN" ? diseno.fondo.url : null;
+  const opcionesFondo = diseno.fondo.mejorar && urlFondo ? { url: urlFondo, sinFondo: false, contorno: false, mejorar: true } : null;
+  const imagenesRecorte = [
+    ...diseno.capas.map(opcionesDeCapa).filter((o): o is NonNullable<typeof o> => !!o),
+    ...(opcionesFondo ? [opcionesFondo] : []),
+  ];
+  const { recorteDe, reintentar } = useRecortesImagen(marcaId, imagenesRecorte, true);
+  const recorteDeCapa = (c: CapaPortada) => {
+    const o = opcionesDeCapa(c);
+    const r = o ? recorteDe(o) : undefined;
+    return r && { ...r, mejora: esMejora(o!) };
+  };
+  const reintentarCapa = (c: CapaPortada) => {
+    const o = opcionesDeCapa(c);
+    if (o) void reintentar(o);
+  };
+  const recorteFondo = opcionesFondo ? recorteDe(opcionesFondo) : undefined;
+  const fondoMejorado = recorteFondo?.estadoRecorte === "LISTO" ? recorteFondo.urlFinal : null;
+  const listoDe = useCallback(
+    (c: CapaPortada) => {
+      const o = opcionesDeCapa(c);
+      const r = o ? recorteDe(o) : undefined;
+      return r?.estadoRecorte === "LISTO" && r.urlFinal ? { url: r.urlFinal, mejora: esMejora(o!) } : null;
+    },
+    [opcionesDeCapa, recorteDe],
+  );
+  const srcDeCapa = useCallback(
+    (c: CapaPortada): string | null => listoDe(c)?.url ?? (c.cuadro ? (cuadroUrl ?? null) : (c.url ?? null)),
+    [cuadroUrl, listoDe],
+  );
+  const capaMejorada = useCallback((c: CapaPortada) => !!listoDe(c)?.mejora, [listoDe]);
 
   const urlsImagenes = diseno.capas.map((c) => (c.tipo === "LOGO" ? logoUrl : c.tipo === "IMAGEN" ? srcDeCapa(c) : null));
   const aspectos = useAspectos([cuadroUrl, logoUrl, ...urlsImagenes]);
@@ -283,6 +318,8 @@ function Editor({
     logoUrl,
     aspectos,
     srcDeCapa,
+    capaMejorada,
+    fondoMejorado,
     textoSinCuadro: t("cuadroDelVideo"),
   };
 
@@ -641,18 +678,15 @@ function Editor({
                       touchAction: "none",
                     }}
                   >
-                    {recorte?.estadoRecorte === "PENDIENTE" && (
-                      <span className="absolute left-1 top-1 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white/80">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        {t("quitandoFondo")}
-                      </span>
-                    )}
-                    {recorte?.estadoRecorte === "FALLIDO" && (
-                      <span className="absolute left-1 top-1 rounded bg-red-900/80 px-1.5 py-0.5 text-[10px] text-white">{t("recorteFallo")}</span>
-                    )}
+                    <EtiquetaRecorte recorte={recorte} />
                   </div>
                 );
               })}
+              {recorteFondo && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-7">
+                  <EtiquetaRecorte recorte={{ ...recorteFondo, mejora: true }} />
+                </div>
+              )}
               {/* Lo que no se ve en la grilla del perfil, oscurecido */}
               {zonaGrilla && franja.desde > 0 && (
                 <>
@@ -775,7 +809,8 @@ function Editor({
                 lleno={lleno}
                 subiendo={subiendo === "reemplazo"}
                 recorte={recorteDeCapa(capa)}
-                onReintentarRecorte={() => capa.url && void reintentar({ url: capa.url, sinFondo: !!capa.sinFondo, contorno: !!capa.contorno })}
+                cuadroRecortable={!!cuadroRecortable}
+                onReintentarRecorte={() => reintentarCapa(capa)}
                 onCambiar={(c, juntar) => cambiarCapa(capa.id, c, juntar)}
                 onBorrar={() => borrar(capa.id)}
                 onDuplicar={() => duplicar(capa.id)}
@@ -815,6 +850,8 @@ function Editor({
                   onCambiar={cambiarFondo}
                   onSubir={() => archivoFondo.current?.click()}
                   tema={tema}
+                  recorte={recorteFondo && { ...recorteFondo, mejora: true }}
+                  onReintentarRecorte={() => opcionesFondo && void reintentar(opcionesFondo)}
                 />
 
                 <Seccion titulo={t("capas")}>
@@ -989,18 +1026,67 @@ function ColorTema({
 
 const porciento = (v: number) => `${Math.round(v * 100)} %`;
 
+/** El recorte de una capa (o del fondo): `mejora` si es la mejorada con IA y no quitar fondo. */
+type RecorteDeCapa = RecorteLocal & { mejora: boolean };
+
+/** Sobre el lienzo, mientras se quita el fondo o se mejora con IA (se ve la original), o si falló. */
+function EtiquetaRecorte({ recorte }: { recorte?: RecorteDeCapa }) {
+  const t = useTranslations("editorPortada");
+  if (recorte?.estadoRecorte === "PENDIENTE") {
+    return (
+      <span className="absolute left-1 top-1 flex items-center gap-1 whitespace-nowrap rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white/80">
+        <Loader2 className="h-3 w-3 animate-spin" />
+        {recorte.mejora ? t("mejorando") : t("quitandoFondo")}
+      </span>
+    );
+  }
+  if (recorte?.estadoRecorte === "FALLIDO") {
+    return (
+      <span className="absolute left-1 top-1 whitespace-nowrap rounded bg-red-900/80 px-1.5 py-0.5 text-[10px] text-white">
+        {recorte.mejora ? t("mejoraFallo") : t("recorteFallo")}
+      </span>
+    );
+  }
+  return null;
+}
+
+/** En el panel: en curso (o lento) y, si falló, reintentar. */
+function EstadoRecorte({ recorte, onReintentar }: { recorte?: RecorteDeCapa; onReintentar: () => void }) {
+  const t = useTranslations("editorPortada");
+  if (recorte?.estadoRecorte === "PENDIENTE") {
+    const texto = recorte.mejora ? (recorte.lento ? t("mejoraLenta") : t("mejorando")) : recorte.lento ? t("recorteLento") : t("quitandoFondo");
+    return <p className="mt-2 text-[11px] text-white/50">{texto}</p>;
+  }
+  if (recorte?.estadoRecorte === "FALLIDO") {
+    return (
+      <p className="mt-2 text-[11px] text-red-400">
+        {recorte.mejora ? t("mejoraFallo") : t("recorteFallo")}{" "}
+        <button onClick={onReintentar} className="underline">
+          {t("reintentar")}
+        </button>
+      </p>
+    );
+  }
+  return null;
+}
+
 function PanelFondo({
   fondo,
   subiendo,
   onCambiar,
   onSubir,
   tema,
+  recorte,
+  onReintentarRecorte,
 }: {
   fondo: FondoPortada;
   subiendo: boolean;
   onCambiar: (c: Partial<FondoPortada>, juntar?: string) => void;
   onSubir: () => void;
   tema: Tema;
+  /** La mejorada con IA del fondo, si se pidió. */
+  recorte?: RecorteDeCapa;
+  onReintentarRecorte: () => void;
 }) {
   const t = useTranslations("editorPortada");
   const tipos: TipoFondoPortada[] = ["CUADRO", "IMAGEN", "COLOR"];
@@ -1032,6 +1118,7 @@ function PanelFondo({
       {fondo.tipo !== "COLOR" && (
         <>
           <Interruptor etiqueta={t("mejorar")} ayuda={t("mejorarAyuda")} valor={fondo.mejorar} onCambio={(v) => onCambiar({ mejorar: v })} />
+          <EstadoRecorte recorte={recorte} onReintentar={onReintentarRecorte} />
           <Deslizador
             etiqueta={t("desenfoque")}
             valor={fondo.desenfoque}
@@ -1079,6 +1166,7 @@ function PanelCapa({
   lleno,
   subiendo,
   recorte,
+  cuadroRecortable,
   onReintentarRecorte,
   onCambiar,
   onBorrar,
@@ -1094,7 +1182,9 @@ function PanelCapa({
   tema: Tema;
   lleno: boolean;
   subiendo: boolean;
-  recorte?: { estadoRecorte: string | null; lento?: boolean };
+  recorte?: RecorteDeCapa;
+  /** El cuadro del clip es uno limpio: su recorte se ve en vivo. */
+  cuadroRecortable: boolean;
   onReintentarRecorte: () => void;
   onCambiar: (c: Partial<CapaPortada>, juntar?: string) => void;
   onBorrar: () => void;
@@ -1223,18 +1313,10 @@ function PanelCapa({
             onCambio={(v) => onCambiar({ contorno: v })}
           />
           <Interruptor etiqueta={t("mejorar")} ayuda={t("mejorarAyuda")} valor={!!capa.mejorar} onCambio={(v) => onCambiar({ mejorar: v })} />
-          {capa.cuadro && (capa.sinFondo || capa.contorno) && <p className="mt-2 text-[11px] text-amber-300/90">{t("cuadroRecorteAyuda")}</p>}
-          {recorte?.estadoRecorte === "PENDIENTE" && (
-            <p className="mt-2 text-[11px] text-white/50">{recorte.lento ? t("recorteLento") : t("quitandoFondo")}</p>
+          {capa.cuadro && !cuadroRecortable && (capa.sinFondo || capa.contorno) && (
+            <p className="mt-2 text-[11px] text-amber-300/90">{t("cuadroRecorteAyuda")}</p>
           )}
-          {recorte?.estadoRecorte === "FALLIDO" && (
-            <p className="mt-2 text-[11px] text-red-400">
-              {t("recorteFallo")}{" "}
-              <button onClick={onReintentarRecorte} className="underline">
-                {t("reintentar")}
-              </button>
-            </p>
-          )}
+          <EstadoRecorte recorte={recorte} onReintentar={onReintentarRecorte} />
           <Deslizador etiqueta={t("tamano")} valor={entre(capa.ancho, 0.02, 2)} min={0.05} max={1.5} paso={0.01} mostrar={porciento} onCambio={(v) => onCambiar({ ancho: v }, j("ancho"))} />
         </Seccion>
       )}
