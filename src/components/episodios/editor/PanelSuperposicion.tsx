@@ -58,7 +58,7 @@ export function PanelSuperposicion({
   const tr = useTranslations("editorHerramientas");
   const tClip = useTranslations("editorClip");
   const link = (c: React.ReactNode) => (
-    <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+    <Link href="/admin/plantilla#logo" className="text-ng-celeste hover:underline">
       {c}
     </Link>
   );

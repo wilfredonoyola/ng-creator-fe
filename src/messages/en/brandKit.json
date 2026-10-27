@@ -47,5 +47,20 @@
     "titulo": "How it looks (9:16)",
     "ayuda": "The hook lasts the first few seconds and the call to action only shows up at the end; here they're always visible so you can adjust them.",
     "zonaSegura": "Whatever falls outside the dotted line is covered by the network."
+  },
+  "nav": {
+    "titulo": "Brand Kit sections",
+    "grupos": {
+      "clips": "On every clip",
+      "publicar": "When posting"
+    },
+    "colores": "Colors",
+    "estilo": "Text style",
+    "logo": "Logo",
+    "llamada": "Call to action",
+    "portada": "Cover",
+    "numeracion": "Numbering",
+    "sinGuardar": "Unsaved changes",
+    "seGuardanJuntas": "Colors, style, logo and call to action are saved together."
   }
 }

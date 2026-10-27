@@ -73,7 +73,7 @@ export function PanelTexto({
         <p className="text-xs text-white/40">
           {tClip.rich("estiloAyuda", {
             link: (c) => (
-              <Link href="/admin/plantilla" className="text-ng-celeste hover:underline">
+              <Link href="/admin/plantilla#estilo" className="text-ng-celeste hover:underline">
                 {c}
               </Link>
             ),
