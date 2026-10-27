@@ -1,0 +1,30 @@
+{
+  "titulo": "Ajustes",
+  "sinMarca": "Elegí una marca arriba para ver sus ajustes.",
+  "deLaMarca": "Lo que se prende y se apaga en",
+  "nav": {
+    "titulo": "Secciones de Ajustes",
+    "grupos": {
+      "publicacion": "Publicación",
+      "funciones": "Funciones"
+    },
+    "por-defecto": "Por defecto",
+    "revision": "Revisión",
+    "numeracion": "Numeración",
+    "funciones": "Videos de reacción"
+  },
+  "funciones": {
+    "titulo": "Funciones del menú",
+    "ayuda": "Secciones que se pueden mostrar u ocultar en el menú de la izquierda.",
+    "videosReaccion": "Videos de reacción",
+    "videosReaccionAyuda": "Crear video, Montaje, Revisión y Creators: el flujo de clip de un creator con narración.",
+    "visible": "En el menú",
+    "oculta": "Oculta",
+    "soloEsteNavegador": "Se recuerda en este navegador. Las páginas siguen funcionando aunque estén ocultas."
+  },
+  "movido": {
+    "por-defecto": "Los hashtags y las cuentas que salen marcadas al publicar ahora están en Ajustes.",
+    "revision": "La revisión antes de publicar ahora está en Ajustes. Quién revisa se sigue marcando acá, en cada persona del equipo.",
+    "ir": "Ir a Ajustes →"
+  }
+}

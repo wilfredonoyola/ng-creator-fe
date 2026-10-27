@@ -9,7 +9,7 @@ La revisión sirve para que nada salga en las redes de un cliente sin que alguie
 
 ## Cómo activarla
 
-1. Elegí la marca en la barra lateral y entrá a **Equipo**.
+1. Elegí la marca en la barra lateral y entrá a **Ajustes** → **Revisión**.
 2. En **Revisión antes de publicar**, prendé **Revisar los clips antes de que salgan**.
 3. En **Si llega la hora y nadie lo revisó**, elegí **No publicar** o **Publicar igual** (lo explicamos en [Revisión vencida](/ayuda/revision-vencida)).
 4. Tocá **Guardar**.

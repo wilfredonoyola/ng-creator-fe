@@ -19,7 +19,7 @@ import {
   MIEMBROS_DE_PAGINA,
   REVOCAR_ACCESO,
 } from "@/graphql/operations";
-import { AjustesRevisionMarca } from "@/components/revision/AjustesRevisionMarca";
+import { MovidoAAjustes } from "@/components/MovidoAAjustes";
 import { useRevisionMarca } from "@/lib/revision";
 import { ConexionesMcpDelEquipo } from "@/components/conectar/ConexionesMcpDelEquipo";
 import { ModalContrasenaTemporal } from "@/components/equipo/ModalContrasenaTemporal";
@@ -249,10 +249,7 @@ export default function EquipoPage() {
         </section>
       )}
 
-      <AjustesRevisionMarca
-        miembros={cargandoMiembros ? null : miembros}
-        verEquipo={() => document.getElementById("equipo-con-acceso")?.scrollIntoView({ behavior: "smooth" })}
-      />
+      <MovidoAAjustes seccion="revision" />
 
       {/* Quienes ya tienen acceso */}
       <section id="equipo-con-acceso" className="scroll-mt-6">
