@@ -33,7 +33,8 @@
   "maximoCapas": "Llegaste al máximo de {n} capas.",
   "capas": "Capas",
   "sinCapas": "Todavía no hay capas: agrega un texto, el título o una imagen.",
-  "atajos": "Arrastra para mover. Supr borra, Ctrl+D duplica, las flechas mueven de a poco y Ctrl+Z deshace.",
+  "atajos": "Arrastra para mover; en la lista, arrastra el asa para cambiar el orden. Supr borra, Ctrl+D duplica, Ctrl+] y Ctrl+[ llevan adelante y atrás (con Mayús, hasta el final), las flechas mueven de a poco y Ctrl+Z deshace.",
+  "arrastrarCapa": "Arrastra para reordenar: {nombre}",
   "delTema": "Del tema",
   "fondo": "Fondo",
   "fondos": {
