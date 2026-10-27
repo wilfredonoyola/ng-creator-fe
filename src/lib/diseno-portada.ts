@@ -21,6 +21,11 @@ export interface FondoPortada {
   oscurecer: number;
   /** De 0 a 1. */
   desenfoque: number;
+  /**
+   * Fondo CUADRO (be#249): acercado y corrido para que la cara salga del mismo
+   * tamaño y a la misma altura en todas las portadas (`ventanaDeCara`).
+   */
+  centrarCara?: boolean | null;
 }
 
 export interface CapaPortada {
@@ -85,6 +90,45 @@ const MARGEN_VERTICAL = 0.05;
 
 export const entre = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 const colorValido = (c: string | null | undefined): string | null => (c && HEX.test(c) ? c : null);
+
+/** Una cara del cuadro en fracciones del cuadro: su caja y la línea de los ojos (be#249). */
+export interface CaraDeCuadro {
+  x: number;
+  y: number;
+  ancho: number;
+  alto: number;
+  ojosY: number;
+}
+
+/** Centrar en la cara: el alto de la cara y dónde van los ojos, en fracción del lienzo (como el backend). */
+const CARA_CENTRADA = 0.25;
+const OJOS_CENTRADOS = 0.32;
+/** Hasta cuánto se acerca: más, y un cuadro de video se ve pixelado. */
+const ZOOM_MAXIMO = 2.5;
+
+/**
+ * La parte del cuadro que queda con `centrarCara`, en fracciones: la misma
+ * cuenta que `ventanaDeCara` del backend (diseno-portada.ts), para que la
+ * vista en vivo se vea como lo que se publica.
+ */
+export function ventanaDeCara(cara: CaraDeCuadro): { x: number; y: number; ancho: number; alto: number } {
+  const zoom = entre(CARA_CENTRADA / Math.max(0.01, cara.alto), 1, ZOOM_MAXIMO);
+  const lado = 1 / zoom;
+  const x = entre(cara.x + cara.ancho / 2 - lado / 2, 0, 1 - lado);
+  const y = entre(cara.ojosY - OJOS_CENTRADOS * lado, 0, 1 - lado);
+  return { x, y, ancho: lado, alto: lado };
+}
+
+/**
+ * La franja que se ve en la grilla del perfil (be#249), en fracción del alto:
+ * TikTok e Instagram muestran el centro 3:4 de la portada. Todo, si el lienzo
+ * es más ancho que 3:4.
+ */
+export function franjaDeGrilla(lienzo: Lienzo): { desde: number; hasta: number } {
+  const visible = Math.min(lienzo.alto, (lienzo.ancho * 4) / 3);
+  const margen = (lienzo.alto - visible) / 2 / lienzo.alto;
+  return { desde: margen, hasta: 1 - margen };
+}
 
 /** Un id para una capa nueva: el backend acepta hasta 40 letras. */
 export const nuevoIdCapa = () => `c${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;

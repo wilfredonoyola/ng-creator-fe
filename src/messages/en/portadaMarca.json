@@ -37,11 +37,14 @@
   },
   "editor": {
     "texto": "Cover title",
-    "textoAyuda": "Empty: the clip's hook. Enter for a new line.",
+    "textoAyuda": "Empty: the first suggested title (or the hook). Enter for a new line.",
     "cuadro": "Frame",
     "cuadroEn": "Frame at {seg} s",
     "sinCuadros": "This clip was exported before brand covers: the frame includes the clip's text. Export it again to pick from clean frames.",
-    "sugeridos": "Suggested titles"
+    "sugeridos": "Suggested titles",
+    "otros": "Others",
+    "otrosAyuda": "Ask the AI for other titles",
+    "mejorCuadro": "Best frame"
   },
   "personalizar": {
     "boton": "Customize this cover",

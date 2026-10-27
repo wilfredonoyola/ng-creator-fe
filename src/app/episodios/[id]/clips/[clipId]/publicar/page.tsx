@@ -75,7 +75,7 @@ import { EtiquetaProveedor } from "@/components/EtiquetaProveedor";
 import { CuadroPortada, ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
-import { useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
+import { textoPorDefectoPortada, useAvisosPortada, useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
 import { claveDiseno, disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
 import { MetricasClip } from "@/components/metricas/MetricasClip";
 import { PanelRevision } from "@/components/revision/PanelRevision";
@@ -225,6 +225,8 @@ function Formulario({
     urlPoster?: string | null;
     /** Cuadros sin textos encima, para la portada de marca (be#239). */
     cuadrosPortada?: CuadroLimpio[] | null;
+    /** Los títulos de portada de la IA (be#249): el primero es el de por defecto. */
+    titulosPortada?: string[] | null;
     hastaSeg: number;
     /** Ya sin los cortes del medio. */
     duracionEfectivaSeg?: number | null;
@@ -262,6 +264,7 @@ function Formulario({
   const tv = useTranslations("versionFacebook");
   const tc = useTranslations("calidadClip");
   const tr = useTranslations("revisionClip.programar");
+  const ta = useTranslations("avisosPortada");
   const locale = useLocale();
   const revision = useRevisionMarca(marcaId || undefined);
   // De entrada sale marcado todo destino usable que la marca no apagó en
@@ -361,6 +364,12 @@ function Formulario({
     { marcaId, clipId: clip._id, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
     !conPortadaMarca || !videoListo,
   );
+  // La revisión de la portada (be#249): un aviso grave no deja programar con la portada de marca.
+  const revisionPortada = useAvisosPortada(
+    { marcaId, clipId: clip._id, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
+    !conPortadaMarca || !videoListo,
+  );
+  const portadaConGraves = conPortadaMarca && videoListo && revisionPortada.graves.length > 0;
   /** Lo que la portada de marca agrega al programar. */
   const camposPortadaMarca = conPortadaMarca
     ? {
@@ -1328,7 +1337,7 @@ function Formulario({
                 <EditorPortadaMarca
                   texto={portadaTexto}
                   onTexto={setPortadaTexto}
-                  textoPorDefecto={clip.gancho?.trim() || clip.titulo}
+                  textoPorDefecto={textoPorDefectoPortada(clip)}
                   cuadros={cuadrosLimpios}
                   seg={portadaSeg}
                   onSeg={setPortadaSeg}
@@ -1340,6 +1349,8 @@ function Formulario({
                   diseno={portadaDiseno}
                   onDiseno={opera ? setPortadaDiseno : undefined}
                   posterUrl={clip.urlPoster}
+                  avisos={revisionPortada.avisos}
+                  revisando={revisionPortada.revisando}
                   sinCuadros={
                     <ElegirPortadaClip url={portadaElegible} duracion={duracionClip} valor={portadaSeg} onCambiar={setPortadaSeg} />
                   }
@@ -1446,6 +1457,7 @@ function Formulario({
                     <p className="text-xs text-amber-300">{aProgramar.length ? tv("faltaVersion") : tv("soloFacebook")}</p>
                   ) : null}
                   {esperandoVideo ? <p className="text-xs text-ng-azul">{t("video.botonAyuda")}</p> : null}
+                  {portadaConGraves && paso >= 2 ? <p className="text-xs text-red-400">{ta("bloquea")}</p> : null}
                   {revision.activa ? (
                     <p className={`text-xs ${revision.soyRevisor ? "text-white/45" : "text-amber-300"}`}>
                       {revision.soyRevisor ? tr("avisoRevisor") : tr("aviso")}
@@ -1471,7 +1483,12 @@ function Formulario({
                 disabled={
                   paso < 3
                     ? (paso === 0 && !redesListas) || (paso === 1 && descripcionLarga)
-                    : enviando || esperandoVideo || (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) || faltaFecha || descripcionLarga
+                    : enviando ||
+                      esperandoVideo ||
+                      (modoEditar ? aProgramar.length === 0 && aCancelar.length === 0 : aProgramar.length === 0) ||
+                      faltaFecha ||
+                      descripcionLarga ||
+                      portadaConGraves
                 }
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-marca px-5 py-3 text-sm font-bold text-ng-tinta transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
               >
