@@ -692,6 +692,12 @@ export const CAMPOS_DISENO_PORTADA = `
     oscurecer
     desenfoque
     centrarCara
+    separar
+    telon
+    telonUrl
+    borde
+    bordeEstilo
+    bordeColor
   }
   capas {
     id
@@ -2770,18 +2776,21 @@ export const CREAR_CLIP_EPISODIO = gql`
  * uno FALLIDO se reintenta. Es el mismo trabajo que usa el guardado.
  */
 export const PREPARAR_RECORTE_IMAGEN = gql`
-  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean) {
-    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar) {
+  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean, $separar: Boolean) {
+    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar, separar: $separar) {
       estadoRecorte
       urlFinal
     }
   }
 `;
 
-/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. `mejorar`: la mejorada con IA (be#255). */
+/**
+ * Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. `mejorar`: la
+ * mejorada con IA (be#255). `separar`: la persona separada del cuadro (be#249).
+ */
 export const RECORTE_IMAGEN = gql`
-  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean) {
-    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar) {
+  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean, $separar: Boolean) {
+    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar, separar: $separar) {
       estadoRecorte
       urlFinal
     }

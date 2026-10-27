@@ -86,5 +86,28 @@
   "centrarCara": "Centrar en la cara",
   "centrarCaraAyuda": "La cara sale del mismo tamaño y a la misma altura en todas las portadas.",
   "zonaGrilla": "Zona de la grilla",
-  "zonaGrillaAyuda": "Oscurece lo que no se ve en la grilla del perfil (TikTok e Instagram muestran el centro 3:4)."
+  "zonaGrillaAyuda": "Oscurece lo que no se ve en la grilla del perfil (TikTok e Instagram muestran el centro 3:4).",
+  "separar": "Separar a la persona",
+  "separarAyuda": "Quita el fondo del cuadro y pone el telón de tu marca detrás.",
+  "separarSinCuadro": "Este clip no tiene cuadros limpios: la persona no se separa en su portada.",
+  "separando": "Separando a la persona…",
+  "separarLento": "Separar a la persona está tardando más de lo normal.",
+  "separarFallo": "No se pudo separar a la persona: la portada sale con el cuadro tal cual.",
+  "telon": "Telón",
+  "telones": {
+    "DEGRADADO": "Degradado de marca",
+    "DESENFOQUE": "Desenfocado",
+    "IMAGEN": "Imagen"
+  },
+  "bordePersona": "Borde",
+  "grosor": "Grosor",
+  "sinBorde": "Sin borde",
+  "estilosBorde": {
+    "LUZ": "Luz",
+    "LINEA": "Línea"
+  },
+  "colorBorde": "Color",
+  "colorMarca": "Marca",
+  "colorBlanco": "Blanco",
+  "colorOtro": "Otro color"
 }

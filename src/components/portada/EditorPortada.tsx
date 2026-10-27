@@ -27,6 +27,7 @@ import { ESTILOS_PORTADA, FUENTES_PORTADA, useAvisosPortada } from "@/lib/portad
 import { ErrorDeSubida, FORMATOS_IMAGEN_CLIP, uploadImagenClip } from "@/lib/upload";
 import { esMejora, useRecortesImagen, type RecorteLocal } from "@/lib/use-recortes-imagen";
 import {
+  BORDE_POR_DEFECTO,
   MAXIMO_CAPAS_PORTADA,
   capaNueva,
   claveDiseno,
@@ -39,7 +40,9 @@ import {
   type CapaPortada,
   type CaraDeCuadro,
   type DisenoPortada,
+  type EstiloBordePortada,
   type FondoPortada,
+  type TelonPortada,
   type TipoFondoPortada,
 } from "@/lib/diseno-portada";
 import { AvisosPortada } from "./AvisosPortada";
@@ -251,7 +254,7 @@ function Editor({
   const [elegida, setElegida] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [subiendo, setSubiendo] = useState<"capa" | "fondo" | "reemplazo" | null>(null);
+  const [subiendo, setSubiendo] = useState<"capa" | "fondo" | "reemplazo" | "telon" | null>(null);
   const [guia, setGuia] = useState<{ v: boolean; h: boolean }>({ v: false, h: false });
   const [zonaGrilla, setZonaGrilla] = useState(false);
   const claveInicial = useRef(claveDiseno(inicial));
@@ -275,7 +278,14 @@ function Editor({
     [cuadroRecortable],
   );
   const urlFondo = diseno.fondo.tipo === "CUADRO" ? cuadroRecortable : diseno.fondo.tipo === "IMAGEN" ? diseno.fondo.url : null;
-  const opcionesFondo = diseno.fondo.mejorar && urlFondo ? { url: urlFondo, sinFondo: false, contorno: false, mejorar: true } : null;
+  // "Separar a la persona" (be#249): un solo trabajo, mejorada y separada si también se mejora.
+  const separar = diseno.fondo.tipo === "CUADRO" && !!diseno.fondo.separar && !!cuadroRecortable;
+  const opcionesFondo =
+    separar && urlFondo
+      ? { url: urlFondo, sinFondo: false, contorno: false, mejorar: !!diseno.fondo.mejorar, separar: true }
+      : diseno.fondo.mejorar && urlFondo
+        ? { url: urlFondo, sinFondo: false, contorno: false, mejorar: true }
+        : null;
   const imagenesRecorte = [
     ...diseno.capas.map(opcionesDeCapa).filter((o): o is NonNullable<typeof o> => !!o),
     ...(opcionesFondo ? [opcionesFondo] : []),
@@ -290,8 +300,12 @@ function Editor({
     const o = opcionesDeCapa(c);
     if (o) void reintentar(o);
   };
-  const recorteFondo = opcionesFondo ? recorteDe(opcionesFondo) : undefined;
-  const fondoMejorado = recorteFondo?.estadoRecorte === "LISTO" ? recorteFondo.urlFinal : null;
+  const recorteFondoLocal = opcionesFondo ? recorteDe(opcionesFondo) : undefined;
+  const recorteFondo: RecorteDeCapa | undefined = recorteFondoLocal && { ...recorteFondoLocal, mejora: !separar, separa: separar };
+  const listoFondo = recorteFondo?.estadoRecorte === "LISTO" ? recorteFondo.urlFinal : null;
+  // Separada, la mejora va en la persona: el cuadro de atrás queda como viene (como el backend).
+  const fondoMejorado = separar ? null : listoFondo;
+  const separada = separar ? listoFondo : null;
   // Con el fondo CUADRO mejorado, el cuadro tal cual de las capas también es el mejorado (como el backend).
   const cuadroMejorado = diseno.fondo.tipo === "CUADRO" ? fondoMejorado : null;
   const listoDe = useCallback(
@@ -322,6 +336,7 @@ function Editor({
     srcDeCapa,
     capaMejorada,
     fondoMejorado,
+    separada,
     textoSinCuadro: t("cuadroDelVideo"),
   };
 
@@ -530,13 +545,15 @@ function Editor({
   const archivoCapa = useRef<HTMLInputElement>(null);
   const archivoFondo = useRef<HTMLInputElement>(null);
   const archivoReemplazo = useRef<HTMLInputElement>(null);
-  async function subir(file: File | undefined, para: "capa" | "fondo" | "reemplazo") {
+  const archivoTelon = useRef<HTMLInputElement>(null);
+  async function subir(file: File | undefined, para: "capa" | "fondo" | "reemplazo" | "telon") {
     if (!file) return;
     setError(null);
     setSubiendo(para);
     try {
       const url = await uploadImagenClip(file, marcaId);
       if (para === "fondo") cambiarFondo({ tipo: "IMAGEN", url });
+      else if (para === "telon") cambiarFondo({ telon: "IMAGEN", telonUrl: url });
       else if (para === "reemplazo" && capa) cambiarCapa(capa.id, { url, cuadro: false });
       else agregar(capaNueva("IMAGEN", { url }));
     } catch (e) {
@@ -636,7 +653,7 @@ function Editor({
               })}
               {recorteFondo && (
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-7">
-                  <EtiquetaRecorte recorte={{ ...recorteFondo, mejora: true }} />
+                  <EtiquetaRecorte recorte={recorteFondo} />
                 </div>
               )}
               {/* Lo que no se ve en la grilla del perfil, oscurecido */}
@@ -758,10 +775,13 @@ function Editor({
                 <PanelFondo
                   fondo={diseno.fondo}
                   subiendo={subiendo === "fondo"}
+                  subiendoTelon={subiendo === "telon"}
                   onCambiar={cambiarFondo}
                   onSubir={() => archivoFondo.current?.click()}
+                  onSubirTelon={() => archivoTelon.current?.click()}
                   tema={tema}
-                  recorte={recorteFondo && { ...recorteFondo, mejora: true }}
+                  cuadroSinRecorte={!!cuadroUrl && !cuadroRecortable}
+                  recorte={recorteFondo}
                   onReintentarRecorte={() => opcionesFondo && void reintentar(opcionesFondo)}
                 />
 
@@ -794,6 +814,7 @@ function Editor({
       <input ref={archivoCapa} type="file" accept={FORMATOS_IMAGEN_CLIP.join(",")} className="hidden" onChange={(e) => { void subir(e.target.files?.[0], "capa"); e.target.value = ""; }} />
       <input ref={archivoFondo} type="file" accept={FORMATOS_IMAGEN_CLIP.join(",")} className="hidden" onChange={(e) => { void subir(e.target.files?.[0], "fondo"); e.target.value = ""; }} />
       <input ref={archivoReemplazo} type="file" accept={FORMATOS_IMAGEN_CLIP.join(",")} className="hidden" onChange={(e) => { void subir(e.target.files?.[0], "reemplazo"); e.target.value = ""; }} />
+      <input ref={archivoTelon} type="file" accept={FORMATOS_IMAGEN_CLIP.join(",")} className="hidden" onChange={(e) => { void subir(e.target.files?.[0], "telon"); e.target.value = ""; }} />
     </>
   );
 }
@@ -937,8 +958,11 @@ function ColorTema({
 
 const porciento = (v: number) => `${Math.round(v * 100)} %`;
 
-/** El recorte de una capa (o del fondo): `mejora` si es la mejorada con IA y no quitar fondo. */
-type RecorteDeCapa = RecorteLocal & { mejora: boolean };
+/**
+ * El recorte de una capa (o del fondo): `mejora` si es la mejorada con IA y no
+ * quitar fondo; `separa` si es la persona separada del cuadro (be#249).
+ */
+type RecorteDeCapa = RecorteLocal & { mejora: boolean; separa?: boolean };
 
 /** Sobre el lienzo, mientras se quita el fondo o se mejora con IA (se ve la original), o si falló. */
 function EtiquetaRecorte({ recorte }: { recorte?: RecorteDeCapa }) {
@@ -947,14 +971,14 @@ function EtiquetaRecorte({ recorte }: { recorte?: RecorteDeCapa }) {
     return (
       <span className="absolute left-1 top-1 flex items-center gap-1 whitespace-nowrap rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white/80">
         <Loader2 className="h-3 w-3 animate-spin" />
-        {recorte.mejora ? t("mejorando") : t("quitandoFondo")}
+        {recorte.separa ? t("separando") : recorte.mejora ? t("mejorando") : t("quitandoFondo")}
       </span>
     );
   }
   if (recorte?.estadoRecorte === "FALLIDO") {
     return (
       <span className="absolute left-1 top-1 whitespace-nowrap rounded bg-red-900/80 px-1.5 py-0.5 text-[10px] text-white">
-        {recorte.mejora ? t("mejoraFallo") : t("recorteFallo")}
+        {recorte.separa ? t("separarFallo") : recorte.mejora ? t("mejoraFallo") : t("recorteFallo")}
       </span>
     );
   }
@@ -965,13 +989,23 @@ function EtiquetaRecorte({ recorte }: { recorte?: RecorteDeCapa }) {
 function EstadoRecorte({ recorte, onReintentar }: { recorte?: RecorteDeCapa; onReintentar: () => void }) {
   const t = useTranslations("editorPortada");
   if (recorte?.estadoRecorte === "PENDIENTE") {
-    const texto = recorte.mejora ? (recorte.lento ? t("mejoraLenta") : t("mejorando")) : recorte.lento ? t("recorteLento") : t("quitandoFondo");
+    const texto = recorte.separa
+      ? recorte.lento
+        ? t("separarLento")
+        : t("separando")
+      : recorte.mejora
+        ? recorte.lento
+          ? t("mejoraLenta")
+          : t("mejorando")
+        : recorte.lento
+          ? t("recorteLento")
+          : t("quitandoFondo");
     return <p className="mt-2 text-[11px] text-white/50">{texto}</p>;
   }
   if (recorte?.estadoRecorte === "FALLIDO") {
     return (
       <p className="mt-2 text-[11px] text-red-400">
-        {recorte.mejora ? t("mejoraFallo") : t("recorteFallo")}{" "}
+        {recorte.separa ? t("separarFallo") : recorte.mejora ? t("mejoraFallo") : t("recorteFallo")}{" "}
         <button onClick={onReintentar} className="underline">
           {t("reintentar")}
         </button>
@@ -984,18 +1018,26 @@ function EstadoRecorte({ recorte, onReintentar }: { recorte?: RecorteDeCapa; onR
 function PanelFondo({
   fondo,
   subiendo,
+  subiendoTelon,
   onCambiar,
   onSubir,
+  onSubirTelon,
   tema,
+  cuadroSinRecorte,
   recorte,
   onReintentarRecorte,
 }: {
   fondo: FondoPortada;
   subiendo: boolean;
+  subiendoTelon: boolean;
   onCambiar: (c: Partial<FondoPortada>, juntar?: string) => void;
   onSubir: () => void;
+  /** Subir la imagen del telón de "Separar a la persona". */
+  onSubirTelon: () => void;
   tema: Tema;
-  /** La mejorada con IA del fondo, si se pidió. */
+  /** El cuadro del clip no es limpio (poster del MP4): no se puede separar a la persona en vivo. */
+  cuadroSinRecorte: boolean;
+  /** La mejorada con IA del fondo, o la persona separada, si se pidió. */
   recorte?: RecorteDeCapa;
   onReintentarRecorte: () => void;
 }) {
@@ -1024,12 +1066,20 @@ function PanelFondo({
         <ColorTema etiqueta={t("color")} valor={fondo.color} porDefecto={tema.colorFondo} onCambio={(v) => onCambiar({ color: v })} />
       )}
       {fondo.tipo === "CUADRO" && (
-        <Interruptor etiqueta={t("centrarCara")} ayuda={t("centrarCaraAyuda")} valor={!!fondo.centrarCara} onCambio={(v) => onCambiar({ centrarCara: v })} />
+        <>
+          <Interruptor etiqueta={t("centrarCara")} ayuda={t("centrarCaraAyuda")} valor={!!fondo.centrarCara} onCambio={(v) => onCambiar({ centrarCara: v })} />
+          <Interruptor etiqueta={t("separar")} ayuda={t("separarAyuda")} valor={!!fondo.separar} onCambio={(v) => onCambiar({ separar: v })} />
+          {fondo.separar && cuadroSinRecorte && <p className="mt-2 text-[11px] text-amber-300/90">{t("separarSinCuadro")}</p>}
+          {recorte?.separa && <EstadoRecorte recorte={recorte} onReintentar={onReintentarRecorte} />}
+          {fondo.separar && (
+            <OpcionesSeparar fondo={fondo} tema={tema} subiendoTelon={subiendoTelon} onCambiar={onCambiar} onSubirTelon={onSubirTelon} />
+          )}
+        </>
       )}
       {fondo.tipo !== "COLOR" && (
         <>
           <Interruptor etiqueta={t("mejorar")} ayuda={t("mejorarAyuda")} valor={fondo.mejorar} onCambio={(v) => onCambiar({ mejorar: v })} />
-          <EstadoRecorte recorte={recorte} onReintentar={onReintentarRecorte} />
+          {!recorte?.separa && <EstadoRecorte recorte={recorte} onReintentar={onReintentarRecorte} />}
           <Deslizador
             etiqueta={t("desenfoque")}
             valor={fondo.desenfoque}
@@ -1051,6 +1101,100 @@ function PanelFondo({
         onCambio={(v) => onCambiar({ oscurecer: v }, "fondo-oscurecer")}
       />
     </Seccion>
+  );
+}
+
+const TELONES: TelonPortada[] = ["DEGRADADO", "DESENFOQUE", "IMAGEN"];
+const ESTILOS_BORDE: EstiloBordePortada[] = ["LUZ", "LINEA"];
+const BLANCO = "#FFFFFF";
+
+/** "Separar a la persona" (be#249): el telón de atrás y el borde de la persona. */
+function OpcionesSeparar({
+  fondo,
+  tema,
+  subiendoTelon,
+  onCambiar,
+  onSubirTelon,
+}: {
+  fondo: FondoPortada;
+  tema: Tema;
+  subiendoTelon: boolean;
+  onCambiar: (c: Partial<FondoPortada>, juntar?: string) => void;
+  onSubirTelon: () => void;
+}) {
+  const t = useTranslations("editorPortada");
+  const telon = fondo.telon ?? "DEGRADADO";
+  const borde = entre(fondo.borde ?? BORDE_POR_DEFECTO, 0, 1);
+  const estilo = fondo.bordeEstilo ?? "LUZ";
+  const color = fondo.bordeColor?.toUpperCase() ?? null;
+  const blanco = color === BLANCO;
+  return (
+    <div className="mt-3 space-y-1 rounded-lg border border-white/10 p-3">
+      <p className="text-xs text-white/60">{t("telon")}</p>
+      <div className="mt-1.5 grid grid-cols-3 gap-2">
+        {TELONES.map((x) => (
+          <button
+            key={x}
+            onClick={() => (x === "IMAGEN" && !fondo.telonUrl ? onSubirTelon() : onCambiar({ telon: x }))}
+            className={opcion(telon === x)}
+          >
+            {t(`telones.${x}`)}
+          </button>
+        ))}
+      </div>
+      {telon === "IMAGEN" && (
+        <button
+          onClick={onSubirTelon}
+          disabled={subiendoTelon}
+          className="mt-2 flex items-center gap-1.5 rounded-lg border border-white/15 px-2.5 py-1.5 text-xs hover:bg-white/5 disabled:opacity-50"
+        >
+          {subiendoTelon && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {fondo.telonUrl ? t("cambiarImagen") : t("subirImagen")}
+        </button>
+      )}
+      {telon !== "IMAGEN" && subiendoTelon && <Loader2 className="mt-2 h-3.5 w-3.5 animate-spin text-white/50" aria-label={t("subirImagen")} />}
+
+      <p className="pt-3 text-xs text-white/60">{t("bordePersona")}</p>
+      <Deslizador
+        etiqueta={t("grosor")}
+        valor={borde}
+        min={0}
+        max={1}
+        paso={0.05}
+        mostrar={(v) => (v > 0 ? porciento(v) : t("sinBorde"))}
+        onCambio={(v) => onCambiar({ borde: v }, "fondo-borde")}
+      />
+      {borde > 0 && (
+        <>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {ESTILOS_BORDE.map((x) => (
+              <button key={x} onClick={() => onCambiar({ bordeEstilo: x })} className={opcion(estilo === x)}>
+                {t(`estilosBorde.${x}`)}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex items-center gap-2 text-xs text-white/60">
+            <span className="flex-1">{t("colorBorde")}</span>
+            <button onClick={() => onCambiar({ bordeColor: null })} className={opcion(!color)}>
+              <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full align-middle" style={{ background: tema.colorPrimario }} />
+              {t("colorMarca")}
+            </button>
+            <button onClick={() => onCambiar({ bordeColor: BLANCO })} className={opcion(blanco)}>
+              <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full bg-white align-middle" />
+              {t("colorBlanco")}
+            </button>
+            <input
+              type="color"
+              value={color ?? tema.colorPrimario}
+              onChange={(e) => onCambiar({ bordeColor: e.target.value.toUpperCase() }, "fondo-borde-color")}
+              className={`h-7 w-9 cursor-pointer rounded border bg-transparent ${color && !blanco ? "border-ng-azul" : "border-white/15"}`}
+              aria-label={t("colorOtro")}
+              title={t("colorOtro")}
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 

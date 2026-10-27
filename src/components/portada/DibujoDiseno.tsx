@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { FUENTES_ESTILO, type Tema } from "@/lib/estilos-texto";
 import {
+  BORDE_POR_DEFECTO,
+  SEPARAR,
   entre,
   medirTexto,
   ventanaDeCara,
@@ -60,6 +62,11 @@ export interface RecursosDibujo {
   capaMejorada?: (capa: CapaPortada) => boolean;
   /** El fondo mejorado con IA, si ya está (be#255): va en lugar del cuadro o la imagen, sin el filtro. */
   fondoMejorado?: string | null;
+  /**
+   * La persona separada del cuadro, si ya está ("Separar a la persona", be#249):
+   * del tamaño del cuadro, va encima del telón en el mismo lugar.
+   */
+  separada?: string | null;
   /** Lo que se escribe donde falta el cuadro del clip (Brand Kit sin clip). */
   textoSinCuadro: string;
 }
@@ -115,6 +122,9 @@ export function DibujoDiseno({
   const aspectoCuadro = recursos.cuadroUrl ? recursos.aspectos[recursos.cuadroUrl] : undefined;
   const ventana =
     fondo.tipo === "CUADRO" && fondo.centrarCara && recursos.caraCuadro && aspectoCuadro ? ventanaDeCara(recursos.caraCuadro) : null;
+  // "Separar a la persona" (be#249): con la separada lista, telón + sombra + borde + persona, como `dibujarSeparada`.
+  // Mientras no está (o si falla), el cuadro como siempre, igual que el servidor.
+  const separada = fondo.tipo === "CUADRO" && fondo.separar && recursos.cuadroUrl && recursos.separada ? recursos.separada : null;
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className={className} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
@@ -145,32 +155,161 @@ export function DibujoDiseno({
       </defs>
 
       {/* El fondo */}
-      {fondoUrl && ventana && aspectoCuadro ? (
-        <g filter={filtroFondo ? `url(#${filtroFondo})` : undefined}>
-          <svg
-            x={0}
-            y={0}
-            width={W}
-            height={H}
-            viewBox={`${ventana.x * 1000} ${ventana.y * 1000 * aspectoCuadro} ${ventana.ancho * 1000} ${ventana.alto * 1000 * aspectoCuadro}`}
-            preserveAspectRatio="xMidYMid slice"
-          >
-            <image href={fondoUrl} x={0} y={0} width={1000} height={1000 * aspectoCuadro} />
-          </svg>
-        </g>
+      {separada ? (
+        <Separada diseno={diseno} lienzo={lienzo} recursos={recursos} separada={separada} ventana={ventana} aspecto={aspectoCuadro} />
       ) : fondoUrl ? (
-        <image href={fondoUrl} x={0} y={0} width={W} height={H} preserveAspectRatio="xMidYMid slice" filter={filtroFondo ? `url(#${filtroFondo})` : undefined} />
+        <g filter={filtroFondo ? `url(#${filtroFondo})` : undefined}>
+          <ImagenCuadro href={fondoUrl} lienzo={lienzo} ventana={ventana} aspecto={aspectoCuadro} />
+        </g>
       ) : fondo.tipo === "CUADRO" ? (
         <SinCuadro x={0} y={0} ancho={W} alto={H} texto={recursos.textoSinCuadro} />
       ) : (
         <rect x={0} y={0} width={W} height={H} fill={(fondo.color && /^#[0-9a-fA-F]{6}$/.test(fondo.color) ? fondo.color : null) ?? tema.colorFondo} />
       )}
-      {oscurecer > 0 && <rect x={0} y={0} width={W} height={H} fill="#000" opacity={oscurecer} />}
+      {/* Con la persona separada, el velo va sobre el telón (debajo de la persona) */}
+      {oscurecer > 0 && !separada && <rect x={0} y={0} width={W} height={H} fill="#000" opacity={oscurecer} />}
 
       {diseno.capas.map((capa) => (
         <Capa key={capa.id} capa={capa} lienzo={lienzo} recursos={recursos} />
       ))}
     </svg>
+  );
+}
+
+/**
+ * El cuadro (o la imagen del fondo) cubriendo el lienzo; con `ventana` (centrar
+ * en la cara), solo esa parte, estirada al lienzo como el backend.
+ */
+function ImagenCuadro({
+  href,
+  lienzo,
+  ventana,
+  aspecto,
+}: {
+  href: string;
+  lienzo: Lienzo;
+  ventana: { x: number; y: number; ancho: number; alto: number } | null;
+  aspecto: number | undefined;
+}) {
+  if (ventana && aspecto) {
+    return (
+      <svg
+        x={0}
+        y={0}
+        width={lienzo.ancho}
+        height={lienzo.alto}
+        viewBox={`${ventana.x * 1000} ${ventana.y * 1000 * aspecto} ${ventana.ancho * 1000} ${ventana.alto * 1000 * aspecto}`}
+        preserveAspectRatio="xMidYMid slice"
+      >
+        <image href={href} x={0} y={0} width={1000} height={1000 * aspecto} />
+      </svg>
+    );
+  }
+  return <image href={href} x={0} y={0} width={lienzo.ancho} height={lienzo.alto} preserveAspectRatio="xMidYMid slice" />;
+}
+
+/**
+ * "Separar a la persona" (be#249), con las medidas de `SEPARAR` (en fracción
+ * del ancho): el telón (con el desenfoque y el velo del fondo), una sombra
+ * suave, el borde y la persona encima, en el mismo lugar que el cuadro. Lo
+ * mismo que `dibujarTelon` y `dibujarSeparada` del backend; el SVG está en px
+ * del lienzo, así los desvíos van tal cual.
+ */
+function Separada({
+  diseno,
+  lienzo,
+  recursos,
+  separada,
+  ventana,
+  aspecto,
+}: {
+  diseno: DisenoPortada;
+  lienzo: Lienzo;
+  recursos: RecursosDibujo;
+  separada: string;
+  ventana: { x: number; y: number; ancho: number; alto: number } | null;
+  aspecto: number | undefined;
+}) {
+  const { fondo } = diseno;
+  const { tema } = recursos;
+  const W = lienzo.ancho;
+  const H = lienzo.alto;
+  const telon = fondo.telon === "IMAGEN" && fondo.telonUrl ? "IMAGEN" : fondo.telon === "DESENFOQUE" && recursos.cuadroUrl ? "DESENFOQUE" : "DEGRADADO";
+  const desenfoque = entre(fondo.desenfoque ?? 0, 0, 1);
+  const oscurecer = entre(fondo.oscurecer ?? 0, 0, 0.7);
+  const borde = entre(fondo.borde ?? BORDE_POR_DEFECTO, 0, 1);
+  const medida = borde * SEPARAR.bordeMaximo * W;
+  const colorBorde = fondo.bordeColor && /^#[0-9a-fA-F]{6}$/.test(fondo.bordeColor) ? fondo.bordeColor : tema.colorPrimario;
+  const linea = fondo.bordeEstilo === "LINEA";
+  const todo = { filterUnits: "userSpaceOnUse", x: 0, y: 0, width: W, height: H } as const;
+  return (
+    <g>
+      <defs>
+        <radialGradient id="dp-brillo" cx={SEPARAR.brilloX} cy={SEPARAR.brilloY} r={SEPARAR.brilloRadio}>
+          <stop offset="0" stopColor={tema.colorPrimario} stopOpacity={SEPARAR.brilloOpacidad} />
+          <stop offset="1" stopColor={tema.colorPrimario} stopOpacity={0} />
+        </radialGradient>
+        <filter id="dp-telon" {...todo} colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation={SEPARAR.telonDesvio * W} edgeMode="duplicate" />
+        </filter>
+        {desenfoque > 0 && (
+          <filter id="dp-telon-desenfoque" {...todo} colorInterpolationFilters="sRGB">
+            <feGaussianBlur stdDeviation={0.3 + desenfoque * 40} edgeMode="duplicate" />
+          </filter>
+        )}
+        <filter id="dp-persona" {...todo} colorInterpolationFilters="sRGB">
+          {/* La sombra: el alfa desenfocado, negro al 45 %, corrido hacia abajo */}
+          <feGaussianBlur in="SourceAlpha" stdDeviation={SEPARAR.sombraDesvio * W} result="sombraAlfa" />
+          <feOffset in="sombraAlfa" dx={0} dy={Math.round(SEPARAR.sombraAbajo * W)} result="sombraCorrida" />
+          <feComponentTransfer in="sombraCorrida" result="sombra">
+            <feFuncA type="linear" slope={SEPARAR.sombraOpacidad} />
+          </feComponentTransfer>
+          {medida > 0 && (
+            <>
+              {linea ? (
+                <feMorphology in="SourceAlpha" operator="dilate" radius={medida} result="bordeAlfa" />
+              ) : (
+                <feGaussianBlur in="SourceAlpha" stdDeviation={medida} result="bordeAlfa" />
+              )}
+              <feFlood floodColor={colorBorde} result="bordeColor" />
+              <feComposite in="bordeColor" in2="bordeAlfa" operator="in" result="borde" />
+            </>
+          )}
+          <feMerge>
+            <feMergeNode in="sombra" />
+            {medida > 0 && <feMergeNode in="borde" />}
+            {/* La luz va dos veces: una sola se pierde sobre un telón claro (como el backend) */}
+            {medida > 0 && !linea && <feMergeNode in="borde" />}
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* El telón, con el desenfoque del fondo */}
+      <g filter={desenfoque > 0 ? "url(#dp-telon-desenfoque)" : undefined}>
+        {telon === "IMAGEN" ? (
+          <image href={fondo.telonUrl!} x={0} y={0} width={W} height={H} preserveAspectRatio="xMidYMid slice" />
+        ) : telon === "DESENFOQUE" ? (
+          <>
+            <g filter="url(#dp-telon)">
+              <ImagenCuadro href={recursos.cuadroUrl!} lienzo={lienzo} ventana={ventana} aspecto={aspecto} />
+            </g>
+            <rect x={0} y={0} width={W} height={H} fill="#000" opacity={SEPARAR.telonVelo} />
+          </>
+        ) : (
+          <>
+            <rect x={0} y={0} width={W} height={H} fill={tema.colorFondo} />
+            <rect x={0} y={0} width={W} height={H} fill="url(#dp-brillo)" />
+          </>
+        )}
+      </g>
+      {oscurecer > 0 && <rect x={0} y={0} width={W} height={H} fill="#000" opacity={oscurecer} />}
+
+      {/* La persona, con su sombra y su borde */}
+      <g filter="url(#dp-persona)">
+        <ImagenCuadro href={separada} lienzo={lienzo} ventana={ventana} aspecto={aspecto} />
+      </g>
+    </g>
   );
 }
 
