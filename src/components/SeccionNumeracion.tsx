@@ -14,6 +14,7 @@ import {
   useAjustesNumeracion,
   type AjustesNumeracion,
 } from "@/lib/numeracion";
+import { Interruptor } from "@/components/Interruptor";
 
 /**
  * La numeración en Brand Kit: "Programa 31 | Video 2" al inicio del texto de
@@ -99,10 +100,7 @@ export function SeccionNumeracion({ marcaId, opera }: { marcaId: string; opera: 
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-semibold">{t("titulo")}</h2>
         {a && (
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={a.activa} onChange={(e) => cambiar({ activa: e.target.checked })} disabled={!opera} />
-            {t("activa")}
-          </label>
+          <Interruptor valor={a.activa} onCambio={(v) => cambiar({ activa: v })} etiqueta={t("activa")} deshabilitado={!opera} />
         )}
       </div>
       <p className="mt-0.5 text-xs text-white/45">{t("ayuda")}</p>

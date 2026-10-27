@@ -19,6 +19,7 @@ import {
 } from "@/lib/portada-marca";
 import { EditorPortada } from "./EditorPortada";
 import { VistaPortada } from "./VistaPortada";
+import { Interruptor } from "@/components/Interruptor";
 
 /**
  * La portada de marca en Brand Kit (ng-creator-be#239): el diseño con que
@@ -117,10 +118,7 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-semibold">{t("titulo")}</h2>
         {p && (
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={p.activa} onChange={(e) => cambiar({ activa: e.target.checked })} disabled={!opera} />
-            {t("activa")}
-          </label>
+          <Interruptor valor={p.activa} onCambio={(v) => cambiar({ activa: v })} etiqueta={t("activa")} deshabilitado={!opera} />
         )}
       </div>
       <p className="mt-0.5 text-xs text-white/45">{t("ayuda")}</p>
@@ -189,10 +187,13 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
               })}
             </div>
 
-            <label className="mt-4 flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={p.mayusculas} onChange={(e) => cambiar({ mayusculas: e.target.checked })} disabled={!opera} />
-              {t("mayusculas")}
-            </label>
+            <Interruptor
+              valor={p.mayusculas}
+              onCambio={(v) => cambiar({ mayusculas: v })}
+              etiqueta={t("mayusculas")}
+              deshabilitado={!opera}
+              className="mt-4"
+            />
 
             <Deslizador
               etiqueta={t("posicion")}
@@ -217,10 +218,7 @@ export function SeccionPortadaMarca({ marcaId, opera, tieneLogo }: { marcaId: st
 
             <div className="mt-5 flex items-center justify-between gap-3">
               <p className="text-xs font-medium uppercase tracking-wide text-white/50">{t("logo")}</p>
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={p.logoActivo} onChange={(e) => cambiar({ logoActivo: e.target.checked })} disabled={!opera} />
-                {t("conLogo")}
-              </label>
+              <Interruptor valor={p.logoActivo} onCambio={(v) => cambiar({ logoActivo: v })} etiqueta={t("conLogo")} deshabilitado={!opera} />
             </div>
             {!tieneLogo && p.logoActivo && <p className="mt-1 text-xs text-white/40">{t("sinLogo")}</p>}
             {p.logoActivo && (
