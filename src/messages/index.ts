@@ -96,6 +96,7 @@ import montajeTelefono_es from "./es/montajeTelefono.json";
 import montajeTexto_es from "./es/montajeTexto.json";
 import montajeVoz_es from "./es/montajeVoz.json";
 import montajeWizard_es from "./es/montajeWizard.json";
+import numeracion_es from "./es/numeracion.json";
 import onboarding_es from "./es/onboarding.json";
 import panel_es from "./es/panel.json";
 import panelSubirClip_es from "./es/panelSubirClip.json";
@@ -224,6 +225,7 @@ import montajeTelefono_en from "./en/montajeTelefono.json";
 import montajeTexto_en from "./en/montajeTexto.json";
 import montajeVoz_en from "./en/montajeVoz.json";
 import montajeWizard_en from "./en/montajeWizard.json";
+import numeracion_en from "./en/numeracion.json";
 import onboarding_en from "./en/onboarding.json";
 import panel_en from "./en/panel.json";
 import panelSubirClip_en from "./en/panelSubirClip.json";
@@ -355,6 +357,7 @@ export const mensajes = {
     "montajeTexto": montajeTexto_es,
     "montajeVoz": montajeVoz_es,
     "montajeWizard": montajeWizard_es,
+    "numeracion": numeracion_es,
     "onboarding": onboarding_es,
     "panel": panel_es,
     "panelSubirClip": panelSubirClip_es,
@@ -485,6 +488,7 @@ export const mensajes = {
     "montajeTexto": montajeTexto_en,
     "montajeVoz": montajeVoz_en,
     "montajeWizard": montajeWizard_en,
+    "numeracion": numeracion_en,
     "onboarding": onboarding_en,
     "panel": panel_en,
     "panelSubirClip": panelSubirClip_en,
