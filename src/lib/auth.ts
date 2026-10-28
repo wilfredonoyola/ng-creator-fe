@@ -377,6 +377,8 @@ export async function cerrarSesion(): Promise<void> {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("tokenExpiresAt");
+  // Quien entre después no puede heredar una suplantación: el backend la rechaza.
+  localStorage.removeItem("suplantando");
   desmarcarSesion();
 
   // Que quien entre después en este navegador no vea, ni por un instante, las

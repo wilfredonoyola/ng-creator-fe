@@ -99,7 +99,9 @@
     "cortar": "Cortar acceso",
     "devolver": "Devolver acceso",
     "confirmarCortar": "¿Cortarle el acceso a {email}? No va a poder entrar a Clipfine hasta que se lo devuelvas.",
-    "error": "No se pudo cambiar."
+    "error": "No se pudo cambiar.",
+    "entrarComo": "Entrar como",
+    "confirmarEntrar": "¿Entrar como {email}? Vas a ver sus marcas y lo que hagas queda a su nombre."
   },
   "origenes": {
     "titulo": "Cómo nos conocieron",
@@ -183,5 +185,9 @@
     "total": "Total: {valor}",
     "maximo": "Máximo: {valor}",
     "sinDatos": "Sin datos en este período."
+  },
+  "suplantando": {
+    "aviso": "Estás como {email}",
+    "salir": "Salir"
   }
 }

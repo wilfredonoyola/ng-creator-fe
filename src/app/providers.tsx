@@ -7,6 +7,7 @@ import { apolloClient } from "@/lib/apollo";
 import { inicializarAutoRefresh } from "@/lib/auth";
 import { SesionProvider } from "@/lib/sesion";
 import { MarcaActivaProvider } from "@/lib/marca-activa";
+import { AvisoSuplantando } from "@/components/AvisoSuplantando";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -25,7 +26,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ApolloProvider client={apolloClient}>
       <SesionProvider>
-        <MarcaActivaProvider>{children}</MarcaActivaProvider>
+        <MarcaActivaProvider>
+          <AvisoSuplantando />
+          {children}
+        </MarcaActivaProvider>
       </SesionProvider>
     </ApolloProvider>
   );
