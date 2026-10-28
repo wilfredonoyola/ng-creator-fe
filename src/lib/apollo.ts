@@ -8,6 +8,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { CABECERA_IDIOMA, idiomaActual } from "@/i18n/cliente";
 import { asegurarTokenValido, haySesion } from "./auth";
+import { cabeceraSuplantar } from "./suplantar";
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "http://localhost:4000/graphql",
@@ -16,7 +17,8 @@ const httpLink = createHttpLink({
 /**
  * Inyecta el idToken en cada peticion. El token se guarda en
  * localStorage tras el login via backend (ver lib/auth.ts). Tambien el idioma
- * de la interfaz (`x-idioma`), con el que el backend traduce sus errores.
+ * de la interfaz (`x-idioma`), con el que el backend traduce sus errores, y a
+ * quién está suplantando un superadmin (lib/suplantar.ts).
  */
 const authLink = setContext(async (_, { headers }) => {
   // Con el token vencido (la web abierta al día siguiente), se espera el
@@ -29,6 +31,7 @@ const authLink = setContext(async (_, { headers }) => {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
       [CABECERA_IDIOMA]: idiomaActual(),
+      ...cabeceraSuplantar(),
     },
   };
 });

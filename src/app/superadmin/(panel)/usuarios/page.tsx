@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { SET_USUARIO_ACTIVO_SUPERADMIN, USUARIOS_SUPERADMIN } from "@/graphql/operations";
 import { tiempoRelativo } from "@/lib/time";
+import { entrarComo } from "@/lib/suplantar";
 
 type Origen = "CHATGPT" | "GOOGLE" | "FACEBOOK" | "INSTAGRAM" | "TIKTOK" | "YOUTUBE" | "LINKEDIN" | "RECOMENDACION" | "OTRO";
 
@@ -25,7 +26,8 @@ type Fila = {
 
 /**
  * Todas las personas con cuenta: a qué marcas entran y con qué rol, cuándo
- * entraron por última vez, y desde acá se les corta o devuelve el acceso.
+ * entraron por última vez, y desde acá se les corta o devuelve el acceso, o
+ * se entra como ellas para ver y operar sus marcas (lib/suplantar.ts).
  */
 export default function UsuariosSuperadmin() {
   const t = useTranslations("superadmin.usuarios");
@@ -120,6 +122,18 @@ export default function UsuariosSuperadmin() {
                 <span>
                   {f.usuario.ultimoAccesoEn ? t("entro", { cuando: tiempoRelativo(f.usuario.ultimoAccesoEn, Date.now(), locale) }) : t("nuncaEntro")}
                 </span>
+                {!f.esSuperadmin && f.usuario.activo && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm(t("confirmarEntrar", { email: f.usuario.email }))) {
+                        entrarComo({ id: f.usuario._id, email: f.usuario.email });
+                      }
+                    }}
+                    className="rounded-lg border border-marca/50 px-3 py-1.5 text-marca transition hover:bg-marca/10"
+                  >
+                    {t("entrarComo")}
+                  </button>
+                )}
                 {!f.esSuperadmin && (
                   <button
                     onClick={() => alternar(f)}

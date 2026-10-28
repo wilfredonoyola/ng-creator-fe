@@ -5,6 +5,7 @@
  */
 
 import { CABECERA_IDIOMA, cabeceraIdioma, idiomaActual } from "@/i18n/cliente";
+import { cabeceraSuplantar } from "@/lib/suplantar";
 import { EXTENSIONES_VIDEO_CLIP, FORMATOS_VIDEO_CLIP, TOPE_VIDEO_CLIP_MB, type VideoSubido } from "@/lib/videos-clip";
 
 const API_BASE_URL =
@@ -96,7 +97,7 @@ export async function uploadClip(file: File): Promise<UploadResult> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      ...cabeceraIdioma(),
+      ...cabeceraIdioma(), ...cabeceraSuplantar(),
     },
     body: formData,
   });
@@ -156,7 +157,7 @@ export async function uploadVoiceNote(file: File): Promise<UploadResult> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      ...cabeceraIdioma(),
+      ...cabeceraIdioma(), ...cabeceraSuplantar(),
     },
     body: formData,
   });
@@ -221,7 +222,7 @@ export async function getTikTokPreview(url: string): Promise<TikTokPreview> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      ...cabeceraIdioma(),
+      ...cabeceraIdioma(), ...cabeceraSuplantar(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ url }),
@@ -259,7 +260,7 @@ export async function downloadFromTikTok(url: string): Promise<UploadResult> {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      ...cabeceraIdioma(),
+      ...cabeceraIdioma(), ...cabeceraSuplantar(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ url }),
@@ -320,7 +321,7 @@ export async function uploadLicenseScreenshot(file: File): Promise<UploadResult>
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      ...cabeceraIdioma(),
+      ...cabeceraIdioma(), ...cabeceraSuplantar(),
     },
     body: formData,
   });
@@ -379,7 +380,7 @@ async function subirImagen(
 
   const response = await fetch(`${API_BASE_URL}/uploads/${endpoint}`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma(), ...cabeceraSuplantar() },
     body: formData,
   });
 
@@ -416,7 +417,7 @@ export async function uploadPortada(
 
   const response = await fetch(`${API_BASE_URL}/uploads/portada`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma(), ...cabeceraSuplantar() },
     body: formData,
   });
 
@@ -456,6 +457,7 @@ export function uploadCamara(
     xhr.open("POST", `${API_BASE_URL}/uploads/camara`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.setRequestHeader(CABECERA_IDIOMA, idiomaActual());
+    for (const [k, v] of Object.entries(cabeceraSuplantar())) xhr.setRequestHeader(k, v);
 
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) {
@@ -503,7 +505,7 @@ export async function uploadMarcaLogo(file: File, marcaId: string): Promise<stri
   formData.append("marcaId", marcaId);
   const response = await fetch(`${API_BASE_URL}/uploads/marca-logo`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma(), ...cabeceraSuplantar() },
     body: formData,
   });
   if (!response.ok) {
@@ -541,7 +543,7 @@ export async function uploadImagenClip(file: File, marcaId: string): Promise<str
   formData.append("marcaId", marcaId);
   const response = await fetch(`${API_BASE_URL}/uploads/clip-imagen`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma(), ...cabeceraSuplantar() },
     body: formData,
   });
   if (!response.ok) {
@@ -588,6 +590,7 @@ export function uploadVideoClip(
     xhr.open("POST", `${API_BASE_URL}/uploads/clip-video`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.setRequestHeader(CABECERA_IDIOMA, idiomaActual());
+    for (const [k, v] of Object.entries(cabeceraSuplantar())) xhr.setRequestHeader(k, v);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) onAvance?.(Math.round((e.loaded / e.total) * 100));
     };
@@ -662,6 +665,7 @@ export function uploadSonido<T = unknown>(
     xhr.open("POST", `${API_BASE_URL}/uploads/sonido`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.setRequestHeader(CABECERA_IDIOMA, idiomaActual());
+    for (const [k, v] of Object.entries(cabeceraSuplantar())) xhr.setRequestHeader(k, v);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) onAvance?.(Math.round((e.loaded / e.total) * 100));
     };
@@ -711,7 +715,7 @@ export async function uploadVozRevision(audio: Blob, marcaId: string): Promise<V
   formData.append("marcaId", marcaId);
   const response = await fetch(`${API_BASE_URL}/uploads/revision-voz`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma() },
+    headers: { Authorization: `Bearer ${token}`, ...cabeceraIdioma(), ...cabeceraSuplantar() },
     body: formData,
   });
   if (!response.ok) {

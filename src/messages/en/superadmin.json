@@ -99,7 +99,9 @@
     "cortar": "Cut access",
     "devolver": "Restore access",
     "confirmarCortar": "Cut access for {email}? They won't be able to sign in to Clipfine until you restore it.",
-    "error": "Couldn't change it."
+    "error": "Couldn't change it.",
+    "entrarComo": "Sign in as",
+    "confirmarEntrar": "Sign in as {email}? You'll see their brands and anything you do will be in their name."
   },
   "origenes": {
     "titulo": "How people found us",
@@ -183,5 +185,9 @@
     "total": "Total: {valor}",
     "maximo": "Max: {valor}",
     "sinDatos": "No data in this period."
+  },
+  "suplantando": {
+    "aviso": "You're signed in as {email}",
+    "salir": "Exit"
   }
 }
