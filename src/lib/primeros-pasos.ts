@@ -20,13 +20,14 @@ interface Vista {
   redesConectadas: boolean;
   completos: boolean;
   oculta: boolean;
+  puedeOcultar: boolean;
 }
 
 /**
  * La guía de primeros pasos de la marca activa (ng-creator-be#273): crear la
  * marca, configurarla (opcional), subir el primer episodio y conectar las
  * redes. El backend calcula cada paso con lo que la marca tiene y devuelve
- * null a quien no es propietario.
+ * null a quien no es propietario ni ADMIN.
  *
  * `cache-and-network`: el Sidebar se monta en cada pantalla, así que al volver
  * de subir el episodio o conectar una red el paso ya aparece hecho.
@@ -65,8 +66,10 @@ export function usePrimerosPasos() {
     hechos: pasos.filter((p) => p.hecho).length,
     /** El primer obligatorio que falta; si no, el opcional. */
     siguiente: pasos.find((p) => !p.hecho && !p.opcional) ?? pasos.find((p) => !p.hecho) ?? null,
-    /** Si va en el menú: hay algo que hacer y no la ocultó. */
-    visible: Boolean(vista && !vista.completos && !vista.oculta),
+    /** Si va en el menú: siempre, salvo que la haya ocultado. Completa, queda chica. */
+    visible: Boolean(vista && !vista.oculta),
+    completos: Boolean(vista?.completos),
+    puedeOcultar: Boolean(vista?.puedeOcultar),
     ocultar,
     guardando,
   };

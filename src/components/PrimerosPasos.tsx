@@ -7,10 +7,12 @@ import { usePrimerosPasos } from "@/lib/primeros-pasos";
 
 /**
  * La guía de primeros pasos en el menú (ng-creator-be#273): cuántos lleva, el
- * que sigue y, al abrirla, los cuatro. Solo para el propietario y mientras le
- * falte algo obligatorio; "Ocultar" la saca (vuelve desde Perfil).
+ * que sigue y, al abrirla, los cuatro. Para el propietario (y un ADMIN, que
+ * solo mira). "Ocultar" la saca; vuelve desde Perfil.
  *
- * En la tira de íconos queda como el conteo; tocarlo expande el menú.
+ * Con los pasos hechos queda como una fila chica, "✓ Primeros pasos", que se
+ * abre para ver el recorrido. En la tira de íconos queda el conteo mientras
+ * falte algo; completa, no ocupa lugar ahí.
  */
 export function PrimerosPasos({
   colapsado = false,
@@ -22,7 +24,7 @@ export function PrimerosPasos({
   ir: (href: string) => void;
 }) {
   const t = useTranslations("primerosPasos");
-  const { pasos, hechos, siguiente, visible, ocultar, guardando } = usePrimerosPasos();
+  const { pasos, hechos, siguiente, visible, completos, puedeOcultar, ocultar, guardando } = usePrimerosPasos();
   const [abierta, setAbierta] = useState(false);
 
   if (!visible) return null;
@@ -30,7 +32,7 @@ export function PrimerosPasos({
 
   return (
     <>
-      {colapsado && (
+      {colapsado && !completos && (
         <div className="hidden justify-center pb-2 md:flex">
           <button
             onClick={onExpandir}
@@ -43,24 +45,31 @@ export function PrimerosPasos({
         </div>
       )}
 
-      <div className={`mx-3 mb-3 rounded-xl border border-white/10 bg-white/5 p-3 ${colapsado ? "md:hidden" : ""}`}>
+      <div
+        className={`mx-3 mb-3 rounded-xl ${completos ? "px-3 py-2" : "border border-white/10 bg-white/5 p-3"} ${colapsado ? "md:hidden" : ""}`}
+      >
         <button
           onClick={() => setAbierta((a) => !a)}
           aria-expanded={abierta}
           className="flex w-full items-center gap-2 text-left"
         >
-          <span className="flex-1 text-sm font-semibold">{t("titulo")}</span>
-          <span className="text-xs text-white/50">
-            {hechos}/{total}
-          </span>
+          {completos && <Check size={14} aria-hidden className="shrink-0 text-marca" />}
+          <span className={`flex-1 ${completos ? "text-xs text-white/50" : "text-sm font-semibold"}`}>{t("titulo")}</span>
+          {!completos && (
+            <span className="text-xs text-white/50">
+              {hechos}/{total}
+            </span>
+          )}
           <ChevronDown size={14} aria-hidden className={`text-white/40 transition ${abierta ? "rotate-180" : ""}`} />
         </button>
 
-        <div className="mt-2 flex gap-1" aria-hidden>
-          {pasos.map((p) => (
-            <span key={p.clave} className={`h-1 flex-1 rounded-full ${p.hecho ? "bg-marca" : "bg-white/10"}`} />
-          ))}
-        </div>
+        {!completos && (
+          <div className="mt-2 flex gap-1" aria-hidden>
+            {pasos.map((p) => (
+              <span key={p.clave} className={`h-1 flex-1 rounded-full ${p.hecho ? "bg-marca" : "bg-white/10"}`} />
+            ))}
+          </div>
+        )}
 
         {abierta ? (
           <ul className="mt-3 space-y-1">
@@ -82,17 +91,20 @@ export function PrimerosPasos({
                 </button>
               </li>
             ))}
-            <li className="pt-1">
-              <button
-                onClick={() => void ocultar(true)}
-                disabled={guardando}
-                className="px-1 text-[11px] text-white/40 transition hover:text-white disabled:opacity-50"
-              >
-                {t("ocultar")}
-              </button>
-            </li>
+            {puedeOcultar && (
+              <li className="pt-1">
+                <button
+                  onClick={() => void ocultar(true)}
+                  disabled={guardando}
+                  className="px-1 text-[11px] text-white/40 transition hover:text-white disabled:opacity-50"
+                >
+                  {t("ocultar")}
+                </button>
+              </li>
+            )}
           </ul>
         ) : (
+          !completos &&
           siguiente && (
             <button
               onClick={() => ir(siguiente.href)}
@@ -109,12 +121,12 @@ export function PrimerosPasos({
 
 /**
  * En Perfil: volver a mostrar la guía que se ocultó, u ocultarla. Solo el
- * propietario y mientras falte algo; si no, no aparece.
+ * propietario (un ADMIN la mira pero no la oculta).
  */
 export function AjustePrimerosPasos({ marcaNombre }: { marcaNombre?: string }) {
   const t = useTranslations("primerosPasos");
   const { vista, ocultar, guardando } = usePrimerosPasos();
-  if (!vista || vista.completos) return null;
+  if (!vista?.puedeOcultar) return null;
 
   return (
     <section className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
