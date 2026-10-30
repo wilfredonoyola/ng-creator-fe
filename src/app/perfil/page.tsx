@@ -11,6 +11,7 @@ import { SelectorIdioma } from "@/components/SelectorIdioma";
 import { cerrarSesion } from "@/lib/auth";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { AjustePrimerosPasos } from "@/components/PrimerosPasos";
 import { CONTACTO } from "@/lib/legal";
 import {
   ELIMINAR_MI_CUENTA,
@@ -45,7 +46,7 @@ export default function PerfilPage() {
   const tRol = useTranslations("marcoRoles");
   const router = useRouter();
   const { usuario, accesos, esAdmin } = useSesion();
-  const { marcas } = useMarcaActiva();
+  const { marcas, activa } = useMarcaActiva();
   const [eliminando, setEliminando] = useState(false);
 
   const nombreDe = (marcaId: string) => marcas.find((m) => m._id === marcaId)?.nombre ?? t("marca");
@@ -117,6 +118,9 @@ export default function PerfilPage() {
         </section>
 
         <PreferenciasDeAvisos />
+
+        {/* La guía de primeros pasos de la marca activa: volver a mostrarla u ocultarla. */}
+        <AjustePrimerosPasos marcaNombre={activa?.nombre} />
 
         {/* El conector MCP: ChatGPT o Claude con los datos de la cuenta (ng-creator-be#182). */}
         <Link
