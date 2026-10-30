@@ -3581,6 +3581,7 @@ export const PRIMEROS_PASOS = gql`
       redesConectadas
       completos
       oculta
+      puedeOcultar
     }
   }
 `;
