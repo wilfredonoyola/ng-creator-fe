@@ -1,0 +1,23 @@
+{
+  "titulo": "Primeros pasos",
+  "progreso": "Primeros pasos: {hechos} de {total}",
+  "opcional": "opcional",
+  "ocultar": "Ocultar",
+  "pasos": {
+    "marca": "Crear la marca",
+    "configurar": "Configurar la marca",
+    "episodio": "Subir tu primer episodio",
+    "redes": "Conectar tus redes"
+  },
+  "siguiente": {
+    "marca": "Crear la marca",
+    "configurar": "Configurar la marca →",
+    "episodio": "Subir mi primer episodio →",
+    "redes": "Conectar mis redes →"
+  },
+  "perfil": {
+    "visible": "La guía de {marca} está en el menú hasta que termines los pasos. Si la ocultas, tampoco te llegan sus recordatorios por correo.",
+    "oculta": "Ocultaste la guía de {marca}. Vuelve a mostrarla para ver qué te falta.",
+    "mostrar": "Mostrar la guía"
+  }
+}

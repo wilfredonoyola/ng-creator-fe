@@ -35,6 +35,7 @@ import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
 import { Campanita } from "./Campanita";
+import { PrimerosPasos } from "./PrimerosPasos";
 import { useFuncion } from "@/lib/funciones";
 
 // Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
@@ -231,6 +232,9 @@ export function Sidebar({
           </button>
         </div>
       )}
+
+      {/* Lo que le falta a la marca (solo el propietario, hasta terminar). */}
+      <PrimerosPasos colapsado={c} onExpandir={onAlternarColapso} ir={ir} />
 
       {/* Navegacion. Scrollea sola si no entra, sin arrastrar el resto. */}
       <nav className={`flex-1 space-y-1 overflow-y-auto px-3 pb-4 ${c ? "md:px-2" : ""}`}>

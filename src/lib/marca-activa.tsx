@@ -125,7 +125,11 @@ export function MarcaActivaProvider({ children }: { children: React.ReactNode })
   // localStorage solo después del montaje: leerlo al renderizar rompe la
   // hidratación, porque el servidor no lo tiene.
   useEffect(() => {
-    setElegidaId(leer(CLAVE));
+    // `?marca=` (los enlaces de los correos): llega directo a esa marca. Si
+    // no es una de las suyas, la validación de abajo la descarta.
+    const deEnlace = new URLSearchParams(window.location.search).get("marca");
+    if (deEnlace) guardar(CLAVE, deEnlace);
+    setElegidaId(deEnlace || leer(CLAVE));
     setPaginaVieja(leer(CLAVE_VIEJA));
     setLeido(true);
   }, []);

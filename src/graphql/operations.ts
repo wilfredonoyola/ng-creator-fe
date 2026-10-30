@@ -3569,3 +3569,24 @@ export const CORREGIR_NUMERACION_CLIP = gql`
     corregirNumeracionClip(marcaId: $marcaId, clipId: $clipId, numeros: $numeros) {${CAMPOS_NUMERACION_CLIP}}
   }
 `;
+
+// ---- Primeros pasos de la marca (ng-creator-be#273) ----
+
+/** Lo que le falta a la marca. Null si no sos su propietario. */
+export const PRIMEROS_PASOS = gql`
+  query PrimerosPasos($marcaId: String!) {
+    primerosPasos(marcaId: $marcaId) {
+      marcaConfigurada
+      primerEpisodio
+      redesConectadas
+      completos
+      oculta
+    }
+  }
+`;
+
+export const OCULTAR_PRIMEROS_PASOS = gql`
+  mutation OcultarPrimerosPasos($marcaId: String!, $oculta: Boolean!) {
+    ocultarPrimerosPasos(marcaId: $marcaId, oculta: $oculta)
+  }
+`;
