@@ -8,7 +8,7 @@ import { usePrimerosPasos } from "@/lib/primeros-pasos";
 /**
  * La guía de primeros pasos en el menú (ng-creator-be#273): cuántos lleva, el
  * que sigue y, al abrirla, los cuatro. Para el propietario (y un ADMIN, que
- * solo mira). "Ocultar" la saca; vuelve desde Perfil.
+ * solo mira). No se oculta: mientras falten pasos es lo más importante del menú.
  *
  * Con los pasos hechos queda como una fila chica, "✓ Primeros pasos", que se
  * abre para ver el recorrido. En la tira de íconos queda el conteo mientras
@@ -24,7 +24,7 @@ export function PrimerosPasos({
   ir: (href: string) => void;
 }) {
   const t = useTranslations("primerosPasos");
-  const { pasos, hechos, siguiente, visible, completos, puedeOcultar, ocultar, guardando } = usePrimerosPasos();
+  const { pasos, hechos, siguiente, visible, completos } = usePrimerosPasos();
   const [abierta, setAbierta] = useState(false);
 
   if (!visible) return null;
@@ -91,17 +91,6 @@ export function PrimerosPasos({
                 </button>
               </li>
             ))}
-            {puedeOcultar && (
-              <li className="pt-1">
-                <button
-                  onClick={() => void ocultar(true)}
-                  disabled={guardando}
-                  className="px-1 text-[11px] text-white/40 transition hover:text-white disabled:opacity-50"
-                >
-                  {t("ocultar")}
-                </button>
-              </li>
-            )}
           </ul>
         ) : (
           !completos &&
@@ -116,31 +105,5 @@ export function PrimerosPasos({
         )}
       </div>
     </>
-  );
-}
-
-/**
- * En Perfil: volver a mostrar la guía que se ocultó, u ocultarla. Solo el
- * propietario (un ADMIN la mira pero no la oculta).
- */
-export function AjustePrimerosPasos({ marcaNombre }: { marcaNombre?: string }) {
-  const t = useTranslations("primerosPasos");
-  const { vista, ocultar, guardando } = usePrimerosPasos();
-  if (!vista?.puedeOcultar) return null;
-
-  return (
-    <section className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
-      <h2 className="font-semibold">{t("titulo")}</h2>
-      <p className="mt-1 text-sm text-white/60">
-        {vista.oculta ? t("perfil.oculta", { marca: marcaNombre ?? "" }) : t("perfil.visible", { marca: marcaNombre ?? "" })}
-      </p>
-      <button
-        onClick={() => void ocultar(!vista.oculta)}
-        disabled={guardando}
-        className="mt-4 rounded-lg border border-white/10 px-4 py-2 text-sm transition hover:bg-white/5 disabled:opacity-50"
-      >
-        {vista.oculta ? t("perfil.mostrar") : t("ocultar")}
-      </button>
-    </section>
   );
 }

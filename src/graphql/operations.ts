@@ -3580,14 +3580,6 @@ export const PRIMEROS_PASOS = gql`
       primerEpisodio
       redesConectadas
       completos
-      oculta
-      puedeOcultar
     }
-  }
-`;
-
-export const OCULTAR_PRIMEROS_PASOS = gql`
-  mutation OcultarPrimerosPasos($marcaId: String!, $oculta: Boolean!) {
-    ocultarPrimerosPasos(marcaId: $marcaId, oculta: $oculta)
   }
 `;
