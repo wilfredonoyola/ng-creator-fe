@@ -1,0 +1,57 @@
+{
+  "titulo": "Billing",
+  "subtitulo": "The Lemon Squeezy connection, without environment variables: paste each mode's API key, confirm which variant is each plan and create the webhook. Keys are stored encrypted and never shown again.",
+  "cargando": "Loading…",
+  "modoVivo": "Live",
+  "modoPrueba": "Test",
+  "listo": "Ready to charge",
+  "falta": "Needs setup",
+  "ayudaVivo": "What clients pay. Create the key in Lemon Squeezy → Settings → API with Test mode off.",
+  "ayudaPrueba": "For accounts marked with test billing in Subscriptions: they pay with test cards. Create the key with Test mode on.",
+  "conectar": "Connect",
+  "conectando": "Connecting…",
+  "guardando": "Saving…",
+  "creando": "Creating…",
+  "deEntorno": "from the server",
+  "historial": "Changes",
+  "intervalos": {
+    "month": "month",
+    "year": "year"
+  },
+  "clave": {
+    "titulo": "API key",
+    "cargada": "Key set here, ending in …{final}.",
+    "entorno": "Uses the key from the server's variables.",
+    "sin": "No key: this mode can't charge.",
+    "tienda": "Store {nombre} ({id})",
+    "pegar": "Paste the API key",
+    "reemplazar": "Paste a new key to replace it",
+    "tiendaOpcional": "Store id (optional)",
+    "ok": "Key connected. Check the plans and create the webhook."
+  },
+  "planes": {
+    "titulo": "Plans",
+    "antes": "Connect the key to pick the variants from Lemon.",
+    "ninguna": "No variant",
+    "guardar": "Save plans",
+    "ok": "Plans saved.",
+    "nombres": {
+      "STARTER_MENSUAL": "Starter monthly",
+      "STARTER_ANUAL": "Starter yearly",
+      "AGENCY_MENSUAL": "Agency monthly",
+      "AGENCY_ANUAL": "Agency yearly",
+      "AGENCY_PRO_MENSUAL": "Agency Pro monthly",
+      "AGENCY_PRO_ANUAL": "Agency Pro yearly"
+    }
+  },
+  "webhook": {
+    "titulo": "Webhook",
+    "creado": "Created: {url}",
+    "entorno": "Uses the secret from the server's variables.",
+    "sin": "No webhook: Lemon wouldn't tell Clipfine about payments.",
+    "crear": "Create webhook",
+    "rehacer": "Redo webhook",
+    "ok": "Webhook created in Lemon Squeezy.",
+    "confirmarRehacer": "Redo the webhook? A new one is created with another secret and the old one is deleted."
+  }
+}

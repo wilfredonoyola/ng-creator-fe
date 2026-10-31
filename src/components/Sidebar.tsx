@@ -9,6 +9,7 @@ import {
   CircleHelp,
   Clapperboard,
   House,
+  CreditCard,
   Link2,
   ShieldCheck,
   ListChecks,
@@ -52,6 +53,7 @@ type ClaveNav =
   | "creators"
   | "equipo"
   | "brandKit"
+  | "plan"
   | "ajustes"
   | "etiquetas"
   | "redesConectadas"
@@ -102,6 +104,8 @@ export const NAV_REACCION: ItemNav[] = [
 const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo" };
 /** El logo y la llamada a la acción de los clips de la marca (be#117). Como Equipo: quien no opera, solo mira. */
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
+/** Mi plan: solo el propietario (el titular paga); quien edita no ve precios ni cobro. */
+const navPlan: ItemNav = { href: "/plan", icon: CreditCard, clave: "plan" };
 /** Las personas que se etiquetan al publicar: elenco, Global y los invitados de cada episodio. */
 /** Lo que se prende y apaga en la marca: por defecto al publicar, revisión, numeración y funciones. */
 const navAjustes: ItemNav = { href: "/admin/ajustes", icon: Settings, clave: "ajustes" };
@@ -277,6 +281,15 @@ export function Sidebar({
                 colapsado={c}
                 activo={pathname.startsWith(navPlantilla.href)}
                 onClick={() => ir(navPlantilla.href)}
+              />
+            )}
+            {rolAqui === "PROPIETARIO" && (
+              <BotonNav
+                {...navPlan}
+                label={t(`nav.${navPlan.clave}`)}
+                colapsado={c}
+                activo={pathname.startsWith(navPlan.href)}
+                onClick={() => ir(navPlan.href)}
               />
             )}
             {rolAqui && (

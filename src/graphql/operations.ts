@@ -3597,6 +3597,164 @@ export const PRIMEROS_PASOS = gql`
   }
 `;
 
+// ---- Plan y cobro (ng-creator-be#94, Lemon Squeezy) ----
+
+const CAMPOS_PLAN = gql`
+  fragment CamposPlan on MiPlan {
+    plan
+    periodo
+    estado
+    pruebaHasta
+    topeHoras
+    horasUsadas
+    cicloHasta
+    renuevaEn
+    terminaEn
+    puedeSubir
+    motivo
+    pagaConLemon
+    cobroDePrueba
+  }
+`;
+
+/** El plan de la cuenta, solo para su titular. Null si no paga ninguna marca. */
+export const MI_PLAN = gql`
+  ${CAMPOS_PLAN}
+  query MiPlan {
+    miPlan {
+      ...CamposPlan
+    }
+    cobroConfigurado
+  }
+`;
+
+/** Si se puede subir en esta marca (para quien opera, sin datos de cobro). Null: sin límites. */
+export const PLAN_DE_MARCA = gql`
+  ${CAMPOS_PLAN}
+  query PlanDeMarca($marcaId: ID!) {
+    planDeMarca(marcaId: $marcaId) {
+      ...CamposPlan
+    }
+  }
+`;
+
+export const INICIAR_SUSCRIPCION = gql`
+  mutation IniciarSuscripcion($plan: PlanSuscripcion!, $periodo: PeriodoSuscripcion!) {
+    iniciarSuscripcion(plan: $plan, periodo: $periodo) {
+      url
+      cambiado
+    }
+  }
+`;
+
+export const PORTAL_SUSCRIPCION = gql`
+  mutation PortalSuscripcion {
+    portalSuscripcion
+  }
+`;
+
+export const SUSCRIPCIONES_ADMIN = gql`
+  ${CAMPOS_PLAN}
+  query SuscripcionesAdmin {
+    suscripcionesAdmin {
+      ...CamposPlan
+      titularId
+      email
+      nombre
+      marcas
+      lemonSuscripcionId
+      modoPrueba
+      creadaEn
+      ajustes {
+        accion
+        detalle
+        porEmail
+        en
+      }
+    }
+  }
+`;
+
+export const AJUSTAR_SUSCRIPCION = gql`
+  ${CAMPOS_PLAN}
+  mutation AjustarSuscripcion($input: AjusteSuscripcionInput!) {
+    ajustarSuscripcion(input: $input) {
+      ...CamposPlan
+      titularId
+    }
+  }
+`;
+
+// ---- Cobro: Lemon Squeezy desde /superadmin/cobro (sin variables de entorno) ----
+
+const CAMPOS_MODO_COBRO = `
+  prueba
+  origenClave
+  claveFinal
+  storeId
+  storeNombre
+  planes {
+    clave
+    varianteId
+    origen
+  }
+  webhookUrl
+  origenWebhook
+  listo
+  cambios {
+    detalle
+    porEmail
+    en
+  }
+`;
+
+/** Los dos modos (de verdad y de prueba). Nunca trae las claves. Solo superadmin. */
+export const CONFIGURACION_COBRO = gql`
+  query ConfiguracionCobro {
+    configuracionCobro {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
+/** Las variantes de la tienda conectada de ese modo, para elegir cada plan. */
+export const CATALOGO_LEMON = gql`
+  query CatalogoLemon($prueba: Boolean!) {
+    catalogoLemon(prueba: $prueba) {
+      id
+      nombre
+      producto
+      intervalo
+      precioCentavos
+      estado
+    }
+  }
+`;
+
+export const CONECTAR_LEMON = gql`
+  mutation ConectarLemon($input: ConectarLemonInput!) {
+    conectarLemon(input: $input) {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
+export const GUARDAR_PLANES_LEMON = gql`
+  mutation GuardarPlanesLemon($input: PlanesLemonInput!) {
+    guardarPlanesLemon(input: $input) {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
+export const CREAR_WEBHOOK_LEMON = gql`
+  mutation CrearWebhookLemon($prueba: Boolean!) {
+    crearWebhookLemon(prueba: $prueba) {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
 /** Cuántos perfiles quedan en el plan de Upload-Post (una marca, un perfil). Solo superadmin. */
 export const CUPO_UPLOAD_POST = gql`
   query CupoUploadPost {
