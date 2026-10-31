@@ -3684,3 +3684,73 @@ export const AJUSTAR_SUSCRIPCION = gql`
     }
   }
 `;
+
+// ---- Cobro: Lemon Squeezy desde /superadmin/cobro (sin variables de entorno) ----
+
+const CAMPOS_MODO_COBRO = `
+  prueba
+  origenClave
+  claveFinal
+  storeId
+  storeNombre
+  planes {
+    clave
+    varianteId
+    origen
+  }
+  webhookUrl
+  origenWebhook
+  listo
+  cambios {
+    detalle
+    porEmail
+    en
+  }
+`;
+
+/** Los dos modos (de verdad y de prueba). Nunca trae las claves. Solo superadmin. */
+export const CONFIGURACION_COBRO = gql`
+  query ConfiguracionCobro {
+    configuracionCobro {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
+/** Las variantes de la tienda conectada de ese modo, para elegir cada plan. */
+export const CATALOGO_LEMON = gql`
+  query CatalogoLemon($prueba: Boolean!) {
+    catalogoLemon(prueba: $prueba) {
+      id
+      nombre
+      producto
+      intervalo
+      precioCentavos
+      estado
+    }
+  }
+`;
+
+export const CONECTAR_LEMON = gql`
+  mutation ConectarLemon($input: ConectarLemonInput!) {
+    conectarLemon(input: $input) {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
+export const GUARDAR_PLANES_LEMON = gql`
+  mutation GuardarPlanesLemon($input: PlanesLemonInput!) {
+    guardarPlanesLemon(input: $input) {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
+
+export const CREAR_WEBHOOK_LEMON = gql`
+  mutation CrearWebhookLemon($prueba: Boolean!) {
+    crearWebhookLemon(prueba: $prueba) {
+      ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
