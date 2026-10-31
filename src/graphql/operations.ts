@@ -415,6 +415,19 @@ export const CLIENTES_SUPERADMIN = gql`
     clientesSuperadmin {
       propietarios
       miembros
+      equipo {
+        usuarioId
+        email
+        nombre
+        rol
+        activo
+        ultimoAccesoEn
+      }
+      pasos {
+        marcaConfigurada
+        primerEpisodio
+        redes
+      }
       episodios
       clips
       horasProcesadas

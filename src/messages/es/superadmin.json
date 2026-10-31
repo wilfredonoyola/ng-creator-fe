@@ -84,6 +84,17 @@
       "agotada": "Agotada",
       "sinTope": "Sin tope",
       "detalle": "{dias, plural, one {1 día} other {# días}} · {usados}/{tope}"
+    },
+    "equipo": {
+      "titulo": "Equipo · {n}",
+      "vacio": "Nadie tiene acceso a esta marca."
+    },
+    "pasos": {
+      "titulo": "Primeros pasos",
+      "configurada": "Marca configurada (logo, colores o plantilla)",
+      "episodio": "Primer episodio subido",
+      "redes": "Redes conectadas",
+      "sinRedes": "Ninguna todavía"
     }
   },
   "usuarios": {
@@ -101,7 +112,37 @@
     "confirmarCortar": "¿Cortarle el acceso a {email}? No va a poder entrar a Clipfine hasta que se lo devuelvas.",
     "error": "No se pudo cambiar.",
     "entrarComo": "Entrar como",
-    "confirmarEntrar": "¿Entrar como {email}? Vas a ver sus marcas y lo que hagas queda a su nombre."
+    "confirmarEntrar": "¿Entrar como {email}? Vas a ver sus marcas y lo que hagas queda a su nombre.",
+    "ordenar": "Ordenar por",
+    "ordenes": {
+      "ultimoAcceso": "Último acceso",
+      "registro": "Fecha de registro",
+      "nombre": "Nombre"
+    },
+    "registro": "Se registró {cuando}",
+    "verCliente": "Ver este cliente",
+    "filtros": {
+      "todos": {
+        "nombre": "Todos",
+        "ayuda": "Todas las personas con cuenta"
+      },
+      "duenos": {
+        "nombre": "Dueños",
+        "ayuda": "Propietarios de alguna marca: los clientes"
+      },
+      "equipo": {
+        "nombre": "Equipo",
+        "ayuda": "Entran solo a marcas de otros, invitados por el dueño"
+      },
+      "sinMarca": {
+        "nombre": "Sin marca",
+        "ayuda": "Se registraron y no crearon su marca"
+      },
+      "sinAcceso": {
+        "nombre": "Sin acceso",
+        "ayuda": "Personas a las que se les cortó el acceso"
+      }
+    }
   },
   "origenes": {
     "titulo": "Cómo nos conocieron",
