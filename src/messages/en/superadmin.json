@@ -227,7 +227,16 @@
     },
     "total": "Total: {valor}",
     "maximo": "Max: {valor}",
-    "sinDatos": "No data in this period."
+    "sinDatos": "No data in this period.",
+    "cupo": {
+      "titulo": "Upload-Post",
+      "usados": "{usados} of {limite} profiles",
+      "sinTope": "{usados} profiles",
+      "quedan": "{n, plural, =0 {none left} one {1 left} other {# left}}",
+      "plan": "{plan} plan",
+      "ayuda": "Each brand that connects its accounts uses one profile. The team gets an email at 80% and when it's full.",
+      "error": "Couldn't read the Upload-Post quota."
+    }
   },
   "suplantando": {
     "aviso": "You're signed in as {email}",

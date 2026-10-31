@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
-import { METRICAS_SUPERADMIN } from "@/graphql/operations";
+import { CUPO_UPLOAD_POST, METRICAS_SUPERADMIN } from "@/graphql/operations";
 
 type Dia = { fecha: string; episodios: number; horas: number; costoUsd: number; registros: number };
 
@@ -105,6 +105,8 @@ export default function SuperadminInicio() {
         </div>
       )}
 
+      <CupoUploadPost />
+
       {loading && !m ? (
         <p className="text-sm text-white/40">{t("cargando")}</p>
       ) : m ? (
@@ -177,5 +179,44 @@ export default function SuperadminInicio() {
         </>
       ) : null}
     </>
+  );
+}
+
+type Cupo = { configurado: boolean; usados: number; limite: number | null; quedan: number | null; plan: string | null };
+
+/**
+ * Los perfiles de Upload-Post: cada marca que conecta redes usa uno, así que
+ * el tope del plan es cuántas pueden publicar (ng-creator-be#273). Amarillo
+ * desde el 80 %, rojo sin lugar; al equipo además le llega un correo.
+ */
+function CupoUploadPost() {
+  const t = useTranslations("superadmin.metricas.cupo");
+  const { data, error } = useQuery<{ cupoUploadPost: Cupo }>(CUPO_UPLOAD_POST, { fetchPolicy: "cache-and-network" });
+  const c = data?.cupoUploadPost;
+  if (error) return <p className="mb-6 text-xs text-white/40">{t("error")}</p>;
+  if (!c?.configurado) return null;
+
+  const parte = c.limite ? c.usados / c.limite : 0;
+  const tono = c.quedan === 0 ? "text-red-300" : parte >= 0.8 ? "text-marca" : "text-white";
+  return (
+    <section className="mb-6 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h2 className="text-sm font-semibold">{t("titulo")}</h2>
+        <span className={`text-sm tabular-nums ${tono}`}>
+          {c.limite ? t("usados", { usados: c.usados, limite: c.limite }) : t("sinTope", { usados: c.usados })}
+        </span>
+        {c.quedan !== null && <span className="text-xs text-white/50">{t("quedan", { n: c.quedan })}</span>}
+        {c.plan && <span className="ml-auto text-xs text-white/40">{t("plan", { plan: c.plan })}</span>}
+      </div>
+      {c.limite ? (
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10" aria-hidden>
+          <div
+            className={`h-full rounded-full ${c.quedan === 0 ? "bg-red-400" : "bg-marca"}`}
+            style={{ width: `${Math.min(100, Math.round(parte * 100))}%` }}
+          />
+        </div>
+      ) : null}
+      <p className="mt-2 text-xs text-white/40">{t("ayuda")}</p>
+    </section>
   );
 }
