@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -10,10 +10,32 @@ import {
   MARCAS_ACTIVAS,
 } from "@/graphql/operations";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
+import { entrarComo } from "@/lib/suplantar";
+
+type Rol = "PROPIETARIO" | "EDITOR" | "REVISOR" | "LECTOR" | "PROVEEDOR";
+
+type Miembro = {
+  usuarioId: string;
+  email: string;
+  nombre?: string | null;
+  rol: Rol;
+  activo: boolean;
+  ultimoAccesoEn?: string | null;
+};
+
+/** Cómo se llama cada red en pantalla (RedSocial del backend). */
+const NOMBRE_RED: Record<string, string> = {
+  TIKTOK: "TikTok",
+  YOUTUBE: "YouTube",
+  INSTAGRAM: "Instagram",
+  FACEBOOK: "Facebook",
+};
 
 type Cliente = {
   propietarios: string[];
   miembros: number;
+  equipo: Miembro[];
+  pasos: { marcaConfigurada: boolean; primerEpisodio: boolean; redes: string[] };
   episodios: number;
   clips: number;
   horasProcesadas: number;
@@ -144,6 +166,15 @@ export default function ClientesSuperadmin() {
   const [filtro, setFiltro] = useState<Filtro>("activos");
   const [orden, setOrden] = useState<{ col: Columna; desc: boolean }>({ col: "ultimoAcceso", desc: true });
   const [elegidoId, setElegidoId] = useState<string | null>(null);
+
+  // `?marca=<id>` (desde Usuarios) abre ese cliente, aunque esté en otro filtro.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("marca");
+    if (id) {
+      setElegidoId(id);
+      setFiltro("todos");
+    }
+  }, []);
 
   const todos = useMemo(() => data?.clientesSuperadmin ?? [], [data]);
   const clientes = useMemo(() => {
@@ -426,6 +457,11 @@ function PanelCliente({ cliente, onCerrar }: { cliente: Cliente; onCerrar: () =>
         {t("desde", { fecha: fechaCompleta(marca.createdAt, locale) })}
       </p>
 
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <EquipoCliente equipo={cliente.equipo} />
+        <PasosCliente pasos={cliente.pasos} />
+      </div>
+
       <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
         <label className="flex items-center gap-2">
           <input type="checkbox" checked={demo} onChange={(e) => setDemo(e.target.checked)} className="accent-[#FFD400]" />
@@ -478,5 +514,84 @@ function PanelCliente({ cliente, onCerrar }: { cliente: Cliente; onCerrar: () =>
       </div>
       {mensaje && <p className={`mt-2 text-xs ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}
     </div>
+  );
+}
+
+/** Quiénes tienen acceso a la marca, con un botón para entrar como cada uno. */
+function EquipoCliente({ equipo }: { equipo: Miembro[] }) {
+  const t = useTranslations("superadmin.clientes.equipo");
+  const tUsuarios = useTranslations("superadmin.usuarios");
+  const tRol = useTranslations("marcoRoles");
+  const locale = useLocale();
+  const ahora = useAhora(60_000);
+
+  return (
+    <section className="rounded-lg border border-white/10 p-3">
+      <h3 className="text-xs font-medium uppercase tracking-wide text-white/50">{t("titulo", { n: equipo.length })}</h3>
+      {equipo.length === 0 ? (
+        <p className="mt-2 text-xs text-white/40">{t("vacio")}</p>
+      ) : (
+        <ul className="mt-2 divide-y divide-white/5">
+          {equipo.map((m) => (
+            <li key={m.usuarioId} className={`flex items-center gap-3 py-2 ${m.activo ? "" : "opacity-60"}`}>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm">
+                  {m.nombre || m.email}
+                  <span className="ml-2 text-xs text-white/45">{tRol(`${m.rol}.etiqueta`)}</span>
+                </p>
+                <p className="truncate text-xs text-white/40">
+                  {m.nombre ? `${m.email} · ` : ""}
+                  {m.ultimoAccesoEn ? tUsuarios("entro", { cuando: tiempoRelativo(m.ultimoAccesoEn, ahora, locale) }) : tUsuarios("nuncaEntro")}
+                </p>
+              </div>
+              {m.activo && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(tUsuarios("confirmarEntrar", { email: m.email }))) entrarComo({ id: m.usuarioId, email: m.email });
+                  }}
+                  className="shrink-0 rounded-lg border border-marca/50 px-3 py-1.5 text-xs text-marca transition hover:bg-marca/10"
+                >
+                  {tUsuarios("entrarComo")}
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+/** Los primeros pasos de la marca, como los ve su dueño en el menú. */
+function PasosCliente({ pasos }: { pasos: Cliente["pasos"] }) {
+  const t = useTranslations("superadmin.clientes.pasos");
+  const filas = [
+    { clave: "configurada", hecho: pasos.marcaConfigurada, detalle: null },
+    { clave: "episodio", hecho: pasos.primerEpisodio, detalle: null },
+    {
+      clave: "redes",
+      hecho: pasos.redes.length > 0,
+      detalle: pasos.redes.length > 0 ? pasos.redes.map((r) => NOMBRE_RED[r] ?? r).join(", ") : t("sinRedes"),
+    },
+  ] as const;
+
+  return (
+    <section className="rounded-lg border border-white/10 p-3">
+      <h3 className="text-xs font-medium uppercase tracking-wide text-white/50">{t("titulo")}</h3>
+      <ul className="mt-2 space-y-2">
+        {filas.map((f) => (
+          <li key={f.clave} className="flex items-start gap-2 text-sm">
+            <span aria-hidden className={f.hecho ? "text-marca" : "text-white/30"}>
+              {f.hecho ? "✓" : "○"}
+            </span>
+            <span className={f.hecho ? "" : "text-white/60"}>
+              {t(f.clave)}
+              {f.detalle && <span className="block text-xs text-white/40">{f.detalle}</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

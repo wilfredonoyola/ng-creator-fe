@@ -84,6 +84,17 @@
       "agotada": "Used up",
       "sinTope": "No cap",
       "detalle": "{dias, plural, one {1 day} other {# days}} · {usados}/{tope}"
+    },
+    "equipo": {
+      "titulo": "Team · {n}",
+      "vacio": "Nobody has access to this brand."
+    },
+    "pasos": {
+      "titulo": "Getting started",
+      "configurada": "Brand set up (logo, colors or template)",
+      "episodio": "First episode uploaded",
+      "redes": "Connected accounts",
+      "sinRedes": "None yet"
     }
   },
   "usuarios": {
@@ -101,7 +112,37 @@
     "confirmarCortar": "Cut access for {email}? They won't be able to sign in to Clipfine until you restore it.",
     "error": "Couldn't change it.",
     "entrarComo": "Sign in as",
-    "confirmarEntrar": "Sign in as {email}? You'll see their brands and anything you do will be in their name."
+    "confirmarEntrar": "Sign in as {email}? You'll see their brands and anything you do will be in their name.",
+    "ordenar": "Sort by",
+    "ordenes": {
+      "ultimoAcceso": "Last access",
+      "registro": "Sign-up date",
+      "nombre": "Name"
+    },
+    "registro": "Signed up {cuando}",
+    "verCliente": "See this client",
+    "filtros": {
+      "todos": {
+        "nombre": "All",
+        "ayuda": "Everyone with an account"
+      },
+      "duenos": {
+        "nombre": "Owners",
+        "ayuda": "Owners of a brand: the clients"
+      },
+      "equipo": {
+        "nombre": "Team",
+        "ayuda": "Only access other people's brands, invited by the owner"
+      },
+      "sinMarca": {
+        "nombre": "No brand",
+        "ayuda": "Signed up and never created their brand"
+      },
+      "sinAcceso": {
+        "nombre": "No access",
+        "ayuda": "People whose access was cut"
+      }
+    }
   },
   "origenes": {
     "titulo": "How people found us",
