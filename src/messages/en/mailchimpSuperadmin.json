@@ -44,5 +44,29 @@
     "confirmarQuitar": "Remove the journey? New sign-ups stop entering it (unless the .env has one).",
     "ok": "Journey saved.",
     "quitado": "Journey removed."
+  },
+  "guia": {
+    "titulo": "How to set up Mailchimp",
+    "pasosTitulo": "Steps",
+    "pasos": [
+      "Sign in to Mailchimp with the Clipfine account. Click your photo (top right) → Profile → Extras → API keys → Create A Key. Copy all of it: it ends with the data center (for example …-us15). Mailchimp shows it only once.",
+      "Paste it below in \"API key\" and click Save. Clipfine checks it with Mailchimp before saving; if it's rejected, nothing is saved.",
+      "Choose the audience (Clipfine's is \"Clipfine.io\") and Save. Everyone who confirms their account joins it, with first name, last name and language.",
+      "In Mailchimp, build the welcome journey: Automations → Customer Journeys → Create journey → choose \"API trigger\" as the starting point. Mailchimp shows a URL ending in …/journeys/35/steps/99/actions/trigger.",
+      "Paste that URL below in \"Welcome journey\" and Save (typing just 35/99 works too). Clipfine checks the journey exists and shows its name and status.",
+      "Add the emails to the journey and turn it on in Mailchimp. While it says Draft, new sign-ups don't enter it.",
+      "Test it: sign up a new account with one of your emails, confirm it and check in Mailchimp that the contact shows up in the audience and enters the journey."
+    ],
+    "importanteTitulo": "Important",
+    "importante": [
+      "Only new sign-ups from the moment this is set up join automatically. Earlier ones must be imported in Mailchimp (Audience → Import contacts).",
+      "People who join through a team invitation don't go to the audience: they work for a client who already pays.",
+      "Every uploaded video sends the video_subido event. It can start another journey with an \"Event\" starting point, if you want.",
+      "One-off campaigns (for example, the Monday and Wednesday ones) are sent from Mailchimp to the whole audience; they don't depend on this screen.",
+      "If someone unsubscribed, signing up again doesn't resubscribe them.",
+      "The clipfine.io domain is already authenticated in Mailchimp (DKIM). If the sender moves to another domain, authenticate it first or emails will bounce.",
+      "What you set here wins over the server variables (.env). Removing a value goes back to the server's, if any.",
+      "Product notices (codes, invitations, summaries) don't go through Mailchimp: Clipfine still sends them."
+    ]
   }
 }
