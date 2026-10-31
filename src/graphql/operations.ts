@@ -3751,6 +3751,9 @@ export const CREAR_WEBHOOK_LEMON = gql`
   mutation CrearWebhookLemon($prueba: Boolean!) {
     crearWebhookLemon(prueba: $prueba) {
       ${CAMPOS_MODO_COBRO}
+    }
+  }
+`;
 
 /** Cuántos perfiles quedan en el plan de Upload-Post (una marca, un perfil). Solo superadmin. */
 export const CUPO_UPLOAD_POST = gql`
