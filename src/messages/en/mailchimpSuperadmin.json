@@ -1,0 +1,48 @@
+{
+  "titulo": "Mailchimp",
+  "subtitulo": "Marketing emails. Everyone who confirms their account joins the audience and starts the welcome journey. The key is stored encrypted; anything you don't set here comes from the server's .env.",
+  "cargando": "Loading…",
+  "activo": "Active",
+  "apagado": "Off",
+  "ayudaActivo": "New sign-ups join the audience and every uploaded video sends an event.",
+  "ayudaApagado": "Nothing is sent to Mailchimp: the key or the audience is missing.",
+  "deEntorno": "from .env",
+  "guardar": "Save",
+  "guardando": "Saving…",
+  "quitar": "Remove",
+  "historial": "Changes",
+  "clave": {
+    "titulo": "API key",
+    "cargada": "Key in use: …{final}",
+    "sin": "No key.",
+    "pegar": "Paste the API key",
+    "reemplazar": "Paste a new key to replace it",
+    "donde": "In Mailchimp: Profile → Extras → API keys. It ends with the data center (…-us15).",
+    "ok": "Key saved."
+  },
+  "audiencia": {
+    "titulo": "Audience",
+    "actual": "{nombre} ({id}) · {contactos, plural, one {# contact} other {# contacts}}",
+    "sin": "No audience.",
+    "elegir": "Choose an audience",
+    "opcion": "{nombre} · {contactos, plural, one {# contact} other {# contacts}}",
+    "ok": "Audience saved."
+  },
+  "journey": {
+    "titulo": "Welcome journey",
+    "ayuda": "A journey whose starting point is \"API trigger\": it starts when someone confirms their account. Paste the trigger URL Mailchimp gives you or type journey/step (35/99).",
+    "actual": "{nombre} ({id})",
+    "sin": "No journey: only the se_registro event is sent.",
+    "pegar": "https://us15.api.mailchimp.com/3.0/customer-journeys/journeys/35/steps/99/actions/trigger",
+    "noActivo": "Until it's active in Mailchimp, new sign-ups don't enter the journey.",
+    "estados": {
+      "sending": "Active",
+      "draft": "Draft",
+      "paused": "Paused",
+      "stopped": "Stopped"
+    },
+    "confirmarQuitar": "Remove the journey? New sign-ups stop entering it (unless the .env has one).",
+    "ok": "Journey saved.",
+    "quitado": "Journey removed."
+  }
+}

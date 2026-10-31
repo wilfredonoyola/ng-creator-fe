@@ -72,6 +72,7 @@ import legal_es from "./es/legal.json";
 import legalPrivacidad_es from "./es/legalPrivacidad.json";
 import legalTerminos_es from "./es/legalTerminos.json";
 import login_es from "./es/login.json";
+import mailchimpSuperadmin_es from "./es/mailchimpSuperadmin.json";
 import marcoCampanita_es from "./es/marcoCampanita.json";
 import marcoCrear_es from "./es/marcoCrear.json";
 import marcoDashboard_es from "./es/marcoDashboard.json";
@@ -204,6 +205,7 @@ import legal_en from "./en/legal.json";
 import legalPrivacidad_en from "./en/legalPrivacidad.json";
 import legalTerminos_en from "./en/legalTerminos.json";
 import login_en from "./en/login.json";
+import mailchimpSuperadmin_en from "./en/mailchimpSuperadmin.json";
 import marcoCampanita_en from "./en/marcoCampanita.json";
 import marcoCrear_en from "./en/marcoCrear.json";
 import marcoDashboard_en from "./en/marcoDashboard.json";
@@ -339,6 +341,7 @@ export const mensajes = {
     "legalPrivacidad": legalPrivacidad_es,
     "legalTerminos": legalTerminos_es,
     "login": login_es,
+    "mailchimpSuperadmin": mailchimpSuperadmin_es,
     "marcoCampanita": marcoCampanita_es,
     "marcoCrear": marcoCrear_es,
     "marcoDashboard": marcoDashboard_es,
@@ -473,6 +476,7 @@ export const mensajes = {
     "legalPrivacidad": legalPrivacidad_en,
     "legalTerminos": legalTerminos_en,
     "login": login_en,
+    "mailchimpSuperadmin": mailchimpSuperadmin_en,
     "marcoCampanita": marcoCampanita_en,
     "marcoCrear": marcoCrear_en,
     "marcoDashboard": marcoDashboard_en,
