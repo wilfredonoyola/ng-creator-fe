@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Building2, Compass, CreditCard, House, KeyRound, LayoutDashboard, LifeBuoy, LogOut, Music, Users, type LucideIcon } from "lucide-react";
+import { Building2, Compass, CreditCard, House, KeyRound, LayoutDashboard, LifeBuoy, LogOut, Mail, Music, Users, type LucideIcon } from "lucide-react";
 import { LogoNG } from "@/components/LogoNG";
 import { BotonNav, Titulo } from "@/components/Sidebar";
 import { cerrarSesion, haySesion } from "@/lib/auth";
 import { useSesion } from "@/lib/sesion";
 import { useSoySuperadmin } from "@/lib/superadmin";
 
-type ClaveSeccion = "inicio" | "clientes" | "suscripciones" | "cobro" | "soporte" | "usuarios" | "origenes" | "sonidos";
+type ClaveSeccion = "inicio" | "clientes" | "suscripciones" | "cobro" | "soporte" | "usuarios" | "origenes" | "sonidos" | "mailchimp";
 
 /** Las secciones, agrupadas como en el menú del panel: un título y sus filas. */
 const GRUPOS: { clave: "general" | "clientes" | "operacion"; secciones: { href: string; clave: ClaveSeccion; icon: LucideIcon }[] }[] = [
@@ -31,6 +31,7 @@ const GRUPOS: { clave: "general" | "clientes" | "operacion"; secciones: { href: 
       { href: "/superadmin/soporte", clave: "soporte", icon: LifeBuoy },
       { href: "/superadmin/sonidos", clave: "sonidos", icon: Music },
       { href: "/superadmin/cobro", clave: "cobro", icon: KeyRound },
+      { href: "/superadmin/mailchimp", clave: "mailchimp", icon: Mail },
     ],
   },
 ];

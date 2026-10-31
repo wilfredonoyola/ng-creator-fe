@@ -3767,3 +3767,39 @@ export const CUPO_UPLOAD_POST = gql`
     }
   }
 `;
+
+// --- Mailchimp desde el superadmin (ng-creator-be: configuracion cifrada, gana sobre el .env) ---
+
+const CAMPOS_MAILCHIMP = `
+  activo
+  origenClave
+  claveFinal
+  audiencia
+  origenAudiencia
+  audienciaNombre
+  contactos
+  journeyRegistro
+  origenJourney
+  journeyNombre
+  journeyEstado
+  problema
+  cambios { detalle porEmail en }
+`;
+
+export const CONFIGURACION_MAILCHIMP = gql`
+  query ConfiguracionMailchimp {
+    configuracionMailchimp { ${CAMPOS_MAILCHIMP} }
+  }
+`;
+
+export const AUDIENCIAS_MAILCHIMP = gql`
+  query AudienciasMailchimp {
+    audienciasMailchimp { id nombre contactos }
+  }
+`;
+
+export const GUARDAR_MAILCHIMP = gql`
+  mutation GuardarMailchimp($input: GuardarMailchimpInput!) {
+    guardarMailchimp(input: $input) { ${CAMPOS_MAILCHIMP} }
+  }
+`;

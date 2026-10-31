@@ -1,0 +1,48 @@
+{
+  "titulo": "Mailchimp",
+  "subtitulo": "Los correos de marketing. Cada persona que confirma su cuenta entra a la audiencia y arranca el journey de bienvenida. La clave se guarda cifrada; lo que no cargues acá sale del .env del servidor.",
+  "cargando": "Cargando…",
+  "activo": "Activo",
+  "apagado": "Apagado",
+  "ayudaActivo": "Los registros nuevos entran a la audiencia y se manda el evento de cada video subido.",
+  "ayudaApagado": "No se manda nada a Mailchimp: falta la clave o la audiencia.",
+  "deEntorno": "del .env",
+  "guardar": "Guardar",
+  "guardando": "Guardando…",
+  "quitar": "Quitar",
+  "historial": "Cambios",
+  "clave": {
+    "titulo": "Clave de API",
+    "cargada": "Clave en uso: …{final}",
+    "sin": "Sin clave.",
+    "pegar": "Pegá la clave de API",
+    "reemplazar": "Pegá una clave nueva para reemplazarla",
+    "donde": "En Mailchimp: Profile → Extras → API keys. Termina en el centro de datos (…-us15).",
+    "ok": "Clave guardada."
+  },
+  "audiencia": {
+    "titulo": "Audiencia",
+    "actual": "{nombre} ({id}) · {contactos, plural, one {# contacto} other {# contactos}}",
+    "sin": "Sin audiencia.",
+    "elegir": "Elegí una audiencia",
+    "opcion": "{nombre} · {contactos, plural, one {# contacto} other {# contactos}}",
+    "ok": "Audiencia guardada."
+  },
+  "journey": {
+    "titulo": "Journey de bienvenida",
+    "ayuda": "Un journey con punto de partida \"API trigger\": arranca cuando alguien confirma su cuenta. Pegá la URL del trigger que da Mailchimp o escribí journey/paso (35/99).",
+    "actual": "{nombre} ({id})",
+    "sin": "Sin journey: solo se manda el evento se_registro.",
+    "pegar": "https://us15.api.mailchimp.com/3.0/customer-journeys/journeys/35/steps/99/actions/trigger",
+    "noActivo": "Mientras no esté activo en Mailchimp, los registros nuevos no entran al journey.",
+    "estados": {
+      "sending": "Activo",
+      "draft": "Borrador",
+      "paused": "Pausado",
+      "stopped": "Detenido"
+    },
+    "confirmarQuitar": "¿Quitar el journey? Los registros nuevos dejan de entrar (salvo que el .env tenga uno).",
+    "ok": "Journey guardado.",
+    "quitado": "Journey quitado."
+  }
+}
