@@ -33,7 +33,7 @@
     "ayuda": "Un journey con punto de partida \"API trigger\": arranca cuando alguien confirma su cuenta. Pegá la URL del trigger que da Mailchimp o escribí journey/paso (35/99).",
     "actual": "{nombre} ({id})",
     "sin": "Sin journey: solo se manda el evento se_registro.",
-    "pegar": "https://us15.api.mailchimp.com/3.0/customer-journeys/journeys/35/steps/99/actions/trigger",
+    "pegar": "Para cambiarlo: pegá la URL del trigger o escribí 35/99",
     "noActivo": "Mientras no esté activo en Mailchimp, los registros nuevos no entran al journey.",
     "estados": {
       "sending": "Activo",
