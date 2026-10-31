@@ -3755,6 +3755,31 @@ export const CREAR_WEBHOOK_LEMON = gql`
   }
 `;
 
+/** Los webhooks que ya tiene la tienda en Lemon (el de Clipfine marcado con `propio`). Solo superadmin. */
+export const WEBHOOKS_LEMON = gql`
+  query WebhooksLemon($prueba: Boolean!) {
+    webhooksLemon(prueba: $prueba) {
+      id
+      url
+      eventos
+      prueba
+      creado
+      propio
+    }
+  }
+`;
+
+/** Manda al webhook un aviso firmado, como Lemon, y devuelve qué contestó el servidor. */
+export const PROBAR_WEBHOOK_LEMON = gql`
+  mutation ProbarWebhookLemon($prueba: Boolean!) {
+    probarWebhookLemon(prueba: $prueba) {
+      ok
+      estado
+      url
+    }
+  }
+`;
+
 /** Cuántos perfiles quedan en el plan de Upload-Post (una marca, un perfil). Solo superadmin. */
 export const CUPO_UPLOAD_POST = gql`
   query CupoUploadPost {

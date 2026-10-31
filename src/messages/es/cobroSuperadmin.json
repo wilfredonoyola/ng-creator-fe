@@ -51,8 +51,19 @@
     "sin": "Sin webhook: Lemon no le avisaría a Clipfine los pagos.",
     "crear": "Crear webhook",
     "rehacer": "Rehacer webhook",
-    "ok": "Webhook creado en Lemon Squeezy.",
-    "confirmarRehacer": "¿Rehacer el webhook? Se crea uno nuevo con otro secreto y se borra el anterior."
+    "ok": "Webhook listo en Lemon Squeezy. Si ya había uno a esta dirección, se usó ese.",
+    "confirmarRehacer": "¿Rehacer el webhook? Se crea uno nuevo con otro secreto y se borra el anterior.",
+    "probar": "Probar webhook",
+    "probando": "Probando…",
+    "pruebaOk": "El webhook responde y acepta la firma: los avisos de Lemon van a llegar.",
+    "pruebaFallo": "El servidor contestó {estado} al aviso de prueba: revisá la URL o rehacé el webhook.",
+    "pruebaSinRespuesta": "No se pudo llegar a la URL del webhook.",
+    "enLemon": "Webhooks de esta tienda en Lemon:",
+    "propio": "El de Clipfine",
+    "ajeno": "Creado a mano (Clipfine no conoce su secreto)",
+    "dePrueba": "de prueba",
+    "deVerdad": "de verdad",
+    "eventos": "{n, plural, one {# evento} other {# eventos}}"
   },
   "guia": {
     "titulo": "Cómo configurar el cobro con Lemon Squeezy",

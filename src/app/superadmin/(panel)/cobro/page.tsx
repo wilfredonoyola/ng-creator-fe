@@ -9,6 +9,8 @@ import {
   CONFIGURACION_COBRO,
   CREAR_WEBHOOK_LEMON,
   GUARDAR_PLANES_LEMON,
+  PROBAR_WEBHOOK_LEMON,
+  WEBHOOKS_LEMON,
 } from "@/graphql/operations";
 import { mensajeDeError } from "@/lib/nombre";
 import { GuiaConfiguracion } from "@/components/superadmin/GuiaConfiguracion";
@@ -27,6 +29,15 @@ interface Modo {
   origenWebhook: Origen;
   listo: boolean;
   cambios: { detalle: string; porEmail: string; en: string }[];
+}
+
+interface WebhookLemon {
+  id: string;
+  url: string;
+  eventos: string[];
+  prueba: boolean;
+  creado: string | null;
+  propio: boolean;
 }
 
 interface Variante {
@@ -87,6 +98,10 @@ function BloqueModo({ modo }: { modo: Modo }) {
   const [guardar, { loading: guardando }] = useMutation(GUARDAR_PLANES_LEMON, { refetchQueries });
   const [crearWebhook, { loading: creando }] = useMutation(CREAR_WEBHOOK_LEMON, { refetchQueries });
   const [pedirCatalogo, catalogo] = useLazyQuery<{ catalogoLemon: Variante[] }>(CATALOGO_LEMON, { fetchPolicy: "network-only" });
+  const [pedirWebhooks, webhooks] = useLazyQuery<{ webhooksLemon: WebhookLemon[] }>(WEBHOOKS_LEMON, { fetchPolicy: "network-only" });
+  const [probarWebhook, { loading: probando }] = useMutation<{
+    probarWebhookLemon: { ok: boolean; estado: number | null; url: string };
+  }>(PROBAR_WEBHOOK_LEMON);
   const [apiKey, setApiKey] = useState("");
   const [storeId, setStoreId] = useState("");
   const [elegidas, setElegidas] = useState<Record<string, string>>({});
@@ -97,6 +112,10 @@ function BloqueModo({ modo }: { modo: Modo }) {
   useEffect(() => {
     if (conectadoAca) void pedirCatalogo({ variables: { prueba } });
   }, [conectadoAca, prueba, pedirCatalogo, modo.storeId]);
+  // Los de Lemon se vuelven a pedir cuando cambia el webhook de Clipfine.
+  useEffect(() => {
+    if (conectadoAca) void pedirWebhooks({ variables: { prueba } });
+  }, [conectadoAca, prueba, pedirWebhooks, modo.storeId, modo.webhookUrl, modo.cambios.length]);
   useEffect(() => {
     setElegidas(Object.fromEntries(modo.planes.map((p) => [p.clave, p.varianteId ?? ""])));
   }, [modo.planes]);
@@ -251,6 +270,46 @@ function BloqueModo({ modo }: { modo: Modo }) {
           {creando ? t("creando") : modo.origenWebhook === "superadmin" ? t("webhook.rehacer") : t("webhook.crear")}
         </button>
       )}
+      {conectadoAca && modo.origenWebhook === "superadmin" && (
+        <button
+          type="button"
+          disabled={probando}
+          onClick={() => {
+            setMensaje(null);
+            void probarWebhook({ variables: { prueba } })
+              .then(({ data }) => {
+                const r = data?.probarWebhookLemon;
+                if (!r) return;
+                setMensaje(
+                  r.ok
+                    ? { ok: true, texto: t("webhook.pruebaOk") }
+                    : { ok: false, texto: r.estado ? t("webhook.pruebaFallo", { estado: r.estado }) : t("webhook.pruebaSinRespuesta") },
+                );
+              })
+              .catch((e: unknown) => setMensaje({ ok: false, texto: mensajeDeError(e) }));
+          }}
+          className={`${boton} mt-2 ml-2`}
+        >
+          {probando ? t("webhook.probando") : t("webhook.probar")}
+        </button>
+      )}
+      {conectadoAca && (webhooks.data?.webhooksLemon.length ?? 0) > 0 && (
+        <div className="mt-3">
+          <p className="text-xs text-white/50">{t("webhook.enLemon")}</p>
+          <ul className="mt-1 space-y-1.5">
+            {webhooks.data!.webhooksLemon.map((w) => (
+              <li key={w.id} className="rounded-lg border border-white/10 px-3 py-2 text-xs">
+                <span className="block break-all text-white/80">{w.url}</span>
+                <span className="text-white/45">
+                  {w.propio ? t("webhook.propio") : t("webhook.ajeno")} · {w.prueba ? t("webhook.dePrueba") : t("webhook.deVerdad")} ·{" "}
+                  {t("webhook.eventos", { n: w.eventos.length })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {conectadoAca && webhooks.error && <p className="mt-2 text-xs text-red-400">{mensajeDeError(webhooks.error)}</p>}
 
       {mensaje && <p className={`mt-3 text-sm ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}
 
