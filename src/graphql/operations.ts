@@ -3596,3 +3596,16 @@ export const PRIMEROS_PASOS = gql`
     }
   }
 `;
+
+/** Cuántos perfiles quedan en el plan de Upload-Post (una marca, un perfil). Solo superadmin. */
+export const CUPO_UPLOAD_POST = gql`
+  query CupoUploadPost {
+    cupoUploadPost {
+      configurado
+      usados
+      limite
+      quedan
+      plan
+    }
+  }
+`;
