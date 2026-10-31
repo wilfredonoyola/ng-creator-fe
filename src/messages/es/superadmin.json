@@ -225,7 +225,16 @@
     },
     "total": "Total: {valor}",
     "maximo": "Máximo: {valor}",
-    "sinDatos": "Sin datos en este período."
+    "sinDatos": "Sin datos en este período.",
+    "cupo": {
+      "titulo": "Upload-Post",
+      "usados": "{usados} de {limite} perfiles",
+      "sinTope": "{usados} perfiles",
+      "quedan": "{n, plural, =0 {sin lugar} one {queda 1} other {quedan #}}",
+      "plan": "Plan {plan}",
+      "ayuda": "Cada marca que conecta sus redes usa un perfil. Al llegar al 80 % y al llenarse, le llega un correo al equipo.",
+      "error": "No se pudo leer el cupo de Upload-Post."
+    }
   },
   "suplantando": {
     "aviso": "Estás como {email}",
