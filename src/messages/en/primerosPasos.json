@@ -2,7 +2,6 @@
   "titulo": "Getting started",
   "progreso": "Getting started: {hechos} of {total}",
   "opcional": "optional",
-  "ocultar": "Hide",
   "pasos": {
     "marca": "Create the brand",
     "configurar": "Set up the brand",
@@ -14,10 +13,5 @@
     "configurar": "Set up the brand →",
     "episodio": "Upload my first episode →",
     "redes": "Connect my accounts →"
-  },
-  "perfil": {
-    "visible": "The {marca} guide is in the menu: with your progress while steps are left, and as a small row to look back on once it's done. If you hide it, its email reminders stop too.",
-    "oculta": "You hid the {marca} guide. Show it again to see what's left.",
-    "mostrar": "Show the guide"
   }
 }

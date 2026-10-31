@@ -1,7 +1,7 @@
 "use client";
 
-import { useMutation, useQuery } from "@apollo/client";
-import { OCULTAR_PRIMEROS_PASOS, PRIMEROS_PASOS } from "@/graphql/operations";
+import { useQuery } from "@apollo/client";
+import { PRIMEROS_PASOS } from "@/graphql/operations";
 import { useMarcaActiva } from "@/lib/marca-activa";
 
 export type ClavePaso = "marca" | "configurar" | "episodio" | "redes";
@@ -19,8 +19,6 @@ interface Vista {
   primerEpisodio: boolean;
   redesConectadas: boolean;
   completos: boolean;
-  oculta: boolean;
-  puedeOcultar: boolean;
 }
 
 /**
@@ -35,13 +33,12 @@ interface Vista {
 export function usePrimerosPasos() {
   const { activa } = useMarcaActiva();
   const marcaId = activa?._id;
-  const { data, refetch } = useQuery(PRIMEROS_PASOS, {
+  const { data } = useQuery(PRIMEROS_PASOS, {
     variables: { marcaId },
     skip: !marcaId,
     fetchPolicy: "cache-and-network",
     errorPolicy: "all",
   });
-  const [mutar, { loading: guardando }] = useMutation(OCULTAR_PRIMEROS_PASOS);
 
   const vista: Vista | null = marcaId ? (data?.primerosPasos ?? null) : null;
   const pasos: PasoGuia[] = vista
@@ -53,11 +50,6 @@ export function usePrimerosPasos() {
       ]
     : [];
 
-  async function ocultar(oculta: boolean) {
-    if (!marcaId) return;
-    await mutar({ variables: { marcaId, oculta } });
-    await refetch();
-  }
 
   return {
     /** Null: no es propietario, o todavía no cargó. */
@@ -66,11 +58,8 @@ export function usePrimerosPasos() {
     hechos: pasos.filter((p) => p.hecho).length,
     /** El primer obligatorio que falta; si no, el opcional. */
     siguiente: pasos.find((p) => !p.hecho && !p.opcional) ?? pasos.find((p) => !p.hecho) ?? null,
-    /** Si va en el menú: siempre, salvo que la haya ocultado. Completa, queda chica. */
-    visible: Boolean(vista && !vista.oculta),
+    /** Siempre en el menú (no se oculta); completa, queda chica. */
+    visible: Boolean(vista),
     completos: Boolean(vista?.completos),
-    puedeOcultar: Boolean(vista?.puedeOcultar),
-    ocultar,
-    guardando,
   };
 }
