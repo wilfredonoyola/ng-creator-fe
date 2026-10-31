@@ -46,5 +46,6 @@
   "procesandoPago": "Estamos confirmando tu pago. En unos segundos se actualiza tu plan.",
   "cobroNoListo": "El pago todavía no está habilitado. Si querés un plan ya, escribinos a {correo}.",
   "custom": "¿Necesitás más de 80 horas al mes? <correo>Escribinos</correo> y armamos un plan Custom.",
-  "lemon": "El pago lo procesa Lemon Squeezy, que emite la factura. Podés cancelar cuando quieras."
+  "lemon": "El pago lo procesa Lemon Squeezy, que emite la factura. Podés cancelar cuando quieras.",
+  "cobroDePrueba": "Esta cuenta está en modo prueba: pagá con la tarjeta de prueba 4242 4242 4242 4242 (cualquier fecha futura y cualquier CVC). No se cobra nada real."
 }

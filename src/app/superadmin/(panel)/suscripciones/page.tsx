@@ -25,14 +25,19 @@ interface Fila extends Plan {
   ajustes: Ajuste[];
 }
 
-type Filtro = "todas" | "prueba" | "vencePronto" | "vencidas";
-const FILTROS: Filtro[] = ["todas", "prueba", "vencePronto", "vencidas"];
+type Filtro = "todas" | "prueba" | "vencePronto" | "vencidas" | "cobroDePrueba";
+const FILTROS: Filtro[] = ["todas", "prueba", "vencePronto", "vencidas", "cobroDePrueba"];
+
+/** Una suscripción de Lemon que sigue corriendo: con ella no se cambia el modo de cobro (el backend tampoco deja). */
+const suscripcionViva = (f: Fila) =>
+  !!f.lemonSuscripcionId && (f.estado === "ACTIVA" || f.estado === "PAGO_PENDIENTE" || f.estado === "CANCELADA");
 
 /** Los planes que se pueden dar a mano (sin la prueba). */
 const PLANES_A_MANO: PlanSuscripcion[] = ["STARTER", "AGENCY", "AGENCY_PRO", "CUSTOM", "INTERNO"];
 
 function pasaFiltro(f: Fila, filtro: Filtro): boolean {
   if (filtro === "prueba") return f.plan === "PRUEBA";
+  if (filtro === "cobroDePrueba") return f.cobroDePrueba;
   if (filtro === "vencidas") return !f.puedeSubir;
   if (filtro === "vencePronto") {
     const dias = diasDePrueba(f);
@@ -153,7 +158,11 @@ function FilaSuscripcion({
         <td className="px-4 py-3">
           {nombrePlan(f.plan)}
           {f.periodo && <span className="ml-1 text-xs text-white/40">{t(`periodo.${f.periodo}`)}</span>}
-          {f.modoPrueba && <span className="ml-2 rounded bg-amber-400/10 px-1.5 text-[10px] text-amber-300">test</span>}
+          {f.cobroDePrueba && (
+            <span title={t("modo.etiquetaAyuda")} className="ml-2 rounded bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-300">
+              {t("modo.etiqueta")}
+            </span>
+          )}
         </td>
         <td className={`px-4 py-3 ${f.puedeSubir ? "text-white/70" : "text-amber-300"}`}>
           {t(`estado.${f.estado}`)}
@@ -249,6 +258,31 @@ function Ajustes({
           </button>
         </div>
         <p className="text-xs text-white/40">{t("ayuda")}</p>
+
+        {/* El modo de cobro: con mucho cuidado, porque decide si a esta cuenta se le cobra de verdad. */}
+        <div className={`rounded-lg border p-3 ${f.cobroDePrueba ? "border-amber-400/40 bg-amber-400/5" : "border-white/10"}`}>
+          <p className="text-xs font-semibold">
+            {t("modo.titulo")}: <span className={f.cobroDePrueba ? "text-amber-300" : "text-white"}>{f.cobroDePrueba ? t("modo.prueba") : t("modo.verdad")}</span>
+          </p>
+          <p className="mt-1 text-xs text-white/50">{f.cobroDePrueba ? t("modo.detallePrueba") : t("modo.detalleVerdad")}</p>
+          {suscripcionViva(f) ? (
+            <p className="mt-2 text-xs text-white/50">{t("modo.conSuscripcion")}</p>
+          ) : (
+            <button
+              type="button"
+              className={`${boton} mt-2`}
+              disabled={loading}
+              onClick={() => {
+                const pasaAPrueba = !f.cobroDePrueba;
+                const quien = f.email ?? f.titularId;
+                if (!window.confirm(pasaAPrueba ? t("modo.confirmarPrueba", { quien }) : t("modo.confirmarVerdad", { quien }))) return;
+                void hacer("MODO_COBRO", { cobroDePrueba: pasaAPrueba });
+              }}
+            >
+              {f.cobroDePrueba ? t("modo.pasarAVerdad") : t("modo.pasarAPrueba")}
+            </button>
+          )}
+        </div>
         {f.lemonSuscripcionId && (
           <p className="text-xs text-white/50">
             Lemon Squeezy: <span className="font-mono">{f.lemonSuscripcionId}</span>

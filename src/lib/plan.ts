@@ -17,6 +17,8 @@ export interface Plan {
   puedeSubir: boolean;
   motivo: MotivoBloqueo | null;
   pagaConLemon: boolean;
+  /** Paga en el modo prueba de Lemon Squeezy: tarjetas de prueba, sin cobro real (lo prende un superadmin). */
+  cobroDePrueba: boolean;
 }
 
 /** Días que le quedan a la prueba (redondeado para arriba), o null si no está en prueba. */

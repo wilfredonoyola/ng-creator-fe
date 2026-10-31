@@ -3613,6 +3613,7 @@ const CAMPOS_PLAN = gql`
     puedeSubir
     motivo
     pagaConLemon
+    cobroDePrueba
   }
 `;
 

@@ -124,6 +124,10 @@ export default function MiPlanPage() {
             {aviso && <p className="mb-4 rounded-ng-md border border-ng-teal/30 bg-ng-teal/5 px-4 py-3 text-sm text-ng-teal">{aviso}</p>}
             {error && <p className="mb-4 rounded-ng-md border border-red-400/30 bg-red-400/5 px-4 py-3 text-sm text-red-300">{error}</p>}
 
+            {plan.cobroDePrueba && (
+              <p className="mb-4 rounded-ng-md border border-amber-400/40 bg-amber-400/5 px-4 py-3 text-sm text-amber-200">{t("cobroDePrueba")}</p>
+            )}
+
             <Actual plan={plan} fecha={fecha} locale={locale} onPortal={abrirPortal} />
 
             {plan.plan !== "INTERNO" && plan.plan !== "CUSTOM" && (

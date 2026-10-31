@@ -46,5 +46,6 @@
   "procesandoPago": "We're confirming your payment. Your plan will update in a few seconds.",
   "cobroNoListo": "Payments aren't enabled yet. If you want a plan now, write to {correo}.",
   "custom": "Need more than 80 hours a month? <correo>Write to us</correo> and we'll set up a Custom plan.",
-  "lemon": "Payments are processed by Lemon Squeezy, which issues the invoice. You can cancel anytime."
+  "lemon": "Payments are processed by Lemon Squeezy, which issues the invoice. You can cancel anytime.",
+  "cobroDePrueba": "This account is in test mode: pay with the test card 4242 4242 4242 4242 (any future date and any CVC). Nothing real is charged."
 }
