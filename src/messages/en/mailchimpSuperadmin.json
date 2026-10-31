@@ -33,7 +33,7 @@
     "ayuda": "A journey whose starting point is \"API trigger\": it starts when someone confirms their account. Paste the trigger URL Mailchimp gives you or type journey/step (35/99).",
     "actual": "{nombre} ({id})",
     "sin": "No journey: only the se_registro event is sent.",
-    "pegar": "https://us15.api.mailchimp.com/3.0/customer-journeys/journeys/35/steps/99/actions/trigger",
+    "pegar": "To change it: paste the trigger URL or type 35/99",
     "noActivo": "Until it's active in Mailchimp, new sign-ups don't enter the journey.",
     "estados": {
       "sending": "Active",
