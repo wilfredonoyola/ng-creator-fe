@@ -53,5 +53,28 @@
     "rehacer": "Rehacer webhook",
     "ok": "Webhook creado en Lemon Squeezy.",
     "confirmarRehacer": "¿Rehacer el webhook? Se crea uno nuevo con otro secreto y se borra el anterior."
+  },
+  "guia": {
+    "titulo": "Cómo configurar el cobro con Lemon Squeezy",
+    "pasosTitulo": "Pasos",
+    "pasos": [
+      "En Lemon Squeezy, creá los productos con suscripción: Starter, Agency y Agency Pro, cada uno con una variante mensual y otra anual, con los precios de la landing. Custom no se vende desde acá: se arma a mano con el cliente.",
+      "Para el modo De verdad: en Lemon, con Test mode apagado, andá a Settings → API → crear una clave. Pegala en el bloque \"De verdad\" y tocá Conectar. Si la cuenta tiene varias tiendas, escribí también el id de la tienda.",
+      "Revisá los planes: Clipfine propone qué variante es cada plan por el nombre y el intervalo (mes o año). Corregí lo que esté mal o falte y tocá Guardar planes. Los seis tienen que tener variante.",
+      "Tocá Crear webhook. Se crea en Lemon apuntando a este servidor, con un secreto nuevo. Sin webhook, Clipfine no se entera de los pagos ni de las cancelaciones.",
+      "Cuando el bloque diga \"Listo para cobrar\", ese modo ya cobra.",
+      "Repetí los pasos 2 a 4 en el bloque \"De prueba\", con Test mode prendido en Lemon. En Test mode los productos son aparte: creálos ahí también (o copialos con Copy to test mode).",
+      "Probá un pago: en Suscripciones, marcá una cuenta tuya con Cobro de prueba. Entrá con esa cuenta a /plan, elegí un plan y pagá con la tarjeta de prueba 4242 4242 4242 4242 (cualquier fecha futura y CVC). Revisá que el plan y las horas cambien."
+    ],
+    "importanteTitulo": "Importante",
+    "importante": [
+      "Cada modo tiene su propia clave: una con Test mode apagado (De verdad) y otra con Test mode prendido (De prueba). Si las cruzás, Conectar falla o los planes no aparecen.",
+      "Las cuentas cobran en el modo De verdad salvo las marcadas con Cobro de prueba en Suscripciones. Ese switch no se puede cambiar mientras la cuenta tenga una suscripción viva.",
+      "Para cobrar de verdad, la tienda tiene que estar activada (aprobada) por Lemon Squeezy. Lemon cobra en su nombre y se encarga de los impuestos.",
+      "Rehacer el webhook crea uno nuevo con otro secreto y borra el anterior. Hacelo solo si el webhook dejó de funcionar o cambió la dirección del servidor.",
+      "Las claves se guardan cifradas y no vuelven a verse (solo los últimos 4). Si se pierde la clave de cifrado del servidor (FACEBOOK_TOKEN_KEY), hay que volver a pegarlas.",
+      "Lo que cargues acá gana sobre las variables del servidor (.env).",
+      "Solo el propietario de la cuenta ve /plan. En la app no hay botón de pago (reglas de Apple y Google): se paga desde la web."
+    ]
   }
 }

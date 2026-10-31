@@ -53,5 +53,28 @@
     "rehacer": "Redo webhook",
     "ok": "Webhook created in Lemon Squeezy.",
     "confirmarRehacer": "Redo the webhook? A new one is created with another secret and the old one is deleted."
+  },
+  "guia": {
+    "titulo": "How to set up billing with Lemon Squeezy",
+    "pasosTitulo": "Steps",
+    "pasos": [
+      "In Lemon Squeezy, create the subscription products: Starter, Agency and Agency Pro, each with a monthly and a yearly variant, at the landing page prices. Custom isn't sold here: it's set up by hand with the client.",
+      "For Live mode: in Lemon, with Test mode off, go to Settings → API → create a key. Paste it in the \"Live\" block and click Connect. If the account has several stores, also type the store id.",
+      "Check the plans: Clipfine suggests which variant is each plan by name and interval (month or year). Fix anything wrong or missing and click Save plans. All six need a variant.",
+      "Click Create webhook. It's created in Lemon pointing to this server, with a new secret. Without a webhook, Clipfine doesn't hear about payments or cancellations.",
+      "When the block says \"Ready to charge\", that mode can charge.",
+      "Repeat steps 2 to 4 in the \"Test\" block, with Test mode on in Lemon. Test mode products are separate: create them there too (or copy them with Copy to test mode).",
+      "Test a payment: in Subscriptions, mark one of your accounts with Test billing. Sign in with that account at /plan, choose a plan and pay with the test card 4242 4242 4242 4242 (any future date and CVC). Check that the plan and hours change."
+    ],
+    "importanteTitulo": "Important",
+    "importante": [
+      "Each mode has its own key: one with Test mode off (Live) and one with Test mode on (Test). If you swap them, Connect fails or the plans don't show up.",
+      "Accounts are charged in Live mode except those marked with Test billing in Subscriptions. That switch can't change while the account has an active subscription.",
+      "To charge for real, Lemon Squeezy has to activate (approve) the store. Lemon charges in its own name and handles taxes.",
+      "Redoing the webhook creates a new one with another secret and deletes the old one. Only do it if the webhook stopped working or the server address changed.",
+      "Keys are stored encrypted and never shown again (only the last 4). If the server's encryption key (FACEBOOK_TOKEN_KEY) is lost, paste them again.",
+      "What you set here wins over the server variables (.env).",
+      "Only the account owner sees /plan. The app has no payment button (Apple and Google rules): payment happens on the web."
+    ]
   }
 }

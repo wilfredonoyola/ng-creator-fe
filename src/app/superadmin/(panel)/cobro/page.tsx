@@ -11,6 +11,7 @@ import {
   GUARDAR_PLANES_LEMON,
 } from "@/graphql/operations";
 import { mensajeDeError } from "@/lib/nombre";
+import { GuiaConfiguracion } from "@/components/superadmin/GuiaConfiguracion";
 
 type Origen = "superadmin" | "entorno" | null;
 type ClavePlan = "STARTER_MENSUAL" | "STARTER_ANUAL" | "AGENCY_MENSUAL" | "AGENCY_ANUAL" | "AGENCY_PRO_MENSUAL" | "AGENCY_PRO_ANUAL";
@@ -56,6 +57,14 @@ export default function CobroSuperadmin() {
         <h1 className="text-2xl font-bold">{t("titulo")}</h1>
         <p className="mt-1 max-w-3xl text-white/50">{t("subtitulo")}</p>
       </div>
+      <GuiaConfiguracion
+        titulo={t("guia.titulo")}
+        pasosTitulo={t("guia.pasosTitulo")}
+        pasos={t.raw("guia.pasos") as string[]}
+        importanteTitulo={t("guia.importanteTitulo")}
+        importante={t.raw("guia.importante") as string[]}
+        abierta={!loading && modos.length > 0 && !modos.every((m) => m.listo)}
+      />
       {error && <p className="mb-4 text-sm text-red-400">{error.message}</p>}
       {loading && !data ? (
         <p className="text-sm text-white/40">{t("cargando")}</p>

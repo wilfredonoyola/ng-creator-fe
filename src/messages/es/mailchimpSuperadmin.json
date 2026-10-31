@@ -44,5 +44,29 @@
     "confirmarQuitar": "¿Quitar el journey? Los registros nuevos dejan de entrar (salvo que el .env tenga uno).",
     "ok": "Journey guardado.",
     "quitado": "Journey quitado."
+  },
+  "guia": {
+    "titulo": "Cómo configurar Mailchimp",
+    "pasosTitulo": "Pasos",
+    "pasos": [
+      "Entrá a Mailchimp con la cuenta de Clipfine. Hacé clic en tu foto (arriba a la derecha) → Profile → Extras → API keys → Create A Key. Copiala completa: termina en el centro de datos (por ejemplo …-us15). Mailchimp la muestra una sola vez.",
+      "Pegala abajo en \"Clave de API\" y tocá Guardar. Clipfine la prueba con Mailchimp antes de guardarla; si la rechaza, no se guarda nada.",
+      "Elegí la audiencia (la de Clipfine es \"Clipfine.io\") y Guardar. Ahí entra cada persona que confirma su cuenta, con nombre, apellido e idioma.",
+      "En Mailchimp, armá el journey de bienvenida: Automations → Customer Journeys → Create journey → como punto de partida elegí \"API trigger\". Mailchimp te muestra una URL que termina en …/journeys/35/steps/99/actions/trigger.",
+      "Pegá esa URL abajo en \"Journey de bienvenida\" y Guardar (también sirve escribir solo 35/99). Clipfine revisa que el journey exista y te muestra su nombre y su estado.",
+      "Agregá los correos al journey y activalo en Mailchimp (Turn on). Mientras diga Borrador, los registros nuevos no entran.",
+      "Probá: registrá una cuenta nueva con un correo tuyo, confirmala y revisá en Mailchimp que el contacto aparezca en la audiencia y entre al journey."
+    ],
+    "importanteTitulo": "Importante",
+    "importante": [
+      "Solo entran solos los registros nuevos desde que esto está configurado. Los anteriores hay que importarlos en Mailchimp (Audience → Import contacts).",
+      "Los que entran invitados a un equipo no van a la audiencia: trabajan para un cliente que ya paga.",
+      "Cada video que se sube manda el evento video_subido. Sirve para otro journey con punto de partida \"Event\", si se quiere.",
+      "Las campañas sueltas (por ejemplo, las del lunes y el miércoles) se mandan desde Mailchimp a toda la audiencia; no dependen de esta pantalla.",
+      "Si alguien se dio de baja, volver a registrarse no lo vuelve a suscribir.",
+      "El dominio clipfine.io ya está autenticado en Mailchimp (DKIM). Si se cambia el remitente a otro dominio, hay que autenticarlo primero o los correos rebotan.",
+      "Lo que cargues acá gana sobre las variables del servidor (.env). Quitar un dato vuelve a usar el del servidor, si hay.",
+      "Los avisos del producto (códigos, invitaciones, resúmenes) no salen por Mailchimp: siguen saliendo desde Clipfine."
+    ]
   }
 }
