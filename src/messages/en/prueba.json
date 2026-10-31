@@ -1,5 +1,12 @@
 {
-  "uso": "Free trial: {usados} of {tope, plural, one {# episode} other {# episodes}}",
-  "tope": "You've reached the trial limit",
-  "verPlanes": "See plans"
+  "prueba": "Free trial: {usadas} of {tope} h · {dias, plural, =0 {ends today} one {# day left} other {# days left}}",
+  "mes": "You've used {usadas} of {tope} video hours this month",
+  "bloqueo": {
+    "pruebaVencida": "The free trial has ended: new videos can't be uploaded",
+    "suscripcionVencida": "The plan isn't active: new videos can't be uploaded",
+    "sinHoras": "All of this month's video hours have been used"
+  },
+  "elegirPlan": "Choose a plan",
+  "verPlan": "See my plan",
+  "avisaleAlDueno": "Let the account owner know."
 }

@@ -1,0 +1,60 @@
+{
+  "titulo": "Subscriptions",
+  "subtitulo": "Each paying account's plan, its usage and manual adjustments.",
+  "cargando": "Loading…",
+  "vacio": "No accounts in this filter.",
+  "filtros": {
+    "todas": "All",
+    "prueba": "On trial",
+    "vencePronto": "Ending soon or payment pending",
+    "vencidas": "Can't upload",
+    "cobroDePrueba": "Test billing"
+  },
+  "col": {
+    "cuenta": "Account (owner)",
+    "plan": "Plan",
+    "estado": "Status",
+    "horas": "Hours this month",
+    "fecha": "Trial end / renewal",
+    "marcas": "Brands"
+  },
+  "periodo": {
+    "MENSUAL": "monthly",
+    "ANUAL": "annual"
+  },
+  "estado": {
+    "PRUEBA": "On trial",
+    "ACTIVA": "Active",
+    "PAGO_PENDIENTE": "Payment pending",
+    "CANCELADA": "Cancelled",
+    "VENCIDA": "Expired"
+  },
+  "diasRestan": "{dias, plural, =0 {ended} one {# day left} other {# days left}}",
+  "ajustar": "Adjust",
+  "cerrar": "Close",
+  "dias": "Days",
+  "horas": "Hours",
+  "acciones": {
+    "EXTENDER_PRUEBA": "Extend trial",
+    "DEVOLVER_HORAS": "Give hours back",
+    "PASAR_A_INTERNO": "Make internal",
+    "DAR_PLAN": "Give this plan"
+  },
+  "ayuda": "Extend adds the days and, if you enter hours, adds them to the cap. Give plan uses the plan's hours, or the ones you enter (for Custom). Internal: no billing, no limits.",
+  "historial": "Adjustments",
+  "sinAjustes": "No manual adjustments.",
+  "modo": {
+    "titulo": "Billing mode",
+    "verdad": "Real",
+    "prueba": "Test",
+    "etiqueta": "Test",
+    "etiquetaAyuda": "Pays in Lemon Squeezy test mode: no real charge",
+    "detalleVerdad": "Pays with a real card on Lemon Squeezy.",
+    "detallePrueba": "Pays with Lemon Squeezy test cards (4242 4242 4242 4242): nothing real is charged and payments don't count as revenue.",
+    "pasarAPrueba": "Switch to test billing",
+    "pasarAVerdad": "Back to real billing",
+    "confirmarPrueba": "Switch {quien} to test billing? They'll pay with test cards and won't be charged. Use it only with test accounts, never with a client.",
+    "confirmarVerdad": "Switch {quien} back to real billing? From now on, if they pay, a real card is charged.",
+    "conSuscripcion": "It has a live Lemon Squeezy subscription: it has to be cancelled or end before switching the mode."
+  }
+}

@@ -1,4 +1,5 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
+import adminSuscripciones_es from "./es/adminSuscripciones.json";
 import ajustesMarca_es from "./es/ajustesMarca.json";
 import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
@@ -13,6 +14,7 @@ import calendario_es from "./es/calendario.json";
 import calidadClip_es from "./es/calidadClip.json";
 import chatSoporte_es from "./es/chatSoporte.json";
 import clipsSubidos_es from "./es/clipsSubidos.json";
+import cobroSuperadmin_es from "./es/cobroSuperadmin.json";
 import conectar_es from "./es/conectar.json";
 import contenido_es from "./es/contenido.json";
 import creators_es from "./es/creators.json";
@@ -105,6 +107,7 @@ import panel_es from "./es/panel.json";
 import panelSubirClip_es from "./es/panelSubirClip.json";
 import perfil_es from "./es/perfil.json";
 import pestanasEpisodios_es from "./es/pestanasEpisodios.json";
+import plan_es from "./es/plan.json";
 import portadaMarca_es from "./es/portadaMarca.json";
 import primerosPasos_es from "./es/primerosPasos.json";
 import proveedorPublicacion_es from "./es/proveedorPublicacion.json";
@@ -132,6 +135,7 @@ import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import superadmin_es from "./es/superadmin.json";
 import variosClips_es from "./es/variosClips.json";
 import versionFacebook_es from "./es/versionFacebook.json";
+import adminSuscripciones_en from "./en/adminSuscripciones.json";
 import ajustesMarca_en from "./en/ajustesMarca.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
@@ -146,6 +150,7 @@ import calendario_en from "./en/calendario.json";
 import calidadClip_en from "./en/calidadClip.json";
 import chatSoporte_en from "./en/chatSoporte.json";
 import clipsSubidos_en from "./en/clipsSubidos.json";
+import cobroSuperadmin_en from "./en/cobroSuperadmin.json";
 import conectar_en from "./en/conectar.json";
 import contenido_en from "./en/contenido.json";
 import creators_en from "./en/creators.json";
@@ -238,6 +243,7 @@ import panel_en from "./en/panel.json";
 import panelSubirClip_en from "./en/panelSubirClip.json";
 import perfil_en from "./en/perfil.json";
 import pestanasEpisodios_en from "./en/pestanasEpisodios.json";
+import plan_en from "./en/plan.json";
 import portadaMarca_en from "./en/portadaMarca.json";
 import primerosPasos_en from "./en/primerosPasos.json";
 import proveedorPublicacion_en from "./en/proveedorPublicacion.json";
@@ -268,6 +274,7 @@ import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
+    "adminSuscripciones": adminSuscripciones_es,
     "ajustesMarca": ajustesMarca_es,
     "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
@@ -282,6 +289,7 @@ export const mensajes = {
     "calidadClip": calidadClip_es,
     "chatSoporte": chatSoporte_es,
     "clipsSubidos": clipsSubidos_es,
+    "cobroSuperadmin": cobroSuperadmin_es,
     "conectar": conectar_es,
     "contenido": contenido_es,
     "creators": creators_es,
@@ -374,6 +382,7 @@ export const mensajes = {
     "panelSubirClip": panelSubirClip_es,
     "perfil": perfil_es,
     "pestanasEpisodios": pestanasEpisodios_es,
+    "plan": plan_es,
     "portadaMarca": portadaMarca_es,
     "primerosPasos": primerosPasos_es,
     "proveedorPublicacion": proveedorPublicacion_es,
@@ -403,6 +412,7 @@ export const mensajes = {
     "versionFacebook": versionFacebook_es,
   },
   en: {
+    "adminSuscripciones": adminSuscripciones_en,
     "ajustesMarca": ajustesMarca_en,
     "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
@@ -417,6 +427,7 @@ export const mensajes = {
     "calidadClip": calidadClip_en,
     "chatSoporte": chatSoporte_en,
     "clipsSubidos": clipsSubidos_en,
+    "cobroSuperadmin": cobroSuperadmin_en,
     "conectar": conectar_en,
     "contenido": contenido_en,
     "creators": creators_en,
@@ -509,6 +520,7 @@ export const mensajes = {
     "panelSubirClip": panelSubirClip_en,
     "perfil": perfil_en,
     "pestanasEpisodios": pestanasEpisodios_en,
+    "plan": plan_en,
     "portadaMarca": portadaMarca_en,
     "primerosPasos": primerosPasos_en,
     "proveedorPublicacion": proveedorPublicacion_en,

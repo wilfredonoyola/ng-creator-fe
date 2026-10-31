@@ -1,5 +1,12 @@
 {
-  "uso": "Prueba gratis: {usados} de {tope, plural, one {# episodio} other {# episodios}}",
-  "tope": "Llegaste al tope de la prueba",
-  "verPlanes": "Ver planes"
+  "prueba": "Prueba gratis: {usadas} de {tope} h · {dias, plural, =0 {termina hoy} one {queda # día} other {quedan # días}}",
+  "mes": "Usaste {usadas} de {tope} h de video este mes",
+  "bloqueo": {
+    "pruebaVencida": "Terminó la prueba gratis: no se pueden subir videos nuevos",
+    "suscripcionVencida": "El plan no está vigente: no se pueden subir videos nuevos",
+    "sinHoras": "Se usaron todas las horas de video del mes"
+  },
+  "elegirPlan": "Elegir plan",
+  "verPlan": "Ver mi plan",
+  "avisaleAlDueno": "Avisale al dueño de la cuenta."
 }

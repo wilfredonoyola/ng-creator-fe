@@ -1,0 +1,60 @@
+{
+  "titulo": "Suscripciones",
+  "subtitulo": "El plan de cada cuenta que paga, cuánto usó y los ajustes a mano.",
+  "cargando": "Cargando…",
+  "vacio": "No hay cuentas en este filtro.",
+  "filtros": {
+    "todas": "Todas",
+    "prueba": "En prueba",
+    "vencePronto": "Vence pronto o pago pendiente",
+    "vencidas": "Sin poder subir",
+    "cobroDePrueba": "Cobro de prueba"
+  },
+  "col": {
+    "cuenta": "Cuenta (titular)",
+    "plan": "Plan",
+    "estado": "Estado",
+    "horas": "Horas del mes",
+    "fecha": "Fin de prueba / renovación",
+    "marcas": "Marcas"
+  },
+  "periodo": {
+    "MENSUAL": "mensual",
+    "ANUAL": "anual"
+  },
+  "estado": {
+    "PRUEBA": "En prueba",
+    "ACTIVA": "Activa",
+    "PAGO_PENDIENTE": "Pago pendiente",
+    "CANCELADA": "Cancelada",
+    "VENCIDA": "Vencida"
+  },
+  "diasRestan": "{dias, plural, =0 {terminó} one {queda # día} other {quedan # días}}",
+  "ajustar": "Ajustar",
+  "cerrar": "Cerrar",
+  "dias": "Días",
+  "horas": "Horas",
+  "acciones": {
+    "EXTENDER_PRUEBA": "Extender prueba",
+    "DEVOLVER_HORAS": "Devolver horas",
+    "PASAR_A_INTERNO": "Pasar a Interno",
+    "DAR_PLAN": "Dar este plan"
+  },
+  "ayuda": "Extender suma los días y, si ponés horas, las suma al tope. Dar plan usa las horas del plan, o las que pongas (para Custom). Interno: sin cobro ni límites.",
+  "historial": "Ajustes",
+  "sinAjustes": "Sin ajustes a mano.",
+  "modo": {
+    "titulo": "Modo de cobro",
+    "verdad": "De verdad",
+    "prueba": "De prueba",
+    "etiqueta": "Prueba",
+    "etiquetaAyuda": "Paga en el modo prueba de Lemon Squeezy: sin cobro real",
+    "detalleVerdad": "Paga con tarjeta real en Lemon Squeezy.",
+    "detallePrueba": "Paga con las tarjetas de prueba de Lemon Squeezy (4242 4242 4242 4242): no se le cobra nada real y sus pagos no cuentan como ingresos.",
+    "pasarAPrueba": "Pasar a cobro de prueba",
+    "pasarAVerdad": "Volver a cobro de verdad",
+    "confirmarPrueba": "¿Pasar a {quien} a cobro de prueba? Va a pagar con tarjetas de prueba y no se le va a cobrar nada real. Usalo solo con cuentas de prueba, nunca con un cliente.",
+    "confirmarVerdad": "¿Volver a {quien} a cobro de verdad? Desde ahora, si paga, se le cobra con tarjeta real.",
+    "conSuscripcion": "Tiene una suscripción viva en Lemon Squeezy: para cambiar el modo, primero tiene que cancelarse o vencer."
+  }
+}

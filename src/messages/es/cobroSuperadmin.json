@@ -1,0 +1,57 @@
+{
+  "titulo": "Cobro",
+  "subtitulo": "La conexión con Lemon Squeezy, sin variables de entorno: pegá la clave de API de cada modo, confirmá qué variante es cada plan y creá el webhook. Las claves se guardan cifradas y no vuelven a verse.",
+  "cargando": "Cargando…",
+  "modoVivo": "De verdad",
+  "modoPrueba": "De prueba",
+  "listo": "Listo para cobrar",
+  "falta": "Falta configurar",
+  "ayudaVivo": "Lo que pagan los clientes. La clave se crea en Lemon Squeezy → Settings → API con Test mode apagado.",
+  "ayudaPrueba": "Para las cuentas marcadas con cobro de prueba en Suscripciones: pagan con tarjetas de prueba. La clave se crea con Test mode prendido.",
+  "conectar": "Conectar",
+  "conectando": "Conectando…",
+  "guardando": "Guardando…",
+  "creando": "Creando…",
+  "deEntorno": "del servidor",
+  "historial": "Cambios",
+  "intervalos": {
+    "month": "mes",
+    "year": "año"
+  },
+  "clave": {
+    "titulo": "Clave de API",
+    "cargada": "Clave cargada desde acá, terminada en …{final}.",
+    "entorno": "Usa la clave de las variables del servidor.",
+    "sin": "Sin clave: este modo no puede cobrar.",
+    "tienda": "Tienda {nombre} ({id})",
+    "pegar": "Pegá la clave de API",
+    "reemplazar": "Pegá una clave nueva para reemplazarla",
+    "tiendaOpcional": "Id de tienda (opcional)",
+    "ok": "Clave conectada. Revisá los planes y creá el webhook."
+  },
+  "planes": {
+    "titulo": "Planes",
+    "antes": "Conectá la clave para elegir las variantes desde Lemon.",
+    "ninguna": "Sin variante",
+    "guardar": "Guardar planes",
+    "ok": "Planes guardados.",
+    "nombres": {
+      "STARTER_MENSUAL": "Starter mensual",
+      "STARTER_ANUAL": "Starter anual",
+      "AGENCY_MENSUAL": "Agency mensual",
+      "AGENCY_ANUAL": "Agency anual",
+      "AGENCY_PRO_MENSUAL": "Agency Pro mensual",
+      "AGENCY_PRO_ANUAL": "Agency Pro anual"
+    }
+  },
+  "webhook": {
+    "titulo": "Webhook",
+    "creado": "Creado: {url}",
+    "entorno": "Usa el secreto de las variables del servidor.",
+    "sin": "Sin webhook: Lemon no le avisaría a Clipfine los pagos.",
+    "crear": "Crear webhook",
+    "rehacer": "Rehacer webhook",
+    "ok": "Webhook creado en Lemon Squeezy.",
+    "confirmarRehacer": "¿Rehacer el webhook? Se crea uno nuevo con otro secreto y se borra el anterior."
+  }
+}
