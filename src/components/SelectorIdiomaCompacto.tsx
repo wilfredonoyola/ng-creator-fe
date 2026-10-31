@@ -3,13 +3,14 @@
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { IDIOMAS, esIdioma } from "@/i18n/idiomas";
+import { IDIOMAS, esIdioma, idiomaDelNavegador } from "@/i18n/idiomas";
 import { guardarIdiomaElegido } from "@/i18n/cliente";
 
 /**
  * "ES · EN" para las páginas sin sesión (landing, ingreso, legales). Sin
- * "Automático": elegir uno lo deja en la cookie, igual que en Perfil
- * (SelectorIdioma), y el servidor vuelve a pintar la página en ese idioma.
+ * "Automático" a la vista: elegir el idioma que no es el del navegador lo deja
+ * en la cookie, igual que en Perfil (SelectorIdioma); elegir el del navegador
+ * la borra y vuelve a seguirlo. Así un toque de prueba no lo deja fijo un año.
  */
 export function SelectorIdiomaCompacto({
   className = "",
@@ -38,7 +39,8 @@ export function SelectorIdiomaCompacto({
             disabled={cambiando}
             onClick={() => {
               if (actual === i) return;
-              guardarIdiomaElegido(i);
+              const delNavegador = idiomaDelNavegador(navigator.languages?.join(",") || navigator.language);
+              guardarIdiomaElegido(i === delNavegador ? null : i);
               startTransition(() => router.refresh());
             }}
             className={`rounded-ng-md px-1.5 py-0.5 uppercase tracking-wide transition-colors ${

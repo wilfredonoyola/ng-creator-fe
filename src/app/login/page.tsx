@@ -11,7 +11,7 @@ import {
   iniciarSesion,
   pedirCodigoPassword,
 } from "@/lib/auth";
-import { passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
+import { CampoPassword, passwordValida, RequisitosPassword } from "@/components/acceso/RequisitosPassword";
 import { conVolverA, destinoSeguro, MarcoAcceso } from "@/components/acceso/MarcoAcceso";
 
 /**
@@ -33,7 +33,6 @@ export default function LoginPage() {
   // Cuando hay sesión de desafío, estamos en el segundo paso.
   const [sesionDesafio, setSesionDesafio] = useState<string | null>(null);
   const [nueva, setNueva] = useState("");
-  const [repetida, setRepetida] = useState("");
 
   // "Olvidé mi contraseña": primero se pide el código, después se usa.
   const [recuperando, setRecuperando] = useState<null | "pedir" | "confirmar">(null);
@@ -50,7 +49,7 @@ export default function LoginPage() {
 
   const modo = sesionDesafio ? "desafio" : (recuperando ?? "entrar");
 
-  const puedeGuardar = passwordValida(nueva) && nueva === repetida;
+  const puedeGuardar = passwordValida(nueva);
 
   async function entrar(e: React.FormEvent) {
     e.preventDefault();
@@ -72,10 +71,6 @@ export default function LoginPage() {
 
   async function definir(e: React.FormEvent) {
     e.preventDefault();
-    if (nueva !== repetida) {
-      setError(t("noCoincidenLargo"));
-      return;
-    }
     setError(null);
     setCargando(true);
     try {
@@ -97,7 +92,6 @@ export default function LoginPage() {
       await pedirCodigoPassword(correo.trim());
       setRecuperando("confirmar");
       setNueva("");
-      setRepetida("");
       setCodigo("");
       setAviso(t("codigoEnviado", { correo: correo.trim() }));
     } catch (err) {
@@ -109,10 +103,6 @@ export default function LoginPage() {
 
   async function confirmarCodigo(e: React.FormEvent) {
     e.preventDefault();
-    if (nueva !== repetida) {
-      setError(t("noCoincidenLargo"));
-      return;
-    }
     setError(null);
     setCargando(true);
     try {
@@ -139,28 +129,15 @@ export default function LoginPage() {
   const camposNueva = (
     <>
       <label className="mb-1 block text-xs text-white/50">{t("nuevaPassword")}</label>
-      <input
-        type="password"
+      <CampoPassword
         value={nueva}
         onChange={(e) => setNueva(e.target.value)}
         autoFocus={modo === "desafio"}
         autoComplete="new-password"
-        className={`mb-3 ${campo}`}
+        className="mb-2"
         required
       />
       <RequisitosPassword valor={nueva} />
-      <label className="mb-1 block text-xs text-white/50">{t("repetila")}</label>
-      <input
-        type="password"
-        value={repetida}
-        onChange={(e) => setRepetida(e.target.value)}
-        autoComplete="new-password"
-        className={campo}
-        required
-      />
-      <p className="mb-6 mt-1 h-4 text-[11px] text-white/35">
-        {repetida && nueva !== repetida ? <span className="text-red-400">{t("noCoinciden")}</span> : null}
-      </p>
     </>
   );
 
@@ -214,11 +191,10 @@ export default function LoginPage() {
               {t("olvidaste")}
             </button>
           </div>
-          <input
-            type="password"
+          <CampoPassword
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={`mb-6 ${campo}`}
+            className="mb-6"
             autoComplete="current-password"
             required
           />

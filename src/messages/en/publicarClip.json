@@ -9,10 +9,8 @@
   "fallaAlgunas": "Some weren't scheduled. {detalle}",
   "programado": "Scheduled: goes out {cuando}. You'll see it in the Calendar.",
   "duracionListo": "{seg} s",
-  "cambiosSinProcesar": "It has changes not exported yet: it exports on its own before publishing.",
-  "sinVideo": "Not exported yet: it exports on its own before publishing.",
   "esperaVideo": "Waiting for the video",
-  "portadaSinVideo": "The cover is picked from the exported video. If you don't pick one, each network sets its own.",
+  "portadaSinVideo": "You can pick the cover once the video is ready. If you don't, each network picks its own.",
   "elegiDiaHora": "Pick the day and time",
   "elegiDiaHoraPunto": "Pick the day and time.",
   "yaPaso": "That time has already passed",
@@ -82,6 +80,126 @@
     "enSeg": "Frame at second {seg}",
     "elegida": "Chosen cover",
     "facebook": "On Facebook it's applied a few minutes after publishing, if the page is also connected through Facebook (Connected networks → bottom).",
-    "youtube": "YouTube only applies it on verified channels."
+    "youtube": "YouTube only applies it on verified channels.",
+    "automaticaDetalle": "Each network picks the frame",
+    "elegirCuadro": "Pick a frame",
+    "elegirCuadroDetalle": "You choose which frame of the clip shows",
+    "cargando": "Loading the frame…",
+    "elegidaEn": "Cover: the frame at second {seg}",
+    "moverAyuda": "Move the bar to the frame you want. It's picked right away, no need to save.",
+    "deMarca": "Brand cover",
+    "deMarcaAyuda": "with your Brand Kit design"
+  },
+  "editar": {
+    "titulo": "Already scheduled · goes out {cuando} on {redes}",
+    "tituloHoras": "Already scheduled on {redes}, at different times",
+    "ayuda": "Change anything and tap \"Save changes\": the scheduled posts are updated. Unchecking a network cancels it there.",
+    "horasAyuda": "If you change the date, all of them move to it.",
+    "horasPorRed": "Each network goes out at its own time",
+    "guardar": "Save changes",
+    "guardando": "Saving…",
+    "guardado": "Done: the scheduled posts were updated.",
+    "fallas": "Couldn't update everything: {detalle}",
+    "confirmarCancelar": "The scheduled post on {redes} will be canceled. Continue?",
+    "seCancela": "Saving cancels it on {redes}.",
+    "cancelarTodo": "Cancel post",
+    "cancelandoTodo": "Canceling…",
+    "confirmarCancelarTodo": "Cancel the post on {redes}? It won't go out. The clip stays and you can schedule it again.",
+    "canceladoTodo": "Post canceled: it won't go out."
+  },
+  "reintentar": {
+    "titulo": "Retry on {red}",
+    "ayuda": "Fix what you need (tags, text, time) and tap \"Retry\": this same post is sent again, without scheduling another one.",
+    "salir": "Exit",
+    "boton": "Retry on {red}",
+    "enviando": "Retrying…",
+    "listo": "Done: {red} is trying again. You can see it below, in Posts.",
+    "editar": "Edit and retry",
+    "sinCambios": "Retry as is",
+    "igual": "Retry anyway",
+    "verCuenta": "View the post ↗",
+    "quizas": "It may have gone out anyway on {red}: check the account before retrying, so it isn't posted twice.",
+    "confirmarForzar": "If it already went out on {red}, it will be there twice. Retry anyway?",
+    "arriba": "Being edited above to retry.",
+    "etiquetas": {
+      "titulo": "It failed because of the tags",
+      "ayuda": "Instagram rejected one of these accounts: it may be private, not exist or not accept collaboration invites. Safest: keep them as tags, not as collaborators.",
+      "colaborador": "collaborator",
+      "etiquetado": "tagged",
+      "pasarATag": "Turn collaborators into tags"
+    },
+    "saleYa": "Goes out as soon as you tap Retry"
+  },
+  "duplicado": {
+    "chip": "Already out",
+    "chipAyuda": "Already published on this account on {cuando}",
+    "linea": "Already published on {red} on {cuando}.",
+    "pregunta": "{n, plural, one {Publish it there again?} other {Publish it again on those accounts?}}"
+  },
+  "reemplazada": {
+    "chip": "Earlier attempt",
+    "texto": "This attempt failed, but it was published on {red} afterwards: nothing to retry."
+  },
+  "errorEtiquetas": "{red} rejected one of the tagged or collaborator accounts (private, missing, not visible or not accepting collaborations).",
+  "verDetalle": "Show details",
+  "ocultarDetalle": "Hide details",
+  "video": {
+    "preparando": "Preparing the final video…",
+    "preparandoProgreso": "Preparing the final video… {n}%",
+    "ayuda": "You can schedule once it's ready (usually a couple of minutes). Meanwhile, fill in the rest: it's kept even if you reload.",
+    "ayudaSoloMira": "It's exporting with the latest edit.",
+    "boton": "Waiting for the video…",
+    "botonAyuda": "Enabled once the video is ready.",
+    "fallo": "The video couldn't be prepared",
+    "falloAyuda": "Try again; if it fails again, check the clip in the editor.",
+    "reintentar": "Try again"
+  },
+  "borrador": {
+    "recuperado": "We restored what you'd left unscheduled."
+  },
+  "confirmar": {
+    "titulo": "Is this date right?",
+    "volver": "Back",
+    "siProgramar": "Yes, schedule",
+    "siGuardar": "Yes, save",
+    "siReintentar": "Yes, retry",
+    "salenEn": "Goes out on"
+  },
+  "menu": {
+    "abrir": "More options",
+    "cancelar": "Cancel schedule",
+    "eliminar": "Delete post",
+    "cancelarTitulo": "Cancel the schedule?",
+    "cancelarSi": "Yes, cancel",
+    "cancelarDetalle": "It won't go out. The clip stays and you can schedule it again.",
+    "eliminarTitulo": "Delete the post?",
+    "eliminarSi": "Yes, delete",
+    "eliminando": "Deleting…",
+    "eliminarDetalle": "This clip's scheduled, failed or cancelled posts are deleted from Clipfine, and it can't be undone. What already went out on the networks isn't touched.",
+    "eliminado": "Post deleted."
+  },
+  "pasos": {
+    "titulo": "Steps to schedule",
+    "redes": "Platforms",
+    "texto": "Text",
+    "portada": "Cover",
+    "cuando": "When",
+    "siguiente": "Next",
+    "atras": "Back"
+  },
+  "resumen": {
+    "titulo": "What will be scheduled",
+    "cambiar": "Change",
+    "sinTexto": "No description",
+    "etiquetadas": "{n, plural, one {# person tagged} other {# people tagged}}",
+    "automatica": "Each platform's automatic one"
+  },
+  "redes": {
+    "verAviso": "See the {red} warning",
+    "tituloVersion": "Facebook needs the short version",
+    "tituloMotivo": "{red} isn't available",
+    "irVersion": "Go to the short version",
+    "irRedes": "Go to Connected accounts",
+    "entendido": "Got it"
   }
 }

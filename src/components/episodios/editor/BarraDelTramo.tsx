@@ -6,8 +6,8 @@ import { Info } from "lucide-react";
 import { Pista } from "@/components/Pista";
 import { reloj } from "./tipos";
 
-/** Tope de un clip a mano, el mismo que valida el backend. */
-const CLIP_MAXIMO_SEG = 180;
+/** Tope de un clip a mano, el mismo que valida el backend (5 min). */
+const CLIP_MAXIMO_SEG = 300;
 
 /**
  * El tramo del clip dentro del episodio, para extenderlo o acortarlo
@@ -139,10 +139,11 @@ export function AjusteFino({
   const [texto, setTexto] = useState(valor.toFixed(3));
   useEffect(() => setTexto(valor.toFixed(3)), [valor]);
   return (
-    <div>
+    <div className="min-w-0">
       <p className="mb-1 text-xs text-white/50">{tr("delEpisodio", { etiqueta })}</p>
-      <div className="flex items-center gap-1">
-        <button type="button" disabled={disabled} onClick={() => onCambio(valor - 0.05)} className="rounded border border-white/15 px-2 py-1 text-xs">
+      {/* min-w-0: en el panel angosto la fila se achica (el numero) en vez de pisar la de al lado. */}
+      <div className="flex min-w-0 items-center gap-1">
+        <button type="button" disabled={disabled} onClick={() => onCambio(valor - 0.05)} className="shrink-0 rounded border border-white/15 px-2 py-1 text-xs">
           −50ms
         </button>
         <input
@@ -154,9 +155,9 @@ export function AjusteFino({
             if (Number.isFinite(n)) onCambio(n);
             else setTexto(valor.toFixed(3));
           }}
-          className="w-24 rounded border border-white/15 bg-black/30 px-2 py-1 text-center text-xs tabular-nums"
+          className="w-24 min-w-0 flex-1 rounded border border-white/15 bg-black/30 px-2 py-1 text-center text-xs tabular-nums"
         />
-        <button type="button" disabled={disabled} onClick={() => onCambio(valor + 0.05)} className="rounded border border-white/15 px-2 py-1 text-xs">
+        <button type="button" disabled={disabled} onClick={() => onCambio(valor + 0.05)} className="shrink-0 rounded border border-white/15 px-2 py-1 text-xs">
           +50ms
         </button>
       </div>

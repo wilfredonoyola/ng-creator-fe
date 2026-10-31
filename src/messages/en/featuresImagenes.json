@@ -1,0 +1,29 @@
+{
+  "seo": {
+    "titulo": "Logos, products and AI cutouts in client clips | Clipfine",
+    "descripcion": "Add up to 3 images per clip: the client's product, a logo or a person cut out with AI and a sticker outline. For agencies that edit clips for clients."
+  },
+  "titulo": "The client's product,",
+  "destacado": "right inside the clip",
+  "bajada": "A photo, a logo or a cut-out person on top of the video, at the second you choose. AI removes the background and a white outline makes it pop. No other app needed.",
+  "datos": {
+    "d1": { "cifra": "3 images", "que": "per clip, each with its own timing" },
+    "d2": { "cifra": "1 tap", "que": "to remove the background with AI" },
+    "d3": { "cifra": "0 extra apps", "que": "to cut out or composite" }
+  },
+  "agencia": {
+    "hastaTres": "Show the client's product or sponsor right when it's mentioned, without sending the clip to another editor.",
+    "quitarFondo": "A cutout that used to be a designer's job is done in the same editor, in seconds.",
+    "contorno": "The sticker look that works on TikTok and Reels, with no templates or extra software."
+  },
+  "vistas": {
+    "hastaTres": { "foto": "Product", "logo": "Logo", "libre": "1 free", "cuando": "Shows from 00:06 to 00:11" },
+    "quitarFondo": { "pie": "Background removed with AI" },
+    "contorno": { "pie": "White sticker outline" }
+  },
+  "preguntas": {
+    "p1": { "p": "Can I show a sponsor's product in the clip?", "r": "Yes. Upload the photo, drop it on the preview, place it and choose the second it appears and leaves. Up to 3 images per clip." },
+    "p2": { "p": "Do I need Photoshop to cut out a person?", "r": "No. With one tap, AI removes the image's background and you can use it as a cutout, with or without a white outline." },
+    "p3": { "p": "Do the images show up in the final video?", "r": "Yes. They're burned into the MP4 that gets published and the one you download, in the place and at the time you chose." }
+  }
+}

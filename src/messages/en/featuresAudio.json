@@ -1,0 +1,31 @@
+{
+  "seo": {
+    "titulo": "Music and sound effects for your clients' clips | Clipfine",
+    "descripcion": "Add royalty-free music, sound effects and the right volume to your clients' clips, and hear it in the preview. No extra software. Built for agencies."
+  },
+  "titulo": "Clips that sound produced,",
+  "destacado": "without opening an audio editor",
+  "bajada": "Royalty-free music or the client's own, sound effects at the exact second and the voice at whatever volume it needs. All in the same editor, and you hear it before exporting.",
+  "datos": {
+    "d1": { "cifra": "400%", "que": "volume for a voice that was recorded low" },
+    "d2": { "cifra": "20 effects", "que": "per clip, each at its own second" },
+    "d3": { "cifra": "2 libraries", "que": "Clipfine's and each client's own" }
+  },
+  "agencia": {
+    "volumenVoz": "A badly recorded episode gets saved in the clip, without sending it back to the client.",
+    "musica": "The client's music stays in their brand, and your team doesn't hunt for it every time.",
+    "bajarAlHablar": "The voice is always clear. Nobody rides the music volume by hand, segment by segment.",
+    "efectos": "The punchline that used to need an audio editor is now one tap on the timeline."
+  },
+  "vistas": {
+    "volumenVoz": { "voz": "Voice", "pie": "You hear it in the preview" },
+    "musica": { "pista1": "Upbeat 03", "libre": "Royalty-free", "pista2": "Client's theme", "tuya": "Uploaded by you", "volumen": "Volume" },
+    "bajarAlHablar": { "voz": "Voice", "musica": "Music", "opcion": "Duck under voice" },
+    "efectos": { "tambor": "Drum", "whoosh": "Whoosh", "aplauso": "Applause", "pie": "Each effect at its second" }
+  },
+  "preguntas": {
+    "p1": { "p": "Can each client have their own music?", "r": "Yes. What you upload to a client's brand is only visible to that brand. The Clipfine library is available to all of them." },
+    "p2": { "p": "Can I hear how it sounds before exporting?", "r": "Yes. The editor preview plays the voice, music and effects as they'll come out. On the web you also hear the voice above 100%; in the app, that shows in the final video." },
+    "p3": { "p": "What audio can I upload?", "r": "MP3, WAV, M4A or OGG. A song up to 15 minutes or an effect up to 30 seconds. Clipfine prepares it so it sounds right on every network." }
+  }
+}

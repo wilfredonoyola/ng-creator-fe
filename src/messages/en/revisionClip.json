@@ -1,0 +1,102 @@
+{
+  "etiquetas": {
+    "porRevisar": "To review",
+    "cambiosPedidos": "Changes requested",
+    "vencida": "Overdue, not reviewed",
+    "salioSinRevisar": "Went out unreviewed"
+  },
+  "ajustes": {
+    "titulo": "Review before publishing",
+    "descripcion": "With review on, what an editor schedules doesn't go out until a reviewer of {marca} approves it. What a reviewer schedules is approved automatically.",
+    "activa": "Review clips before they go out",
+    "alVencer": "If the time comes and nobody reviewed it",
+    "noPublicar": "Don't publish",
+    "noPublicarAyuda": "It stays “Overdue, not reviewed” until someone approves it.",
+    "publicarIgual": "Publish anyway",
+    "publicarIgualAyuda": "It goes out on time and is marked “Went out unreviewed”. Clips with requested changes don't go out.",
+    "guardar": "Save",
+    "guardando": "Saving…",
+    "guardado": "Saved",
+    "errorGuardar": "Couldn't save",
+    "soloPropietario": "Only the brand owner can change this.",
+    "revisores": "Who reviews",
+    "revisoresAyuda": "The owner and anyone with the Reviewer role always review. Invite a client who only approves as a Reviewer. If an editor also approves, mark them with “Reviews”.",
+    "chequeo": {
+      "revisan": "{n, plural, one {Reviewer: {nombres}} other {Reviewers ({n}): {nombres}}}",
+      "soloPropietario": "Right now only the owner reviews: everything the team schedules will land on that person, and if it isn't approved in time it won't go out. To share the load, invite someone as a Reviewer or mark an editor with “Reviews”.",
+      "sinEditores": "Everyone who schedules clips is a reviewer, and what a reviewer schedules is approved automatically: review won't hold anything back until there's an editor who doesn't review.",
+      "marcarRevisores": "Mark reviewers on the team ↓"
+    }
+  },
+  "equipo": {
+    "revisa": "Reviews",
+    "revisaSiempre": "Always reviews",
+    "revisorDe": "Reviewer: {nombre}"
+  },
+  "programar": {
+    "aviso": "This brand reviews clips before publishing: this will stay “To review” until a reviewer approves it.",
+    "avisoRevisor": "You're a reviewer: what you schedule is approved."
+  },
+  "panel": {
+    "titulo": "Review",
+    "estado": {
+      "PENDIENTE": "Waiting for review",
+      "APROBADA": "Approved",
+      "CAMBIOS_PEDIDOS": "Changes requested"
+    },
+    "sinRevision": "This clip hasn't been sent for review yet. It's sent automatically when you schedule it.",
+    "mandarARevisar": "Send for review",
+    "mandarDeNuevo": "Send for review again",
+    "aprobar": "Approve",
+    "aprobando": "Approving…",
+    "pedirCambios": "Request changes",
+    "pidiendo": "Sending…",
+    "comentar": "Comment",
+    "comentando": "Sending…",
+    "placeholder": "What needs to change, or a comment",
+    "faltaComentario": "Write or record what needs to change.",
+    "vencidas": "{n, plural, one {One post went overdue} other {# posts went overdue}} waiting for review. When approving:",
+    "publicarYa": "Publish now",
+    "otraHora": "Pick another time",
+    "horaPasada": "Pick a time that hasn't passed.",
+    "aprobado": "Approved: it goes out on time.",
+    "cambiosMandados": "Done: we let {nombre} know.",
+    "mandadoARevisar": "Done: we let the reviewers know.",
+    "error": "Couldn't do it",
+    "noSoyRevisor": "Only the brand's reviewers can approve or request changes.",
+    "verVideo": "Watch the video",
+    "acciones": {
+      "PEDIDA": "sent it for review",
+      "APROBADA": "approved it",
+      "CAMBIOS_PEDIDOS": "requested changes",
+      "COMENTARIO": "commented"
+    },
+    "transcripcion": "Transcript",
+    "transcripcionAyuda": "Fix it if needed: it's what people read when they can't listen.",
+    "sinRevisionCorto": "Not sent for review yet: it goes automatically when you schedule it.",
+    "vencidasCorto": "{n, plural, one {One post expired} other {# posts expired}} waiting for review",
+    "notaDeVoz": "voice note",
+    "revisar": "Review",
+    "verCambios": "See the changes",
+    "abrir": "Open",
+    "abrirN": "{n, plural, one {See # comment} other {See # comments}}",
+    "cerrar": "Close"
+  },
+  "voz": {
+    "grabar": "Record voice",
+    "parar": "Stop",
+    "grabando": "Recording {seg}",
+    "subiendo": "Uploading…",
+    "quitar": "Remove",
+    "sinMicrofono": "Couldn't use the microphone",
+    "sinTranscripcion": "Couldn't transcribe it: the audio is sent anyway."
+  },
+  "lista": {
+    "titulo": "To review",
+    "vacia": "Nothing to review.",
+    "pidio": "{nombre} · {cuando}",
+    "abrir": "Review",
+    "cargando": "…"
+  },
+  "filtro": "To review"
+}

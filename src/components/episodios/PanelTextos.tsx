@@ -13,40 +13,51 @@ import {
 
 export const MAXIMO_TEXTOS = 4;
 
+/** Los colores a mano para la letra y las destacadas (los mismos que en la app); el de la marca va al final. */
+const MUESTRAS = ["#FFFFFF", "#000000", "#FFE600", "#FF3B30", "#14D8C4"];
+
 /**
  * Diseños listos para arrancar. Es lo que se elige primero; después se puede
  * cambiar cualquier cosa. El de "Marca" toma el color destacado del estilo de
  * la marca, el mismo que resalta la palabra en los subtítulos.
+ *
+ * "Simple" va primero y es el de todo texto nuevo: letra moderna, blanca, sin
+ * contorno ni caja, en minúsculas, como los títulos de arriba en TikTok. Todos
+ * tienen estilo propio: elegir un diseño manda sobre el estilo de la marca.
  */
 export function disenosDeTexto(colorMarca: string) {
   return [
     {
+      id: "simple" as const,
+      estilo: { fuente: "INTER_TIGHT_SEMIBOLD", tamano: 64, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "NINGUNO", colorEfecto: "#000000", mayusculas: false, interlineado: 1.1, estiloPropio: true },
+    },
+    {
       id: "impacto" as const,
-      estilo: { fuente: "ANTON", tamano: 110, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "CONTORNO", colorEfecto: "#000000", mayusculas: true },
+      estilo: { fuente: "ANTON", tamano: 110, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "CONTORNO", colorEfecto: "#000000", mayusculas: true, interlineado: 1, estiloPropio: true },
     },
     {
       id: "caja" as const,
-      estilo: { fuente: "BEBAS", tamano: 96, color: "#FFFFFF", colorDestacado: "#FF3B30", efecto: "CAJA", colorEfecto: "#000000", mayusculas: true },
+      estilo: { fuente: "BEBAS", tamano: 96, color: "#FFFFFF", colorDestacado: "#FF3B30", efecto: "CAJA", colorEfecto: "#000000", mayusculas: true, interlineado: 1, estiloPropio: true },
     },
     {
       id: "marca" as const,
-      estilo: { fuente: "ANTON", tamano: 90, color: "#000000", colorDestacado: "#FFFFFF", efecto: "CAJA", colorEfecto: colorMarca, mayusculas: true },
+      estilo: { fuente: "ANTON", tamano: 90, color: "#000000", colorDestacado: "#FFFFFF", efecto: "CAJA", colorEfecto: colorMarca, mayusculas: true, interlineado: 1, estiloPropio: true },
     },
     {
       id: "amarillo" as const,
-      estilo: { fuente: "ANTON", tamano: 110, color: "#FFE600", colorDestacado: "#FFFFFF", efecto: "CONTORNO", colorEfecto: "#000000", mayusculas: true },
+      estilo: { fuente: "ANTON", tamano: 110, color: "#FFE600", colorDestacado: "#FFFFFF", efecto: "CONTORNO", colorEfecto: "#000000", mayusculas: true, interlineado: 1, estiloPropio: true },
     },
     {
       id: "sombra" as const,
-      estilo: { fuente: "NUNITO", tamano: 84, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "SOMBRA", colorEfecto: "#000000", mayusculas: false },
+      estilo: { fuente: "NUNITO", tamano: 84, color: "#FFFFFF", colorDestacado: "#FFE600", efecto: "SOMBRA", colorEfecto: "#000000", mayusculas: false, interlineado: 1, estiloPropio: true },
     },
     {
       id: "limpio" as const,
-      estilo: { fuente: "NUNITO", tamano: 72, color: "#FFFFFF", colorDestacado: "#14D8C4", efecto: "NINGUNO", colorEfecto: "#000000", mayusculas: false },
+      estilo: { fuente: "NUNITO", tamano: 72, color: "#FFFFFF", colorDestacado: "#14D8C4", efecto: "NINGUNO", colorEfecto: "#000000", mayusculas: false, interlineado: 1, estiloPropio: true },
     },
   ] satisfies {
     id: string;
-    estilo: Pick<Texto, "fuente" | "tamano" | "color" | "colorDestacado" | "efecto" | "colorEfecto" | "mayusculas">;
+    estilo: Pick<Texto, "fuente" | "tamano" | "color" | "colorDestacado" | "efecto" | "colorEfecto" | "mayusculas" | "interlineado" | "estiloPropio">;
   }[];
 }
 
@@ -59,13 +70,23 @@ export function textoNuevo(
   return { contenido, destacadas: [], ...estilo, centroX: 0.5, centroY, ancho: 0.85, desdeSeg: 0, hastaSeg: null };
 }
 
-const FUENTES_ELEGIBLES: { valor: FuenteTexto; etiqueta: string }[] = [
+/** Primero las simples, de lectura tranquila; después las de impacto. */
+const FUENTES_ELEGIBLES: { valor: FuenteTexto; etiqueta?: string }[] = [
+  { valor: "INTER_TIGHT_SEMIBOLD", etiqueta: "Simple" },
+  { valor: "INTER_TIGHT_BOLD" },
+  { valor: "MONTSERRAT_EXTRABOLD", etiqueta: "Montserrat" },
+  { valor: "INSTRUMENT_SERIF", etiqueta: "Serif" },
+  { valor: "NUNITO", etiqueta: "Nunito" },
   { valor: "ANTON", etiqueta: "Anton" },
   { valor: "BEBAS", etiqueta: "Bebas" },
-  { valor: "NUNITO", etiqueta: "Nunito" },
 ];
 
-const EFECTOS: EfectoTexto[] = ["CONTORNO", "SOMBRA", "CAJA", "NINGUNO"];
+const EFECTOS: EfectoTexto[] = ["NINGUNO", "CONTORNO", "SOMBRA", "CAJA"];
+
+/** Lo mismo que el backend: de 14 (una línea al pie) a 200 (un titular enorme). */
+const TAMANO_MIN = 14;
+const TAMANO_MAX = 200;
+const INTERLINEADOS = [0.9, 1, 1.2, 1.5] as const;
 
 const POSICIONES = [
   { clave: "arriba", centroY: 0.15 },
@@ -87,6 +108,7 @@ export function PanelTextos({
   onElegir,
   duracion,
   colorMarca,
+  estiloManda,
   deshabilitado,
 }: {
   textos: Texto[];
@@ -96,6 +118,8 @@ export function PanelTextos({
   /** Del clip, en segundos. */
   duracion: number;
   colorMarca: string;
+  /** Hay un estilo de texto que pone la letra: sin elegir una a mano, va la suya. */
+  estiloManda?: boolean;
   deshabilitado?: boolean;
 }) {
   const tr = useTranslations("editorTextos");
@@ -111,6 +135,11 @@ export function PanelTextos({
 
   function cambiar(i: number, parcial: Partial<Texto>) {
     onCambiar(textos.map((t, k) => (k === i ? { ...t, ...parcial } : t)));
+  }
+
+  /** Un cambio de cómo se ve: desde ahí el texto usa su propio estilo, no el de la marca. */
+  function cambiarDiseno(i: number, parcial: Partial<Texto>) {
+    cambiar(i, { ...parcial, estiloPropio: true });
   }
 
   function quitar(i: number) {
@@ -198,45 +227,111 @@ export function PanelTextos({
             </div>
           </div>
 
+          <Muestras
+            etiqueta={tr("colorDestacadas")}
+            ayuda={tr("colorDestacadasAyuda")}
+            valor={t.colorDestacado}
+            colorMarca={colorMarca}
+            onCambio={(colorDestacado) => cambiarDiseno(elegido, { colorDestacado })}
+            deshabilitado={deshabilitado}
+          />
+
+          {estiloManda && t.estiloPropio && (
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-xs text-white/60">
+              <span>{tr("estiloPropio.nota")}</span>
+              {!deshabilitado && (
+                <button
+                  type="button"
+                  onClick={() => cambiar(elegido, { estiloPropio: false, fuenteElegida: false, interlineado: 1 })}
+                  className="font-medium text-ng-celeste hover:underline"
+                >
+                  {tr("estiloPropio.usarMarca")}
+                </button>
+              )}
+            </div>
+          )}
+
           <Fila etiqueta={tr("filas.letra")}>
+            {estiloManda && (
+              <Opcion activa={!t.fuenteElegida && !t.estiloPropio} onClick={() => cambiar(elegido, { fuenteElegida: false, estiloPropio: false })} deshabilitado={deshabilitado}>
+                {tr("fuentes.delEstilo")}
+              </Opcion>
+            )}
             {FUENTES_ELEGIBLES.map((f) => (
-              <Opcion key={f.valor} activa={t.fuente === f.valor} onClick={() => cambiar(elegido, { fuente: f.valor })} deshabilitado={deshabilitado}>
-                <span style={{ fontFamily: `'${FUENTES[f.valor].familia}'`, fontWeight: f.valor === "NUNITO" ? 900 : 400 }}>
-                  {f.etiqueta}
+              <Opcion
+                key={f.valor}
+                activa={t.fuente === f.valor && (!estiloManda || Boolean(t.fuenteElegida) || Boolean(t.estiloPropio))}
+                onClick={() => cambiarDiseno(elegido, { fuente: f.valor, fuenteElegida: true })}
+                deshabilitado={deshabilitado}
+              >
+                <span style={{ fontFamily: `'${FUENTES[f.valor].familia}'`, fontWeight: FUENTES[f.valor].peso }}>
+                  {f.etiqueta ?? tr("fuentes.clasica")}
                 </span>
               </Opcion>
             ))}
-            <Opcion activa={t.mayusculas} onClick={() => cambiar(elegido, { mayusculas: !t.mayusculas })} deshabilitado={deshabilitado}>
+            <Opcion activa={t.mayusculas} onClick={() => cambiarDiseno(elegido, { mayusculas: !t.mayusculas })} deshabilitado={deshabilitado}>
               AA
             </Opcion>
           </Fila>
 
           <Fila etiqueta={tr("filas.alrededor")}>
             {EFECTOS.map((e) => (
-              <Opcion key={e} activa={t.efecto === e} onClick={() => cambiar(elegido, { efecto: e })} deshabilitado={deshabilitado}>
+              <Opcion key={e} activa={t.efecto === e} onClick={() => cambiarDiseno(elegido, { efecto: e })} deshabilitado={deshabilitado}>
                 {tr(`efectos.${e}`)}
               </Opcion>
             ))}
           </Fila>
 
-          <Fila etiqueta={tr("filas.colores")}>
-            <Color etiqueta={tr("colores.texto")} valor={t.color} onCambio={(color) => cambiar(elegido, { color })} deshabilitado={deshabilitado} />
-            <Color etiqueta={tr("colores.destacado")} valor={t.colorDestacado} onCambio={(colorDestacado) => cambiar(elegido, { colorDestacado })} deshabilitado={deshabilitado} />
-            {t.efecto !== "NINGUNO" && (
+          <Muestras
+            etiqueta={tr("colorTexto")}
+            valor={t.color}
+            colorMarca={colorMarca}
+            onCambio={(color) => cambiarDiseno(elegido, { color })}
+            deshabilitado={deshabilitado}
+          />
+
+          {t.efecto !== "NINGUNO" && (
+            <Fila etiqueta={tr("filas.colores")}>
               <Color
                 etiqueta={tr(`colores.${t.efecto === "CAJA" ? "caja" : t.efecto === "SOMBRA" ? "sombra" : "contorno"}`)}
                 valor={t.colorEfecto}
-                onCambio={(colorEfecto) => cambiar(elegido, { colorEfecto })}
+                onCambio={(colorEfecto) => cambiarDiseno(elegido, { colorEfecto })}
                 deshabilitado={deshabilitado}
               />
-            )}
-          </Fila>
+            </Fila>
+          )}
 
-          <label className="block text-xs text-white/50">
-            {tr("tamano", { n: Math.round(t.tamano) })}
-            <input type="range" min={40} max={200} step={1} value={t.tamano} disabled={deshabilitado}
-              onChange={(e) => cambiar(elegido, { tamano: parseFloat(e.target.value) })} className="mt-1 block w-full" />
-          </label>
+          <div className="block text-xs text-white/50">
+            <div className="flex items-center justify-between gap-2">
+              <span>{tr("tamano", { n: Math.round(t.tamano) })}</span>
+              <span className="flex items-center gap-1">
+                <Opcion activa={false} onClick={() => cambiarDiseno(elegido, { tamano: Math.max(TAMANO_MIN, Math.round(t.tamano) - 2) })} deshabilitado={deshabilitado || t.tamano <= TAMANO_MIN}>
+                  −
+                </Opcion>
+                <Opcion activa={false} onClick={() => cambiarDiseno(elegido, { tamano: Math.min(TAMANO_MAX, Math.round(t.tamano) + 2) })} deshabilitado={deshabilitado || t.tamano >= TAMANO_MAX}>
+                  +
+                </Opcion>
+              </span>
+            </div>
+            <input type="range" min={TAMANO_MIN} max={TAMANO_MAX} step={1} value={t.tamano} disabled={deshabilitado}
+              aria-label={tr("tamano", { n: Math.round(t.tamano) })}
+              onChange={(e) => cambiarDiseno(elegido, { tamano: parseFloat(e.target.value) })} className="mt-1 block w-full" />
+          </div>
+          <div className="block text-xs text-white/50">
+            <div className="flex items-center justify-between gap-2">
+              <span>{tr("interlineado", { n: (t.interlineado ?? 1).toFixed(2) })}</span>
+              <span className="flex items-center gap-1">
+                {INTERLINEADOS.map((v) => (
+                  <Opcion key={v} activa={Math.abs((t.interlineado ?? 1) - v) < 0.01} onClick={() => cambiarDiseno(elegido, { interlineado: v })} deshabilitado={deshabilitado}>
+                    {v}
+                  </Opcion>
+                ))}
+              </span>
+            </div>
+            <input type="range" min={0.8} max={2} step={0.05} value={t.interlineado ?? 1} disabled={deshabilitado}
+              aria-label={tr("interlineado", { n: (t.interlineado ?? 1).toFixed(2) })}
+              onChange={(e) => cambiarDiseno(elegido, { interlineado: parseFloat(e.target.value) })} className="mt-1 block w-full" />
+          </div>
           <label className="block text-xs text-white/50">
             {tr("anchoMaximo", { n: Math.round(t.ancho * 100) })}
             <input type="range" min={0.3} max={1} step={0.01} value={t.ancho} disabled={deshabilitado}
@@ -291,9 +386,9 @@ function MuestraDiseno({ estilo }: { estilo: ReturnType<typeof disenosDeTexto>[n
     <span
       style={{
         fontFamily: `'${f.familia}', sans-serif`,
-        fontWeight: estilo.fuente === "NUNITO" ? 900 : 400,
+        fontWeight: f.peso,
         fontSize: estilo.tamano * f.factorCss * escala,
-        lineHeight: 1.1,
+        lineHeight: estilo.interlineado ?? 1.1,
         color: estilo.color,
         textTransform: estilo.mayusculas ? "uppercase" : "none",
         ...(estilo.efecto === "CONTORNO" ? { WebkitTextStroke: `${2 * borde * escala}px ${estilo.colorEfecto}`, paintOrder: "stroke fill" } : {}),
@@ -336,6 +431,70 @@ export function Opcion({
     >
       {children}
     </button>
+  );
+}
+
+/**
+ * Un color elegido con muestras: las de siempre, la de la marca y "otro"
+ * (el selector del navegador). La muestra elegida va marcada.
+ */
+function Muestras({
+  etiqueta,
+  ayuda,
+  valor,
+  colorMarca,
+  onCambio,
+  deshabilitado,
+}: {
+  etiqueta: string;
+  ayuda?: string;
+  valor: string;
+  colorMarca: string;
+  onCambio: (v: string) => void;
+  deshabilitado?: boolean;
+}) {
+  const tr = useTranslations("editorTextos");
+  const muestras = [...new Set([...MUESTRAS, colorMarca.toUpperCase()])];
+  const elegida = valor.toUpperCase();
+  const propio = !muestras.includes(elegida);
+  return (
+    <div>
+      <p className="mb-1.5 text-xs text-white/50">{etiqueta}</p>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {muestras.map((c) => (
+          <button
+            key={c}
+            type="button"
+            disabled={deshabilitado}
+            onClick={() => onCambio(c)}
+            aria-label={`${etiqueta}: ${c}`}
+            aria-pressed={elegida === c}
+            className={`h-7 w-7 rounded-full border border-white/25 transition disabled:opacity-50 ${
+              elegida === c ? "ring-2 ring-marca ring-offset-2 ring-offset-ng-fondo" : "hover:scale-110"
+            }`}
+            style={{ background: c }}
+          />
+        ))}
+        <label
+          title={tr("otroColor")}
+          className={`relative flex h-7 w-7 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-dashed border-white/40 text-xs text-white/70 ${
+            propio ? "ring-2 ring-marca ring-offset-2 ring-offset-ng-fondo" : ""
+          }`}
+          style={propio ? { background: valor } : undefined}
+        >
+          {!propio && "+"}
+          <input
+            type="color"
+            value={valor}
+            disabled={deshabilitado}
+            aria-label={`${etiqueta}: ${tr("otroColor")}`}
+            onChange={(e) => onCambio(e.target.value.toUpperCase())}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </label>
+      </div>
+      {ayuda && <p className="mt-1 text-[11px] text-white/40">{ayuda}</p>}
+    </div>
   );
 }
 

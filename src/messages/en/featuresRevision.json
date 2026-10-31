@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "titulo": "Content approval for agency clients | Clipfine",
+    "descripcion": "Your clients approve or request changes on every clip before it goes out, in writing or by voice note. No more back-and-forth over chat. Built for agencies."
+  },
+  "titulo": "Clients approve in Clipfine,",
+  "destacado": "not over WhatsApp",
+  "bajada": "What your team schedules waits for someone to approve it. Your client watches the clip, approves it with one tap or asks for changes with a voice note, and nothing goes out without their yes.",
+  "datos": {
+    "d1": { "cifra": "1 tap", "que": "to approve, from the web or the phone" },
+    "d2": { "cifra": "2 h", "que": "before it's due, a heads-up if nobody reviewed" },
+    "d3": { "cifra": "3 channels", "que": "for alerts: in Clipfine, push and email" }
+  },
+  "agencia": {
+    "porRevisar": "A new editor can't publish something the client hasn't seen.",
+    "aprobar": "The client's approval lives in one place, not lost in a chat.",
+    "pedirCambios": "Changes reach the editor who made the clip, without you playing messenger.",
+    "notaVoz": "The client explains what they want in ten seconds, and the editor reads or listens.",
+    "clienteRevisor": "Your client approves without touching anything or seeing other clients.",
+    "vencimiento": "Nothing unapproved goes out at 3 a.m. You decide what happens if it runs out of time.",
+    "editarVuelve": "What goes out is exactly what the client approved.",
+    "avisosRevision": "Nobody has to chase anybody: whoever has to act gets told."
+  },
+  "vistas": {
+    "porRevisar": { "clip": "The mistake that almost cost…", "estado": "To review", "pie": "Thu 6:00 PM · waiting for approval" },
+    "aprobar": { "boton": "Approve", "pie": "Goes out at the scheduled time" },
+    "pedirCambios": { "comentario": "Cut before the laugh and change the hook.", "estado": "Changes requested", "vuelve": "Back to Leo" },
+    "notaVoz": { "transcripcion": "Transcript:", "texto": "the logo covers the face at the end…" },
+    "clienteRevisor": { "cliente": "Marta · Client B", "rol": "Reviewer", "ve": "Views", "aprueba": "Approves", "noEdita": "Can't edit" },
+    "vencimiento": { "aviso": "Goes out in 2 h and nobody reviewed it", "detalle": "If time runs out, it doesn't go out.", "publicarIgual": "Publish anyway" },
+    "editarVuelve": { "aprobado": "Approved", "editado": "Edited", "porRevisar": "To review", "pie": "Any change goes back to review" },
+    "avisosRevision": { "aviso": "There's a Client B clip to review", "app": "Clipfine", "push": "Push", "correo": "Email" }
+  },
+  "preguntas": {
+    "p1": { "p": "Does my client have to learn Clipfine to approve?", "r": "No. You invite them with the Reviewer role: they get the alert, watch the clip and tap Approve or Request changes. They can do it on the web or in the app." },
+    "p2": { "p": "What if the client doesn't approve in time?", "r": "Clipfine sends a heads-up 2 hours before it's due. If time runs out without approval, it doesn't go out. If the brand chose to publish anyway, it goes out and is marked Went out unreviewed." },
+    "p3": { "p": "Can I turn it on for only some clients?", "r": "Yes. Review is turned on per brand, from Team, and for each brand you choose who reviews." }
+  }
+}

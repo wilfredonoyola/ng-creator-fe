@@ -23,6 +23,10 @@ import { Precios } from "@/components/landing/Precios";
 import { PLANES } from "@/components/landing/planes";
 import { VARIABLES_FUENTES } from "@/components/landing/fuentes";
 import { MaquetaMetricas } from "@/components/landing/MaquetaMetricas";
+import { APPS_IA, LogoIA } from "@/components/landing/LogosIA";
+import { APP_EN_TIENDAS } from "@/lib/app-movil";
+import { MaquetaRevision } from "@/components/landing/mockups/MaquetaRevision";
+import { MaquetaClipsSubidos } from "@/components/landing/mockups/MaquetaClipsSubidos";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landing");
@@ -52,7 +56,11 @@ const USOS = ["podcast", "lives"] as const;
 const PASOS = ["subir", "clips", "publicar"] as const;
 /** Lo que hace la analítica (#119), en el orden en que importa a una agencia. */
 const PUNTOS_METRICAS = ["porClip", "retencion", "ia", "programa", "reporte", "solo"] as const;
-const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "sigue", "idioma", "app"] as const;
+const PUNTOS_SUBIDOS = ["tal", "editor", "flujo", "horas"] as const;
+/** Lo que se le puede preguntar al conector MCP (los mismos ejemplos que la guía de la wiki). */
+const EJEMPLOS_MCP = ["mejores", "reporte", "semana"] as const;
+const PUNTOS_APROBACION = ["rol", "voz", "hora", "editar"] as const;
+const PREGUNTAS = ["gratis", "horas", "custom", "redes", "metricas", "clientes", "opus", "editar", "capcut", "revision", "sigue", "idioma", "app"] as const;
 
 const CLIPS = ["c1", "c2", "c3", "c4"] as const;
 const CLIENTES = [
@@ -232,7 +240,7 @@ export default function Landing() {
       "@type": "SoftwareApplication",
       name: "Clipfine",
       applicationCategory: "MultimediaApplication",
-      operatingSystem: "Web, iOS, Android",
+      operatingSystem: APP_EN_TIENDAS ? "Web, iOS, Android" : "Web",
       inLanguage: locale,
       description: t("datos.descripcion"),
       offers: PLANES.map((p) => ({
@@ -288,6 +296,19 @@ export default function Landing() {
                     </li>
                   ))}
                 </ul>
+                {/* El conector MCP (be#222): ChatGPT y Claude leen de Clipfine. */}
+                <a href="#mcp" className={`flex items-center gap-3.5 rounded-md sm:border-l sm:border-[#2E2E2B] sm:pl-3.5 ${FOCO}`}>
+                  <span className={`${ETIQUETA} text-sm font-medium text-[#D9D8D2]`}>{t("portada.preguntaEn")}</span>
+                  <span className="flex gap-2">
+                    {APPS_IA.map((app) => (
+                      <span key={app} title={app} className="flex h-8 w-8 items-center justify-center rounded-[7px] border border-[#2E2E2B] bg-[#1C1C1A] text-white">
+                        <LogoIA app={app} />
+                        <span className="sr-only">{app}</span>
+                      </span>
+                    ))}
+                  </span>
+                  <span className={`${MONO} rounded-[5px] border border-[#FFD400]/40 px-1.5 py-0.5 text-[11px] font-bold text-[#FFD400]`}>MCP</span>
+                </a>
               </div>
             </div>
           </div>
@@ -403,6 +424,63 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ---- Clips ya editados (ng-creator-be#181) ---- */}
+      <section id="subir-clips" aria-labelledby="subidos-titulo" className="scroll-mt-20 bg-[#0A0A0A] text-white">
+        <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16 lg:py-28`}>
+          <div className="min-w-0 max-lg:order-2">
+            <MaquetaClipsSubidos />
+          </div>
+          <div className="flex flex-col gap-7">
+            <p className={`${ETIQUETA} text-sm font-bold uppercase tracking-[.12em] text-[#FFD400]`}>{t("subidos.etiqueta")}</p>
+            <h2 id="subidos-titulo" className={`${CONDENSADA} text-[44px] leading-[.95] sm:text-[68px]`}>{t("subidos.titulo")}</h2>
+            <p className="text-lg leading-relaxed text-[#D9D8D2] sm:text-[19px]">{t("subidos.texto")}</p>
+            <ul className="flex flex-col gap-4 border-t border-[#2E2E2B] pt-6">
+              {PUNTOS_SUBIDOS.map((k) => (
+                <li key={k} className="flex gap-3">
+                  <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 bg-[#FFD400]" />
+                  <p className="leading-relaxed text-[#D9D8D2]">
+                    <strong className="font-bold text-white">{t(`subidos.puntos.${k}.titulo`)}</strong> {t(`subidos.puntos.${k}.texto`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link href={`${ENLACE_FUNCIONES}/subir-clips`} className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-white`}>
+              {t("subidos.verMas")} →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Aprobación antes de publicar (ng-creator-be#178) ---- */}
+      <section id="aprobacion" aria-labelledby="aprobacion-titulo" className="scroll-mt-20">
+        <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-28`}>
+          <div className="flex flex-col gap-7">
+            <Seccion>{t("aprobacion.etiqueta")}</Seccion>
+            <h2 id="aprobacion-titulo" className={H2}>{t("aprobacion.titulo")}</h2>
+            <p className="text-lg leading-relaxed text-[#3A3935] sm:text-[19px]">{t("aprobacion.texto")}</p>
+            <ul className="flex flex-col gap-4 border-t border-[#D9D8D2] pt-6">
+              {PUNTOS_APROBACION.map((k) => (
+                <li key={k} className="flex gap-3">
+                  <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 bg-[#FFD400]" />
+                  <p className="leading-relaxed text-[#3A3935]">
+                    <strong className="font-bold text-[#0A0A0A]">{t(`aprobacion.puntos.${k}.titulo`)}</strong> {t(`aprobacion.puntos.${k}.texto`)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href={`${ENLACE_FUNCIONES}/revision`}
+              className={`self-start text-[17px] ${LINK_SUBRAYADO} ${FOCO} focus-visible:outline-[#0A0A0A]`}
+            >
+              {t("aprobacion.verMas")} →
+            </Link>
+          </div>
+          <div className="min-w-0">
+            <MaquetaRevision />
+          </div>
+        </div>
+      </section>
+
       {/* ---- Métricas ---- */}
       <section id="metricas" aria-labelledby="metricas-titulo" className="scroll-mt-20 bg-[#0A0A0A] text-white">
         <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-28`}>
@@ -425,6 +503,48 @@ export default function Landing() {
             </Link>
           </div>
           <MaquetaMetricas />
+        </div>
+      </section>
+
+      {/* ---- Conector MCP (be#222) ---- */}
+      <section id="mcp" aria-labelledby="mcp-titulo" className="scroll-mt-20 border-b border-[#E9E8E4]">
+        <div className={`${ANCHO} grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:gap-16 lg:py-28`}>
+          <div className="flex flex-col gap-7">
+            <Seccion>{t("mcp.etiqueta")}</Seccion>
+            <h2 id="mcp-titulo" className={H2}>{t("mcp.titulo")}</h2>
+            <p className="text-lg leading-relaxed text-[#3A3935] sm:text-[19px]">{t("mcp.texto")}</p>
+            <p className="flex gap-3 border-t border-[#E9E8E4] pt-6 leading-relaxed text-[#3A3935]">
+              <span aria-hidden className="mt-[9px] h-2 w-2 shrink-0 bg-[#FFD400]" />
+              <span>
+                <strong className="font-bold text-[#0A0A0A]">{t("mcp.directo")}</strong> {t("mcp.soloLectura")}
+              </span>
+            </p>
+            <Link href="/ayuda/conectar-chatgpt-claude" className={`self-start text-[17px] ${LINK_SUBRAYADO}`}>
+              {t("mcp.comoConectar")} →
+            </Link>
+          </div>
+          <div className="flex flex-col gap-5 rounded-2xl bg-[#0A0A0A] p-6 text-white sm:p-8">
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {APPS_IA.map((app) => (
+                <li key={app} className="flex items-center gap-3 rounded-xl border border-[#2E2E2B] bg-[#1C1C1A] px-4 py-3.5">
+                  <LogoIA app={app} tamano={26} color />
+                  <span className="font-bold">{app}</span>
+                </li>
+              ))}
+              <li className="flex items-center gap-3 rounded-xl border border-dashed border-[#2E2E2B] px-4 py-3.5 text-sm text-[#A3A29C]">
+                <span className={`${MONO} rounded-[5px] border border-[#FFD400]/40 px-1.5 py-0.5 text-[11px] font-bold text-[#FFD400]`}>MCP</span>
+                {t("mcp.compatible")}
+              </li>
+            </ul>
+            <p className={`${ETIQUETA} pt-2 text-xs font-bold uppercase tracking-[.12em] text-[#A3A29C]`}>{t("mcp.ejemplosTitulo")}</p>
+            <ul className="flex flex-col gap-3">
+              {EJEMPLOS_MCP.map((k) => (
+                <li key={k} className="self-start rounded-2xl rounded-bl-sm bg-[#1C1C1A] px-4 py-3 leading-relaxed text-[#D9D8D2]">
+                  {t(`mcp.ejemplos.${k}`)}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </section>
 

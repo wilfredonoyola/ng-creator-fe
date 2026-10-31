@@ -1,0 +1,35 @@
+{
+  "seo": {
+    "titulo": "Automatic captions and text for client clips | Clipfine",
+    "descripcion": "Automatic captions with the spoken word highlighted, 9 styles, hook and call to action in each client's colors. For agencies that edit clips."
+  },
+  "titulo": "Captions and text ready,",
+  "destacado": "in each client's brand",
+  "bajada": "Captions come straight from the transcript, with the spoken word highlighted. The opening hook and the closing call to action use the client's colors. Your editor proofreads instead of typing.",
+  "datos": {
+    "d1": { "cifra": "9 styles", "que": "of captions, viral and professional" },
+    "d2": { "cifra": "14 fonts", "que": "for designed text" },
+    "d3": { "cifra": "0 typing", "que": "captions come from the transcript" }
+  },
+  "agencia": {
+    "subtitulos": "The slowest part of editing a clip is done by Clipfine. Your editor just reviews it.",
+    "corregir": "Fixing a misspelled client name means changing one word, with nothing to re-sync.",
+    "estilos": "Each client gets a different look without designing from scratch: a viral style for one, a clean one for another.",
+    "textosDiseno": "Text looks agency-made, not like a generic template, and it's built in the same editor.",
+    "gancho": "The first seconds decide whether the clip gets watched. The hook comes suggested and goes on with one tap.",
+    "cta": "Every clip ends by sending people to the client's episode, which is what they pay you for."
+  },
+  "vistas": {
+    "subtitulos": { "antes": "this is", "palabra": "what", "despues": "nobody says", "arrastrar": "Drag them up or down", "transcripcion": "From the transcript" },
+    "corregir": { "frase": "Today we're talking with the team at", "pie": "Timing stays untouched" },
+    "estilos": { "viral": "Viral", "profesional": "Professional" },
+    "textosDiseno": { "texto": "Key fact", "contorno": "Outline", "caja": "Box", "sombra": "Shadow", "pie": "Shows at 00:04 · highlighted word" },
+    "gancho": { "frase": "Nobody tells you this", "cuando": "First seconds of the clip" },
+    "cta": { "texto": "Watch the full episode", "cuando": "Last seconds", "color": "In the brand's color" }
+  },
+  "preguntas": {
+    "p1": { "p": "Do I have to type the captions?", "r": "No. They come from the episode transcript, word by word and in sync. If a word came out wrong, you change it without touching the timing." },
+    "p2": { "p": "Can I use a different style for each client?", "r": "Yes. Each brand has its caption and hook style, painted in its colors. You can change it on a single clip." },
+    "p3": { "p": "Can I add text on top of the captions?", "r": "Yes. Add text with the font, outline, shadow or box you want, with highlighted words in another color and the second it appears." }
+  }
+}

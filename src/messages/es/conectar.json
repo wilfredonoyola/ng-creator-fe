@@ -1,0 +1,60 @@
+{
+  "titulo": "Conectar con ChatGPT o Claude",
+  "bajada": "Preguntale a ChatGPT o Claude cómo rinden los clips de cada cliente, qué hay programado o cómo usar Clipfine, con tus datos y tus permisos.",
+  "cargando": "Cargando…",
+  "error": "No se pudo completar. Volvé a conectar desde ChatGPT o Claude.",
+  "url": {
+    "titulo": "La URL del conector",
+    "texto": "La pegás una vez en ChatGPT o Claude, al agregar un conector personalizado.",
+    "copiar": "Copiar",
+    "copiada": "Copiada"
+  },
+  "pasos": {
+    "p1": "En ChatGPT o Claude, agregá un conector personalizado y pegá la URL.",
+    "p2": "Te pide entrar a Clipfine: entrá con tu cuenta y tocá Permitir.",
+    "p3": "Listo: preguntá, por ejemplo, \"¿qué clips de Café Luna funcionaron mejor este mes?\"."
+  },
+  "guia": "Pasos detallados para cada app",
+  "conectadas": {
+    "titulo": "Apps conectadas",
+    "ninguna": "Todavía no conectaste ninguna.",
+    "desde": "Conectada el {fecha}",
+    "uso": "último uso {cuando}",
+    "desconectar": "Desconectar"
+  },
+  "soloLectura": "Las apps conectadas consultan y pueden crear clips sin publicar: no programan, no aprueban ni borran nada.",
+  "volverPerfil": "Volver a Perfil",
+  "aprobar": {
+    "titulo": "{app} quiere conectarse a tu Clipfine",
+    "texto": "Si lo permitís, {app} va a poder consultar, con tus permisos:",
+    "puede": {
+      "marcas": "Las marcas en las que trabajás.",
+      "metricas": "Sus métricas y lo que tienen programado.",
+      "ayuda": "La ayuda y las funciones de Clipfine.",
+      "clips": "Crear clips en las marcas donde editás, sin publicarlos."
+    },
+    "noPuede": "No puede programar, publicar, aprobar ni borrar nada.",
+    "vuelveA": "Después vas a volver a {host}.",
+    "cancelar": "Cancelar",
+    "cancelando": "Cancelando…",
+    "permitir": "Permitir",
+    "permitiendo": "Conectando…",
+    "revocar": "Lo podés desconectar cuando quieras desde Perfil → Conectar con ChatGPT o Claude."
+  },
+  "estado": {
+    "ACTIVA": "Activa",
+    "INACTIVA": "Sin uso",
+    "VENCIDA": "Vencida",
+    "ayudaINACTIVA": "Hace más de una semana que no la usan. Si la quitaste en ChatGPT o Claude, desconectala acá también.",
+    "ayudaVENCIDA": "Pasaron 60 días sin uso. Para volver a usarla, conectala de nuevo desde ChatGPT o Claude.",
+    "ayudaACTIVA": "Se usó en la última semana."
+  },
+  "equipo": {
+    "titulo": "ChatGPT y Claude",
+    "texto": "Quiénes del equipo conectaron ChatGPT o Claude: pueden preguntarles por las métricas y lo programado de esta marca y, si editan, crear clips sin publicar.",
+    "ninguna": "Nadie del equipo los conectó todavía.",
+    "cargando": "Cargando…",
+    "nota": "Cada persona desconecta las suyas desde Perfil. Si alguien no tiene que ver más esta marca, sacalo del equipo: el conector usa los mismos permisos que el panel.",
+    "como": "Cómo se conecta"
+  }
+}

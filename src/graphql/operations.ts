@@ -415,7 +415,34 @@ export const CLIENTES_SUPERADMIN = gql`
     clientesSuperadmin {
       propietarios
       miembros
+      equipo {
+        usuarioId
+        email
+        nombre
+        rol
+        activo
+        ultimoAccesoEn
+      }
+      pasos {
+        marcaConfigurada
+        primerEpisodio
+        redes
+      }
       episodios
+      clips
+      horasProcesadas
+      costoUsd
+      tokensIa
+      ultimoAccesoEn
+      ultimoEpisodioEn
+      soporteAbiertos
+      prueba {
+        desde
+        diasEnPrueba
+        topeEpisodios
+        episodiosUsados
+        agotada
+      }
       marca {
         _id
         nombre
@@ -426,6 +453,73 @@ export const CLIENTES_SUPERADMIN = gql`
           topeEpisodios
           episodiosUsados
         }
+      }
+    }
+  }
+`;
+
+/**
+ * Los tickets de soporte (conversaciones del chat que se pasaron al equipo),
+ * de los tres estados a la vez para las pestañas con su conteo. Solo superadmin.
+ */
+const CAMPOS_TICKET_SOPORTE = `
+  _id
+  correo
+  nombre
+  estado
+  derivadaEn
+  createdAt
+  updatedAt
+  pagina
+  marcas
+  mensajes {
+    rol
+    texto
+    fecha
+  }
+`;
+
+export const TICKETS_SOPORTE_SUPERADMIN = gql`
+  query TicketsSoporteSuperadmin($marcaId: ID) {
+    abiertos: ticketsSoporteSuperadmin(estado: DERIVADA, marcaId: $marcaId) { ${CAMPOS_TICKET_SOPORTE} }
+    enProgreso: ticketsSoporteSuperadmin(estado: EN_PROGRESO, marcaId: $marcaId) { ${CAMPOS_TICKET_SOPORTE} }
+    cerrados: ticketsSoporteSuperadmin(estado: CERRADA, marcaId: $marcaId) { ${CAMPOS_TICKET_SOPORTE} }
+  }
+`;
+
+/** Mueve un ticket: en progreso, cerrado, o de vuelta a abierto (DERIVADA). */
+export const CAMBIAR_ESTADO_TICKET_SUPERADMIN = gql`
+  mutation CambiarEstadoTicketSuperadmin($id: ID!, $estado: EstadoConversacionSoporte!) {
+    cambiarEstadoTicketSuperadmin(id: $id, estado: $estado) {
+      _id
+      estado
+      updatedAt
+    }
+  }
+`;
+
+/** Las métricas de inicio de /superadmin, de los últimos `dias` días. */
+export const METRICAS_SUPERADMIN = gql`
+  query MetricasSuperadmin($dias: Int) {
+    metricasSuperadmin(dias: $dias) {
+      clientes
+      clientesNuevos
+      clientesActivos
+      usuariosActivos
+      registros
+      episodios
+      horasProcesadas
+      costoUsd
+      tokensIa
+      enPrueba
+      pruebasAgotadas
+      ticketsAbiertos
+      porDia {
+        fecha
+        episodios
+        horas
+        costoUsd
+        registros
       }
     }
   }
@@ -598,6 +692,53 @@ export const FACEBOOK_DESCONECTAR = gql`
 // ---- Publicar: la cola de publicaciones (ng-creator-be#59) ----
 
 /**
+ * El diseño del editor de portadas (ng-creator-be#244). Va como texto y no
+ * como fragment: se lee dentro de la plantilla y de las publicaciones. Las
+ * capas no son entidades (apollo.ts, `keyFields: false`): repiten id entre diseños.
+ */
+export const CAMPOS_DISENO_PORTADA = `
+  fondo {
+    tipo
+    url
+    color
+    mejorar
+    oscurecer
+    desenfoque
+    centrarCara
+    separar
+    telon
+    telonUrl
+    borde
+    bordeEstilo
+    bordeColor
+  }
+  capas {
+    id
+    tipo
+    x
+    y
+    ancho
+    alto
+    rotacion
+    opacidad
+    texto
+    titulo
+    estilo
+    fuente
+    tamano
+    mayusculas
+    color
+    color2
+    url
+    cuadro
+    sinFondo
+    contorno
+    mejorar
+    radio
+  }
+`;
+
+/**
  * Lo que se lee de cada publicación. Igual para las de la cola y para las de
  * antes, que el backend traduce: la tarjeta no tiene que saber de dónde vienen.
  */
@@ -621,6 +762,8 @@ const CAMPOS_PUBLICACION = gql`
     portadaAplicada
     portadaError
     esperaVideo
+    esperaAprobacion
+    sinRevisar
     createdAt
     creadoPor {
       nombre
@@ -660,6 +803,13 @@ export const CANCELAR_PUBLICACION = gql`
   ${CAMPOS_PUBLICACION}
 `;
 
+/** Borra el registro de lo que no salió: programado, fallido o cancelado (be#226). */
+export const ELIMINAR_PUBLICACION = gql`
+  mutation EliminarPublicacion($marcaId: ID!, $id: ID!) {
+    eliminarPublicacion(marcaId: $marcaId, id: $id)
+  }
+`;
+
 export const REPROGRAMAR_PUBLICACION = gql`
   mutation ReprogramarPublicacion(
     $marcaId: ID!
@@ -686,6 +836,13 @@ export const EDITAR_PUBLICACION = gql`
     $tituloYoutube: String
     $portadaSeg: Float
     $quitarPortada: Boolean
+    $textoBase: String
+    $personaIds: [ID!]
+    $etiquetas: JSON
+    $portadaMarca: Boolean
+    $portadaTexto: String
+    $portadaDiseno: DisenoPortadaInput
+    $quitarPortadaDiseno: Boolean
   ) {
     editarPublicacion(
       marcaId: $marcaId
@@ -694,10 +851,22 @@ export const EDITAR_PUBLICACION = gql`
       tituloYoutube: $tituloYoutube
       portadaSeg: $portadaSeg
       quitarPortada: $quitarPortada
+      textoBase: $textoBase
+      personaIds: $personaIds
+      etiquetas: $etiquetas
+      portadaMarca: $portadaMarca
+      portadaTexto: $portadaTexto
+      portadaDiseno: $portadaDiseno
+      quitarPortadaDiseno: $quitarPortadaDiseno
     ) {
       ...CamposPublicacion
       descripcion
       portadaSeg
+      portadaMarca
+      portadaTexto
+      portadaDiseno {
+        ${CAMPOS_DISENO_PORTADA}
+      }
       ajustes
     }
   }
@@ -719,6 +888,40 @@ export const PUBLICACIONES_DE_CLIP = gql`
   query PublicacionesDeClip($marcaId: ID!, $clipId: ID!) {
     publicacionesDeClip(marcaId: $marcaId, clipId: $clipId) {
       ...CamposPublicacion
+      # Para abrir "Programar" en modo editar con lo que ya está programado.
+      descripcion
+      portadaSeg
+      portadaMarca
+      portadaTexto
+      portadaDiseno {
+        ${CAMPOS_DISENO_PORTADA}
+      }
+      ajustes
+      textoBase
+      personaIds
+      # Para "Editar y reintentar" lo que falló.
+      aviso
+      puedeReintentar
+      quizasPublicada
+      etiquetasDescartadas {
+        etiquetados
+        colaboradores
+        motivo
+      }
+    }
+  }
+  ${CAMPOS_PUBLICACION}
+`;
+
+/**
+ * Vuelve a mandar una publicación que falló, la misma (sin programar otra).
+ * Sin `publicarEn`, sale apenas pueda. `forzar` es para cuando el backend
+ * avisa que quizás salió igual (`quizasPublicada`): reintentar podría duplicarla.
+ */
+export const REINTENTAR_PUBLICACION = gql`
+  mutation ReintentarPublicacion($marcaId: ID!, $id: ID!, $publicarEn: DateTime, $forzar: Boolean) {
+    reintentarPublicacion(marcaId: $marcaId, id: $id, publicarEn: $publicarEn, forzar: $forzar) {
+      ...CamposPublicacion
     }
   }
   ${CAMPOS_PUBLICACION}
@@ -736,17 +939,38 @@ export const PUBLICACIONES_DE_MARCA = gql`
       portadaUrl
       mediaUrl
       portadaSeg
+      portadaMarca
+      portadaTexto
+      portadaDiseno {
+        ${CAMPOS_DISENO_PORTADA}
+      }
       ajustes
       clip {
         _id
         episodioId
         titulo
+        gancho
         urlPoster
         urlVideo
+        cuadrosPortada {
+          seg
+          url
+          puntaje
+          caras
+          cara {
+            x
+            y
+            ancho
+            alto
+            ojosY
+          }
+        }
+        titulosPortada
         desdeSeg
         hastaSeg
         duracionEfectivaSeg
         duracionFinalSeg
+        estadoRevision
         editadoPor {
           nombre
         }
@@ -1017,6 +1241,7 @@ export const MIEMBROS_DE_PAGINA = gql`
       usuarioId
       marcaId
       rol
+      revisor
       email
       nombre
       activo
@@ -1040,14 +1265,22 @@ export const INVITACIONES_DE_PAGINA = gql`
   }
 `;
 
+/** Una contraseña temporal para una invitación pendiente, para mandarla a mano. */
+export const CONTRASENA_TEMPORAL = gql`
+  mutation ContrasenaTemporal($marcaId: String!, $email: String!) {
+    contrasenaTemporal(marcaId: $marcaId, email: $email)
+  }
+`;
+
 export const INVITAR_MIEMBRO = gql`
   mutation InvitarMiembro(
     $email: String!
     $marcaId: String!
     $rol: RolPagina!
     $nombre: String
+    $sinCorreo: Boolean
   ) {
-    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol, nombre: $nombre) {
+    invitarMiembro(email: $email, marcaId: $marcaId, rol: $rol, nombre: $nombre, sinCorreo: $sinCorreo) {
       _id
       email
       nombre
@@ -1721,6 +1954,28 @@ export const PREPARAR_SUBIDA_EPISODIO = gql`
   }
 `;
 
+/**
+ * Lo mismo para un clip ya editado (CapCut, un recorte de YouTube): no cuenta
+ * para el cupo y sigue solo hasta quedar listo para programar
+ * (ng-creator-be#181). Renovar y confirmar son las del episodio.
+ */
+export const PREPARAR_SUBIDA_CLIP = gql`
+  ${CAMPOS_EPISODIO}
+  mutation PrepararSubidaClip($input: PrepararSubidaEpisodioInput!) {
+    prepararSubidaClip(input: $input) {
+      endpoint
+      libraryId
+      videoId
+      expiracion
+      firma
+      retomada
+      episodio {
+        ...CamposEpisodio
+      }
+    }
+  }
+`;
+
 /** Firma nueva para el mismo video, cuando la anterior está por vencer. */
 export const RENOVAR_SUBIDA_EPISODIO = gql`
   mutation RenovarSubidaEpisodio($id: ID!, $marcaId: String!) {
@@ -1832,6 +2087,55 @@ const RESUMEN_PUBLICACION_CLIP = gql`
   }
 `;
 
+/** Los clips subidos de la marca: su episodio (cómo va) y su clip cuando ya está armado. */
+export const CLIPS_SUBIDOS = gql`
+  query ClipsSubidos($marcaId: String!, $episodioId: ID, $sinEpisodio: Boolean) {
+    clipsSubidos(marcaId: $marcaId, episodioId: $episodioId, sinEpisodio: $sinEpisodio) {
+      episodio {
+        _id
+        titulo
+        estado
+        episodioPadreId
+        error
+        duracionSeg
+        miniaturaUrl
+        createdAt
+        subidoPor {
+          nombre
+        }
+      }
+      clip {
+        _id
+        titulo
+        formato
+        estadoRender
+        progresoRender
+        urlPoster
+        usarOriginal
+        listoPor {
+          nombre
+          en
+        }
+        publicacion {
+          ...ResumenPublicacionClip
+        }
+        estadoRevision
+      }
+    }
+  }
+  ${RESUMEN_PUBLICACION_CLIP}
+`;
+
+/** Pasar un clip subido a un episodio, o a ninguno con `episodioId` null (be#228). */
+export const MOVER_CLIP_SUBIDO = gql`
+  mutation MoverClipSubido($id: ID!, $marcaId: String!, $episodioId: ID) {
+    moverClipSubido(id: $id, marcaId: $marcaId, episodioId: $episodioId) {
+      _id
+      episodioPadreId
+    }
+  }
+`;
+
 /** Los clips que propuso la IA, de mejor a peor (ng-creator-be#68). */
 export const CLIPS_DE_EPISODIO = gql`
   query ClipsDeEpisodio($id: ID!, $marcaId: String!) {
@@ -1866,6 +2170,7 @@ export const CLIPS_DE_EPISODIO = gql`
       publicacion {
         ...ResumenPublicacionClip
       }
+      estadoRevision
     }
   }
   ${RESUMEN_PUBLICACION_CLIP}
@@ -2007,6 +2312,7 @@ const CAMPOS_CLIP_EDITOR = gql`
     _id
     episodioId
     marcaId
+    estadoRevision
     origen
     desdeSeg
     hastaSeg
@@ -2065,7 +2371,10 @@ const CAMPOS_CLIP_EDITOR = gql`
       contenido
       destacadas
       fuente
+      fuenteElegida
       tamano
+      interlineado
+      estiloPropio
       color
       colorDestacado
       efecto
@@ -2089,6 +2398,23 @@ const CAMPOS_CLIP_EDITOR = gql`
       hastaSeg
       estadoRecorte
       urlFinal
+    }
+    videos {
+      id
+      url
+      centroX
+      centroY
+      ancho
+      pantallaCompleta
+      desdeSeg
+      hastaSeg
+      inicioSeg
+      sonido
+      volumen
+      duracionSeg
+      anchoVideo
+      altoVideo
+      tieneAudio
     }
     volumenClip
     velocidad
@@ -2115,6 +2441,20 @@ const CAMPOS_CLIP_EDITOR = gql`
     errorRender
     urlVideo
     urlPoster
+    cuadrosPortada {
+      seg
+      url
+      puntaje
+      caras
+      cara {
+        x
+        y
+        ancho
+        alto
+        ojosY
+      }
+    }
+    titulosPortada
     renderizadoEn
     editadoEn
     calidad {
@@ -2205,6 +2545,126 @@ export const PLANTILLA_CLIP_MARCA = gql`
     estiloClipMarca(marcaId: $marcaId) {
       ...CamposEstiloClipMarca
     }
+  }
+`;
+
+// ---- Portada de marca (ng-creator-be#239) ----
+
+const CAMPOS_PLANTILLA_PORTADA = `
+  activa
+  estilo
+  fuente
+  posicionY
+  tamano
+  mayusculas
+  logoActivo
+  logoPosicion
+  logoTamano
+  diseno {
+    ${CAMPOS_DISENO_PORTADA}
+  }
+`;
+
+/** El diseño de las portadas de la marca; el de por defecto (apagado) si nunca lo guardó. */
+export const PLANTILLA_PORTADA_MARCA = gql`
+  query PlantillaPortadaMarca($marcaId: ID!) {
+    plantillaPortadaMarca(marcaId: $marcaId) {
+      ${CAMPOS_PLANTILLA_PORTADA}
+    }
+  }
+`;
+
+export const GUARDAR_PLANTILLA_PORTADA = gql`
+  mutation GuardarPlantillaPortada($marcaId: ID!, $plantilla: PlantillaPortadaInput!) {
+    guardarPlantillaPortada(marcaId: $marcaId, plantilla: $plantilla) {
+      _id
+    }
+  }
+`;
+
+/**
+ * La portada tal cual sale (JPG en data URL, 540 de ancho): la dibuja el
+ * backend con el mismo render que publica. Sin `clipId`, sobre el último clip
+ * listo de la marca; con `plantilla`, una que todavía no se guardó.
+ */
+export const VISTA_PORTADA_MARCA = gql`
+  query VistaPortadaMarca(
+    $marcaId: ID!
+    $clipId: ID
+    $texto: String
+    $seg: Float
+    $plantilla: PlantillaPortadaInput
+    $diseno: DisenoPortadaInput
+  ) {
+    vistaPortadaMarca(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, plantilla: $plantilla, diseno: $diseno)
+  }
+`;
+
+/** El diseño de la marca para abrir el editor: el guardado o el que sale de la plantilla simple. */
+export const DISENO_PORTADA_MARCA = gql`
+  query DisenoPortadaMarca($marcaId: ID!) {
+    disenoPortadaMarca(marcaId: $marcaId) {
+      ${CAMPOS_DISENO_PORTADA}
+    }
+  }
+`;
+
+/**
+ * La revisión de la portada sin dibujarla (ng-creator-be#249): lo que hace que
+ * el perfil se vea disparejo o que algo no se lea en la grilla. Con `diseno`,
+ * el propio de la publicación; sin él, el de la marca. Sin `clipId` (Brand
+ * Kit), sobre el último clip listo de la marca.
+ */
+export const AVISOS_PORTADA = gql`
+  query AvisosPortada($marcaId: ID!, $clipId: ID, $texto: String, $seg: Float, $diseno: DisenoPortadaInput) {
+    avisosPortada(marcaId: $marcaId, clipId: $clipId, texto: $texto, seg: $seg, diseno: $diseno) {
+      codigo
+      grave
+      capaId
+    }
+  }
+`;
+
+/**
+ * El mejor cuadro limpio del último clip listo de la marca (be#249): el que
+ * ve el editor del diseño de la marca (Brand Kit). null sin clips listos.
+ */
+export const CUADRO_MUESTRA_PORTADA = gql`
+  query CuadroMuestraPortada($marcaId: ID!) {
+    cuadroMuestraPortada(marcaId: $marcaId) {
+      seg
+      url
+      puntaje
+      caras
+      cara {
+        x
+        y
+        ancho
+        alto
+        ojosY
+      }
+    }
+  }
+`;
+
+/** La grilla del perfil: el diseño sobre los últimos clips listos (hasta 9). */
+export const PORTADAS_PERFIL = gql`
+  query PortadasPerfil($marcaId: ID!, $diseno: DisenoPortadaInput, $plantilla: PlantillaPortadaInput, $cantidad: Int) {
+    portadasPerfil(marcaId: $marcaId, diseno: $diseno, plantilla: $plantilla, cantidad: $cantidad) {
+      clipId
+      imagen
+    }
+  }
+`;
+
+/**
+ * Títulos para la portada de un clip: los de la IA y, después, el gancho y el
+ * título. Cada uno puede traer un Enter: el renglón de arriba y el de abajo.
+ * `nuevos` pide otros a la IA y reemplaza los guardados ("Otros", be#249).
+ */
+export const TITULOS_PORTADA = gql`
+  query TitulosPortada($marcaId: ID!, $clipId: ID!, $nuevos: Boolean) {
+    titulosPortada(marcaId: $marcaId, clipId: $clipId, nuevos: $nuevos)
   }
 `;
 
@@ -2329,18 +2789,21 @@ export const CREAR_CLIP_EPISODIO = gql`
  * uno FALLIDO se reintenta. Es el mismo trabajo que usa el guardado.
  */
 export const PREPARAR_RECORTE_IMAGEN = gql`
-  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
-    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+  mutation PrepararRecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean, $separar: Boolean) {
+    prepararRecorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar, separar: $separar) {
       estadoRecorte
       urlFinal
     }
   }
 `;
 
-/** Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. */
+/**
+ * Como PREPARAR_RECORTE_IMAGEN pero sin encolar: para el sondeo. `mejorar`: la
+ * mejorada con IA (be#255). `separar`: la persona separada del cuadro (be#249).
+ */
 export const RECORTE_IMAGEN = gql`
-  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!) {
-    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno) {
+  query RecorteImagen($marcaId: String!, $url: String!, $sinFondo: Boolean!, $contorno: Boolean!, $mejorar: Boolean, $separar: Boolean) {
+    recorteImagen(marcaId: $marcaId, url: $url, sinFondo: $sinFondo, contorno: $contorno, mejorar: $mejorar, separar: $separar) {
       estadoRecorte
       urlFinal
     }
@@ -2531,6 +2994,23 @@ export const CRUCES_DE_TRAMO = gql`
 `;
 
 /** Dónde se dice una frase en el episodio: el paso 1 del "Crear clip" guiado. */
+/**
+ * Para crear un clip a mano por tiempo (h:mm:ss): el tramo llevado a las
+ * palabras, lo que se dice, y un título y un gancho de la IA. No guarda nada.
+ */
+export const SUGERIR_CLIP_EPISODIO = gql`
+  query SugerirClipEpisodio($episodioId: ID!, $marcaId: String!, $desdeSeg: Float!, $hastaSeg: Float!) {
+    sugerirClipEpisodio(episodioId: $episodioId, marcaId: $marcaId, desdeSeg: $desdeSeg, hastaSeg: $hastaSeg) {
+      desdeSeg
+      hastaSeg
+      texto
+      titulo
+      gancho
+      conIa
+    }
+  }
+`;
+
 export const BUSCAR_EN_EPISODIO = gql`
   query BuscarEnEpisodio($id: ID!, $marcaId: String!, $texto: String!) {
     buscarEnEpisodio(id: $id, marcaId: $marcaId, texto: $texto) {
@@ -2594,6 +3074,26 @@ export const RESTREAM_EVENTOS = gql`
       archivo
       grabacionVenceEn
       episodioId
+      episodio {
+        _id
+        estado
+        error
+        duracionSeg
+        progresoBunny
+        estadoImportacion
+        progresoImportacion
+        errorImportacion
+        estadoTranscripcion
+        progresoTranscripcion
+        errorTranscripcion
+        estadoMomentos
+        errorMomentos
+        clipsSugeridos
+        reimportacion {
+          estado
+          progreso
+        }
+      }
     }
   }
 `;
@@ -2697,6 +3197,402 @@ export const GUARDAR_AJUSTES_PUBLICACION = gql`
     guardarAjustesPublicacion(marcaId: $marcaId, hashtags: $hashtags, destinosApagados: $destinosApagados) {
       hashtags
       destinosApagados
+    }
+  }
+`;
+
+// ---- Etiquetas: personas para etiquetar (elenco, global y por episodio) ----
+
+const CAMPOS_PERSONA = `
+  _id
+  marcaId
+  nombre
+  alias
+  instagram
+  tiktok
+  youtube
+  facebook
+  facebookPaginaId
+  foto
+  nivel
+  episodioId
+  verificaciones {
+    red
+    estado
+    nombre
+    foto
+    verificadoEn
+  }
+  usos
+  ultimoUsoEn
+  createdAt
+`;
+
+/** Las personas de la marca. Sin `nivel`: elenco y global (elenco primero, después las más usadas). */
+export const PERSONAS = gql`
+  query Personas($marcaId: ID!, $buscar: String, $nivel: NivelPersona) {
+    personas(marcaId: $marcaId, buscar: $buscar, nivel: $nivel) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+/** Los episodios recientes, livianos: para "Por episodio" en Etiquetas. */
+export const EPISODIOS_ETIQUETAS = gql`
+  query EpisodiosEtiquetas($marcaId: String!, $limite: Int) {
+    episodios(marcaId: $marcaId, limite: $limite) {
+      _id
+      titulo
+      miniaturaUrl
+      createdAt
+    }
+  }
+`;
+
+export const INVITADOS_EPISODIO = gql`
+  query InvitadosEpisodio($marcaId: ID!, $episodioId: ID!) {
+    invitadosEpisodio(marcaId: $marcaId, episodioId: $episodioId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+/** A quién etiquetar en un clip: invitados del episodio, elenco y quien se nombra en lo que se dice. */
+export const SUGERIR_PERSONAS_CLIP = gql`
+  query SugerirPersonasClip($marcaId: ID!, $clipId: ID!) {
+    sugerirPersonasClip(marcaId: $marcaId, clipId: $clipId) {
+      motivo
+      segundo
+      persona {
+        ${CAMPOS_PERSONA}
+      }
+    }
+  }
+`;
+
+export const CREAR_PERSONA = gql`
+  mutation CrearPersona($marcaId: ID!, $input: PersonaInput!, $episodioId: ID) {
+    crearPersona(marcaId: $marcaId, input: $input, episodioId: $episodioId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const ACTUALIZAR_PERSONA = gql`
+  mutation ActualizarPersona($marcaId: ID!, $id: ID!, $input: PersonaInput!) {
+    actualizarPersona(marcaId: $marcaId, id: $id, input: $input) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const BORRAR_PERSONA = gql`
+  mutation BorrarPersona($marcaId: ID!, $id: ID!) {
+    borrarPersona(marcaId: $marcaId, id: $id)
+  }
+`;
+
+export const AGREGAR_INVITADO = gql`
+  mutation AgregarInvitado($marcaId: ID!, $episodioId: ID!, $personaId: ID!) {
+    agregarInvitado(marcaId: $marcaId, episodioId: $episodioId, personaId: $personaId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const QUITAR_INVITADO = gql`
+  mutation QuitarInvitado($marcaId: ID!, $episodioId: ID!, $personaId: ID!) {
+    quitarInvitado(marcaId: $marcaId, episodioId: $episodioId, personaId: $personaId) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+export const REVERIFICAR_PERSONA = gql`
+  mutation ReverificarPersona($marcaId: ID!, $id: ID!) {
+    reverificarPersona(marcaId: $marcaId, id: $id) {
+      ${CAMPOS_PERSONA}
+    }
+  }
+`;
+
+/** Si un usuario existe en la red (be#200): para atrapar un error de tipeo al cargar a alguien. */
+export const VERIFICAR_USUARIO_RED = gql`
+  query VerificarUsuarioRed($marcaId: ID!, $red: RedSocial!, $usuario: String!) {
+    verificarUsuarioRed(marcaId: $marcaId, red: $red, usuario: $usuario) {
+      estado
+      usuario
+      url
+      nombre
+      foto
+      motivo
+    }
+  }
+`;
+
+// ---- Revisión antes de publicar (ng-creator-be#175) ----
+
+export const AJUSTES_REVISION = gql`
+  query AjustesRevision($marcaId: ID!) {
+    ajustesRevision(marcaId: $marcaId) {
+      activa
+      alVencer
+    }
+    soyRevisor(marcaId: $marcaId)
+  }
+`;
+
+export const GUARDAR_AJUSTES_REVISION = gql`
+  mutation GuardarAjustesRevision($marcaId: ID!, $activa: Boolean!, $alVencer: AlVencerRevision!) {
+    guardarAjustesRevision(marcaId: $marcaId, activa: $activa, alVencer: $alVencer) {
+      activa
+      alVencer
+    }
+  }
+`;
+
+export const MARCAR_REVISOR = gql`
+  mutation MarcarRevisor($marcaId: ID!, $usuarioId: ID!, $revisor: Boolean!) {
+    marcarRevisor(marcaId: $marcaId, usuarioId: $usuarioId, revisor: $revisor) {
+      _id
+      revisor
+    }
+  }
+`;
+
+const CAMPOS_REVISION = gql`
+  fragment CamposRevision on Revision {
+    _id
+    clipId
+    estado
+    updatedAt
+    pedidaPor {
+      usuarioId
+      nombre
+      en
+    }
+    resueltaPor {
+      usuarioId
+      nombre
+      en
+    }
+    comentarios {
+      _id
+      accion
+      texto
+      audioUrl
+      audioDuracionSeg
+      transcripcion
+      autor {
+        usuarioId
+        nombre
+        en
+      }
+    }
+  }
+`;
+
+export const REVISION_DE_CLIP = gql`
+  ${CAMPOS_REVISION}
+  query RevisionDeClip($marcaId: ID!, $clipId: ID!) {
+    revisionDeClip(marcaId: $marcaId, clipId: $clipId) {
+      ...CamposRevision
+    }
+  }
+`;
+
+/** Sin estado: las que esperan algo (pendientes y con cambios pedidos). */
+export const REVISIONES_DE_MARCA = gql`
+  query RevisionesDeMarca($marcaId: ID!) {
+    revisionesDeMarca(marcaId: $marcaId) {
+      _id
+      clipId
+      estado
+      updatedAt
+      pedidaPor {
+        nombre
+      }
+    }
+  }
+`;
+
+/** Lo mínimo de un clip para la lista "Por revisar": la revisión trae solo el id. */
+export const CLIP_PARA_REVISION = gql`
+  query ClipParaRevision($id: ID!, $marcaId: String!) {
+    clipEpisodio(id: $id, marcaId: $marcaId) {
+      _id
+      episodioId
+      titulo
+      urlPoster
+    }
+  }
+`;
+
+export const PEDIR_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation PedirRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput) {
+    pedirRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario) {
+      ...CamposRevision
+    }
+  }
+`;
+
+export const APROBAR_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation AprobarRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput, $nuevaHora: DateTime) {
+    aprobarRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario, nuevaHora: $nuevaHora) {
+      ...CamposRevision
+    }
+  }
+`;
+
+export const PEDIR_CAMBIOS_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation PedirCambiosRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput!) {
+    pedirCambiosRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario) {
+      ...CamposRevision
+    }
+  }
+`;
+
+export const COMENTAR_REVISION = gql`
+  ${CAMPOS_REVISION}
+  mutation ComentarRevision($marcaId: ID!, $clipId: ID!, $comentario: ComentarioRevisionInput!) {
+    comentarRevision(marcaId: $marcaId, clipId: $clipId, comentario: $comentario) {
+      ...CamposRevision
+    }
+  }
+`;
+
+/** Las apps (ChatGPT, Claude…) conectadas a la cuenta por el MCP (ng-creator-be#182). */
+export const MIS_CONEXIONES_MCP = gql`
+  query MisConexionesMcp {
+    misConexionesMcp {
+      _id
+      nombreApp
+      estado
+      ultimoUso
+      createdAt
+    }
+    urlConectorMcp
+  }
+`;
+
+/** Quién del equipo de la marca conectó ChatGPT o Claude. Solo el propietario. */
+export const CONEXIONES_MCP_DE_MARCA = gql`
+  query ConexionesMcpDeMarca($marcaId: ID!) {
+    conexionesMcpDeMarca(marcaId: $marcaId) {
+      usuarioId
+      email
+      nombre
+      rol
+      conexion {
+        _id
+        nombreApp
+        estado
+        ultimoUso
+        createdAt
+      }
+    }
+  }
+`;
+
+export const REVOCAR_CONEXION_MCP = gql`
+  mutation RevocarConexionMcp($id: ID!) {
+    revocarConexionMcp(id: $id)
+  }
+`;
+
+/**
+ * Los momentos del episodio que cumplen lo que pide la persona (#221): "un
+ * clip por cada tema", "donde habla de precios". No guarda nada. Tarda lo que
+ * tarda la IA (hasta un minuto en un video largo).
+ */
+export const BUSCAR_MOMENTOS_EPISODIO = gql`
+  query BuscarMomentosEpisodio($episodioId: ID!, $marcaId: String!, $instruccion: String!) {
+    buscarMomentosEpisodio(episodioId: $episodioId, marcaId: $marcaId, instruccion: $instruccion) {
+      desdeSeg
+      hastaSeg
+      puntuacion
+      titulo
+      explicacion
+      gancho
+      texto
+      clipId
+    }
+  }
+`;
+
+/** Varios clips de una vez (#221): todos o ninguno. */
+export const CREAR_CLIPS_EPISODIO = gql`
+  mutation CrearClipsEpisodio($input: CrearClipsEpisodioInput!) {
+    crearClipsEpisodio(input: $input) {
+      _id
+      titulo
+      desdeSeg
+      hastaSeg
+    }
+  }
+`;
+
+// ---- Numeración: "Programa 31 | Video 2" (ng-creator-be, NumeracionService) ----
+
+const CAMPOS_AJUSTES_NUMERACION = `
+  activa
+  formato
+  enTexto
+  enPortada
+  siguientePrograma
+  siguientePublicacion
+`;
+
+const CAMPOS_NUMERACION_CLIP = `
+  programa
+  video
+  publicacion
+  encabezado
+  asignada
+  enTexto
+  enPortada
+`;
+
+/** Los de la marca, o los de por defecto (apagada) si nunca se guardaron. */
+export const AJUSTES_NUMERACION = gql`
+  query AjustesNumeracion($marcaId: ID!) {
+    ajustesNumeracion(marcaId: $marcaId) {${CAMPOS_AJUSTES_NUMERACION}}
+  }
+`;
+
+export const GUARDAR_AJUSTES_NUMERACION = gql`
+  mutation GuardarAjustesNumeracion($marcaId: ID!, $ajustes: AjustesNumeracionInput!) {
+    guardarAjustesNumeracion(marcaId: $marcaId, ajustes: $ajustes) {${CAMPOS_AJUSTES_NUMERACION}}
+  }
+`;
+
+/** Los números del clip: fijados, o los que va a tomar al programarlo. Null si la marca no numera. */
+export const NUMERACION_DE_CLIP = gql`
+  query NumeracionDeClip($marcaId: ID!, $clipId: ID!) {
+    numeracionDeClip(marcaId: $marcaId, clipId: $clipId) {${CAMPOS_NUMERACION_CLIP}}
+  }
+`;
+
+/** El de programa es del episodio: cambia el de todos sus clips. */
+export const CORREGIR_NUMERACION_CLIP = gql`
+  mutation CorregirNumeracionClip($marcaId: ID!, $clipId: ID!, $numeros: NumerosClipInput!) {
+    corregirNumeracionClip(marcaId: $marcaId, clipId: $clipId, numeros: $numeros) {${CAMPOS_NUMERACION_CLIP}}
+  }
+`;
+
+// ---- Primeros pasos de la marca (ng-creator-be#273) ----
+
+/** Lo que le falta a la marca. Null si no sos su propietario. */
+export const PRIMEROS_PASOS = gql`
+  query PrimerosPasos($marcaId: String!) {
+    primerosPasos(marcaId: $marcaId) {
+      marcaConfigurada
+      primerEpisodio
+      redesConectadas
+      completos
     }
   }
 `;

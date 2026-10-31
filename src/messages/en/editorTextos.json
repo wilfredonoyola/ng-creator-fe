@@ -1,5 +1,6 @@
 {
   "disenos": {
+    "simple": "Simple",
     "impacto": "Impact",
     "caja": "Black box",
     "marca": "Brand box",
@@ -45,5 +46,18 @@
   "de": "from",
   "a": "to",
   "quitar": "Remove this text",
-  "muestra": "Hello <d>you</d>"
+  "muestra": "Hello <d>you</d>",
+  "fuentes": {
+    "clasica": "Classic",
+    "delEstilo": "From style"
+  },
+  "interlineado": "Line spacing {n}",
+  "estiloPropio": {
+    "nota": "This text uses its own style (not the brand’s).",
+    "usarMarca": "Use the brand style"
+  },
+  "colorTexto": "Text color",
+  "colorDestacadas": "Highlighted words color",
+  "colorDestacadasAyuda": "The words you tapped above come out in this color.",
+  "otroColor": "Other color"
 }

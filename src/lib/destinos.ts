@@ -126,17 +126,19 @@ export interface ComoSale {
 }
 
 /** Una línea por red elegida (sin repetir la red), para revisar antes de programar. */
-export function comoSaleEnCadaRed(destinos: Pick<Destino, "red">[], descripcionFinal: string, tituloYoutube: string): ComoSale[] {
+export function comoSaleEnCadaRed(
+  destinos: Pick<Destino, "red">[],
+  descripcionFinal: string,
+  tituloYoutube: string,
+  /** El texto de cada red si no es el mismo para todas (las @menciones de las personas etiquetadas). */
+  textoDe: (red: Red) => string = () => descripcionFinal,
+): ComoSale[] {
   const redes = Array.from(new Set(destinos.map((d) => d.red)));
-  const descripcionLarga = descripcionFinal.length > DESCRIPCION_MAX;
-  return redes.map((red) =>
-    red === "YOUTUBE"
-      ? {
-          red,
-          titulo: tituloYoutube,
-          texto: descripcionFinal,
-          largo: descripcionLarga || tituloYoutube.length > TITULO_YOUTUBE_MAX,
-        }
-      : { red, texto: descripcionFinal, largo: descripcionLarga },
-  );
+  return redes.map((red) => {
+    const texto = textoDe(red);
+    const largo = texto.length > DESCRIPCION_MAX;
+    return red === "YOUTUBE"
+      ? { red, titulo: tituloYoutube, texto, largo: largo || tituloYoutube.length > TITULO_YOUTUBE_MAX }
+      : { red, texto, largo };
+  });
 }

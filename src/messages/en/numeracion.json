@@ -1,0 +1,39 @@
+{
+  "titulo": "Numbering",
+  "activa": "Number the videos",
+  "ayuda": "A running number like \"Programa 31 | Video 2\" on every post. The show number goes up with each episode and the video number restarts at 1 in each show.",
+  "cargando": "Loading…",
+  "errorCargar": "Couldn't load the numbering.",
+  "formato": "Format",
+  "variables": "Variables:",
+  "asiQueda": "Looks like:",
+  "formatoInvalido": "Use at least one variable: '{programa}', '{video}' or '{publicacion}'.",
+  "donde": "Where it goes",
+  "dondeOpciones": {
+    "texto": "At the start of the text",
+    "portada": "On the cover",
+    "ambos": "Both"
+  },
+  "portadaAyuda": "It goes as the first line of the brand cover title (the brand cover must be on).",
+  "siguientePrograma": "Next show",
+  "siguienteProgramaAyuda": "The next episode you schedule takes it.",
+  "siguientePublicacion": "Next post",
+  "siguientePublicacionAyuda": "A brand-wide counter: '{publicacion}'.",
+  "videoAyuda": "The video number is set when scheduling: the first one out of each show is 1. When scheduling you can change that clip's numbers.",
+  "guardar": "Save numbering",
+  "guardando": "Saving…",
+  "guardado": "Saved",
+  "errorGuardar": "Couldn't save",
+  "delClip": {
+    "seFijaAlProgramar": "Set when scheduled",
+    "cambiar": "Change numbers",
+    "programa": "Show",
+    "video": "Video",
+    "publicacion": "Post",
+    "programaAyuda": "Changes it for every clip of this episode.",
+    "aplicar": "Apply",
+    "cancelar": "Cancel",
+    "sinPrograma": "This clip has no episode: the format can't be built.",
+    "error": "Couldn't change the numbers"
+  }
+}

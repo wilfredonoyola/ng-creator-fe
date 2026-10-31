@@ -9,10 +9,8 @@
   "fallaAlgunas": "Algunas no se programaron. {detalle}",
   "programado": "Programado: sale el {cuando}. Lo ves en el Calendario.",
   "duracionListo": "{seg} s",
-  "cambiosSinProcesar": "Tiene cambios sin exportar: se exporta solo antes de publicar.",
-  "sinVideo": "Todavía no se exportó: se exporta solo antes de publicar.",
   "esperaVideo": "Esperando el video",
-  "portadaSinVideo": "La portada se elige con el video exportado. Sin elegirla, cada red pone la suya.",
+  "portadaSinVideo": "Vas a poder elegir la portada cuando el video esté listo. Sin elegirla, cada red pone la suya.",
   "elegiDiaHora": "Elegí el día y la hora",
   "elegiDiaHoraPunto": "Elegí el día y la hora.",
   "yaPaso": "Esa hora ya pasó",
@@ -82,6 +80,126 @@
     "enSeg": "Cuadro en el segundo {seg}",
     "elegida": "Portada elegida",
     "facebook": "En Facebook se aplica unos minutos después de publicar, si la página está conectada también en Facebook (Redes conectadas → abajo).",
-    "youtube": "YouTube solo la aplica en canales verificados."
+    "youtube": "YouTube solo la aplica en canales verificados.",
+    "automaticaDetalle": "Cada red elige el cuadro",
+    "elegirCuadro": "Elegir un cuadro",
+    "elegirCuadroDetalle": "Vos elegís qué cuadro del clip se ve",
+    "cargando": "Cargando el cuadro…",
+    "elegidaEn": "Portada: el cuadro del segundo {seg}",
+    "moverAyuda": "Mové la barra hasta el cuadro que quieras. Queda elegido solo, no hace falta guardar.",
+    "deMarca": "Portada de marca",
+    "deMarcaAyuda": "con el diseño de Brand Kit"
+  },
+  "editar": {
+    "titulo": "Ya está programado · sale el {cuando} en {redes}",
+    "tituloHoras": "Ya está programado en {redes}, a horas distintas",
+    "ayuda": "Cambiá lo que quieras y tocá \"Guardar cambios\": se actualiza lo programado. Si desmarcás una red, se cancela ahí.",
+    "horasAyuda": "Si cambiás la fecha, todas pasan a la nueva.",
+    "horasPorRed": "Cada red sale a su hora",
+    "guardar": "Guardar cambios",
+    "guardando": "Guardando…",
+    "guardado": "Listo: se actualizó lo programado.",
+    "fallas": "No se pudo actualizar todo: {detalle}",
+    "confirmarCancelar": "Se va a cancelar lo programado en {redes}. ¿Seguimos?",
+    "seCancela": "Al guardar se cancela en {redes}.",
+    "cancelarTodo": "Cancelar publicación",
+    "cancelandoTodo": "Cancelando…",
+    "confirmarCancelarTodo": "¿Cancelar la publicación en {redes}? No va a salir. El clip queda y lo podés volver a programar.",
+    "canceladoTodo": "Publicación cancelada: no va a salir."
+  },
+  "reintentar": {
+    "titulo": "Reintentar en {red}",
+    "ayuda": "Corregí lo que haga falta (etiquetas, texto, hora) y tocá \"Reintentar\": se vuelve a mandar esta misma publicación, sin programar otra.",
+    "salir": "Salir",
+    "boton": "Reintentar en {red}",
+    "enviando": "Reintentando…",
+    "listo": "Listo: {red} vuelve a intentarlo. Lo ves abajo, en Publicaciones.",
+    "editar": "Editar y reintentar",
+    "sinCambios": "Reintentar sin cambios",
+    "igual": "Reintentar igual",
+    "verCuenta": "Ver la publicación ↗",
+    "quizas": "Puede que haya salido igual en {red}: revisá la cuenta antes de reintentar, para no publicarlo dos veces.",
+    "confirmarForzar": "Si ya salió en {red}, va a quedar dos veces. ¿Reintentamos igual?",
+    "arriba": "Editándola arriba para reintentar.",
+    "etiquetas": {
+      "titulo": "Falló por las etiquetas",
+      "ayuda": "Instagram rechazó alguna de estas cuentas: puede ser privada, no existir o no aceptar invitaciones de colaboración. Lo más seguro: dejalas como etiqueta, no como colaborador.",
+      "colaborador": "colaborador",
+      "etiquetado": "etiquetado",
+      "pasarATag": "Pasar los colaboradores a etiquetas"
+    },
+    "saleYa": "Sale apenas tocás Reintentar"
+  },
+  "duplicado": {
+    "chip": "Ya salió",
+    "chipAyuda": "Ya salió en esta cuenta el {cuando}",
+    "linea": "Ya salió en {red} el {cuando}.",
+    "pregunta": "{n, plural, one {¿Publicarlo otra vez ahí?} other {¿Publicarlo otra vez en esas cuentas?}}"
+  },
+  "reemplazada": {
+    "chip": "Intento anterior",
+    "texto": "Este intento falló, pero después salió en {red}: no hay nada que reintentar."
+  },
+  "errorEtiquetas": "{red} rechazó una de las cuentas etiquetadas o colaboradoras (privada, inexistente, que no se ve o que no acepta colaboraciones).",
+  "verDetalle": "Ver detalle",
+  "ocultarDetalle": "Ocultar detalle",
+  "video": {
+    "preparando": "Preparando el video final…",
+    "preparandoProgreso": "Preparando el video final… {n} %",
+    "ayuda": "Vas a poder programar cuando esté listo (suele tardar un par de minutos). Mientras, llená el resto: queda guardado aunque recargues.",
+    "ayudaSoloMira": "Se está exportando con la última edición.",
+    "boton": "Esperando el video…",
+    "botonAyuda": "Se habilita cuando el video esté listo.",
+    "fallo": "No se pudo preparar el video",
+    "falloAyuda": "Reintentá; si vuelve a fallar, revisá el clip en el editor.",
+    "reintentar": "Reintentar"
+  },
+  "borrador": {
+    "recuperado": "Recuperamos lo que habías dejado sin programar."
+  },
+  "confirmar": {
+    "titulo": "¿Confirmás la fecha?",
+    "volver": "Volver",
+    "siProgramar": "Sí, programar",
+    "siGuardar": "Sí, guardar",
+    "siReintentar": "Sí, reintentar",
+    "salenEn": "Sale en"
+  },
+  "menu": {
+    "abrir": "Más opciones",
+    "cancelar": "Cancelar programación",
+    "eliminar": "Eliminar publicación",
+    "cancelarTitulo": "¿Cancelar la programación?",
+    "cancelarSi": "Sí, cancelar",
+    "cancelarDetalle": "No va a salir. El clip queda y lo podés volver a programar.",
+    "eliminarTitulo": "¿Eliminar la publicación?",
+    "eliminarSi": "Sí, eliminar",
+    "eliminando": "Eliminando…",
+    "eliminarDetalle": "Se borra de Clipfine lo programado, fallido o cancelado de este clip, y no se puede deshacer. Lo que ya salió en las redes no se toca.",
+    "eliminado": "Publicación eliminada."
+  },
+  "pasos": {
+    "titulo": "Pasos para programar",
+    "redes": "Redes",
+    "texto": "Texto",
+    "portada": "Portada",
+    "cuando": "Cuándo",
+    "siguiente": "Siguiente",
+    "atras": "Atrás"
+  },
+  "resumen": {
+    "titulo": "Lo que se va a programar",
+    "cambiar": "Cambiar",
+    "sinTexto": "Sin descripción",
+    "etiquetadas": "{n, plural, one {# persona etiquetada} other {# personas etiquetadas}}",
+    "automatica": "La automática de cada red"
+  },
+  "redes": {
+    "verAviso": "Ver el aviso de {red}",
+    "tituloVersion": "Facebook necesita la versión corta",
+    "tituloMotivo": "{red} no está disponible",
+    "irVersion": "Ir a la versión corta",
+    "irRedes": "Ir a Redes conectadas",
+    "entendido": "Entendido"
   }
 }

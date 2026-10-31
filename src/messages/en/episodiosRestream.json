@@ -1,6 +1,7 @@
 {
   "horasMinutos": "{h} h {m} min",
   "minutos": "{m} min",
+  "segundos": "{s} s",
   "sinUrl": "The backend didn't return the authorization URL",
   "errorConectar": "Couldn't start the connection",
   "errorImportar": "Couldn't import",
@@ -20,5 +21,11 @@
   "yaImportado": "✓ Already imported",
   "pidiendo": "Requesting…",
   "importar": "Import",
-  "sinGrabacion": "No recording"
+  "sinGrabacion": "No recording",
+  "estado": {
+    "fallo": "⚠ Failed",
+    "listo": "{n, plural, =0 {✓ Ready, no suggested clips} one {✓ Ready · # clip} other {✓ Ready · # clips}}",
+    "corta": "⚠ Only {trajo} of {dura} came in",
+    "cortaQueHacer": "Delete the episode and import it again"
+  }
 }

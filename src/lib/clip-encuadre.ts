@@ -182,6 +182,12 @@ export function ajustarRegion(
   };
 }
 
+/**
+ * El recuadro de un panel cuando no hay uno elegido: todo el alto del video
+ * (de abajo hacia arriba; todo el ancho si el panel es más ancho que el
+ * video), centrado en su parte del cuadro. Con varios paneles se pisan: cada
+ * uno sigue con todo el alto, no se achica para entrar.
+ */
 export function regionPorDefecto(
   fuente: { ancho: number; alto: number },
   panel: { ancho: number; alto: number },
@@ -189,8 +195,28 @@ export function regionPorDefecto(
   total: number,
 ): Region {
   const cx = total === 1 ? 0.5 : (indice + 0.5) / total;
-  const ancho = total === 1 ? 1 : 1 / total;
+  const ancho = anchoDeTodoElAlto(fuente, panel);
   return ajustarRegion({ x: cx - ancho / 2, y: 0, ancho, alto: 1 }, fuente, panel);
+}
+
+/** El ancho (fracción del video) del recuadro de todo el alto para un panel. */
+function anchoDeTodoElAlto(fuente: { ancho: number; alto: number }, panel: { ancho: number; alto: number }): number {
+  return Math.min(1, (panel.ancho / panel.alto) * (fuente.alto / fuente.ancho));
+}
+
+/** El zoom de un recuadro: 1 es todo el alto (o todo el ancho); 2, la mitad. */
+export function zoomDe(r: Region, fuente: { ancho: number; alto: number }, panel: { ancho: number; alto: number }): number {
+  const lleno = anchoDeTodoElAlto(fuente, panel);
+  return r.ancho > 0 ? Math.max(1, lleno / r.ancho) : 1;
+}
+
+/** El recuadro con otro zoom, sobre el mismo centro (y dentro del cuadro). */
+export function conZoom(r: Region, zoom: number, fuente: { ancho: number; alto: number }, panel: { ancho: number; alto: number }): Region {
+  const ancho = anchoDeTodoElAlto(fuente, panel) / Math.max(1, zoom);
+  const alto = ancho / ((panel.ancho / panel.alto) * (fuente.alto / fuente.ancho));
+  const cx = r.x + r.ancho / 2;
+  const cy = r.y + r.alto / 2;
+  return ajustarRegion({ x: cx - ancho / 2, y: cy - alto / 2, ancho, alto }, fuente, panel);
 }
 
 export interface PosicionEfectiva {
@@ -249,25 +275,61 @@ export function posicionEn(posiciones: PosicionEfectiva[], t: number): PosicionE
 
 // ---- Textos sobre el clip (copiado del backend, igual) ----
 
-export type FuenteTexto = "NUNITO" | "ANTON" | "BEBAS";
+/** Las mismas del backend (FuenteTexto): las de los textos y las de los estilos. */
+export type FuenteTexto =
+  | "NUNITO"
+  | "ANTON"
+  | "BEBAS"
+  | "MONTSERRAT_BLACK"
+  | "MONTSERRAT_EXTRABOLD"
+  | "INTER_TIGHT_SEMIBOLD"
+  | "INTER_TIGHT_BOLD"
+  | "INSTRUMENT_SERIF"
+  | "INSTRUMENT_SERIF_ITALICA"
+  | "MANROPE_SEMIBOLD"
+  | "MANROPE_BOLD"
+  | "GEIST_MEDIUM"
+  | "GEIST_SEMIBOLD"
+  | "PLUS_JAKARTA_BOLD";
 export type EfectoTexto = "NINGUNO" | "CONTORNO" | "SOMBRA" | "CAJA";
 
 /**
- * Nombre de la familia y factor para CSS. libass mide la letra por la altura
- * "win" de la fuente y CSS por el em: sin el factor la vista previa se ve
- * hasta un 70% más grande que el MP4. Ver FUENTES en el backend.
+ * Familia, peso y factor para CSS (los @font-face de globals.css). libass mide
+ * la letra por la altura "win" de la fuente y CSS por el em: sin el factor la
+ * vista previa se ve hasta un 70% más grande que el MP4. Ver FUENTES en el backend.
  */
-export const FUENTES: Record<FuenteTexto, { familia: string; factorCss: number }> = {
-  NUNITO: { familia: "Nunito Black", factorCss: 1000 / 1377 },
-  ANTON: { familia: "Anton", factorCss: 2048 / 3550 },
-  BEBAS: { familia: "Bebas Neue", factorCss: 1000 / 1300 },
+export const FUENTES: Record<FuenteTexto, { familia: string; peso: number; italica?: boolean; factorCss: number }> = {
+  NUNITO: { familia: "Nunito Black", peso: 900, factorCss: 1000 / 1377 },
+  ANTON: { familia: "Anton", peso: 400, factorCss: 2048 / 3550 },
+  BEBAS: { familia: "Bebas Neue", peso: 400, factorCss: 1000 / 1300 },
+  MONTSERRAT_BLACK: { familia: "Montserrat", peso: 900, factorCss: 1000 / 1562 },
+  MONTSERRAT_EXTRABOLD: { familia: "Montserrat", peso: 800, factorCss: 1000 / 1562 },
+  INTER_TIGHT_SEMIBOLD: { familia: "Inter Tight", peso: 600, factorCss: 2048 / 2917 },
+  INTER_TIGHT_BOLD: { familia: "Inter Tight", peso: 700, factorCss: 2048 / 2917 },
+  INSTRUMENT_SERIF: { familia: "Instrument Serif", peso: 400, factorCss: 1000 / 1300 },
+  INSTRUMENT_SERIF_ITALICA: { familia: "Instrument Serif", peso: 400, italica: true, factorCss: 1000 / 1300 },
+  MANROPE_SEMIBOLD: { familia: "Manrope", peso: 600, factorCss: 2000 / 2732 },
+  MANROPE_BOLD: { familia: "Manrope", peso: 700, factorCss: 2000 / 2732 },
+  GEIST_MEDIUM: { familia: "Geist", peso: 500, factorCss: 1000 / 1350 },
+  GEIST_SEMIBOLD: { familia: "Geist", peso: 600, factorCss: 1000 / 1350 },
+  PLUS_JAKARTA_BOLD: { familia: "Plus Jakarta Sans", peso: 700, factorCss: 1000 / 1652 },
 };
 
 export interface Texto {
   contenido: string;
   destacadas: string[];
   fuente: FuenteTexto;
+  /** La eligió la persona: con un estilo de texto, manda sobre la letra del estilo. */
+  fuenteElegida?: boolean;
   tamano: number;
+  /** Alto de cada renglón, en veces el tamaño de la letra. 1 = el de siempre. */
+  interlineado?: number;
+  /**
+   * El texto se ve con su propia letra, tamaño, colores, efecto e interlineado
+   * aunque el clip o la marca tengan un estilo de texto: cualquier cambio de
+   * diseño en el editor manda sobre el Brand Kit.
+   */
+  estiloPropio?: boolean;
   color: string;
   colorDestacado: string;
   efecto: EfectoTexto;

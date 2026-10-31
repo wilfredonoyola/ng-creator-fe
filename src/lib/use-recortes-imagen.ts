@@ -18,7 +18,30 @@ export interface RecorteLocal {
   lento: boolean;
 }
 
-type Opciones = Pick<ImagenClip, "url" | "sinFondo" | "contorno">;
+/**
+ * `mejorar` (editor de portada, be#255): la versión mejorada con IA; solo cuenta
+ * sin "Quitar fondo" ni contorno. `separar` (be#249): la persona separada del
+ * cuadro, del tamaño del cuadro (mejorada también, con `mejorar`).
+ */
+type Opciones = Pick<ImagenClip, "url" | "sinFondo" | "contorno"> & { mejorar?: boolean; separar?: boolean };
+
+/** Pide la mejorada con IA y no un recorte (con quitar fondo o contorno, el servidor ignora `mejorar`). */
+export const esMejora = (im: Opciones) => !im.separar && !!im.mejorar && !im.sinFondo && !im.contorno;
+
+/** Pide la persona separada ("Separar a la persona"): manda sobre lo demás. */
+export const esSeparar = (im: Opciones) => !!im.separar;
+
+/** Hay algo que pedir al servidor: un recorte, la mejorada o la separada. */
+const pideAlgo = (im: Opciones) => esSeparar(im) || im.sinFondo || im.contorno || esMejora(im);
+
+const variablesDe = (marcaId: string, im: Opciones) => ({
+  marcaId,
+  url: im.url,
+  sinFondo: im.sinFondo,
+  contorno: im.contorno,
+  mejorar: esSeparar(im) ? !!im.mejorar : esMejora(im),
+  separar: esSeparar(im),
+});
 
 interface Entrada {
   estadoRecorte: EstadoRecorte | null;
@@ -28,13 +51,19 @@ interface Entrada {
 }
 
 /** Un recorte por url y opciones: es la clave del trabajo en el servidor. */
-export const claveRecorte = (im: Opciones) => `${im.sinFondo ? 1 : 0}${im.contorno ? 1 : 0} ${im.url}`;
+export const claveRecorte = (im: Opciones) =>
+  esSeparar(im) ? `s${im.mejorar ? "m" : ""} ${im.url}` : `${im.sinFondo ? 1 : 0}${im.contorno ? 1 : 0}${esMejora(im) ? "m" : ""} ${im.url}`;
 
 /**
  * Los recortes de las imágenes del borrador, sin esperar a guardar el clip:
  * al agregar una imagen o cambiar "Quitar fondo"/"Contorno blanco" se pide
  * (`prepararRecorteImagen`) y se pregunta cada 2 s (`recorteImagen`) hasta
  * que quede LISTO o FALLIDO. El estado es local, por url y opciones.
+ *
+ * Con `mejorar` (y sin quitar fondo ni contorno) pide la versión mejorada con
+ * IA (~40 s): el editor de portada la usa para el cuadro del clip, el fondo y
+ * las imágenes subidas. El editor de clips no la usa. Con `separar`, la
+ * persona separada del cuadro limpio (be#249, ~1 min con `mejorar`).
  *
  * `activo` en false (quien solo mira) no pide nada: se queda con lo guardado.
  */
@@ -64,7 +93,7 @@ export function useRecortesImagen(marcaId: string | null | undefined, imagenes: 
       try {
         const r = await cliente.mutate({
           mutation: PREPARAR_RECORTE_IMAGEN,
-          variables: { marcaId, url: im.url, sinFondo: im.sinFondo, contorno: im.contorno },
+          variables: variablesDe(marcaId, im),
           fetchPolicy: "no-cache",
         });
         const v = r.data?.prepararRecorteImagen;
@@ -84,7 +113,7 @@ export function useRecortesImagen(marcaId: string | null | undefined, imagenes: 
 
   // Pedir las que hacen falta y todavía no se pidieron.
   const faltan = activo
-    ? imagenes.filter((im) => (im.sinFondo || im.contorno) && !pedidos.current.has(claveRecorte(im)))
+    ? imagenes.filter((im) => pideAlgo(im) && !pedidos.current.has(claveRecorte(im)))
     : [];
   const claveFaltan = faltan.map(claveRecorte).join("|");
   useEffect(() => {
@@ -107,7 +136,7 @@ export function useRecortesImagen(marcaId: string | null | undefined, imagenes: 
           try {
             const r = await cliente.query({
               query: RECORTE_IMAGEN,
-              variables: { marcaId, url: im.url, sinFondo: im.sinFondo, contorno: im.contorno },
+              variables: variablesDe(marcaId, im),
               fetchPolicy: "no-cache",
             });
             const v = r.data?.recorteImagen;
@@ -129,7 +158,7 @@ export function useRecortesImagen(marcaId: string | null | undefined, imagenes: 
   /** Lo que se sabe del recorte de una imagen, o undefined si no se pidió (se usa lo guardado). */
   const recorteDe = useCallback(
     (im: Opciones): RecorteLocal | undefined => {
-      if (!activo || !(im.sinFondo || im.contorno)) return undefined;
+      if (!activo || !pideAlgo(im)) return undefined;
       const r = recortes[claveRecorte(im)];
       if (!r) return undefined;
       return { ...r, lento: r.estadoRecorte === "PENDIENTE" && ahora - r.desde > LENTO_MS };

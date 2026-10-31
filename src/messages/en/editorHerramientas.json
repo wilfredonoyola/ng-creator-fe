@@ -29,7 +29,7 @@
     "alDia": "It already has every change: only if you want to redo it.",
     "equipo": "For the team",
     "listoSinVideo": "Export the video to mark it ready.",
-    "seExportaSolo": "It exports on its own before publishing.",
+    "seExportaSolo": "It exports first: you can schedule once the video is ready.",
     "bajaAlTerminar": "It downloads on its own once the export finishes."
   },
   "escenario": {
@@ -43,10 +43,12 @@
     "textos": "Text",
     "subtitulos": "Captions",
     "imagenes": "Images",
+    "superposicion": "Overlay",
     "textoVacio": "(empty)",
     "llamada": "Call to action",
     "logo": "Brand logo",
     "imagen": "Image {n}",
+    "videoN": "Video {n}",
     "agregarTexto": "Text",
     "agregarImagen": "Image",
     "subtitulosActivos": "Word by word",
@@ -63,7 +65,7 @@
     "empiezaAca": "Start here",
     "terminaAca": "End here",
     "cortes": "Cuts · {n}",
-    "ayuda": "Split cuts the video at the playhead. Tap a segment (or drag) on the timeline and remove it. Striped parts don't play; the ✕ brings them back.",
+    "ayuda": "Split cuts the video at the playhead. To land it exactly: ← → move it one frame (Shift: one second), space plays and S splits. Tap a segment (or drag) on the timeline and remove it. Striped parts don't play; the ✕ brings them back.",
     "enElEpisodio": "In the episode",
     "velocidad": "Speed",
     "duraFinal": "Lasts {antes} → {despues} at {velocidad}",
@@ -82,14 +84,20 @@
     "cambiarEstilo": "Change the style"
   },
   "superposicion": {
-    "ayuda": "Drag the image on the video to move it; the corner resizes it. Its edges on the timeline set when it shows."
+    "ayuda": "Drag the image on the video to move it; the corner resizes it. Its edges on the timeline set when it shows.",
+    "ayudaVideos": "Drag the video on the preview to move it, or make it full screen. It goes over the video and the images, under the texts and captions."
   },
   "formato": {
     "proporcion": "Aspect ratio",
     "esteTramo": "This segment · {desde} → {hasta}",
     "irAuto": "Auto-frame",
     "fondo": "Background",
-    "nuevoEncuadre": "Framing here"
+    "nuevoEncuadre": "Framing here",
+    "zoom": "Zoom · {zoom}%",
+    "zoomEtiqueta": "Box zoom",
+    "todoElAlto": "Full height",
+    "todosTodoElAlto": "Every segment at full height",
+    "zoomAyuda": "At 100% the box uses the video's full height. Raise it only to get closer."
   },
   "auto": {
     "pedir": "Auto-frame",

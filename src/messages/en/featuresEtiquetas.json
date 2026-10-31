@@ -1,0 +1,75 @@
+{
+  "seo": {
+    "titulo": "Tag people on Instagram, TikTok, YouTube and Facebook | Clipfine",
+    "descripcion": "Mention the cast and guests with @ once and each network gets their username. Verified accounts, suggestions from what's said in the clip, and Instagram and Facebook collaborators."
+  },
+  "titulo": "Tag who's on screen,",
+  "destacado": "once, on all four networks",
+  "bajada": "Add the cast and guests with their username on each network. When you publish, type @Ana and Clipfine puts the right username on Instagram, TikTok, YouTube and Facebook, and warns you if an account doesn't exist.",
+  "datos": {
+    "d1": {
+      "cifra": "1 @mention",
+      "que": "that comes out right on all four networks"
+    },
+    "d2": {
+      "cifra": "3 levels",
+      "que": "cast, Global and each episode's guests"
+    },
+    "d3": {
+      "cifra": "0 accounts",
+      "que": "misspelled: they're verified when added"
+    }
+  },
+  "agencia": {
+    "menciones": "Nobody has to remember every guest's username on every network.",
+    "tresNiveles": "A returning guest isn't added twice, and the cast is always at hand.",
+    "verificar": "A misspelled username never gets published: you see it first.",
+    "sugeridas": "You don't miss tagging someone who's named in the clip.",
+    "colaboradores": "The guest or sponsor shares the Reel on their profile without you asking.",
+    "buscar": "Find anyone from any client in seconds."
+  },
+  "vistas": {
+    "menciones": {
+      "texto": "Today on the show"
+    },
+    "tresNiveles": {
+      "elenco": "Cast",
+      "global": "Global",
+      "episodio": "Episode"
+    },
+    "verificar": {
+      "existe": "exists · Ana Radio",
+      "noExiste": "not found: check it"
+    },
+    "sugeridas": {
+      "frase": "…as Dr. Pérez explained…",
+      "sumar": "Tag",
+      "motivo": "Named at 0:12"
+    },
+    "colaboradores": {
+      "pie": "If they accept, the Reel also shows on their profile"
+    },
+    "buscar": {
+      "busqueda": "jose",
+      "usada": "12 posts"
+    }
+  },
+  "preguntas": {
+    "p1": {
+      "p": "Are the tags real on every network?",
+      "r": "On Instagram, yes: the person is tagged on the Reel and also mentioned in the text. TikTok, YouTube and Facebook don't let outside apps tag people, so there it goes out as an @mention in the description, with their username on that network."
+    },
+    "p2": {
+      "p": "How do I know the username is spelled right?",
+      "r": "Clipfine looks it up on the network when you add it. TikTok and YouTube confirm whether it exists; Instagram, if it's a professional account; Facebook, if it's a Page Meta lets us see. When the network doesn't allow checking, you get the profile link to look at it."
+    },
+    "p3": {
+      "p": "What about a guest who comes only once?",
+      "r": "Add them to the episode and they stay there. If they come back, move them to Global in one tap and they're ready for any clip, without adding them again."
+    },
+    "p4": {
+      "p": "Can I invite them as a collaborator?",
+      "r": "Yes. On Instagram, up to 3 accounts per Reel; on Facebook, up to 10 Pages (not personal profiles). They get the invitation and, if they accept, the Reel also shows on their profile or Page."
+    }
+  }
+}

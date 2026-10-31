@@ -6,6 +6,7 @@ import {
   type Texto,
 } from "@/lib/clip-encuadre";
 import { CARACTERES, METRICAS } from "@/lib/metricas-fuentes";
+import { AVANCE_EMOJI, emDe, grafemas, tieneEmoji } from "@/lib/emojis";
 
 /**
  * Los estilos de texto de los clips (ng-creator-be#132): la galería de
@@ -48,7 +49,7 @@ export type TokenTema =
   | "SOBRE_PRIMARIO"
   | "SOBRE_SECUNDARIO";
 
-/** Todas las fuentes de los estilos (las de los textos del editor son NUNITO, ANTON y BEBAS). */
+/** Todas las fuentes de los estilos (las mismas que FuenteTexto). */
 export type FuenteEstilo =
   | "NUNITO"
   | "ANTON"
@@ -270,6 +271,13 @@ const metrica = (fuente: FuenteEstilo) => METRICAS[fuente] ?? METRICAS.NUNITO;
 export function anchoTexto(texto: string, fuente: FuenteEstilo, cuerpo: number, interletra = 0): number {
   const m = metrica(fuente);
   const escala = cuerpo / (m.ascWin + m.descWin);
+  // Con emojis, por grafema: cada emoji avanza lo mismo que su hueco en el render.
+  if (tieneEmoji(texto)) {
+    return grafemas(texto).reduce(
+      (s, { g, emoji }) => s + (emoji ? emDe(fuente, cuerpo) * AVANCE_EMOJI + interletra : anchoTexto(g, fuente, cuerpo, interletra)),
+      0,
+    );
+  }
   let unidades = 0;
   let letras = 0;
   for (const c of texto) {
@@ -654,7 +662,7 @@ function fundido(tc: number | undefined, desde: number, hasta: number): number {
 /**
  * Un texto del clip (el gancho, un titular, la llamada a la acción) dibujado
  * con el estilo: su contenido, destacadas, lugar, ancho, tamaño y tiempo; la
- * fuente, los colores y la caja, del estilo. `tc` es el segundo del clip
+ * fuente (salvo que la haya elegido la persona), los colores y la caja, del estilo. `tc` es el segundo del clip
  * (para el fundido); sin él, se ve entero.
  */
 export function dibujarTexto(
@@ -663,6 +671,8 @@ export function dibujarTexto(
   lienzo: Lienzo,
   opciones: { duracionSeg: number; nombreMarca?: string; tc?: number },
 ): Dibujo | null {
+  // La letra elegida a mano manda sobre la del estilo, en todas las palabras (como el render).
+  if (t.fuenteElegida && t.fuente) g = { ...g, fuente: t.fuente, fuenteDestacada: null, fuenteMarca: null };
   const palabras = palabrasDelTexto({ contenido: t.contenido, destacadas: t.destacadas, mayusculas: g.mayusculas });
   if (!palabras.length) return null;
   const desde = Math.max(0, t.desdeSeg || 0);

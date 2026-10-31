@@ -2,6 +2,7 @@ import type { DisenoClip, Encuadre, FondoClip, FormatoClip, ImagenClip, ImagenCl
 import type { EstiloTexto } from "@/lib/estilos-texto";
 import { normalizarCortes, type Corte } from "@/lib/cortes";
 import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
+import { videosAlInput, videosDelClip, type VideoClip } from "@/lib/videos-clip";
 import { disenosDeTexto, textoNuevo } from "@/components/episodios/PanelTextos";
 
 /** Lo que se edita de un clip: lo que se guarda solo y se deshace. */
@@ -25,6 +26,8 @@ export interface Borrador {
   textos: Texto[];
   /** Hasta tres imágenes encima del video; el recorte lo hace el servidor. */
   imagenes: ImagenClip[];
+  /** Hasta tres videos encima del video y de las imágenes (be#246). */
+  videos: VideoClip[];
   /** Si lleva el logo y la llamada a la acción de la plantilla de la marca (be#117). */
   plantillaActiva: boolean;
   /** El estilo de texto de este clip (be#132). Null = el de la marca. */
@@ -54,6 +57,9 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
     contenido: t.contenido,
     destacadas: [...t.destacadas],
     fuente: t.fuente,
+    fuenteElegida: t.fuenteElegida ?? false,
+    interlineado: t.interlineado ?? 1,
+    estiloPropio: t.estiloPropio ?? false,
     tamano: t.tamano,
     color: t.color,
     colorDestacado: t.colorDestacado,
@@ -70,7 +76,9 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
   // diseño "Impacto": desde acá, todo texto sobre el clip es uno de estos.
   if (!textos.length && clip.ganchoActivo && clip.gancho?.trim()) {
     textos.push({
-      ...textoNuevo(disenosDeTexto(colorResaltado)[0].estilo, clip.gancho.trim(), 0.15),
+      // Con el diseño "Impacto" y el estilo de la marca: como se veía el gancho.
+      ...textoNuevo(disenosDeTexto(colorResaltado).find((d) => d.id === "impacto")!.estilo, clip.gancho.trim(), 0.15),
+      estiloPropio: false,
       hastaSeg: clip.ganchoSeg ?? 3,
     });
   }
@@ -120,6 +128,7 @@ export function borradorDelClip(clip: ClipServidor, colorResaltado: string): Bor
       desdeSeg: im.desdeSeg,
       hastaSeg: im.hastaSeg ?? null,
     })),
+    videos: videosDelClip(clip.videos),
     plantillaActiva: clip.plantillaActiva ?? true,
     estiloTexto: clip.estiloTexto ?? null,
     cortes: normalizarCortes(clip.cortes ?? [], clip.desdeSeg, clip.hastaSeg),
@@ -178,6 +187,8 @@ export function inputDelBorrador(b: Borrador) {
       desdeSeg,
       hastaSeg: hastaSeg ?? null,
     })),
+    // La lista entera ([] los quita); sin lo que mide el servidor.
+    videos: videosAlInput(b.videos),
     plantillaActiva: b.plantillaActiva,
     // null = el de la marca.
     estiloTexto: b.estiloTexto,

@@ -5,14 +5,13 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 const PESTANAS = [
-  { href: "/publicados", clave: "publicados" },
+  { href: "/contenido", clave: "contenido" },
   { href: "/analisis", clave: "analisis" },
 ] as const;
 
 /**
- * Publicaciones es una sola sección del menú con dos pestañas: lo que salió y
- * cómo le fue. Análisis dejó de ser un destino aparte porque mirar el
- * rendimiento es parte de publicar.
+ * Contenido es una sola sección del menú: el contenido de cada episodio y cómo
+ * le fue (Análisis). Reemplaza a la vieja Publicaciones (/publicados).
  */
 export function PestanasPublicaciones() {
   const t = useTranslations("publicadosPestanas");

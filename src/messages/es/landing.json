@@ -16,6 +16,7 @@
     "empezar": "Empezar gratis",
     "inicio": "Clipfine, inicio",
     "metricas": "Métricas",
+    "ayuda": "Ayuda",
     "irApp": "Ir a la app"
   },
   "pronto": "Pronto",
@@ -25,6 +26,7 @@
     "texto": "Subí el video largo de un cliente y recibí sus mejores momentos como clips verticales con subtítulos. Programalos desde un calendario y mirá qué funciona, para cada cliente que maneja tu agencia.",
     "letraChica": "15 días gratis · Sin tarjeta",
     "publicaEn": "Publicá en",
+    "preguntaEn": "Preguntale desde",
     "maqueta": {
       "alt": "El espacio de Clipfine: un selector de clientes, un episodio largo convertido en clips verticales con subtítulos y un calendario semanal de publicaciones.",
       "cliente": "Cliente {letra}",
@@ -40,14 +42,38 @@
       "calendario": "Calendario · esta semana",
       "redes": "4 redes",
       "clips": {
-        "c1": { "antes": "El gancho está en los", "marca": "primeros", "despues": "tres segundos" },
-        "c2": { "antes": "Nadie", "marca": "habla", "despues": "de esta parte" },
-        "c3": { "antes": "Ahí fue cuando nos", "marca": "cayó", "despues": "la ficha" },
-        "c4": { "antes": "Esto lo haríamos", "marca": "distinto", "despues": "" }
+        "c1": {
+          "antes": "El gancho está en los",
+          "marca": "primeros",
+          "despues": "tres segundos"
+        },
+        "c2": {
+          "antes": "Nadie",
+          "marca": "habla",
+          "despues": "de esta parte"
+        },
+        "c3": {
+          "antes": "Ahí fue cuando nos",
+          "marca": "cayó",
+          "despues": "la ficha"
+        },
+        "c4": {
+          "antes": "Esto lo haríamos",
+          "marca": "distinto",
+          "despues": ""
+        }
       }
     }
   },
-  "dias": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie", "sab": "Sáb", "dom": "Dom" },
+  "dias": {
+    "lun": "Lun",
+    "mar": "Mar",
+    "mie": "Mié",
+    "jue": "Jue",
+    "vie": "Vie",
+    "sab": "Sáb",
+    "dom": "Dom"
+  },
   "problema": {
     "titulo": "Tus clientes quieren más clips. Tu equipo ya no da abasto.",
     "texto": "Cada cliente nuevo son más videos para mirar, más clips para cortar y subtitular, cuatro redes donde publicar y otro reporte para mandar. Clipfine junta todo eso en un solo lugar para cada cliente: entran los videos, salen los clips programados y los resultados a la vista. Así sumás clientes sin sumar sueldos."
@@ -59,8 +85,19 @@
       "titulo": "Todos tus clientes en una plataforma",
       "texto": "Manejá todos tus clientes desde una cuenta. Cada uno tiene su espacio con sus episodios, clips, calendario y análisis, y su Brand Kit con sus colores, letras y logo. Tu equipo entra con su rol en los clientes que le tocan, sin mezclar nada.",
       "alt": "Lista de cuatro clientes, cada uno con sus episodios, clips, calendario y análisis",
-      "pestanas": { "episodios": "Episodios", "clips": "Clips", "calendario": "Calendario", "analisis": "Análisis", "brandKit": "Brand Kit" },
-      "estados": { "listo": "Listo", "programado": "Programado", "procesando": "Procesando", "publicado": "Publicado" }
+      "pestanas": {
+        "episodios": "Episodios",
+        "clips": "Clips",
+        "calendario": "Calendario",
+        "analisis": "Análisis",
+        "brandKit": "Brand Kit"
+      },
+      "estados": {
+        "listo": "Listo",
+        "programado": "Programado",
+        "procesando": "Procesando",
+        "publicado": "Publicado"
+      }
     },
     "momentos": {
       "titulo": "Los mejores momentos, ya cortados",
@@ -99,6 +136,54 @@
         "valor": "20:00"
       }
     }
+  },
+  "subidos": {
+    "etiqueta": "Subir clips",
+    "titulo": "¿Ya lo editaste en CapCut? Subilo y publicalo.",
+    "texto": "No todo sale de un episodio largo. Reels, tips o cortes que tu equipo ya editó afuera entran a Clipfine y siguen el mismo camino que los demás: se programan, se aprueban y se miden.",
+    "puntos": {
+      "tal": {
+        "titulo": "Sale tal cual.",
+        "texto": "Sin recomprimir de más: lo que exportaste es lo que se publica."
+      },
+      "editor": {
+        "titulo": "O lo retocás.",
+        "texto": "Si querés, lo abrís en el editor y le sumás subtítulos, plantilla o gancho."
+      },
+      "flujo": {
+        "titulo": "El mismo flujo.",
+        "texto": "Calendario en las cuatro redes, revisión del cliente y métricas por clip."
+      },
+      "horas": {
+        "titulo": "No descuenta horas.",
+        "texto": "Las horas de tu plan quedan para los episodios."
+      }
+    },
+    "verMas": "Cómo funciona subir clips"
+  },
+  "aprobacion": {
+    "etiqueta": "Aprobación",
+    "titulo": "Tu cliente aprueba antes de que salga.",
+    "texto": "Activá la revisión por cliente y nada se publica sin el visto bueno. Tu equipo programa como siempre; el revisor aprueba o pide cambios desde la web o el celular, con un comentario o una nota de voz.",
+    "puntos": {
+      "rol": {
+        "titulo": "El cliente, con su rol.",
+        "texto": "Lo invitás como Revisor: ve sus clips y los aprueba, pero no edita."
+      },
+      "voz": {
+        "titulo": "Cambios en voz alta.",
+        "texto": "Una nota de voz con su transcripción, en vez de un correo largo."
+      },
+      "hora": {
+        "titulo": "Nada sale sin aprobar.",
+        "texto": "Si llega la hora sin revisión, no sale, y todos se enteran."
+      },
+      "editar": {
+        "titulo": "Lo aprobado es lo que sale.",
+        "texto": "Si se edita después, vuelve a revisión."
+      }
+    },
+    "verMas": "Cómo funciona la aprobación"
   },
   "metricas": {
     "etiqueta": "Métricas",
@@ -164,6 +249,21 @@
       "mejorClip": "Mejor clip: humor · 10,8K vistas · IA 92"
     }
   },
+  "mcp": {
+    "etiqueta": "Conector MCP",
+    "titulo": "Preguntale a ChatGPT o Claude por tus clientes.",
+    "texto": "Clipfine tiene su propio conector MCP. Conectalo una vez a ChatGPT, a Claude o a cualquier app compatible con MCP y preguntá por tus marcas, sus métricas y lo que tienen programado, sin abrir el panel.",
+    "directo": "Conexión directa: tu IA lee de Clipfine, con tus permisos.",
+    "compatible": "Y cualquier app con MCP",
+    "ejemplosTitulo": "Lo que podés preguntar",
+    "ejemplos": {
+      "mejores": "¿Qué clips de Café Luna funcionaron mejor este mes?",
+      "reporte": "Armame el reporte de los últimos 30 días para mandarle al cliente.",
+      "semana": "¿Qué tiene programado cada cliente esta semana?"
+    },
+    "soloLectura": "No publica, no aprueba ni borra nada: como mucho, crea clips para que los termines vos.",
+    "comoConectar": "Cómo conectarlo"
+  },
   "paraQuien": {
     "etiqueta": "Para quién es",
     "titulo": "Hecho para agencias que manejan video para muchos clientes.",
@@ -171,22 +271,49 @@
     "porTipo": "Por tipo de agencia",
     "porUso": "Por caso de uso",
     "tipos": {
-      "clips": { "titulo": "Agencias de clips", "texto": "Manejá más canales de clientes sin sumar editores." },
-      "podcast": { "titulo": "Productoras de podcast", "texto": "Sumá clips cortos a cada episodio que producís." },
-      "b2b": { "titulo": "Podcasts B2B", "texto": "Convertí entrevistas con ejecutivos en clips que ventas y redes pueden usar." },
-      "redes": { "titulo": "Agencias de redes", "texto": "Mantené el feed de cada cliente lleno de video, y mostrá que funciona." }
+      "clips": {
+        "titulo": "Agencias de clips",
+        "texto": "Manejá más canales de clientes sin sumar editores."
+      },
+      "podcast": {
+        "titulo": "Productoras de podcast",
+        "texto": "Sumá clips cortos a cada episodio que producís."
+      },
+      "b2b": {
+        "titulo": "Podcasts B2B",
+        "texto": "Convertí entrevistas con ejecutivos en clips que ventas y redes pueden usar."
+      },
+      "redes": {
+        "titulo": "Agencias de redes",
+        "texto": "Mantené el feed de cada cliente lleno de video, y mostrá que funciona."
+      }
     },
     "usos": {
-      "podcast": { "titulo": "Del podcast a Shorts, Reels y TikTok", "texto": "Entra un episodio, salen sus mejores clips, programados desde un calendario." },
-      "lives": { "titulo": "Lives y streams", "texto": "Subí la grabación del live o del stream como cualquier episodio y salen los clips." }
+      "podcast": {
+        "titulo": "Del podcast a Shorts, Reels y TikTok",
+        "texto": "Entra un episodio, salen sus mejores clips, programados desde un calendario."
+      },
+      "lives": {
+        "titulo": "Lives y streams",
+        "texto": "Subí la grabación del live o del stream como cualquier episodio y salen los clips."
+      }
     }
   },
   "como": {
     "etiqueta": "Cómo funciona",
     "pasos": {
-      "subir": { "titulo": "Sumá un cliente y subí su video.", "texto": "Un podcast, un live o cualquier video largo. También lo traemos de Restream." },
-      "clips": { "titulo": "Recibí los mejores clips.", "texto": "Clipfine encuentra los momentos y los convierte en clips verticales con subtítulos. Ajustá el que quieras en el editor." },
-      "publicar": { "titulo": "Programá, publicá y medí.", "texto": "Poné los clips en el calendario y mirá en el análisis qué le funciona a cada cliente." }
+      "subir": {
+        "titulo": "Sumá un cliente y subí su video.",
+        "texto": "Un podcast, un live o cualquier video largo. También lo traemos de Restream."
+      },
+      "clips": {
+        "titulo": "Recibí los mejores clips.",
+        "texto": "Clipfine encuentra los momentos y los convierte en clips verticales con subtítulos. Ajustá el que quieras en el editor."
+      },
+      "publicar": {
+        "titulo": "Programá, publicá y medí.",
+        "texto": "Poné los clips en el calendario y mirá en el análisis qué le funciona a cada cliente."
+      }
     }
   },
   "precios": {
@@ -204,10 +331,23 @@
     "empezarPrueba": "Empezar la prueba",
     "empezar": "Empezar gratis",
     "planes": {
-      "prueba": { "nombre": "Prueba gratis", "para": "Probá todo con tu primer cliente.", "nota": "15 días · Sin tarjeta" },
-      "starter": { "nombre": "Starter", "para": "Para agencias chicas y primeros clientes." },
-      "agency": { "nombre": "Agency", "para": "Para agencias con varios clientes." },
-      "agencyPro": { "nombre": "Agency Pro", "para": "Para equipos con mucho volumen y muchos clientes." }
+      "prueba": {
+        "nombre": "Prueba gratis",
+        "para": "Probá todo con tu primer cliente.",
+        "nota": "15 días · Sin tarjeta"
+      },
+      "starter": {
+        "nombre": "Starter",
+        "para": "Para agencias chicas y primeros clientes."
+      },
+      "agency": {
+        "nombre": "Agency",
+        "para": "Para agencias con varios clientes."
+      },
+      "agencyPro": {
+        "nombre": "Agency Pro",
+        "para": "Para equipos con mucho volumen y muchos clientes."
+      }
     },
     "custom": {
       "nombre": "Custom",
@@ -221,7 +361,7 @@
       "brandKit": "Brand Kit por cliente",
       "calendario": "Calendario de publicaciones",
       "analisis": "Análisis por cliente",
-      "app": "App para iPhone y Android"
+      "app": "App para iPhone y Android (próximamente)"
     }
   },
   "preguntas": {
@@ -255,17 +395,29 @@
         "p": "¿En qué se diferencia de Opus Clip o Descript?",
         "r": "Esas herramientas están pensadas para un creador. Clipfine está pensado para agencias con muchos clientes: los clips, el calendario y el análisis están juntos y ordenados por cliente, con precios que crecen con tu cartera."
       },
+      "editar": {
+        "p": "¿Puedo editar los clips?",
+        "r": "Sí, en un editor como CapCut que se guarda solo: línea de tiempo, cortes, subtítulos, textos, imágenes, música libre de derechos, efectos de sonido, volumen y velocidad. Programás desde el mismo editor y Clipfine arma el video final."
+      },
+      "capcut": {
+        "p": "¿Puedo subir clips que ya edité en CapCut?",
+        "r": "Sí. En Publicaciones, Subir clips: soltás uno o varios videos, salen tal cual o los abrís en el editor, y siguen el mismo camino que los demás, con revisión del cliente, programación en las cuatro redes y métricas. No descuentan horas."
+      },
+      "revision": {
+        "p": "¿Mi cliente puede aprobar antes de que se publique?",
+        "r": "Sí. Con la revisión antes de publicar, lo que programa el equipo espera a que un revisor lo apruebe o pida cambios, con un comentario o una nota de voz, desde la web o el celular."
+      },
       "sigue": {
         "p": "¿El clip sigue a la persona que habla?",
         "r": "Sí, con el auto-encuadre. Reconoce las voces y mira quién mueve los labios, así que no se confunde con quien gesticula. Cuando hablan varios, divide la pantalla. Cada plano se puede corregir en el editor."
       },
       "idioma": {
         "p": "¿En qué idioma funciona?",
-        "r": "Está pensado para videos en español: la transcripción, los momentos y los subtítulos."
+        "r": "Clipfine detecta solo el idioma del video y lo transcribe, encuentra los momentos y escribe los subtítulos en ese mismo idioma: español, inglés, portugués y más. El panel está en español e inglés."
       },
       "app": {
         "p": "¿Hay app para el celular?",
-        "r": "Sí, para iPhone y Android, con la misma cuenta de la web y los mismos clientes."
+        "r": "Está en camino: la app para iPhone y Android sale muy pronto en App Store y Google Play, con la misma cuenta, los mismos clientes y todo sincronizado con la web. Mientras tanto, todo funciona desde la web, también en el navegador del celular."
       }
     }
   },
@@ -274,6 +426,8 @@
     "texto": "Empezá tus 15 días gratis hoy, o agendá una llamada y armamos Clipfine alrededor de tu forma de trabajar."
   },
   "pie": {
+    "soporte": "Cualquier duda o consulta, escribinos a soporte: <correo></correo>",
+    "ayuda": "Ayuda",
     "lema": "Software de clips con IA para agencias.",
     "funciones": "Funciones",
     "app": "App",

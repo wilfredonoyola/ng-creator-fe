@@ -13,6 +13,8 @@
   "clips": "Clips",
   "crearClipAyuda": "Find the moment, mark the start and end, and off to the editor",
   "crearClip": "+ Create clip",
+  "variosClips": "✨ Several clips",
+  "variosClipsAyuda": "Ask the AI for the moments (one clip per topic, for example) or paste a list of time ranges",
   "analisis": {
     "transcribiendo": "Transcribing the episode ({p}%). Then the AI looks for moments.",
     "falloTranscripcion": "The transcription failed: {error}. Retry it from Episodes.",
@@ -36,10 +38,18 @@
     "verFinal": "View final video",
     "programar": "Schedule",
     "reproducirTramo": "Play this segment",
-    "escuchar": "▶ Listen"
+    "escuchar": "▶ Listen",
+    "revisar": "Review"
   },
   "modal": {
     "etiqueta": "Final video: {titulo}",
     "cerrar": "Close"
+  },
+  "pestanas": {
+    "etiqueta": "Episode clips",
+    "ia": "AI picks",
+    "manuales": "Manual",
+    "sinManuales": "No manual clips yet. Tap \"Create clip\" to make one from the transcript.",
+    "sinManualesSoloVer": "No manual clips yet."
   }
 }

@@ -1,13 +1,15 @@
 "use client";
 
-import { useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, X } from "lucide-react";
 import { aTiempoDelEpisodio, pedazosDelClip, siguienteTiempoVisible, type Corte } from "@/lib/cortes";
 import type { plantillaDelClip } from "@/lib/plantilla-clip";
 import type { ImagenClip, PosicionEfectiva, Texto } from "@/lib/clip-encuadre";
 import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
+import { finVisible, recortarVideo, type ModoRecorte, type VideoClip } from "@/lib/videos-clip";
 import { useTiempo, type Reproductor } from "./reproductor";
+import { TiraDeCuadros } from "./TiraDeCuadros";
 import { reloj, relojFino, type Herramienta, type SeleccionCortes } from "./tipos";
 
 /** Cuánto hay que mover el puntero para que un toque pase a ser un arrastre. */
@@ -32,6 +34,24 @@ interface Barra {
   alTocar: () => void;
   /** Sin esto, no se arrastra. */
   alMover?: (desde: number, hasta: number) => void;
+  /** Un video: su archivo como tira de cuadros, corrida a su `inicioSeg`. */
+  tira?: Tira;
+  /**
+   * El arrastre a medida de un video (mover, recortar el inicio o el final):
+   * mientras se arrastra solo se dibuja (`previa`); se guarda al soltar, en
+   * un solo paso de deshacer y un solo guardado.
+   */
+  recorte?: {
+    previa: (modo: ModoRecorte, corrida: number) => { desde: number; hasta: number; tira?: Tira };
+    alSoltar: (modo: ModoRecorte, corrida: number) => void;
+  };
+}
+
+interface Tira {
+  url: string;
+  duracionSeg: number;
+  /** El segundo del archivo que cae en el borde izquierdo de la barra. */
+  inicioSeg: number;
 }
 
 /**
@@ -60,10 +80,15 @@ export function LineaDeTiempo({
   onCambiarTextos,
   textoElegido,
   onElegirTexto,
+  onAgregarTexto,
   imagenes,
   onCambiarImagenes,
   imagenElegida,
   onElegirImagen,
+  videos,
+  onCambiarVideos,
+  videoElegido,
+  onElegirVideo,
   subtitulosActivos,
   plantilla,
   musica,
@@ -87,10 +112,17 @@ export function LineaDeTiempo({
   onCambiarTextos: (t: Texto[]) => void;
   textoElegido: number | null;
   onElegirTexto: (i: number) => void;
+  /** "+ Texto": lo crea ya en el video. Sin él (llegó al máximo), solo abre el panel. */
+  onAgregarTexto?: () => void;
   imagenes: ImagenClip[];
   onCambiarImagenes: (im: ImagenClip[]) => void;
   imagenElegida: number | null;
   onElegirImagen: (i: number) => void;
+  /** Van en la misma pista que las imágenes (Superposición). */
+  videos: VideoClip[];
+  onCambiarVideos: (v: VideoClip[]) => void;
+  videoElegido: number | null;
+  onElegirVideo: (i: number) => void;
   subtitulosActivos: boolean;
   plantilla: ReturnType<typeof plantillaDelClip>;
   musica: MusicaClip | null;
@@ -201,6 +233,41 @@ export function LineaDeTiempo({
     },
     alMover: puedeEditar ? (d, h) => onCambiarImagenes(imagenes.map((x, j) => (j === i ? conTiempo(x, d, h) : x))) : undefined,
   }));
+  // Un video sin final propio llega hasta que se le acaba el archivo (no hace
+  // loop): la barra muestra eso, con los cuadros del archivo. El medio lo
+  // corre; el borde izquierdo recorta el principio (corre también desde qué
+  // segundo del archivo arranca); el derecho, el final. Arrastrar el borde
+  // derecho hasta el final del archivo lo deja sin tope.
+  const tramo = { desde, hasta, cortes };
+  videos.forEach((v, i) => {
+    const tiraDe = (x: VideoClip): Tira => ({ url: x.url, duracionSeg: x.duracionSeg, inicioSeg: x.inicioSeg });
+    barrasImagenes.push({
+      clave: `v-${v.id}`,
+      etiqueta: tr("linea.videoN", { n: i + 1 }),
+      desde: v.desdeSeg,
+      hasta: finVisible(v, tramo),
+      elegida: videoElegido === i,
+      alTocar: () => {
+        onElegirVideo(i);
+        onAbrir("superposicion");
+      },
+      tira: tiraDe(v),
+      recorte: puedeEditar
+        ? {
+            previa: (modo, corrida) => {
+              const n = recortarVideo(v, modo, corrida, tramo);
+              return { desde: n.desdeSeg, hasta: finVisible(n, tramo), tira: tiraDe(n) };
+            },
+            alSoltar: (modo, corrida) => {
+              const n = recortarVideo(v, modo, corrida, tramo);
+              if (n.desdeSeg !== v.desdeSeg || n.hastaSeg !== v.hastaSeg || n.inicioSeg !== v.inicioSeg) {
+                onCambiarVideos(videos.map((x, j) => (j === i ? n : x)));
+              }
+            },
+          }
+        : undefined,
+    });
+  });
   if (plantilla.logo) {
     barrasImagenes.push({ clave: "logo", etiqueta: tr("linea.logo"), desde: 0, hasta: duracion, elegida: false, fija: true, alTocar: () => onAbrir("superposicion") });
   }
@@ -334,7 +401,7 @@ export function LineaDeTiempo({
             duracion={duracion}
             vacia={
               puedeEditar ? (
-                <button type="button" onClick={() => onAbrir("texto")} className={AGREGAR}>
+                <button type="button" onClick={() => (onAgregarTexto ? onAgregarTexto() : onAbrir("texto"))} className={AGREGAR}>
                   <Plus size={12} aria-hidden />
                   {tr("linea.agregarTexto")}
                 </button>
@@ -359,7 +426,7 @@ export function LineaDeTiempo({
         </Fila>
 
         {/* Imágenes */}
-        <Fila etiqueta={tr("linea.imagenes")} activa={herramienta === "superposicion"}>
+        <Fila etiqueta={tr("linea.superposicion")} activa={herramienta === "superposicion"}>
           <Pista
             barras={barrasImagenes}
             duracion={duracion}
@@ -434,6 +501,19 @@ function Cabezal({ reproductor, desde, duracion }: { reproductor: Reproductor; d
  */
 function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number; vacia: ReactNode }) {
   const pista = useRef<HTMLDivElement>(null);
+  // El ancho en píxeles: para correr la tira de cuadros de un video a su segundo.
+  const [anchoPx, setAnchoPx] = useState(0);
+  useEffect(() => {
+    const el = pista.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setAnchoPx(el.clientWidth));
+    ro.observe(el);
+    setAnchoPx(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+  // Lo que se está arrastrando de un video: se dibuja acá y se guarda al soltar.
+  const [vivo, setVivo] = useState<{ clave: string; desde: number; hasta: number; tira?: Tira } | null>(null);
+  const pxPorSeg = anchoPx / duracion;
   // Renglones: cada barra va al primero donde la anterior ya terminó.
   const finDeRenglon: number[] = [];
   const renglonDe = new Map<string, number>();
@@ -445,7 +525,11 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
       finDeRenglon[r] = b.hasta;
       renglonDe.set(b.clave, r);
     });
-  const renglones = Math.max(1, finDeRenglon.length);
+  // Con solo barras fijas (logo, llamada a la acción) el botón de agregar va
+  // en su propio renglón: si no, queda encima de la barra, que ocupa todo el clip.
+  const conVacia = Boolean(vacia) && !barras.some((b) => !b.fija);
+  const corrimiento = conVacia && barras.length > 0 ? 1 : 0;
+  const renglones = Math.max(1, finDeRenglon.length + corrimiento);
   const ALTO = 28;
   const ESPACIO = 4;
 
@@ -457,11 +541,17 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
     if (!caja) return;
     const x0 = e.clientX;
     let movido = false;
+    let corrida = 0;
     const mover = (ev: PointerEvent) => {
-      if (!b.alMover) return;
+      if (!b.alMover && !b.recorte) return;
       if (!movido && Math.abs(ev.clientX - x0) < UMBRAL_PX) return;
       movido = true;
       const ds = ((ev.clientX - x0) / caja.width) * duracion;
+      if (b.recorte) {
+        corrida = ds;
+        setVivo({ clave: b.clave, ...b.recorte.previa(modo, ds) });
+        return;
+      }
       let d = b.desde;
       let h = b.hasta;
       if (modo === "mover") {
@@ -474,24 +564,30 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
       } else {
         h = Math.max(Math.min(duracion, b.hasta + ds), b.desde + MINIMO_SEG);
       }
-      b.alMover(d, h);
+      b.alMover?.(d, h);
     };
     const soltar = () => {
       window.removeEventListener("pointermove", mover);
       window.removeEventListener("pointerup", soltar);
+      window.removeEventListener("pointercancel", soltar);
+      if (b.recorte && movido) b.recorte.alSoltar(modo, corrida);
+      setVivo(null);
     };
     window.addEventListener("pointermove", mover);
     window.addEventListener("pointerup", soltar);
+    window.addEventListener("pointercancel", soltar);
     // Al agarrarla ya queda elegida, aunque después se arrastre.
     b.alTocar();
   }
 
   return (
     <div ref={pista} className="relative" style={{ height: renglones * ALTO + (renglones - 1) * ESPACIO }}>
-      {!barras.some((b) => !b.fija) && vacia}
-      {barras.map((b) => {
-        const r = renglonDe.get(b.clave) ?? 0;
-        const editable = Boolean(b.alMover) && !b.fija && !b.musica;
+      {conVacia && <div className="absolute inset-x-0 top-0" style={{ height: ALTO }}>{vacia}</div>}
+      {barras.map((bOriginal) => {
+        const enVivo = vivo?.clave === bOriginal.clave ? vivo : null;
+        const b = enVivo ? { ...bOriginal, desde: enVivo.desde, hasta: enVivo.hasta, tira: enVivo.tira ?? bOriginal.tira } : bOriginal;
+        const r = (renglonDe.get(b.clave) ?? 0) + corrimiento;
+        const editable = Boolean(b.alMover || b.recorte) && !b.fija && !b.musica;
         const bordes = editable && !b.soloMover;
         return (
           <div
@@ -507,12 +603,14 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
                 b.alTocar();
               }
             }}
-            onPointerDown={(e) => (editable ? arrastrar(e, b, "mover") : (e.stopPropagation(), b.alTocar()))}
+            onPointerDown={(e) => (editable ? arrastrar(e, bOriginal, "mover") : (e.stopPropagation(), b.alTocar()))}
             className={`group absolute flex touch-none items-center overflow-hidden whitespace-nowrap rounded-md text-xs font-semibold ${
               b.fija
                 ? "cursor-pointer border border-dashed border-white/20 bg-transparent text-ng-secundario"
                 : b.musica
                   ? "cursor-pointer bg-white/10 text-white hover:bg-white/15"
+                  : b.tira
+                  ? `cursor-grab text-white ${b.elegida ? "z-10 ring-2 ring-inset ring-ng-azul" : "ring-1 ring-inset ring-white/15"} ${enVivo ? "cursor-grabbing" : ""}`
                   : b.elegida
                   ? "z-10 cursor-grab border-2 border-ng-azul bg-ng-azul/20 text-ng-azul"
                   : "cursor-grab bg-ng-azul/10 text-ng-lila hover:bg-ng-azul/15"
@@ -524,18 +622,33 @@ function Pista({ barras, duracion, vacia }: { barras: Barra[]; duracion: number;
               height: ALTO,
             }}
           >
+            {b.tira && (
+              // El archivo entero, corrido para que en el borde izquierdo caiga su `inicioSeg`.
+              <div
+                className="pointer-events-none absolute inset-y-0"
+                style={{ left: -b.tira.inicioSeg * pxPorSeg, width: Math.max(1, b.tira.duracionSeg * pxPorSeg) }}
+              >
+                <TiraDeCuadros url={b.tira.url} duracionSeg={b.tira.duracionSeg} className="h-full w-full opacity-80" />
+              </div>
+            )}
             {bordes && (
               <span
-                onPointerDown={(e) => arrastrar(e, b, "inicio")}
-                className={`h-full w-2 shrink-0 cursor-ew-resize ${b.elegida ? "bg-ng-azul" : "bg-ng-azul/30 opacity-0 group-hover:opacity-100"}`}
+                onPointerDown={(e) => arrastrar(e, bOriginal, "inicio")}
+                className={`relative h-full w-2 shrink-0 cursor-ew-resize ${b.elegida ? "bg-ng-azul" : "bg-ng-azul/30 opacity-0 group-hover:opacity-100"}`}
                 aria-hidden
               />
             )}
-            <span className="min-w-0 flex-1 truncate px-2">{b.etiqueta}</span>
+            {b.tira ? (
+              <span className="relative min-w-0 flex-1 truncate px-2 [text-shadow:0_1px_2px_rgba(0,0,0,0.9)]">
+                {b.etiqueta} <span className="font-normal text-white/80">· {relojFino(Math.max(0, b.hasta - b.desde))}</span>
+              </span>
+            ) : (
+              <span className="min-w-0 flex-1 truncate px-2">{b.etiqueta}</span>
+            )}
             {bordes && (
               <span
-                onPointerDown={(e) => arrastrar(e, b, "fin")}
-                className={`h-full w-2 shrink-0 cursor-ew-resize ${b.elegida ? "bg-ng-azul" : "bg-ng-azul/30 opacity-0 group-hover:opacity-100"}`}
+                onPointerDown={(e) => arrastrar(e, bOriginal, "fin")}
+                className={`relative h-full w-2 shrink-0 cursor-ew-resize ${b.elegida ? "bg-ng-azul" : "bg-ng-azul/30 opacity-0 group-hover:opacity-100"}`}
                 aria-hidden
               />
             )}

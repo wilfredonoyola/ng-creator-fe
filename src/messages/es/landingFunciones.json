@@ -1,7 +1,7 @@
 {
   "meta": {
     "titulo": "Todas las funciones",
-    "descripcion": "Clips con IA, edición, subtítulos, Brand Kit y publicación en TikTok, YouTube Shorts, Instagram Reels y Facebook: todo lo que hace Clipfine para agencias y podcasts."
+    "descripcion": "Clips con IA, un editor como CapCut con música y efectos, subtítulos, Brand Kit, revisión antes de publicar y publicación en TikTok, YouTube Shorts, Instagram Reels y Facebook: todo lo que hace Clipfine para agencias y podcasts."
   },
   "portada": {
     "etiqueta": "Funciones",
@@ -9,82 +9,480 @@
     "texto": "Del episodio largo a los clips publicados en cuatro redes, para cada cliente de tu agencia. Esto es lo que ya podés usar hoy.",
     "cta": "Probar gratis"
   },
-  "indice": "En esta página",
+  "indice": "Secciones",
+  "ver": "Ver la sección",
+  "migas": "Ruta",
+  "otras": "Otras funciones",
+  "anterior": "Anterior",
+  "siguiente": "Siguiente",
+  "verTodas": "Ver todas las funciones",
+  "grupos": {
+    "producir": {
+      "titulo": "Producir más con el mismo equipo",
+      "texto": "Del episodio largo a clips terminados, sin que un editor arranque de cero."
+    },
+    "entregar": {
+      "titulo": "Entregar a tiempo, con el visto bueno del cliente",
+      "texto": "La semana de cada cliente programada en cuatro redes, con la gente bien etiquetada, y nada sale sin aprobación."
+    },
+    "demostrar": {
+      "titulo": "Demostrar resultados",
+      "texto": "Los números que tu cliente quiere ver antes de renovar."
+    },
+    "operar": {
+      "titulo": "Muchos clientes, sin mezclarlos",
+      "texto": "La marca de cada cliente, tu equipo con su rol y todo también en el celular."
+    }
+  },
+  "agencia": {
+    "guias": "Cómo se usa, paso a paso",
+    "etiqueta": "Tu agencia",
+    "funciones": "Qué hace, y qué te ahorra",
+    "funcionesTexto": "Cada función como se ve en Clipfine, con lo que gana tu agencia.",
+    "datos": "Lo que gana tu agencia",
+    "preguntas": "Preguntas de agencias",
+    "relacionadas": "Sigue con"
+  },
   "secciones": {
-    "ia": { "titulo": "Clips con IA", "texto": "Subís el episodio y recibís sus mejores momentos, cada uno con su porqué." },
-    "edicion": { "titulo": "Edición", "texto": "Ajustá el tramo, sacá lo que sobra y encuadrá a quien habla, sin saber editar video." },
-    "textos": { "titulo": "Textos y subtítulos", "texto": "Subtítulos que se leen solos y textos con diseño, listos para redes." },
-    "imagenes": { "titulo": "Imágenes", "texto": "Sumá fotos, logos o personas recortadas encima del clip." },
-    "marca": { "titulo": "Brand Kit", "texto": "Cada cliente con su logo, sus colores y su estilo, en todos sus clips." },
-    "calidad": { "titulo": "Calidad y vista previa", "texto": "Clips nítidos y una vista previa de cómo salen en cada red." },
-    "importar": { "titulo": "Traer episodios", "texto": "El episodio grabado o el live, sin pasos de más." },
-    "publicar": { "titulo": "Publicar y programar", "texto": "Programá cada clip en las cuatro redes y seguí su estado desde un calendario." },
-    "metricas": { "titulo": "Métricas", "texto": "Qué clip funcionó, en qué red y por qué, para decidir el próximo y mostrárselo al cliente." },
-    "equipo": { "titulo": "Equipo y marcas", "texto": "Muchos clientes y mucha gente trabajando, sin pisarse." },
-    "app": { "titulo": "App e idiomas", "texto": "Lo mismo de la web, en el celular, en español o en inglés." }
+    "ia": {
+      "titulo": "Clips con IA",
+      "texto": "Subís el episodio y recibís sus mejores momentos, cada uno con su porqué."
+    },
+    "edicion": {
+      "titulo": "Edición",
+      "texto": "Ajustá el tramo, sacá lo que sobra y encuadrá a quien habla, sin saber editar video."
+    },
+    "audio": {
+      "titulo": "Audio y música",
+      "texto": "Música libre de derechos, efectos de sonido y el volumen justo, escuchándolo mientras editás."
+    },
+    "textos": {
+      "titulo": "Textos y subtítulos",
+      "texto": "Subtítulos que se leen solos y textos con diseño, listos para redes."
+    },
+    "imagenes": {
+      "titulo": "Imágenes",
+      "texto": "Sumá fotos, logos o personas recortadas encima del clip."
+    },
+    "marca": {
+      "titulo": "Brand Kit",
+      "texto": "Cada cliente con su logo, sus colores y su estilo, en todos sus clips."
+    },
+    "calidad": {
+      "titulo": "Calidad y vista previa",
+      "texto": "Clips nítidos y una vista previa de cómo salen en cada red."
+    },
+    "importar": {
+      "titulo": "Traer contenido",
+      "texto": "El episodio grabado, el live o el clip que ya editaste, sin pasos de más."
+    },
+    "subir-clips": {
+      "titulo": "Subir clips",
+      "texto": "Lo que ya editaste en CapCut, programado, aprobado y medido como cualquier clip."
+    },
+    "revision": {
+      "titulo": "Aprobación antes de publicar",
+      "texto": "Nada sale sin que alguien lo apruebe. Ni siquiera a las 3 de la mañana."
+    },
+    "publicar": {
+      "titulo": "Publicar y programar",
+      "texto": "Programá cada clip en las cuatro redes y seguí su estado desde un calendario."
+    },
+    "metricas": {
+      "titulo": "Métricas",
+      "texto": "Qué clip funcionó, en qué red y por qué, para decidir el próximo y mostrárselo al cliente."
+    },
+    "equipo": {
+      "titulo": "Equipo y marcas",
+      "texto": "Muchos clientes y mucha gente trabajando, sin pisarse."
+    },
+    "app": {
+      "titulo": "La app de Clipfine",
+      "texto": "Muy pronto en tu celular, en iPhone y Android: la misma cuenta, los mismos clientes y todo sincronizado con la web. Empezás en la compu y terminás donde estés."
+    },
+    "etiquetas": {
+      "titulo": "Etiquetas",
+      "texto": "Mencioná con @ a quien sale en el clip y cada red recibe su usuario: etiqueta real en Instagram, @mención en TikTok, YouTube y Facebook."
+    }
   },
   "items": {
-    "momentos": { "titulo": "Los mejores momentos, solos", "texto": "Clipfine transcribe el episodio y la IA elige los tramos que se entienden solos. Arrancás con una tanda de clips, no con 90 minutos de video." },
-    "puntaje": { "titulo": "Un puntaje y el porqué", "texto": "Cada clip sugerido trae un puntaje de 0 a 100 y el motivo: gancho fuerte, humor, opinión polémica, frase citable, emoción…" },
-    "sugeridos": { "titulo": "Título y gancho sugeridos", "texto": "Cada momento llega con un título y una frase de gancho para los primeros segundos, para usar tal cual o cambiar." },
-    "aMano": { "titulo": "Clips a mano, desde lo que se dice", "texto": "Leé la transcripción, escuchá el tramo, marcá dónde empieza y dónde termina, y al editor." },
-    "tramo": { "titulo": "Recorte con contexto", "texto": "Alargá o acortá el clip desde los bordes para no perder el arranque de una idea ni el remate." },
-    "cortes": { "titulo": "Cortes en el medio del clip", "texto": "Sacá lo que sobra adentro del clip, en la línea de tiempo o tocando las palabras de la transcripción." },
-    "silencios": { "titulo": "Quitar silencios largos", "texto": "Un toque marca los silencios largos como cortes, y los revisás uno por uno." },
-    "autoEncuadre": { "titulo": "Auto-encuadre", "texto": "El clip sigue a quien habla: reconoce las voces y mira quién mueve los labios. Cada cambio se puede corregir." },
-    "encuadreManual": { "titulo": "Encuadre a mano", "texto": "Mové y agrandá el recuadro, y sumá un encuadre nuevo desde cualquier segundo." },
-    "formatos": { "titulo": "9:16, 1:1 y 16:9", "texto": "Vertical para Reels, TikTok y Shorts, cuadrado para el feed u horizontal para YouTube." },
-    "disenos": { "titulo": "Cuatro diseños", "texto": "Uno, Dividido (dos personas, una arriba de la otra), Horizontal y Centrado. Se pueden cambiar en cada tramo." },
-    "fondo": { "titulo": "Fondo desenfocado o negro", "texto": "Si el video no llena la pantalla, el resto se completa con el mismo video suavizado o con franjas negras para los textos." },
-    "subtitulos": { "titulo": "Subtítulos automáticos", "texto": "Salen de la transcripción, con la palabra que se dice resaltada. Los subís, bajás o agrandás arrastrándolos." },
-    "corregir": { "titulo": "Corregí una palabra", "texto": "Si una palabra salió mal transcrita, la cambiás o la sacás del subtítulo sin tocar los tiempos." },
-    "estilos": { "titulo": "Estilos virales y profesionales", "texto": "Pop, Karaoke, Bestia, Editorial, Keynote y más, pintados con los colores de la marca." },
-    "textosDiseno": { "titulo": "Textos con diseño", "texto": "Varias letras, contorno, sombra o caja, palabras destacadas en otro color y el momento justo en que aparecen." },
-    "gancho": { "titulo": "Gancho al inicio", "texto": "Una frase grande en los primeros segundos, para que nadie pase de largo." },
-    "cta": { "titulo": "Llamada a la acción al final", "texto": "Un cierre como “Mirá el episodio completo”, en una caja con el color de la marca." },
-    "hastaTres": { "titulo": "Hasta 3 imágenes por clip", "texto": "Una foto, un logo o un producto: la soltás en la vista previa, la acomodás y elegís cuándo aparece." },
-    "quitarFondo": { "titulo": "Quitar el fondo con IA", "texto": "Recortá a una persona o un objeto de su fondo con un toque." },
-    "contorno": { "titulo": "Contorno tipo sticker", "texto": "Un borde blanco alrededor del recorte, para que se despegue del video." },
-    "logo": { "titulo": "El logo en cada clip", "texto": "Elegís la esquina, el tamaño y la opacidad. Si el logo trae fondo, se lo sacamos." },
-    "colores": { "titulo": "Los colores de la marca", "texto": "Se toman del logo con un toque o se eligen a mano, y pintan los textos y subtítulos." },
-    "estiloMarca": { "titulo": "Un estilo por marca", "texto": "El gancho y los subtítulos de cada cliente salen siempre con su estilo." },
-    "aplicaSolo": { "titulo": "Se aplica solo", "texto": "Los clips de la marca salen con su Brand Kit. En cada clip podés cambiar el estilo o apagar el logo." },
-    "render": { "titulo": "Render en alta calidad", "texto": "Se respetan los cuadros por segundo del original y el video que subiste no se vuelve a comprimir." },
-    "indicador": { "titulo": "Indicador de calidad", "texto": "Cada clip te dice si su calidad es excelente, buena o baja, y qué hacer si el zoom la empeora." },
-    "vistaPrevia": { "titulo": "Cómo se ve en cada red", "texto": "Mirá el clip con la pantalla de TikTok, Reels, Shorts o Facebook encima, para que nada quede tapado." },
-    "versionFacebook": { "titulo": "Versión corta para Facebook", "texto": "Si el clip pasa de 90 segundos, elegís qué tramo sale en Facebook; las otras redes llevan el clip entero." },
-    "descargar": { "titulo": "Descargá el MP4", "texto": "Cada clip terminado se baja listo para subirlo donde quieras." },
-    "subir": { "titulo": "Subí el episodio", "texto": "Elegí el video del podcast desde tu computadora y Clipfine lo transcribe solo." },
-    "restream": { "titulo": "El live desde Restream", "texto": "Conectá Restream y traé la grabación del live directo, sin esperar a que YouTube la procese." },
-    "cuatroRedes": { "titulo": "Cuatro redes a la vez", "texto": "Programá el mismo clip en TikTok, YouTube Shorts, Instagram Reels y Facebook en un solo paso." },
-    "porDefecto": { "titulo": "Hashtags y cuentas por defecto", "texto": "Cada marca guarda sus hashtags y sus cuentas, y se cargan solos cada vez que programás." },
-    "portada": { "titulo": "Elegí la portada", "texto": "Un cuadro del video o una imagen tuya como portada del clip." },
-    "comoSale": { "titulo": "Cómo sale en cada red", "texto": "Antes de programar ves si la descripción se pasa del largo que acepta alguna red." },
-    "calendario": { "titulo": "Calendario de la semana", "texto": "Qué está programado y qué ya salió, con el estado de cada red en cada clip." },
-    "editarAgendada": { "titulo": "Editá lo agendado", "texto": "Cambiá la hora o la descripción, o quitá una red, antes de que salga." },
-    "reintentar": { "titulo": "Si una red falla, te enterás", "texto": "Ves el motivo y reintentás solo esa red, sin volver a publicar donde ya salió." },
-    "metricasClip": { "titulo": "Métricas de cada clip", "texto": "Vistas, likes, comentarios, compartidos, guardados, alcance y seguidores ganados, red por red y sumados." },
-    "crecimiento": { "titulo": "Cómo creció", "texto": "La curva de vistas desde que salió: a la hora, a las 6 horas, al día y hasta 90 días después." },
-    "retencion": { "titulo": "Retención segundo a segundo", "texto": "Cuántos se van en los primeros 3 segundos, cuántos lo ven completo y cuánto se ve en promedio, donde la red lo da." },
-    "iaVsRealidad": { "titulo": "La IA contra la realidad", "texto": "La puntuación que le dio la IA a cada momento, al lado de las vistas reales, y qué tipo de momento rinde más." },
-    "resumenPrograma": { "titulo": "El resumen de cada cliente", "texto": "Totales contra el periodo anterior, mejores y peores clips, seguidores por red y la mejor hora para publicar." },
-    "exportar": { "titulo": "Exportar en PDF, CSV o Markdown", "texto": "Un reporte listo para el cliente, una planilla para Excel o Sheets, o un resumen para Notion, Slack o un correo." },
-    "seActualiza": { "titulo": "Se actualiza solo", "texto": "Las métricas se leen solas durante 90 días después de publicar, y también las ves en la app." },
-    "marcas": { "titulo": "Varias marcas en una cuenta", "texto": "Cada cliente tiene su espacio: episodios, clips, calendario, Brand Kit y redes, sin mezclarse." },
-    "roles": { "titulo": "Roles", "texto": "Propietario, editor o lector: cada persona entra con su rol en las marcas que le tocan." },
-    "invitaciones": { "titulo": "Invitaciones por correo", "texto": "Sumás a alguien con su correo y su nombre, y entra directo a la marca." },
-    "tomar": { "titulo": "Quién edita qué", "texto": "Quien toma un clip queda a su nombre y el resto lo ve. Si un tramo ya está en otro clip, Clipfine avisa." },
-    "listos": { "titulo": "Listos para programar", "texto": "Cuando un clip se marca terminado, aparece en el calendario para que alguien lo programe." },
-    "autoria": { "titulo": "Quién hizo cada cosa", "texto": "Cada clip muestra quién lo editó, quién lo terminó y quién lo programó." },
-    "avisos": { "titulo": "Avisos", "texto": "Te enterás cuando hay clips listos, cuando alguien toma o programa uno y cuando se publica." },
-    "app": { "titulo": "App para iPhone y Android", "texto": "La misma cuenta y las mismas marcas: editá, programá y mirá el calendario desde el celular." },
-    "push": { "titulo": "Notificaciones en el celular", "texto": "Los avisos del equipo te llegan al teléfono, y elegís cuáles querés recibir." },
-    "fotos": { "titulo": "Guardá el clip en Fotos", "texto": "Exportá el clip terminado a la galería del teléfono." },
-    "idiomas": { "titulo": "Español e inglés", "texto": "La web y la app están en español y en inglés. Por ahora, los episodios se transcriben en español." }
+    "momentos": {
+      "titulo": "Los mejores momentos, solos",
+      "texto": "Clipfine transcribe el episodio y la IA elige los tramos que se entienden solos. Arrancás con una tanda de clips, no con 90 minutos de video."
+    },
+    "puntaje": {
+      "titulo": "Un puntaje y el porqué",
+      "texto": "Cada clip sugerido trae un puntaje de 0 a 100 y el motivo: gancho fuerte, humor, opinión polémica, frase citable, emoción…"
+    },
+    "sugeridos": {
+      "titulo": "Título y gancho sugeridos",
+      "texto": "Cada momento llega con un título y una frase de gancho para los primeros segundos, para usar tal cual o cambiar."
+    },
+    "aMano": {
+      "titulo": "Clips a mano, desde lo que se dice",
+      "texto": "Leé la transcripción, escuchá el tramo, marcá dónde empieza y dónde termina, y al editor."
+    },
+    "pedirMomentos": {
+      "titulo": "Pedile los momentos que querés",
+      "texto": "Escribí \"un clip por cada tema del webinar\" o \"las preguntas del público\": la IA los busca en todo el video, elegís cuáles y se crean de una vez. También pegando una lista de tramos."
+    },
+    "desdeChatgpt": {
+      "titulo": "Clips desde ChatGPT o Claude",
+      "texto": "Conectá Clipfine y pedile al chat que lea la transcripción y saque los clips: los crea en tu cuenta, sin publicar, listos para terminar en el editor."
+    },
+    "editor": {
+      "titulo": "Un editor como CapCut",
+      "texto": "Línea de tiempo con cada pista, herramientas a un costado y deshacer o rehacer cualquier cambio."
+    },
+    "guardado": {
+      "titulo": "Se guarda solo",
+      "texto": "Cada cambio queda guardado mientras editás. No hay botón de guardar ni trabajo perdido."
+    },
+    "tramo": {
+      "titulo": "Recorte con contexto",
+      "texto": "Alargá o acortá el clip desde los bordes para no perder el arranque de una idea ni el remate."
+    },
+    "cortes": {
+      "titulo": "Cortes en el medio del clip",
+      "texto": "Sacá lo que sobra adentro del clip, en la línea de tiempo o tocando las palabras de la transcripción."
+    },
+    "silencios": {
+      "titulo": "Quitar silencios largos",
+      "texto": "Un toque marca los silencios largos como cortes, y los revisás uno por uno."
+    },
+    "autoEncuadre": {
+      "titulo": "Auto-encuadre",
+      "texto": "El clip sigue a quien habla: reconoce las voces y mira quién mueve los labios. Cada cambio se puede corregir."
+    },
+    "encuadreManual": {
+      "titulo": "Encuadre a mano",
+      "texto": "Mové y agrandá el recuadro, y sumá un encuadre nuevo desde cualquier segundo."
+    },
+    "formatos": {
+      "titulo": "9:16, 1:1 y 16:9",
+      "texto": "Vertical para Reels, TikTok y Shorts, cuadrado para el feed u horizontal para YouTube."
+    },
+    "disenos": {
+      "titulo": "Cuatro diseños",
+      "texto": "Uno, Dividido (dos personas, una arriba de la otra), Horizontal y Centrado. Se pueden cambiar en cada tramo."
+    },
+    "fondo": {
+      "titulo": "Fondo desenfocado o negro",
+      "texto": "Si el video no llena la pantalla, el resto se completa con el mismo video suavizado o con franjas negras para los textos."
+    },
+    "velocidad": {
+      "titulo": "Velocidad del clip",
+      "texto": "De 0,5x a 2x, sin que la voz cambie de tono. Ves al instante cuánto va a durar."
+    },
+    "volumenVoz": {
+      "titulo": "Volumen de la voz",
+      "texto": "Subila hasta 400 % o silenciala, y escuchá el cambio en la vista previa, sin exportar."
+    },
+    "musica": {
+      "titulo": "Música libre de derechos",
+      "texto": "Elegí una pista de la biblioteca de Clipfine o subí la tuya, y ajustá su volumen."
+    },
+    "bajarAlHablar": {
+      "titulo": "La música baja cuando hablan",
+      "texto": "La música se corre sola para atrás mientras alguien habla y vuelve en las pausas."
+    },
+    "efectos": {
+      "titulo": "Efectos de sonido",
+      "texto": "Un tambor, un whoosh o un aplauso en el segundo justo: los ponés con un toque en la línea de tiempo."
+    },
+    "subtitulos": {
+      "titulo": "Subtítulos automáticos",
+      "texto": "Salen de la transcripción, con la palabra que se dice resaltada. Los subís, bajás o agrandás arrastrándolos."
+    },
+    "corregir": {
+      "titulo": "Corregí una palabra",
+      "texto": "Si una palabra salió mal transcrita, la cambiás o la sacás del subtítulo sin tocar los tiempos."
+    },
+    "estilos": {
+      "titulo": "Estilos virales y profesionales",
+      "texto": "Pop, Karaoke, Bestia, Editorial, Keynote y más, pintados con los colores de la marca."
+    },
+    "textosDiseno": {
+      "titulo": "Textos con diseño",
+      "texto": "Varias letras, contorno, sombra o caja, palabras destacadas en otro color y el momento justo en que aparecen."
+    },
+    "gancho": {
+      "titulo": "Gancho al inicio",
+      "texto": "Una frase grande en los primeros segundos, para que nadie pase de largo."
+    },
+    "cta": {
+      "titulo": "Llamada a la acción al final",
+      "texto": "Un cierre como “Mirá el episodio completo”, en una caja con el color de la marca."
+    },
+    "hastaTres": {
+      "titulo": "Hasta 3 imágenes por clip",
+      "texto": "Una foto, un logo o un producto: la soltás en la vista previa, la acomodás y elegís cuándo aparece."
+    },
+    "quitarFondo": {
+      "titulo": "Quitar el fondo con IA",
+      "texto": "Recortá a una persona o un objeto de su fondo con un toque."
+    },
+    "contorno": {
+      "titulo": "Contorno tipo sticker",
+      "texto": "Un borde blanco alrededor del recorte, para que se despegue del video."
+    },
+    "logo": {
+      "titulo": "El logo en cada clip",
+      "texto": "Elegís la esquina, el tamaño y la opacidad. Si el logo trae fondo, se lo sacamos."
+    },
+    "colores": {
+      "titulo": "Los colores de la marca",
+      "texto": "Se toman del logo con un toque o se eligen a mano, y pintan los textos y subtítulos."
+    },
+    "estiloMarca": {
+      "titulo": "Un estilo por marca",
+      "texto": "El gancho y los subtítulos de cada cliente salen siempre con su estilo."
+    },
+    "aplicaSolo": {
+      "titulo": "Se aplica solo",
+      "texto": "Los clips de la marca salen con su Brand Kit. En cada clip podés cambiar el estilo o apagar el logo."
+    },
+    "render": {
+      "titulo": "Render en alta calidad",
+      "texto": "Se respetan los cuadros por segundo del original y el video que subiste no se vuelve a comprimir."
+    },
+    "indicador": {
+      "titulo": "Indicador de calidad",
+      "texto": "Cada clip te dice si su calidad es excelente, buena o baja, y qué hacer si el zoom la empeora."
+    },
+    "vistaPrevia": {
+      "titulo": "Cómo se ve en cada red",
+      "texto": "Mirá el clip con la pantalla de TikTok, Reels, Shorts o Facebook encima, para que nada quede tapado."
+    },
+    "versionFacebook": {
+      "titulo": "Versión corta para Facebook",
+      "texto": "Si el clip pasa de 90 segundos, elegís qué tramo sale en Facebook; las otras redes llevan el clip entero."
+    },
+    "descargar": {
+      "titulo": "Descargá el MP4",
+      "texto": "Cada clip terminado se baja listo para subirlo donde quieras."
+    },
+    "subir": {
+      "titulo": "Subí el episodio",
+      "texto": "Elegí el video del podcast desde tu computadora y Clipfine lo transcribe solo."
+    },
+    "restream": {
+      "titulo": "El live desde Restream",
+      "texto": "Conectá Restream y traé la grabación del live directo, sin esperar a que YouTube la procese."
+    },
+    "clipsEditados": {
+      "titulo": "Clips ya editados",
+      "texto": "Subí lo que editaste en CapCut o un recorte de YouTube y publicalo como cualquier clip: revisión, cuatro redes y métricas."
+    },
+    "cuatroRedes": {
+      "titulo": "Cuatro redes a la vez",
+      "texto": "Programá el mismo clip en TikTok, YouTube Shorts, Instagram Reels y Facebook en un solo paso."
+    },
+    "sinExportar": {
+      "titulo": "Programá sin exportar",
+      "texto": "Programás desde el editor y Clipfine arma el video final antes de publicarlo. También podés bajar el MP4."
+    },
+    "porDefecto": {
+      "titulo": "Hashtags y cuentas por defecto",
+      "texto": "Cada marca guarda sus hashtags y sus cuentas, y se cargan solos cada vez que programás."
+    },
+    "portada": {
+      "titulo": "Elegí la portada",
+      "texto": "Un cuadro del video o una imagen tuya como portada del clip."
+    },
+    "comoSale": {
+      "titulo": "Cómo sale en cada red",
+      "texto": "Antes de programar ves si la descripción se pasa del largo que acepta alguna red."
+    },
+    "calendario": {
+      "titulo": "Calendario de la semana",
+      "texto": "Qué está programado y qué ya salió, con el estado de cada red en cada clip."
+    },
+    "editarAgendada": {
+      "titulo": "Editá lo agendado",
+      "texto": "Cambiá la hora o la descripción, o quitá una red, antes de que salga."
+    },
+    "porRevisar": {
+      "titulo": "Por revisar",
+      "texto": "Con la revisión activa, lo que programa un editor queda «Por revisar» y no sale hasta que lo aprueben, aunque llegue la hora."
+    },
+    "aprobar": {
+      "titulo": "Aprobar con un toque",
+      "texto": "El revisor mira el clip y lo aprueba: sale a la hora que se programó, en todas sus redes."
+    },
+    "pedirCambios": {
+      "titulo": "Pedir cambios",
+      "texto": "Si algo no va, el revisor dice qué cambiar y el clip vuelve a quien lo editó. Corregido, se manda de nuevo."
+    },
+    "clienteRevisor": {
+      "titulo": "Tu cliente aprueba",
+      "texto": "Invitá a tu cliente con el rol Revisor: ve sus clips y los aprueba o pide cambios, pero no puede editar nada."
+    },
+    "vencimiento": {
+      "titulo": "Nada se escapa",
+      "texto": "Si se acerca la hora y nadie revisó, avisa. Si llega sin aprobación, no sale; o, si la marca lo prefiere, sale igual y queda marcado."
+    },
+    "editarVuelve": {
+      "titulo": "Lo aprobado es lo que sale",
+      "texto": "Si alguien edita un clip después de aprobarlo, vuelve a revisión. Nadie cambia nada a escondidas."
+    },
+    "avisosRevision": {
+      "titulo": "Avisos al que tiene que actuar",
+      "texto": "El revisor se entera cuando hay algo para revisar; el editor, cuando lo aprueban o le piden cambios. Por la app, push y correo."
+    },
+    "reintentar": {
+      "titulo": "Si una red falla, te enterás",
+      "texto": "Ves el motivo y reintentás solo esa red, sin volver a publicar donde ya salió."
+    },
+    "metricasClip": {
+      "titulo": "Métricas de cada clip",
+      "texto": "Vistas, likes, comentarios, compartidos, guardados, alcance y seguidores ganados, red por red y sumados."
+    },
+    "crecimiento": {
+      "titulo": "Cómo creció",
+      "texto": "La curva de vistas desde que salió: a la hora, a las 6 horas, al día y hasta 90 días después."
+    },
+    "retencion": {
+      "titulo": "Retención segundo a segundo",
+      "texto": "Cuántos se van en los primeros 3 segundos, cuántos lo ven completo y cuánto se ve en promedio, donde la red lo da."
+    },
+    "iaVsRealidad": {
+      "titulo": "La IA contra la realidad",
+      "texto": "La puntuación que le dio la IA a cada momento, al lado de las vistas reales, y qué tipo de momento rinde más."
+    },
+    "resumenPrograma": {
+      "titulo": "El resumen de cada cliente",
+      "texto": "Totales contra el periodo anterior, mejores y peores clips, seguidores por red y la mejor hora para publicar."
+    },
+    "exportar": {
+      "titulo": "Exportar en PDF, CSV o Markdown",
+      "texto": "Un reporte listo para el cliente, una planilla para Excel o Sheets, o un resumen para Notion, Slack o un correo."
+    },
+    "seActualiza": {
+      "titulo": "Se actualiza solo",
+      "texto": "Las métricas se leen solas durante 90 días después de publicar, y también las ves en la app."
+    },
+    "marcas": {
+      "titulo": "Varias marcas en una cuenta",
+      "texto": "Cada cliente tiene su espacio: episodios, clips, calendario, Brand Kit y redes, sin mezclarse."
+    },
+    "roles": {
+      "titulo": "Roles",
+      "texto": "Propietario, editor, revisor o lector: cada persona entra con su rol en las marcas que le tocan."
+    },
+    "invitaciones": {
+      "titulo": "Invitaciones por correo",
+      "texto": "Sumás a alguien con su correo y su nombre, y entra directo a la marca."
+    },
+    "tomar": {
+      "titulo": "Quién edita qué",
+      "texto": "Quien toma un clip queda a su nombre y el resto lo ve. Si un tramo ya está en otro clip, Clipfine avisa."
+    },
+    "listos": {
+      "titulo": "Listos para programar",
+      "texto": "Cuando un clip se marca terminado, aparece en el calendario para que alguien lo programe."
+    },
+    "notaVoz": {
+      "titulo": "Comentarios de voz",
+      "texto": "¿No querés escribir? Grabá una nota de voz. Clipfine la transcribe, así el editor la escucha o la lee."
+    },
+    "autoria": {
+      "titulo": "Quién hizo cada cosa",
+      "texto": "Cada clip muestra quién lo editó, quién lo terminó y quién lo programó."
+    },
+    "avisos": {
+      "titulo": "Avisos",
+      "texto": "Te enterás cuando hay clips listos, cuando alguien toma o programa uno y cuando se publica."
+    },
+    "idiomas": {
+      "titulo": "Español e inglés",
+      "texto": "Cada persona del equipo usa Clipfine en su idioma, en la web y en la app. Los episodios se transcriben en el idioma en que se habla: español, inglés y más."
+    },
+    "app": {
+      "titulo": "App para iPhone y Android",
+      "texto": "Entrás con tu cuenta de siempre y tus clientes, episodios y clips ya están ahí. No hay nada que configurar de nuevo."
+    },
+    "sincronizado": {
+      "titulo": "Todo sincronizado con la web",
+      "texto": "Lo que editás en la compu aparece en el teléfono y al revés, sin exportar ni pasar archivos."
+    },
+    "editarCelular": {
+      "titulo": "El editor en el bolsillo",
+      "texto": "Recortá, subtitulá, sumá música y efectos y programá en las cuatro redes desde el celular."
+    },
+    "aprobarCelular": {
+      "titulo": "Aprobá desde donde estés",
+      "texto": "Mirá el clip, aprobalo o pedí cambios con una nota de voz, sin abrir la compu."
+    },
+    "push": {
+      "titulo": "Notificaciones en el celular",
+      "texto": "Los avisos del equipo te llegan al teléfono, y elegís cuáles querés recibir."
+    },
+    "fotos": {
+      "titulo": "Guardá el clip en Fotos",
+      "texto": "Exportá el clip terminado a la galería del teléfono."
+    },
+    "soltarVarios": {
+      "titulo": "Varios a la vez",
+      "texto": "Soltás o elegís varios videos y se suben juntos, cada uno con su avance."
+    },
+    "talCual": {
+      "titulo": "Sale tal cual",
+      "texto": "Si ya está en H.264, se publica sin recomprimir: lo que exportaste es lo que se ve."
+    },
+    "retocar": {
+      "titulo": "O lo retocás",
+      "texto": "Abrilo en el editor y sumale subtítulos, plantilla, gancho o música."
+    },
+    "programarSubido": {
+      "titulo": "Al calendario",
+      "texto": "Se programa en TikTok, Instagram, YouTube y Facebook como los demás clips."
+    },
+    "revisarSubido": {
+      "titulo": "Con aprobación",
+      "texto": "Si el cliente revisa, el clip subido también pasa por su visto bueno."
+    },
+    "medirSubido": {
+      "titulo": "Con métricas",
+      "texto": "Vistas, interacciones y retención por clip y por red."
+    },
+    "sinHoras": {
+      "titulo": "No descuenta horas",
+      "texto": "Las horas del plan quedan para los episodios."
+    },
+    "desdeCelular": {
+      "titulo": "Desde el celular",
+      "texto": "En la app, elegís los videos de la galería y si se corta la conexión, sigue desde donde quedó."
+    },
+    "menciones": {
+      "titulo": "@menciones que se resuelven solas",
+      "texto": "Escribís @Ana una vez en la descripción y al publicar cada red recibe su usuario de esa red. Si no tiene cuenta ahí, sale su nombre."
+    },
+    "tresNiveles": {
+      "titulo": "Elenco, Global y por episodio",
+      "texto": "El elenco que sale siempre, un directorio Global para quien aparece cada tanto y los invitados de cada programa, que pasás a Global con un toque."
+    },
+    "verificar": {
+      "titulo": "Cuentas verificadas",
+      "texto": "Al cargar un usuario, Clipfine lo busca en la red y te muestra su nombre y foto. Si no existe, avisa antes de publicar. Donde la red no deja confirmarlo, te deja el perfil a un clic."
+    },
+    "sugeridas": {
+      "titulo": "Sugeridas por lo que se dice",
+      "texto": "Si en el clip nombran a alguien de tu lista, aparece sugerido con el segundo en que lo dicen. Los invitados del episodio ya vienen marcados."
+    },
+    "colaboradores": {
+      "titulo": "Colaboradores en Instagram y Facebook",
+      "texto": "Invitá hasta 3 cuentas de Instagram y hasta 10 páginas de Facebook: si aceptan, el Reel sale también en su perfil o su página."
+    },
+    "buscar": {
+      "titulo": "Un directorio que se busca",
+      "texto": "Buscá por nombre, apodo o usuario, sin acentos, y mirá cuántas veces etiquetaste a cada uno."
+    }
   },
   "cierre": {
     "titulo": "Probalo con un cliente",
     "texto": "Subí un episodio y mirá los clips que salen, con su Brand Kit y listos para programar.",
     "cta": "Probar gratis"
-  }
+  },
+  "proximamenteTiendas": "Próximamente en App Store y Google Play"
 }

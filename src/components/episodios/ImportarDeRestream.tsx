@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
@@ -13,6 +13,7 @@ import {
   RESTREAM_URL_DE_CONEXION,
 } from "@/graphql/operations";
 import { useSesion } from "@/lib/sesion";
+import { faseDe, useEpisodiosEnCurso, type EpisodioEnCurso } from "@/lib/en-curso";
 
 interface EventoRestream {
   id: string;
@@ -23,9 +24,50 @@ interface EventoRestream {
   archivo?: string | null;
   grabacionVenceEn?: string | null;
   episodioId?: string | null;
+  episodio?: EpisodioDelLive | null;
+}
+
+type EpisodioDelLive = Omit<EpisodioEnCurso, "titulo" | "subidoPor"> & {
+  error?: string | null;
+  duracionSeg?: number | null;
+  errorImportacion?: string | null;
+  errorTranscripcion?: string | null;
+  errorMomentos?: string | null;
+  clipsSugeridos?: number | null;
+};
+
+/**
+ * En qué va el episodio de un live: "Ya importado" apenas se pedía no decía
+ * si se estaba bajando, si había fallado o si ya tenía clips.
+ */
+function situacionDe(ep: EpisodioDelLive, enCurso?: EpisodioEnCurso) {
+  const fallo =
+    ep.estadoImportacion === "FALLIDA"
+      ? ep.errorImportacion
+      : ep.estado === "FALLIDO"
+        ? ep.error
+        : ep.estadoTranscripcion === "FALLIDA"
+          ? ep.errorTranscripcion
+          : ep.estadoMomentos === "FALLIDO"
+            ? ep.errorMomentos
+            : undefined;
+  if (fallo !== undefined) return { tipo: "fallo" as const, error: fallo ?? "" };
+  if (enCurso) return { tipo: "enCurso" as const, ...faseDe(enCurso) };
+  const termino = ep.estado === "LISTO" && ep.estadoTranscripcion === "LISTA" && ep.estadoMomentos === "LISTO";
+  if (!termino) return { tipo: "enCurso" as const, ...faseDe({ ...ep, titulo: "" }) };
+  return { tipo: "listo" as const, clips: ep.clipsSugeridos ?? 0 };
+}
+
+/**
+ * La grabación vino mucho más corta que el live: Restream guardó varios
+ * tramos y se trajo uno chico (pasó con el Programa #28: 40 s de 2 h 23 min).
+ */
+function vinoCorta(ep: EpisodioDelLive, ev: EventoRestream): boolean {
+  return Boolean(ev.duracionSeg && ev.duracionSeg > 120 && ep.duracionSeg && ep.duracionSeg < ev.duracionSeg * 0.8);
 }
 
 function duracion(t: ReturnType<typeof useTranslations<"episodiosRestream">>, seg: number): string {
+  if (seg < 60) return t("segundos", { s: Math.round(seg) });
   const h = Math.floor(seg / 3600);
   const m = Math.round((seg % 3600) / 60);
   return h ? t("horasMinutos", { h, m }) : t("minutos", { m });
@@ -38,7 +80,11 @@ function duracion(t: ReturnType<typeof useTranslations<"episodiosRestream">>, se
  */
 export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; onImportado: () => void }) {
   const t = useTranslations("episodiosRestream");
+  const tf = useTranslations("marcoEnCurso.fases");
   const locale = useLocale();
+  // Lo que está en marcha ya se consulta seguido para la barra de "en curso":
+  // de ahí sale el avance, sin volver a preguntarle a Restream.
+  const enCurso = useEpisodiosEnCurso();
   const { esPropietario } = useSesion();
   const mando = esPropietario(marcaId);
   const { data: conf } = useQuery(RESTREAM_CONFIGURADO, { errorPolicy: "all" });
@@ -51,6 +97,16 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
     fetchPolicy: "network-only",
   });
   const eventos: EventoRestream[] = eventosQ.data?.restreamEventos ?? [];
+  // Cuando un episodio de la lista termina (sale de "en curso"), se vuelve a
+  // traer la lista una vez para mostrar cómo quedó: listo, sin clips o falló.
+  const enCursoAntes = useRef<Set<string>>(new Set());
+  const { refetch: refetchEventos } = eventosQ;
+  useEffect(() => {
+    const ahora = new Set(enCurso.map((e) => e._id));
+    const termino = [...enCursoAntes.current].some((id) => !ahora.has(id));
+    enCursoAntes.current = ahora;
+    if (termino && abierto) void refetchEventos().catch(() => {});
+  }, [enCurso, abierto, refetchEventos]);
   const [pedirUrl, { loading: pidiendoUrl }] = useLazyQuery(RESTREAM_URL_DE_CONEXION, { fetchPolicy: "network-only" });
   const [importar] = useMutation(IMPORTAR_DE_RESTREAM);
   const [desconectar] = useMutation(RESTREAM_DESCONECTAR, {
@@ -153,7 +209,15 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
                     )}
                   </p>
                 </div>
-                {ev.episodioId ? (
+                {ev.episodioId && ev.episodio ? (
+                  <EstadoDelLive
+                    ev={ev}
+                    ep={ev.episodio}
+                    enCurso={enCurso.find((x) => x._id === ev.episodioId)}
+                    t={t}
+                    tf={tf}
+                  />
+                ) : ev.episodioId ? (
                   <Link href={`/episodios/${ev.episodioId}`} className="shrink-0 text-xs text-ng-teal hover:underline">
                     {t("yaImportado")}
                   </Link>
@@ -175,5 +239,52 @@ export function ImportarDeRestream({ marcaId, onImportado }: { marcaId: string; 
         </div>
       )}
     </div>
+  );
+}
+
+function EstadoDelLive({
+  ev,
+  ep,
+  enCurso,
+  t,
+  tf,
+}: {
+  ev: EventoRestream;
+  ep: EpisodioDelLive;
+  enCurso?: EpisodioEnCurso;
+  t: ReturnType<typeof useTranslations<"episodiosRestream">>;
+  tf: ReturnType<typeof useTranslations<"marcoEnCurso.fases">>;
+}) {
+  const s = situacionDe(ep, enCurso);
+  const href = `/episodios/${ev.episodioId}`;
+  if (s.tipo === "fallo") {
+    return (
+      <Link href={href} title={s.error} className="max-w-[45%] shrink-0 truncate text-right text-xs text-red-400 hover:underline">
+        {t("estado.fallo")}
+        {s.error ? `: ${s.error}` : ""}
+      </Link>
+    );
+  }
+  if (s.tipo === "enCurso") {
+    return (
+      <Link href={href} className="flex shrink-0 items-center gap-1.5 text-xs text-amber-300 hover:underline">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-300" aria-hidden />
+        {tf(s.fase)}
+        {s.progreso != null ? ` ${s.progreso} %` : "…"}
+      </Link>
+    );
+  }
+  if (vinoCorta(ep, ev)) {
+    return (
+      <Link href={href} className="max-w-[50%] shrink-0 text-right text-xs text-amber-300 hover:underline">
+        {t("estado.corta", { trajo: duracion(t, ep.duracionSeg ?? 0), dura: duracion(t, ev.duracionSeg ?? 0) })}
+        <span className="block text-white/45">{t("estado.cortaQueHacer")}</span>
+      </Link>
+    );
+  }
+  return (
+    <Link href={href} className="shrink-0 text-xs text-ng-teal hover:underline">
+      {t("estado.listo", { n: s.clips })}
+    </Link>
   );
 }

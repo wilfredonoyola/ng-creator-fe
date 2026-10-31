@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "titulo": "Programar clips en TikTok, Reels y Shorts para tus clientes | Clipfine",
+    "descripcion": "Programá los clips de cada cliente en TikTok, Instagram Reels, YouTube Shorts y Facebook desde un calendario. Sin bajar ni subir archivos. Para agencias."
+  },
+  "titulo": "La semana de cada cliente,",
+  "destacado": "programada en una tarde",
+  "bajada": "Los clips de cada cliente salen en TikTok, Instagram Reels, YouTube Shorts y Facebook desde un solo calendario. Sin bajar el video, sin volver a subirlo y sin abrir cuatro apps.",
+  "datos": {
+    "d1": { "cifra": "4 redes", "que": "por clip, programadas en un solo paso" },
+    "d2": { "cifra": "0 archivos", "que": "que bajar y volver a subir" },
+    "d3": { "cifra": "1 calendario", "que": "por cliente, con el estado de cada red" }
+  },
+  "agencia": {
+    "cuatroRedes": "Un clip, cuatro publicaciones. El editor deja de subir lo mismo cuatro veces.",
+    "sinExportar": "Nadie se queda mirando una barra de exportación. Programás y seguís con el próximo cliente.",
+    "porDefecto": "Imposible publicar en la cuenta equivocada o con los hashtags de otro cliente.",
+    "portada": "El perfil del cliente se ve prolijo en la grilla, no con caras a mitad de palabra.",
+    "comoSale": "El error aparece antes de publicar, no cuando el cliente pregunta por qué no salió.",
+    "calendario": "El martes ya sabés si la semana de cada cliente está cubierta, sin preguntarle a nadie.",
+    "editarAgendada": "Si el cliente cambia de idea a último momento, es un cambio de diez segundos.",
+    "reintentar": "Nada de publicaciones duplicadas frente al cliente por arreglar una sola red."
+  },
+  "vistas": {
+    "cuatroRedes": { "pie": "jue 18:00 · 4 publicaciones" },
+    "sinExportar": { "editor": "Editor", "programar": "Programar", "armando": "Armando el video final", "pie": "Sale cuando el video está listo" },
+    "porDefecto": { "marca": "Cliente B · por defecto", "descripcion": "El error que casi nos cuesta el programa…" },
+    "portada": { "pie": "Portada: cuadro 00:12 · o subí una imagen" },
+    "comoSale": { "descripcion": "Nadie habla de esta parte del negocio y por eso hoy te traigo…", "sePasa": "TikTok: se pasa 112" },
+    "calendario": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie" },
+    "editarAgendada": { "antes": "Jueves 18:00", "despues": "Viernes 12:30", "quitar": "Quitar: YouTube", "pie": "Se puede cambiar hasta que sale" },
+    "reintentar": { "motivo": "Facebook: la cuenta perdió el permiso.", "accion": "Reintentar solo Facebook →" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Puedo programar en las cuentas de mis clientes sin tener sus contraseñas?", "r": "Sí. Cada cliente conecta sus redes una vez a su marca en Clipfine y tu equipo programa desde ahí. Nadie de tu equipo necesita la contraseña." },
+    "p2": { "p": "¿Qué pasa si el cliente tiene que aprobar antes?", "r": "Activás la aprobación antes de publicar en su marca. Lo que programa tu equipo queda Por revisar hasta que el cliente lo aprueba o pide cambios." },
+    "p3": { "p": "¿Puedo bajar el MP4 para otras redes?", "r": "Sí. Cada clip terminado se baja como MP4, listo para LinkedIn, X o donde lo necesite el cliente." }
+  }
+}

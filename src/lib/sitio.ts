@@ -16,3 +16,6 @@ export const PREFIJO_APP = process.env.NODE_ENV === "production" ? URL_APP : "";
  * un link relativo a "/" nunca llegaría a la página de venta.
  */
 export const PREFIJO_SITIO = process.env.NODE_ENV === "production" ? URL_SITIO : "";
+
+/** El conector MCP que se pega en ChatGPT o Claude: Vercel lo pasa al backend (next.config.js). */
+export const URL_MCP = process.env.NEXT_PUBLIC_URL_MCP ?? "https://mcp.clipfine.io";

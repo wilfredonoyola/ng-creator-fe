@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useMutation } from "@apollo/client";
-import { useTranslations } from "next-intl";
-import { ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, Redo2, Send, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { CalendarCheck, ChevronDown, ChevronLeft, Download, Ellipsis, LoaderCircle, PencilLine, Redo2, Send, Trash2, Undo2, UserCheck, UserMinus, UserPlus, X } from "lucide-react";
+import { diaYHora } from "@/lib/publicaciones";
 import { SOLTAR_CLIP_EPISODIO, TOMAR_CLIP_EPISODIO } from "@/graphql/operations";
 import { useSesion } from "@/lib/sesion";
 import type { CalidadClip } from "@/lib/calidad";
@@ -12,6 +14,7 @@ import { Menu } from "@/components/Menu";
 import { IndicadorCalidad } from "@/components/episodios/IndicadorCalidad";
 import { EstadoGuardado, useDescargarMp4 } from "@/components/episodios/ExportarClip";
 import type { Autoria } from "@/components/episodios/TomarClip";
+import { sePuedeBorrar, useBorrarClip } from "@/components/episodios/useBorrarClip";
 import { PanelExportar } from "./PanelExportar";
 import type { EstadoGuardado as Guardado } from "./useGuardado";
 
@@ -30,7 +33,8 @@ const ICONO = "inline-flex h-10 w-10 shrink-0 items-center justify-center rounde
  * - Programar no espera al MP4: si falta o quedó viejo, se exporta solo antes
  *   de publicar (ng-creator-be, `esperaVideo`).
  *
- * En lo angosto, quién lo edita pasa al menú "···".
+ * En lo angosto, quién lo edita pasa al menú "···". Ahí también está Borrar
+ * clip, solo para uno hecho a mano que todavía no se publicó (be#223).
  */
 export function BarraSuperior({
   clipId,
@@ -46,6 +50,7 @@ export function BarraSuperior({
   calidad,
   exportar,
   hrefProgramar,
+  hechoAMano = false,
 }: {
   clipId: string;
   marcaId: string;
@@ -61,6 +66,8 @@ export function BarraSuperior({
   calidad: CalidadClip | null;
   exportar: Omit<ComponentProps<typeof PanelExportar>, "clipId" | "marcaId" | "puedeOperar" | "bajada" | "bajarAlTerminar">;
   hrefProgramar: string;
+  /** Lo armó una persona (origen MANUAL): solo esos se pueden borrar. */
+  hechoAMano?: boolean;
 }) {
   const t = useTranslations("editorBarra");
   const th = useTranslations("editorHerramientas");
@@ -76,7 +83,20 @@ export function BarraSuperior({
   const alDia = render.estado === "LISTO" && Boolean(render.urlVideo) && !render.desactualizado;
   const bajada = useDescargarMp4(render.urlVideo, titulo);
   const [bajarAlTerminar, setBajarAlTerminar] = useState(false);
-  const { fallidas = 0 } = exportar.publicacion ?? {};
+  const { fallidas = 0, programadas = 0, proximaEn } = exportar.publicacion ?? {};
+  const locale = useLocale();
+  const router = useRouter();
+  const [yendo, setYendo] = useState(false);
+
+  // Programar sin el MP4 al día: primero se exporta (con lo último guardado) y
+  // después se va a Programar, que espera el video antes de dejar programar.
+  async function irAProgramar(e: React.MouseEvent) {
+    if (alDia || procesando) return;
+    e.preventDefault();
+    setYendo(true);
+    await exportar.onExportar();
+    router.push(hrefProgramar);
+  }
 
   // Se pidió "Descargar" sin el MP4 al día: baja solo en cuanto termina. Un
   // FALLIDO de antes no cuenta: solo el del render que se pidió ahora.
@@ -148,6 +168,22 @@ export function BarraSuperior({
         onClick: mio ? liberarlo : tomarlo,
       }
     : null;
+  // Borrar: después de borrarlo no hay editor al que volver, se va al episodio.
+  const borrador = useBorrarClip(marcaId);
+  const clipParaBorrar = { _id: clipId, titulo, origen: hechoAMano ? "MANUAL" : null, publicacion: exportar.publicacion };
+  const opcionBorrar = sePuedeBorrar(clipParaBorrar, puedeOperar)
+    ? {
+        texto: borrador.borrando ? t("borrar.borrando") : t("borrar.boton"),
+        detalle: t("borrar.ayuda"),
+        icono: <Trash2 size={16} />,
+        peligro: true,
+        deshabilitada: borrador.borrando,
+        onClick: () =>
+          void borrador.borrar(clipParaBorrar).then((ok) => {
+            if (ok) router.push(hrefVolver);
+          }),
+      }
+    : null;
   const chipQuien = (
     <span className="inline-flex items-center gap-1.5">
       {tomando || soltando ? <LoaderCircle size={14} className="animate-spin" aria-hidden /> : <UserCheck size={14} aria-hidden />}
@@ -211,15 +247,21 @@ export function BarraSuperior({
         </span>
       )}
 
-      {opcionTomar && (
+      {(opcionTomar || opcionBorrar) && (
         <div className="md:hidden">
           <Menu
             etiqueta={t("masAcciones")}
             claseBoton={ICONO}
-            encabezado={<p className="text-white/70">{quien}</p>}
-            opciones={[opcionTomar]}
+            encabezado={opcionTomar ? <p className="text-white/70">{quien}</p> : undefined}
+            opciones={[opcionTomar, opcionBorrar]}
             boton={<Ellipsis size={20} aria-hidden />}
           />
+        </div>
+      )}
+      {/* Desde md, quién lo edita va en su chip: el "···" queda para borrar. */}
+      {opcionBorrar && (
+        <div className="hidden md:block">
+          <Menu etiqueta={t("masAcciones")} claseBoton={ICONO} opciones={[opcionBorrar]} boton={<Ellipsis size={20} aria-hidden />} />
         </div>
       )}
 
@@ -253,14 +295,35 @@ export function BarraSuperior({
             <ChevronDown size={16} aria-hidden />
           </button>
         </div>
+        {/* Ya programado: se ve acá, y el botón lleva a editar lo programado. */}
+        {programadas > 0 && (
+          <Link
+            href={hrefProgramar}
+            title={t("programar.verProgramado")}
+            className="hidden h-10 items-center gap-1.5 rounded-ng-md border border-ng-teal/30 bg-ng-teal/10 px-3 text-xs font-semibold text-ng-teal lg:inline-flex"
+          >
+            <CalendarCheck size={14} aria-hidden />
+            {proximaEn
+              ? t("programar.programadoEl", { cuando: diaYHora(new Date(proximaEn), locale), n: programadas })
+              : t("programar.programado", { n: programadas })}
+          </Link>
+        )}
         {puedeOperar && (
           <Link
             href={hrefProgramar}
+            onClick={(e) => void irAProgramar(e)}
+            aria-disabled={yendo}
             title={alDia ? undefined : th("exportar.seExportaSolo")}
             className="inline-flex h-10 items-center gap-2 rounded-ng-md bg-ng-azul px-4 text-sm font-bold text-ng-tinta transition hover:brightness-110"
           >
-            <Send size={16} aria-hidden />
-            {fallidas ? t("programar.reintentar") : t("programar.programar")}
+            {yendo ? (
+              <LoaderCircle size={16} className="animate-spin" aria-hidden />
+            ) : programadas > 0 ? (
+              <PencilLine size={16} aria-hidden />
+            ) : (
+              <Send size={16} aria-hidden />
+            )}
+            {fallidas ? t("programar.reintentar") : programadas > 0 ? t("programar.editar") : t("programar.programar")}
           </Link>
         )}
         {abierto && (
@@ -274,10 +337,13 @@ export function BarraSuperior({
         )}
       </div>
 
-      {error && (
+      {(error ?? borrador.error) && (
         <p role="alert" className="absolute right-2 top-full z-30 mt-1 flex max-w-sm items-start gap-2 rounded-lg border border-red-400/30 bg-ng-elevada px-3 py-2 text-xs text-red-300 shadow-xl">
-          <span className="min-w-0 break-words">{error}</span>
-          <button type="button" onClick={() => setError(null)} aria-label={t("cerrar")} className="shrink-0 text-red-300/70 hover:text-red-200">
+          <span className="min-w-0 break-words">{error ?? borrador.error}</span>
+          <button type="button" onClick={() => {
+              setError(null);
+              borrador.limpiarError();
+            }} aria-label={t("cerrar")} className="shrink-0 text-red-300/70 hover:text-red-200">
             <X size={14} aria-hidden />
           </button>
         </p>

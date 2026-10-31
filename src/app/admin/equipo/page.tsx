@@ -14,14 +14,22 @@ import {
   CANCELAR_INVITACION,
   INVITACIONES_DE_PAGINA,
   INVITAR_MIEMBRO,
+  CONTRASENA_TEMPORAL,
+  MARCAR_REVISOR,
   MIEMBROS_DE_PAGINA,
   REVOCAR_ACCESO,
 } from "@/graphql/operations";
+import { MovidoAAjustes } from "@/components/MovidoAAjustes";
+import { useRevisionMarca } from "@/lib/revision";
+import { ConexionesMcpDelEquipo } from "@/components/conectar/ConexionesMcpDelEquipo";
+import { ModalContrasenaTemporal } from "@/components/equipo/ModalContrasenaTemporal";
 
 interface Miembro {
   usuarioId: string;
   marcaId: string;
   rol: RolPagina;
+  /** Revisa los clips antes de que salgan (ng-creator-be#175). El propietario, siempre. */
+  revisor?: boolean | null;
   email: string;
   nombre?: string | null;
   activo: boolean;
@@ -37,7 +45,7 @@ interface Invitacion {
   createdAt: string;
 }
 
-const ROLES: RolPagina[] = ["PROPIETARIO", "EDITOR", "LECTOR", "PROVEEDOR"];
+const ROLES: RolPagina[] = ["PROPIETARIO", "EDITOR", "REVISOR", "LECTOR", "PROVEEDOR"];
 
 /**
  * Quién trabaja en esta marca y con qué rol.
@@ -91,6 +99,18 @@ export default function EquipoPage() {
   const [cancelar] = useMutation(CANCELAR_INVITACION, {
     refetchQueries: refrescar,
   });
+  const [marcarRevisor] = useMutation(MARCAR_REVISOR, { refetchQueries: refrescar });
+  const [pedirTemporal, { loading: creandoTemporal }] = useMutation(CONTRASENA_TEMPORAL);
+  // La contraseña recién creada: se ve una vez, en el modal, para copiarla.
+  const [temporal, setTemporal] = useState<{ email: string; nombre?: string | null; password: string } | null>(null);
+  const [aviso, setAviso] = useState<string | null>(null);
+
+  async function crearTemporal(email: string, nombre?: string | null) {
+    const r = await pedirTemporal({ variables: { marcaId, email } });
+    setTemporal({ email, nombre, password: r.data.contrasenaTemporal });
+  }
+  // Quién revisa se ve solo si la marca revisa: si no, sería un dato sin efecto.
+  const revision = useRevisionMarca(marcaId);
 
   const miembros: Miembro[] = miembrosData?.miembrosDePagina ?? [];
   const invitaciones: Invitacion[] =
@@ -142,13 +162,35 @@ export default function EquipoPage() {
         </div>
       )}
 
+      {aviso && (
+        <div className="mb-6 rounded-xl border border-ng-teal/30 bg-ng-teal/10 p-4">
+          <p className="text-sm text-ng-teal">{aviso}</p>
+        </div>
+      )}
+
+      {temporal && (
+        <ModalContrasenaTemporal
+          {...temporal}
+          marcaNombre={activa?.nombre}
+          onCerrar={() => setTemporal(null)}
+        />
+      )}
+
       {mando ? (
         <FormularioInvitar
-          invitando={invitando}
-          onInvitar={(email, rol, nombre) =>
-            accion(() =>
-              invitar({ variables: { email, marcaId, rol, nombre: nombre || null } }),
-            )
+          invitando={invitando || creandoTemporal}
+          onInvitar={(email, rol, nombre, sinCorreo) =>
+            accion(async () => {
+              setAviso(null);
+              const r = await invitar({ variables: { email, marcaId, rol, nombre: nombre || null, sinCorreo } });
+              if (!sinCorreo) return;
+              // Ya tenía cuenta: el acceso quedó hecho y entra con su contraseña de siempre.
+              if (r.data?.invitarMiembro?.estado !== "PENDIENTE") {
+                setAviso(t("temporal.yaTieneCuenta", { email }));
+                return;
+              }
+              await crearTemporal(email, nombre || null);
+            })
           }
         />
       ) : (
@@ -184,6 +226,14 @@ export default function EquipoPage() {
                 </div>
                 <ChipRol rol={inv.rol} />
                 <button
+                  onClick={() => accion(() => crearTemporal(inv.email, inv.nombre))}
+                  disabled={creandoTemporal}
+                  title={t("temporal.botonAyuda")}
+                  className="rounded-lg border border-marca/40 px-3 py-1.5 text-xs text-white/80 transition hover:bg-marca/10 disabled:opacity-40"
+                >
+                  {t("temporal.boton")}
+                </button>
+                <button
                   onClick={() =>
                     accion(() =>
                       cancelar({ variables: { id: inv._id, marcaId } }),
@@ -199,8 +249,10 @@ export default function EquipoPage() {
         </section>
       )}
 
+      <MovidoAAjustes seccion="revision" />
+
       {/* Quienes ya tienen acceso */}
-      <section>
+      <section id="equipo-con-acceso" className="scroll-mt-6">
         <h2 className="mb-2 text-xs font-medium uppercase tracking-wider text-white/35">
           {t("conAcceso", { n: miembros.length })}
         </h2>
@@ -229,6 +281,11 @@ export default function EquipoPage() {
                 soyYo={m.usuarioId === usuario?._id}
                 editable={mando}
                 editaNombre={editaNombres && m.usuarioId !== usuario?._id}
+                conRevision={revision.activa}
+                marcaRevisor={mando || esAdmin}
+                onRevisor={(revisor) =>
+                  accion(() => marcarRevisor({ variables: { marcaId, usuarioId: m.usuarioId, revisor } }))
+                }
                 onRenombrar={async (nombre) => {
                   try {
                     await renombrar({
@@ -257,6 +314,9 @@ export default function EquipoPage() {
         )}
       </section>
 
+      {/* Solo el propietario: pedirlo sin serlo da un 403 inútil. */}
+      {mando && marcaId && <ConexionesMcpDelEquipo marcaId={marcaId} />}
+
       <LeyendaDeRoles />
     </DashboardLayout>
   );
@@ -268,18 +328,20 @@ function FormularioInvitar({
   onInvitar,
 }: {
   invitando: boolean;
-  onInvitar: (email: string, rol: RolPagina, nombre: string) => Promise<void>;
+  onInvitar: (email: string, rol: RolPagina, nombre: string, sinCorreo: boolean) => Promise<void>;
 }) {
   const t = useTranslations("equipo.invitar");
   const tRol = useTranslations("marcoRoles");
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
   const [rol, setRol] = useState<RolPagina>("EDITOR");
+  // Cómo le llega: el correo de siempre, o una contraseña para mandar a mano.
+  const [sinCorreo, setSinCorreo] = useState(false);
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
-    await onInvitar(email.trim(), rol, nombre.trim());
+    await onInvitar(email.trim(), rol, nombre.trim(), sinCorreo);
     setEmail("");
     setNombre("");
   }
@@ -290,7 +352,31 @@ function FormularioInvitar({
       className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5"
     >
       <h2 className="font-semibold">{t("titulo")}</h2>
-      <p className="mt-1 text-sm text-white/45">{t("detalle")}</p>
+      <p className="mt-1 text-sm text-white/45">{sinCorreo ? t("detalleSinCorreo") : t("detalle")}</p>
+
+      <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={t("comoLlega")}>
+        {([false, true] as const).map((v) => {
+          const on = sinCorreo === v;
+          return (
+            <button
+              key={String(v)}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => setSinCorreo(v)}
+              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs transition ${
+                on ? "border-marca bg-marca/10 text-white" : "border-dashed border-white/15 text-white/55 hover:text-white/80"
+              }`}
+            >
+              <span
+                aria-hidden
+                className={`flex h-3.5 w-3.5 items-center justify-center rounded-full ${on ? "bg-marca" : "border border-white/30"}`}
+              />
+              {v ? t("porContrasena") : t("porCorreo")}
+            </button>
+          );
+        })}
+      </div>
 
       {/* En móvil los tres controles van apilados: el correo necesita el ancho
           completo para verse entero mientras se escribe. */}
@@ -330,7 +416,7 @@ function FormularioInvitar({
           disabled={!email.trim() || invitando}
           className="rounded-lg bg-marca px-5 py-2.5 text-sm font-medium text-ng-tinta transition hover:brightness-110 disabled:opacity-40"
         >
-          {invitando ? t("enviando") : t("boton")}
+          {invitando ? t("enviando") : sinCorreo ? t("botonSinCorreo") : t("boton")}
         </button>
       </div>
 
@@ -407,6 +493,9 @@ function FilaMiembro({
   soyYo,
   editable,
   editaNombre,
+  conRevision,
+  marcaRevisor,
+  onRevisor,
   onRenombrar,
   onCambiarRol,
   onRevocar,
@@ -415,6 +504,11 @@ function FilaMiembro({
   soyYo: boolean;
   editable: boolean;
   editaNombre: boolean;
+  /** Si la marca revisa los clips: recién ahí importa quién es revisor. */
+  conRevision: boolean;
+  /** Si quien mira puede marcar revisores (propietario o ADMIN). */
+  marcaRevisor: boolean;
+  onRevisor: (revisor: boolean) => void;
   /** Devuelve null si se guardó, o el error (traducido por el backend). */
   onRenombrar: (nombre: string) => Promise<string | null>;
   onCambiarRol: (rol: RolPagina) => void;
@@ -481,6 +575,8 @@ function FilaMiembro({
         </p>
       </div>
 
+      {conRevision && <ChipRevisor miembro={miembro} puede={marcaRevisor} onRevisor={onRevisor} />}
+
       {puedeEditarse ? (
         <select
           value={miembro.rol}
@@ -524,6 +620,56 @@ function FilaMiembro({
           </button>
         ))}
     </div>
+  );
+}
+
+/**
+ * Si la persona revisa los clips (ng-creator-be#175). El propietario revisa
+ * siempre; un editor o un lector, si se lo marca. Un proveedor no puede.
+ */
+function ChipRevisor({
+  miembro,
+  puede,
+  onRevisor,
+}: {
+  miembro: Miembro;
+  puede: boolean;
+  onRevisor: (revisor: boolean) => void;
+}) {
+  const t = useTranslations("revisionClip.equipo");
+  if (miembro.rol === "PROPIETARIO" || miembro.rol === "REVISOR") {
+    return (
+      <span className="shrink-0 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs text-amber-300">
+        {t("revisaSiempre")}
+      </span>
+    );
+  }
+  if (miembro.rol !== "EDITOR" && miembro.rol !== "LECTOR") return null;
+  const on = !!miembro.revisor;
+  // Al lector no se lo marca (para eso está el rol Revisor); el marcado antes sigue contando.
+  if (!puede || miembro.rol === "LECTOR") {
+    return on ? (
+      <span className="shrink-0 rounded-full bg-amber-400/15 px-2.5 py-1 text-xs text-amber-300">{t("revisa")}</span>
+    ) : null;
+  }
+  return (
+    <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs">
+      <span className="text-white/60">{t("revisa")}</span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={on}
+        aria-label={t("revisorDe", { nombre: miembro.nombre || miembro.email })}
+        onClick={() => onRevisor(!on)}
+        className={`relative h-5 w-9 rounded-full transition ${on ? "bg-marca" : "bg-white/15"}`}
+      >
+        <span
+          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${
+            on ? "left-[18px] bg-ng-tinta" : "left-0.5"
+          }`}
+        />
+      </button>
+    </label>
   );
 }
 

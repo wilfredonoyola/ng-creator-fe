@@ -37,7 +37,8 @@
     "confirmarQuitar": "¿Quitar {red} de este clip?",
     "quitarRed": "Quitar {red} de este clip",
     "apagada": "No sale en {red}",
-    "verEn": "Ver en {red}"
+    "verEn": "Ver en {red}",
+    "editarProgramacion": "Editar la programación"
   },
   "cambiarHora": {
     "titulo": "Cambiar hora",
@@ -78,6 +79,17 @@
     "guardado": "Guardado",
     "sinCambios": "No hay cambios para guardar.",
     "errorRed": "{red}: {mensaje}",
-    "noSePudo": "no se pudo guardar"
-  }
+    "noSePudo": "no se pudo guardar",
+    "editarYReintentar": "Editar y reintentar",
+    "intentoAnterior": "Un intento anterior falló; después salió en {red}.",
+    "intentoAnteriorChip": "Intento anterior",
+    "errorEtiquetas": "{red} rechazó una de las cuentas etiquetadas o colaboradoras. Abrí \"Editar y reintentar\" para ver el detalle.",
+    "cancelarPublicacion": "Cancelar publicación",
+    "cancelando": "Cancelando…",
+    "cancelarAyuda": "No sale en ninguna red. El clip queda, y lo podés volver a programar.",
+    "confirmarCancelar": "¿Cancelar la publicación en {redes}? No va a salir.",
+    "errorCancelar": "No se pudo cancelar",
+    "portadaDeMarca": "Portada de marca"
+  },
+  "porRevisar": "Por revisar"
 }

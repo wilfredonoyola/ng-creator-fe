@@ -1,0 +1,62 @@
+{
+  "sinMarca": "Pick a brand to upload its clips.",
+  "subiendo": "Uploading {nombre}",
+  "enCola": "{n, plural, one {# more waiting} other {# more waiting}}",
+  "muyLargo": "{nombre} is {dura} s long and the limit is {maximo} s.",
+  "errorSubir": "Couldn't upload it. Try again.",
+  "vacio": "You haven't uploaded any clips yet.",
+  "confirmarBorrar": "Delete “{titulo}”? The video is deleted. This can't be undone.",
+  "subidoPor": "uploaded by {nombre}",
+  "editado": "edited in Clipfine",
+  "programar": "Schedule",
+  "editar": "Edit",
+  "borrar": "Delete",
+  "estados": {
+    "subiendo": "Uploading…",
+    "preparando": "Preparing the video…",
+    "listo": "Ready to schedule",
+    "programado": "Scheduled",
+    "publicado": "Published",
+    "fallo": "Couldn't process it. Upload it again.",
+    "falloCopia": "Couldn't prepare the video. Open it in the editor and export it."
+  },
+  "etiqueta": "Already-edited clips",
+  "titulo": "Upload your clips and publish them like the rest",
+  "descripcion": "What you edited in CapCut, a YouTube cut or any short video joins the Clipfine flow: client review, scheduling on all four networks and analytics. It goes out as it is, or you open it in the editor.",
+  "pasos": {
+    "subi": {
+      "titulo": "Upload",
+      "texto": "Drop one or more videos."
+    },
+    "programa": {
+      "titulo": "Schedule",
+      "texto": "On TikTok, Reels, Shorts and Facebook."
+    },
+    "medi": {
+      "titulo": "Measure",
+      "texto": "Each clip's analytics, automatically."
+    }
+  },
+  "soltar": "Drop your videos here",
+  "elegir": "Choose videos",
+  "chips": {
+    "formatos": "MP4 or MOV",
+    "duracion": "Up to {maximo} min",
+    "horas": "Doesn't use hours"
+  },
+  "soloVer": "Only editors and brand owners can upload clips.",
+  "tusClips": "Your clips",
+  "filtros": {
+    "todos": "All",
+    "preparando": "Preparing",
+    "listo": "Ready",
+    "programado": "Scheduled",
+    "publicado": "Published"
+  },
+  "sinEnFiltro": "No clips in this state.",
+  "vacioDetalle": "Drop a video above and in a few seconds it's ready to schedule.",
+  "noEsVideo": "{n, plural, one {One file isn't a video and was skipped.} other {# files aren't videos and were skipped.}}",
+  "seCancelan": "It has {n, plural, one {# scheduled post} other {# scheduled posts}}: they'll be canceled.",
+  "noSeBorraPublicado": "Already published: it can't be deleted.",
+  "errorBorrar": "Couldn't delete it."
+}

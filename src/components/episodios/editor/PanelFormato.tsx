@@ -2,10 +2,10 @@
 
 import { useTranslations } from "next-intl";
 import { Plus, ScanFace, X } from "lucide-react";
-import { ajustarRegion, llevaFondo, panelesDe, posicionEn, regionPorDefecto, type DisenoClip, type FondoClip, type FormatoClip, type PosicionEfectiva } from "@/lib/clip-encuadre";
+import { conZoom, llevaFondo, panelesDe, posicionEn, regionPorDefecto, zoomDe, type DisenoClip, type FondoClip, type FormatoClip, type PosicionEfectiva } from "@/lib/clip-encuadre";
 import { useTiempo, type Reproductor } from "./reproductor";
 import { relojFino } from "./tipos";
-import { Seccion } from "./ui";
+import { EtiquetaBeta, Seccion } from "./ui";
 
 const FORMATOS = [
   { valor: "VERTICAL", etiqueta: "9:16" },
@@ -64,24 +64,62 @@ export function PanelFormato({
   const finDe = (i: number) => (i + 1 < posiciones.length ? posiciones[i + 1].desdeSeg : duracion);
 
   /**
-   * El diseño del tramo donde está parado el video. Con la misma cantidad de
-   * recuadros, cada uno conserva su lugar; si cambia, se arranca de los de
-   * siempre (en Uno, centrado en donde estaba el primero).
+   * El diseño del tramo donde está parado el video. Cada recuadro toma la
+   * proporción de su panel (9:16 en Uno, el cuadrado en Centrado, el 16:9 en
+   * Horizontal) con todo el alto, centrado donde estaba: la mejor calidad que
+   * da el video. Antes conservaba el ancho, y un cuadrado con el ancho de un
+   * 9:16 quedaba más bajo que el video (con zoom sin pedirlo).
    */
   function cambiarDisenoTramo(d: DisenoClip) {
     if (d === activa.diseno) return;
     const nuevos = panelesDe(formato, d);
     const regiones = nuevos.map((panel, i) => {
       const previa = activa.regiones.length === nuevos.length ? activa.regiones[i] : nuevos.length === 1 ? activa.regiones[0] : null;
-      return previa ? ajustarRegion(previa, fuente, panel) : regionPorDefecto(fuente, panel, i, nuevos.length);
+      return previa ? conZoom(previa, 1, fuente, panel) : regionPorDefecto(fuente, panel, i, nuevos.length);
     });
     onCambiarPosiciones(posiciones.map((p, k) => (k === indiceActiva ? { ...p, diseno: d, regiones } : p)));
   }
 
-  /** Un cambio de encuadre donde está parado el video, copiando el actual. */
+  // El zoom del tramo: 1 es todo el alto, que es como arranca siempre.
+  const panelesActiva = panelesDe(formato, activa.diseno);
+  const zoom = activa.regiones.length && panelesActiva[0] ? zoomDe(activa.regiones[0], fuente, panelesActiva[0]) : 1;
+  // Algún tramo con zoom (hecho a mano, o de antes de que fuera siempre todo el alto).
+  const conZoomAlguno = posiciones.some((p) => {
+    const ps = panelesDe(formato, p.diseno);
+    return p.regiones.some((r, i) => ps[i] && zoomDe(r, fuente, ps[i]) > 1.005);
+  });
+  function todosATodoElAlto() {
+    onCambiarPosiciones(
+      posiciones.map((p) => {
+        const ps = panelesDe(formato, p.diseno);
+        return { ...p, regiones: p.regiones.map((r, i) => (ps[i] ? conZoom(r, 1, fuente, ps[i]) : r)) };
+      }),
+    );
+  }
+  function cambiarZoom(z: number) {
+    const regiones = activa.regiones.map((r, i) => (panelesActiva[i] ? conZoom(r, z, fuente, panelesActiva[i]) : r));
+    onCambiarPosiciones(posiciones.map((p, k) => (k === indiceActiva ? { ...p, regiones } : p)));
+  }
+
+  /**
+   * Un cambio de encuadre donde está parado el video, copiando el actual.
+   *
+   * Arranca en el cabezal redondeado PARA ABAJO: el recuadro que se arrastra
+   * es el del cambio donde está parado el video (`posicionEn`), y si el nuevo
+   * empezaba una centésima después del cuadro que se ve, lo que se movía era
+   * el anterior y el encuadre "se iba a otro lado".
+   */
   function nuevaPosicion() {
-    const seg = Math.round(tc * 100) / 100;
-    if (posiciones.some((p) => Math.abs(p.desdeSeg - seg) < 0.2)) return;
+    const seg = Math.floor(tc * 100) / 100;
+    const cerca = posiciones.findIndex((p) => Math.abs(p.desdeSeg - seg) < 0.2);
+    if (cerca >= 0) {
+      // Ya hay uno pegado. Si arranca un poco después del cabezal, se trae
+      // hasta acá: así el que se mueve es ese, no el de antes.
+      if (cerca > 0 && posiciones[cerca].desdeSeg > seg) {
+        onCambiarPosiciones(posiciones.map((p, k) => (k === cerca ? { ...p, desdeSeg: seg } : p)));
+      }
+      return;
+    }
     onCambiarPosiciones(
       [...posiciones, { desdeSeg: seg, diseno: activa.diseno, regiones: activa.regiones.map((r) => ({ ...r })) }].sort((a, b) => a.desdeSeg - b.desdeSeg),
     );
@@ -132,6 +170,33 @@ export function PanelFormato({
             </button>
           ))}
         </div>
+        <div>
+          <div className="mb-1 flex items-center justify-between text-xs">
+            <span className="text-ng-secundario">{th("formato.zoom", { zoom: Math.round(zoom * 100) })}</span>
+            {zoom > 1.005 && puedeEditar && (
+              <button type="button" onClick={() => cambiarZoom(1)} className="font-medium text-ng-azul hover:underline">
+                {th("formato.todoElAlto")}
+              </button>
+            )}
+          </div>
+          <input
+            type="range"
+            min={1}
+            max={3}
+            step={0.05}
+            value={Math.min(3, zoom)}
+            disabled={!puedeEditar}
+            onChange={(e) => cambiarZoom(Number(e.target.value))}
+            aria-label={th("formato.zoomEtiqueta")}
+            className="w-full accent-[#FFD400]"
+          />
+          <p className="mt-1 text-[11px] text-ng-tenue">{th("formato.zoomAyuda")}</p>
+          {conZoomAlguno && posiciones.length > 1 && puedeEditar && (
+            <button type="button" onClick={todosATodoElAlto} className="mt-1 text-xs font-medium text-ng-azul hover:underline">
+              {th("formato.todosTodoElAlto")}
+            </button>
+          )}
+        </div>
         {puedeEditar && (
           <button
             type="button"
@@ -140,6 +205,7 @@ export function PanelFormato({
           >
             <ScanFace size={16} aria-hidden />
             {th("formato.irAuto")}
+            <EtiquetaBeta />
           </button>
         )}
       </Seccion>

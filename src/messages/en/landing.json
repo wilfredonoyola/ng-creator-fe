@@ -16,6 +16,7 @@
     "empezar": "Sign up for free",
     "inicio": "Clipfine home",
     "metricas": "Analytics",
+    "ayuda": "Help",
     "irApp": "Go to app"
   },
   "pronto": "Soon",
@@ -25,6 +26,7 @@
     "texto": "Upload a client's long video and get its best moments as captioned, vertical clips. Schedule them from one calendar and see what works, for every client your agency manages.",
     "letraChica": "15-day free trial · No card required",
     "publicaEn": "Post to",
+    "preguntaEn": "Ask from",
     "maqueta": {
       "alt": "Clipfine workspace: a client switcher, a long episode turned into captioned vertical clips, and a weekly posting calendar.",
       "cliente": "Client {letra}",
@@ -40,14 +42,38 @@
       "calendario": "Calendar · this week",
       "redes": "4 platforms",
       "clips": {
-        "c1": { "antes": "The hook is in the", "marca": "first", "despues": "three seconds" },
-        "c2": { "antes": "Nobody", "marca": "talks", "despues": "about this part" },
-        "c3": { "antes": "That's when it", "marca": "clicked", "despues": "for us" },
-        "c4": { "antes": "Here's what we'd do", "marca": "differently", "despues": "" }
+        "c1": {
+          "antes": "The hook is in the",
+          "marca": "first",
+          "despues": "three seconds"
+        },
+        "c2": {
+          "antes": "Nobody",
+          "marca": "talks",
+          "despues": "about this part"
+        },
+        "c3": {
+          "antes": "That's when it",
+          "marca": "clicked",
+          "despues": "for us"
+        },
+        "c4": {
+          "antes": "Here's what we'd do",
+          "marca": "differently",
+          "despues": ""
+        }
       }
     }
   },
-  "dias": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri", "sab": "Sat", "dom": "Sun" },
+  "dias": {
+    "lun": "Mon",
+    "mar": "Tue",
+    "mie": "Wed",
+    "jue": "Thu",
+    "vie": "Fri",
+    "sab": "Sat",
+    "dom": "Sun"
+  },
   "problema": {
     "titulo": "Your clients want more clips. Your team is already full.",
     "texto": "Every new client means more videos to watch, more clips to cut and caption, four platforms to post to and another report to send. Clipfine puts all of it in one place for every client: videos in, clips scheduled, results in view. So you can take on more clients without more payroll."
@@ -59,8 +85,19 @@
       "titulo": "Every client in one platform",
       "texto": "Run all your clients from one account. Each one has its own space for episodes, clips, calendar and analytics, plus a Brand Kit with its colors, fonts and logo. Your team works with its role on the clients assigned to it, and nothing gets mixed up.",
       "alt": "List of four clients, each with its own episodes, clips, calendar and analytics",
-      "pestanas": { "episodios": "Episodes", "clips": "Clips", "calendario": "Calendar", "analisis": "Analytics", "brandKit": "Brand Kit" },
-      "estados": { "listo": "Ready", "programado": "Scheduled", "procesando": "Processing", "publicado": "Posted" }
+      "pestanas": {
+        "episodios": "Episodes",
+        "clips": "Clips",
+        "calendario": "Calendar",
+        "analisis": "Analytics",
+        "brandKit": "Brand Kit"
+      },
+      "estados": {
+        "listo": "Ready",
+        "programado": "Scheduled",
+        "procesando": "Processing",
+        "publicado": "Posted"
+      }
     },
     "momentos": {
       "titulo": "The best moments, already cut",
@@ -99,6 +136,54 @@
         "valor": "8 PM"
       }
     }
+  },
+  "subidos": {
+    "etiqueta": "Upload clips",
+    "titulo": "Already edited in CapCut? Upload it and post it.",
+    "texto": "Not everything comes from a long episode. Reels, tips or cuts your team already edited elsewhere come into Clipfine and follow the same path as the rest: scheduled, approved and measured.",
+    "puntos": {
+      "tal": {
+        "titulo": "Goes out as is.",
+        "texto": "No extra recompression: what you exported is what gets posted."
+      },
+      "editor": {
+        "titulo": "Or touch it up.",
+        "texto": "Open it in the editor and add captions, a template or a hook if you want."
+      },
+      "flujo": {
+        "titulo": "Same workflow.",
+        "texto": "Calendar across all four networks, client review and per-clip metrics."
+      },
+      "horas": {
+        "titulo": "Doesn't use hours.",
+        "texto": "Your plan's hours stay for episodes."
+      }
+    },
+    "verMas": "How uploading clips works"
+  },
+  "aprobacion": {
+    "etiqueta": "Approval",
+    "titulo": "Your client approves before it goes out.",
+    "texto": "Turn on review per client and nothing is published without sign-off. Your team schedules as usual; the reviewer approves or requests changes from the web or their phone, with a comment or a voice note.",
+    "puntos": {
+      "rol": {
+        "titulo": "The client, with their own role.",
+        "texto": "Invite them as a Reviewer: they see their clips and approve them, but can't edit."
+      },
+      "voz": {
+        "titulo": "Changes, out loud.",
+        "texto": "A voice note with its transcript, instead of a long email."
+      },
+      "hora": {
+        "titulo": "Nothing goes out unapproved.",
+        "texto": "If the time comes without review, it doesn't go out, and everyone knows."
+      },
+      "editar": {
+        "titulo": "What's approved is what goes out.",
+        "texto": "If it's edited afterwards, it goes back to review."
+      }
+    },
+    "verMas": "How approval works"
   },
   "metricas": {
     "etiqueta": "Analytics",
@@ -164,6 +249,21 @@
       "mejorClip": "Top clip: humor · 10.8K views · AI 92"
     }
   },
+  "mcp": {
+    "etiqueta": "MCP connector",
+    "titulo": "Ask ChatGPT or Claude about your clients.",
+    "texto": "Clipfine has its own MCP connector. Connect it once to ChatGPT, Claude or any MCP-compatible app and ask about your brands, their analytics and what's scheduled, without opening the dashboard.",
+    "directo": "Direct connection: your AI reads from Clipfine, with your permissions.",
+    "compatible": "And any MCP app",
+    "ejemplosTitulo": "What you can ask",
+    "ejemplos": {
+      "mejores": "Which Café Luna clips did best this month?",
+      "reporte": "Put together the last 30 days report so I can send it to the client.",
+      "semana": "What does each client have scheduled this week?"
+    },
+    "soloLectura": "It doesn't post, approve or delete anything: at most, it creates clips for you to finish.",
+    "comoConectar": "How to connect it"
+  },
   "paraQuien": {
     "etiqueta": "Who it's for",
     "titulo": "Built for agencies that run video for many clients.",
@@ -171,22 +271,49 @@
     "porTipo": "By agency type",
     "porUso": "By use case",
     "tipos": {
-      "clips": { "titulo": "Clipping agencies", "texto": "Run more client channels without adding editors." },
-      "podcast": { "titulo": "Podcast production agencies", "texto": "Add short clips to every episode you produce." },
-      "b2b": { "titulo": "B2B podcast agencies", "texto": "Turn executive interviews into clips that sales and social can use." },
-      "redes": { "titulo": "Social media agencies", "texto": "Keep every client's feed full of video, and prove it's working." }
+      "clips": {
+        "titulo": "Clipping agencies",
+        "texto": "Run more client channels without adding editors."
+      },
+      "podcast": {
+        "titulo": "Podcast production agencies",
+        "texto": "Add short clips to every episode you produce."
+      },
+      "b2b": {
+        "titulo": "B2B podcast agencies",
+        "texto": "Turn executive interviews into clips that sales and social can use."
+      },
+      "redes": {
+        "titulo": "Social media agencies",
+        "texto": "Keep every client's feed full of video, and prove it's working."
+      }
     },
     "usos": {
-      "podcast": { "titulo": "Podcast to Shorts, Reels and TikTok", "texto": "One episode in, its best clips out, scheduled from one calendar." },
-      "lives": { "titulo": "Lives and streams", "texto": "Upload the live or stream recording like any episode and get the clips." }
+      "podcast": {
+        "titulo": "Podcast to Shorts, Reels and TikTok",
+        "texto": "One episode in, its best clips out, scheduled from one calendar."
+      },
+      "lives": {
+        "titulo": "Lives and streams",
+        "texto": "Upload the live or stream recording like any episode and get the clips."
+      }
     }
   },
   "como": {
     "etiqueta": "How it works",
     "pasos": {
-      "subir": { "titulo": "Add a client and upload their video.", "texto": "A podcast, a live or any long video. We can also bring it in from Restream." },
-      "clips": { "titulo": "Get the best clips.", "texto": "Clipfine finds the moments and turns them into captioned, vertical clips. Fine-tune any of them in the editor." },
-      "publicar": { "titulo": "Schedule, post and track.", "texto": "Put clips on the calendar and see in analytics what works for each client." }
+      "subir": {
+        "titulo": "Add a client and upload their video.",
+        "texto": "A podcast, a live or any long video. We can also bring it in from Restream."
+      },
+      "clips": {
+        "titulo": "Get the best clips.",
+        "texto": "Clipfine finds the moments and turns them into captioned, vertical clips. Fine-tune any of them in the editor."
+      },
+      "publicar": {
+        "titulo": "Schedule, post and track.",
+        "texto": "Put clips on the calendar and see in analytics what works for each client."
+      }
     }
   },
   "precios": {
@@ -204,10 +331,23 @@
     "empezarPrueba": "Start free trial",
     "empezar": "Sign up for free",
     "planes": {
-      "prueba": { "nombre": "Free trial", "para": "Try every feature on your first client.", "nota": "15 days · No card required" },
-      "starter": { "nombre": "Starter", "para": "For small agencies and first clients." },
-      "agency": { "nombre": "Agency", "para": "For agencies running several clients." },
-      "agencyPro": { "nombre": "Agency Pro", "para": "For high-volume teams and large rosters." }
+      "prueba": {
+        "nombre": "Free trial",
+        "para": "Try every feature on your first client.",
+        "nota": "15 days · No card required"
+      },
+      "starter": {
+        "nombre": "Starter",
+        "para": "For small agencies and first clients."
+      },
+      "agency": {
+        "nombre": "Agency",
+        "para": "For agencies running several clients."
+      },
+      "agencyPro": {
+        "nombre": "Agency Pro",
+        "para": "For high-volume teams and large rosters."
+      }
     },
     "custom": {
       "nombre": "Custom",
@@ -221,7 +361,7 @@
       "brandKit": "Brand Kit per client",
       "calendario": "Posting calendar",
       "analisis": "Analytics per client",
-      "app": "iPhone and Android app"
+      "app": "iPhone and Android app (coming soon)"
     }
   },
   "preguntas": {
@@ -255,17 +395,29 @@
         "p": "How is Clipfine different from Opus Clip or Descript?",
         "r": "Those tools are built for a single creator. Clipfine is built for agencies with many clients: clips, calendar and analytics sit together, organized by client, with pricing that scales with your roster."
       },
+      "editar": {
+        "p": "Can I edit the clips?",
+        "r": "Yes, in a CapCut-style editor that saves on its own: timeline, cuts, captions, text, images, royalty-free music, sound effects, volume and speed. You schedule from the same editor and Clipfine builds the final video."
+      },
+      "capcut": {
+        "p": "Can I upload clips I already edited in CapCut?",
+        "r": "Yes. In Publications, Upload clips: drop one or more videos, they go out as they are or you open them in the editor, and they follow the same path as the rest, with client review, scheduling on all four networks and analytics. They don't use up hours."
+      },
+      "revision": {
+        "p": "Can my client approve before it goes out?",
+        "r": "Yes. With review before publishing, what the team schedules waits for a reviewer to approve it or ask for changes, with a comment or a voice note, from the web or the phone."
+      },
       "sigue": {
         "p": "Does the clip follow the person speaking?",
         "r": "Yes, with auto-reframe. It recognizes voices and watches who's moving their lips, so it isn't fooled by someone gesturing. When several people talk, it splits the screen. Every shot can be corrected in the editor."
       },
       "idioma": {
         "p": "What language does it work in?",
-        "r": "It's built for Spanish-language videos: the transcription, the moments and the captions."
+        "r": "Clipfine detects the video's language on its own and transcribes it, finds the moments and writes the captions in that same language: English, Spanish, Portuguese and more. The dashboard is in English and Spanish."
       },
       "app": {
         "p": "Is there a mobile app?",
-        "r": "Yes, for iPhone and Android, with the same account and the same clients as the web."
+        "r": "It's on its way: the iPhone and Android app is coming soon to the App Store and Google Play, with the same account, the same clients and everything in sync with the web. Meanwhile, everything works on the web, including your phone's browser."
       }
     }
   },
@@ -274,6 +426,8 @@
     "texto": "Start your 15-day free trial today, or book a call and we'll set Clipfine up around your workflow."
   },
   "pie": {
+    "soporte": "Any questions? Write to support: <correo></correo>",
+    "ayuda": "Help",
     "lema": "AI clipping software for agencies.",
     "funciones": "Features",
     "app": "App",

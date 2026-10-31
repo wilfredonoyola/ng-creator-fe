@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { aTiempoDeSalida, estaCortado, type Corte } from "@/lib/cortes";
+import { aTiempoDeSalida, duracionEfectiva, estaCortado, type Corte } from "@/lib/cortes";
+import { momentoDelVideo, type VideoClip } from "@/lib/videos-clip";
 import type { EfectoClip, MusicaClip } from "@/lib/sonidos";
 import type { Reproductor } from "./reproductor";
 import type { Palabra } from "./tipos";
@@ -11,6 +12,43 @@ const BAJADA_AL_HABLAR = 0.35;
 /** Un salto del cabezal más grande que esto es un seek o un corte: no dispara efectos. */
 const SALTO_SEG = 0.5;
 
+/**
+ * El `<video>` pasado por Web Audio, para que la voz suene a más de 100 %
+ * como en el render (el `volume` del navegador no pasa de 1), con un
+ * limitador al final como el del render.
+ */
+interface Amplificador {
+  ctx: AudioContext;
+  ganancia: GainNode;
+}
+
+/**
+ * Web Audio solo deja sonar lo que se puede leer: lo de hls.js (MSE, un
+ * `blob:`) o un HLS nativo pedido con CORS (ver `useHls`). Lo demás quedaría
+ * mudo, así que se queda con el volumen del navegador.
+ */
+function sePuedeAmplificar(v: HTMLVideoElement): boolean {
+  return v.currentSrc.startsWith("blob:") || v.crossOrigin === "anonymous";
+}
+
+function amplificar(v: HTMLVideoElement): Amplificador | null {
+  try {
+    const ctx = new AudioContext();
+    const ganancia = ctx.createGain();
+    // Un limitador después, como el `alimiter` del render: sube sin saturar.
+    const limitador = ctx.createDynamicsCompressor();
+    limitador.threshold.value = -1;
+    limitador.knee.value = 0;
+    limitador.ratio.value = 20;
+    limitador.attack.value = 0.003;
+    limitador.release.value = 0.05;
+    ctx.createMediaElementSource(v).connect(ganancia).connect(limitador).connect(ctx.destination);
+    return { ctx, ganancia };
+  } catch {
+    return null;
+  }
+}
+
 /** ¿Hay una palabra en este segundo del episodio? Con un margen, para que no suba entre palabra y palabra. */
 function hablando(palabras: readonly Palabra[], t: number): boolean {
   return palabras.some((p) => t >= p.desde - 0.15 && t <= p.hasta + 0.35);
@@ -20,12 +58,16 @@ function hablando(palabras: readonly Palabra[], t: number): boolean {
  * Que la vista previa se escuche como va a salir (Tanda 2):
  *
  * - El video, a la velocidad del clip (sin cambiar el tono) y con el volumen
- *   de la voz (el navegador no pasa de 100 %: el render sí).
+ *   de la voz. Más de 100 % pasa por Web Audio (el `volume` no pasa de 1): se
+ *   conecta recién la primera vez que hace falta y queda conectado.
  * - La música en un `<audio>` aparte, en loop y en el tiempo del MP4 (no se
  *   acelera): sigue al video al reproducir, pausar, hacer seek o saltar un
  *   corte. Con "bajar cuando hablan", baja donde hay palabras.
  * - Cada efecto suena cuando el cabezal pasa por su segundo (tiempo original;
  *   en un corte no suena).
+ * - Mientras se ve un video de encima con "Solo el video", la voz del clip se
+ *   calla, como en el render. El sonido del video lo maneja su `<video>`
+ *   (VideoEncima).
  *
  * Un solo bucle mira el `<video>` y corrige todo: por eso no se desfasa al
  * cambiar de herramienta ni si el HLS se vuelve a enganchar. Vive en la página
@@ -41,6 +83,7 @@ export function useAudioDeVista(o: {
   musica: MusicaClip | null;
   efectos: EfectoClip[];
   palabras: Palabra[];
+  videos: VideoClip[];
 }) {
   const ultimo = useRef(o);
   ultimo.current = o;
@@ -96,6 +139,8 @@ export function useAudioDeVista(o: {
     let id = 0;
     let antes: number | null = null;
     let volumenMusica = ultimo.current.musica?.volumen ?? 0;
+    let amp: Amplificador | null = null;
+    let sinAmplificar = false;
     const paso = () => {
       const v = video.current;
       const e = ultimo.current;
@@ -107,12 +152,30 @@ export function useAudioDeVista(o: {
           v.playbackRate = e.velocidad;
         }
         if (!v.preservesPitch) v.preservesPitch = true;
-        const volumen = Math.min(1, Math.max(0, e.volumenClip));
-        if (Math.abs(v.volume - volumen) > 0.001) v.volume = volumen;
-        const mudo = e.volumenClip === 0;
+        // Cargando (buffering) no cuenta como pausado: el cuadro se congela pero
+        // `paused` sigue en false. La música y los efectos esperan al video.
+        const sonando = !v.paused && !v.ended && v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
+        const soloVideo = e.videos.some(
+          (x) =>
+            x.sonido === "SOLO_VIDEO" &&
+            momentoDelVideo(x, v.currentTime, { desde: e.desde, hasta: e.hasta, cortes: e.cortes, efectiva: duracionEfectiva(e.desde, e.hasta, e.cortes) }) !== null,
+        );
+        const voz = soloVideo ? 0 : Math.max(0, e.volumenClip);
+        if (!amp && !sinAmplificar && voz > 1 && sonando && sePuedeAmplificar(v)) {
+          amp = amplificar(v);
+          sinAmplificar = !amp;
+        }
+        if (amp) {
+          if (sonando && amp.ctx.state === "suspended") void amp.ctx.resume().catch(() => undefined);
+          if (v.volume !== 1) v.volume = 1;
+          if (Math.abs(amp.ganancia.gain.value - voz) > 0.001) amp.ganancia.gain.value = voz;
+        } else {
+          const volumen = Math.min(1, voz);
+          if (Math.abs(v.volume - volumen) > 0.001) v.volume = volumen;
+        }
+        const mudo = voz === 0;
         if (v.muted !== mudo) v.muted = mudo;
 
-        const sonando = !v.paused && !v.ended;
         const t = v.currentTime;
 
         // La música, en el tiempo del MP4: la salida (sin cortes) dividida por la velocidad.
@@ -178,6 +241,7 @@ export function useAudioDeVista(o: {
     return () => {
       cancelAnimationFrame(id);
       musicaEl.current?.pause();
+      void amp?.ctx.close().catch(() => undefined);
     };
   }, [video]);
 }

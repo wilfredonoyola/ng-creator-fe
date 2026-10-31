@@ -21,7 +21,10 @@ import {
   REDES,
   aInputLocal,
   diaYHora,
+  esRechazoDeEtiquetas,
+  fallaReemplazada,
   horaCorta,
+  ordenarPorDestino,
   zonaHoraria,
   type EstadoPublicacion,
   type Publicacion,
@@ -30,14 +33,23 @@ import type { Red } from "@/lib/upload-post";
 import { fechaCompleta, tiempoRelativo, useAhora } from "@/lib/time";
 import type { Autoria } from "@/components/episodios/TomarClip";
 import { ElegirPortadaClip } from "@/components/episodios/ElegirPortadaClip";
+import { EditorPortadaMarca } from "@/components/portada/EditorPortadaMarca";
+import { textoPorDefectoPortada, useAvisosPortada, useVistaPortada, type CuadroPortada as CuadroLimpio } from "@/lib/portada-marca";
+import { claveDiseno, disenoParaEnviar, type DisenoPortada } from "@/lib/diseno-portada";
 import { ComoSaleEnCadaRed } from "@/components/episodios/ComoSaleEnCadaRed";
 import { DESCRIPCION_MAX, TITULO_YOUTUBE_MAX, comoSaleEnCadaRed } from "@/lib/destinos";
+import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
+import { PorRevisar } from "@/components/revision/PorRevisar";
+import { etiquetaRevision, useRevisionMarca, type EstadoRevision } from "@/lib/revision";
 
 interface PublicacionCalendario extends Publicacion {
   /** El MP4 que sale en esta red (en Facebook puede ser la versión corta). */
   mediaUrl?: string | null;
   /** El cuadro de portada elegido; null = la automática de cada red. */
   portadaSeg?: number | null;
+  /** Sale con la portada de marca (be#239) y su título (vacío = el del clip). */
+  portadaMarca?: boolean | null;
+  portadaTexto?: string | null;
   /** Lo propio de la red: en YouTube, `titulo`. */
   ajustes?: { titulo?: string } | null;
   /** El clip de la publicación; null en las de expedientes o si se borró. */
@@ -45,12 +57,17 @@ interface PublicacionCalendario extends Publicacion {
     _id: string;
     episodioId: string;
     titulo: string;
+    gancho?: string | null;
     urlPoster?: string | null;
     urlVideo?: string | null;
+    cuadrosPortada?: CuadroLimpio[] | null;
+    /** Los títulos de portada de la IA (be#249): el primero es el de por defecto. */
+    titulosPortada?: string[] | null;
     desdeSeg?: number | null;
     hastaSeg?: number | null;
     duracionEfectivaSeg?: number | null;
     duracionFinalSeg?: number | null;
+    estadoRevision?: EstadoRevision | null;
     editadoPor?: { nombre: string } | null;
     tomadoPor?: { nombre: string } | null;
   } | null;
@@ -67,13 +84,17 @@ interface ClipListo {
 }
 
 const FILTROS = ["FACEBOOK", "INSTAGRAM", "YOUTUBE", "TIKTOK"] as const;
+/** El filtro de lo que espera revisión (ng-creator-be#175), junto a los de red. */
+const POR_REVISAR = "POR_REVISAR";
 const MARGEN_MS = 60_000;
 const REFETCH = ["PublicacionesDeMarca", "ClipsListosSinProgramar", "ClipsDeEpisodio", "ClipEpisodio"];
 
 /**
- * Las publicaciones del mismo clip a la misma hora: una tarjeta, con un logo
- * por red. Es como se programan (un clip, varias redes, una hora), y así se
- * quita una red sin tocar las otras. Lo que no es de un clip va solo.
+ * Las publicaciones del mismo clip en el día: una tarjeta, con un logo por
+ * red. Es como se programan (un clip, varias redes, una hora), y así se quita
+ * una red sin tocar las otras. Va por día y no por hora: un reintento o una
+ * red movida a otra hora siguen siendo el mismo clip, en la misma tarjeta (a
+ * la hora de la primera). Lo que no es de un clip va solo.
  */
 interface Grupo {
   clave: string;
@@ -83,8 +104,8 @@ interface Grupo {
 function agrupar(pubs: PublicacionCalendario[]): Grupo[] {
   const grupos = new Map<string, Grupo>();
   for (const p of pubs) {
-    const minuto = Math.floor(new Date(p.publicarEn).getTime() / 60_000);
-    const clave = p.clip ? `${p.clip._id}@${minuto}` : p._id;
+    // El clip y el día (local): el detalle agrupa toda la semana de una vez.
+    const clave = p.clip ? `${p.clip._id}@${new Date(p.publicarEn).toDateString()}` : p._id;
     const g = grupos.get(clave);
     if (g) g.pubs.push(p);
     else grupos.set(clave, { clave, pubs: [p] });
@@ -142,7 +163,16 @@ export default function CalendarioPage() {
 
   const todas: PublicacionCalendario[] = useMemo(() => pubsQ.data?.publicacionesDeMarca ?? [], [pubsQ.data]);
   const listos: ClipListo[] = listosQ.data?.clipsListosSinProgramar ?? [];
-  const visibles = useMemo(() => (filtro ? todas.filter((p) => p.red === filtro) : todas), [todas, filtro]);
+  const revision = useRevisionMarca(marcaId || undefined);
+  const visibles = useMemo(
+    () =>
+      filtro === POR_REVISAR
+        ? todas.filter((p) => p.esperaAprobacion && p.estado === "PROGRAMADA")
+        : filtro
+          ? todas.filter((p) => p.red === filtro)
+          : todas,
+    [todas, filtro],
+  );
 
   const dias = useMemo(() => {
     if (!inicio) return [];
@@ -186,6 +216,8 @@ export default function CalendarioPage() {
         </div>
         {zona && <p className="text-xs text-white/40">{t("horasDe", { zona })}</p>}
       </div>
+
+      {revision.activa && <PorRevisar marcaId={marcaId} />}
 
       <ListosParaProgramar listos={listos} opera={opera} cargando={listosQ.loading && !listosQ.data} />
 
@@ -232,6 +264,11 @@ export default function CalendarioPage() {
             {REDES[r].nombre}
           </Chip>
         ))}
+        {revision.activa && (
+          <Chip activo={filtro === POR_REVISAR} onClick={() => setFiltro(filtro === POR_REVISAR ? null : POR_REVISAR)}>
+            {t("porRevisar")}
+          </Chip>
+        )}
       </div>
 
       {pubsQ.error && !pubsQ.data && (
@@ -364,11 +401,18 @@ function TarjetaGrupo({
       ? `/publicados/${p.expedienteId}`
       : null;
   const hayProgramadas = pubs.some((x) => x.estado === "PROGRAMADA");
+  // Un clip que todavía va a salir se abre en su pantalla de programar, en
+  // modo editar (la misma con que se programó). Lo que ya salió abre el detalle.
+  const editarEnProgramar = Boolean(p.clip && enlace && pubs.some((x) => x.estado === "PROGRAMADA" || x.estado === "AGENDADA_EN_RED"));
 
   return (
     <li className="min-w-0 rounded-lg border border-white/10 bg-ng-tarjeta p-2">
       <div className="flex gap-2">
-        {p.clip ? (
+        {editarEnProgramar ? (
+          <Link href={enlace!} aria-label={t("tarjeta.editarProgramacion")} className="shrink-0 rounded-lg hover:brightness-125">
+            <Poster url={p.clip?.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
+          </Link>
+        ) : p.clip ? (
           <button onClick={onAbrir} aria-label={t("detalle.titulo")} className="shrink-0 rounded-lg hover:brightness-125">
             <Poster url={p.clip.urlPoster ?? p.portadaUrl} className="h-16 w-9" />
           </button>
@@ -381,7 +425,15 @@ function TarjetaGrupo({
               {horaCorta(hora, locale)}
             </span>
           </p>
-          {p.clip ? (
+          {editarEnProgramar ? (
+            <Link
+              href={enlace!}
+              title={t("tarjeta.editarProgramacion")}
+              className="mt-0.5 line-clamp-2 break-words text-sm leading-snug hover:underline"
+            >
+              {titulo}
+            </Link>
+          ) : p.clip ? (
             <button
               onClick={onAbrir}
               className="mt-0.5 line-clamp-2 break-words text-left text-sm leading-snug hover:underline"
@@ -399,6 +451,9 @@ function TarjetaGrupo({
           {pubs.some((x) => x.esperaVideo && x.estado === "PROGRAMADA") && (
             <p className="truncate text-[11px] text-ng-azul">{t("esperaVideo")}</p>
           )}
+          <div className="mt-0.5">
+            <EtiquetaRevision etiqueta={etiquetaRevision(pubs, p.clip?.estadoRevision, Date.now())} chica />
+          </div>
         </div>
       </div>
       <LogosDeRedes pubs={pubs} opera={opera} />
@@ -445,7 +500,8 @@ function LogoRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
     );
   }
 
-  const fallida = pubs.find((x) => x.estado === "FALLIDA");
+  // Un intento fallido en una cuenta donde después salió no cuenta como falla.
+  const fallida = pubs.find((x) => x.estado === "FALLIDA" && !fallaReemplazada(x, pubs));
   const publicada = pubs.find((x) => x.estado === "PUBLICADA");
   const programadas = pubs.filter((x) => x.estado === "PROGRAMADA");
   const reintento = programadas.find((x) => x.error);
@@ -631,6 +687,7 @@ function DetalleAgendada({
               <EditarAgendada
                 programadas={programadas}
                 videoUrl={videoUrl}
+                clip={clip ?? null}
                 duracionClip={clip ? clip.duracionFinalSeg ?? clip.duracionEfectivaSeg ?? (clip.hastaSeg ?? 0) - (clip.desdeSeg ?? 0) : 0}
                 enlaceClip={enlaceClip}
                 onMover={onMover}
@@ -644,10 +701,60 @@ function DetalleAgendada({
                 {todoSalio && <p className="pt-1 text-xs text-white/40">{t("detalle.soloLectura")}</p>}
               </section>
             )}
+            {editable && <CancelarProgramadas programadas={programadas} onCanceladas={onCerrar} />}
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Cancelar todo lo programado de la tarjeta, a la vista (la ✕ de cada logo
+ * quita una red sola). Solo lo PROGRAMADA: lo que ya se está subiendo o quedó
+ * agendado en la red no se corta desde acá.
+ */
+function CancelarProgramadas({ programadas, onCanceladas }: { programadas: PublicacionCalendario[]; onCanceladas: () => void }) {
+  const t = useTranslations("calendario.detalle");
+  const [cancelar, { loading }] = useMutation(CANCELAR_PUBLICACION, { refetchQueries: REFETCH });
+  const [error, setError] = useState<string | null>(null);
+  const redes = programadas
+    .map((x) => [REDES[x.red]?.nombre ?? x.red, x.cuentaNombre].filter(Boolean).join(" · "))
+    .join(", ");
+
+  async function cancelarTodas() {
+    if (!window.confirm(t("confirmarCancelar", { redes }))) return;
+    setError(null);
+    const fallas: string[] = [];
+    // Una por una: si una ya salió a subirse, las otras se cancelan igual.
+    for (const x of programadas) {
+      try {
+        await cancelar({ variables: { marcaId: x.marcaId, id: x._id } });
+      } catch (e) {
+        fallas.push(`${REDES[x.red]?.nombre ?? x.red}: ${e instanceof Error ? e.message : t("errorCancelar")}`);
+      }
+    }
+    if (fallas.length) setError(fallas.join(" · "));
+    else onCanceladas();
+  }
+
+  return (
+    <section className="space-y-1.5 border-t border-white/10 pt-3">
+      <button
+        type="button"
+        onClick={() => void cancelarTodas()}
+        disabled={loading}
+        className="rounded-lg border border-red-400/40 px-3 py-1.5 text-sm text-red-300 hover:bg-red-400/10 disabled:opacity-50"
+      >
+        {loading ? t("cancelando") : t("cancelarPublicacion")}
+      </button>
+      <p className="text-xs text-white/40">{t("cancelarAyuda")}</p>
+      {error && (
+        <p role="alert" className="break-words text-xs text-red-400">
+          {error}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -667,15 +774,20 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
             {nombre} · {t("detalle.noSale")}
           </p>
         ) : (
-          pubs.map((x) => (
+          ordenarPorDestino(pubs).map((x) => (
             <div key={x._id} className="min-w-0">
               <p className="truncate">
                 <span className="font-medium">{nombre}</span>
                 {x.cuentaNombre ? <span className="text-white/50"> · {x.cuentaNombre}</span> : null}
                 <span
-                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] ${ESTADOS_PUBLICACION[x.estado]?.clase ?? "bg-white/10 text-white/70"}`}
+                  className={`ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] ${
+                    fallaReemplazada(x, pubs) ? "bg-white/10 text-white/50" : ESTADOS_PUBLICACION[x.estado]?.clase ?? "bg-white/10 text-white/70"
+                  }`}
                 >
-                  {estado(x.estado)}
+                  {fallaReemplazada(x, pubs) ? t("detalle.intentoAnteriorChip") : estado(x.estado)}
+                </span>
+                <span className="ml-1.5 inline-block">
+                  <EtiquetaRevision etiqueta={etiquetaRevision([x], x.clip?.estadoRevision, Date.now())} chica />
                 </span>
               </p>
               {x.estado === "PUBLICADA" && x.permalink && (
@@ -684,7 +796,22 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
                 </a>
               )}
               {x.esperaVideo && x.estado === "PROGRAMADA" && <p className="text-xs text-white/55">{t("esperaVideo")}</p>}
-              {x.estado === "FALLIDA" && x.error && <p className="break-words text-xs text-red-400">{x.error}</p>}
+              {x.estado === "FALLIDA" && fallaReemplazada(x, pubs) ? (
+                <p className="text-xs text-white/45">{t("detalle.intentoAnterior", { red: nombre })}</p>
+              ) : x.estado === "FALLIDA" && x.error ? (
+                <p className="break-words text-xs text-red-400">
+                  {esRechazoDeEtiquetas(x.error) ? t("detalle.errorEtiquetas", { red: nombre }) : x.error}
+                </p>
+              ) : null}
+              {/* Lo que falló se corrige y se reintenta en la pantalla de programar del clip, la misma publicación. */}
+              {x.estado === "FALLIDA" && opera && x.clip && !fallaReemplazada(x, pubs) ? (
+                <Link
+                  href={`/episodios/${x.clip.episodioId}/clips/${x.clip._id}/publicar?reintentar=${x._id}`}
+                  className="text-xs font-medium text-ng-celeste hover:underline"
+                >
+                  {t("detalle.editarYReintentar")} →
+                </Link>
+              ) : null}
               {x.estado === "PROGRAMADA" && x.error && (
                 <p className="break-words text-xs text-amber-300">{t("detalle.reintentando", { error: x.error })}</p>
               )}
@@ -705,12 +832,14 @@ function FilaRed({ red, pubs, opera }: { red: string; pubs: PublicacionCalendari
 function EditarAgendada({
   programadas,
   videoUrl,
+  clip,
   duracionClip,
   enlaceClip,
   onMover,
 }: {
   programadas: PublicacionCalendario[];
   videoUrl: string | null;
+  clip: PublicacionCalendario["clip"];
   duracionClip: number;
   enlaceClip: string | null;
   onMover: () => void;
@@ -722,6 +851,23 @@ function EditarAgendada({
   const [descripcion, setDescripcion] = useState(inicial.descripcion ?? "");
   const [tituloYoutube, setTituloYoutube] = useState(youtube?.ajustes?.titulo ?? "");
   const [portadaSeg, setPortadaSeg] = useState<number | null>(inicial.portadaSeg ?? null);
+  const [portadaMarca, setPortadaMarca] = useState(Boolean(inicial.portadaMarca));
+  const [portadaTexto, setPortadaTexto] = useState(inicial.portadaTexto ?? "");
+  /** La portada propia de la publicación (be#244); null = el diseño de la marca. */
+  const [portadaDiseno, setPortadaDiseno] = useState<DisenoPortada | null>(() =>
+    inicial.portadaDiseno ? disenoParaEnviar(inicial.portadaDiseno) : null,
+  );
+  const vistaPortada = useVistaPortada(
+    { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
+    !portadaMarca || !clip,
+  );
+  // La revisión de la portada (be#249): un aviso grave no deja guardar con la portada de marca.
+  const revisionPortada = useAvisosPortada(
+    { marcaId: inicial.marcaId, clipId: clip?._id ?? null, texto: portadaTexto.trim() || null, seg: portadaSeg, diseno: portadaDiseno },
+    !portadaMarca || !clip,
+  );
+  const portadaConGraves = portadaMarca && !!clip && revisionPortada.graves.length > 0;
+  const ta = useTranslations("avisosPortada");
   const [duracionVideo, setDuracionVideo] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [aviso, setAviso] = useState<{ tono: "ok" | "error"; textos: string[] } | null>(null);
@@ -744,6 +890,12 @@ function EditarAgendada({
     if (portadaSeg !== (x.portadaSeg ?? null)) {
       if (portadaSeg == null) v.quitarPortada = true;
       else v.portadaSeg = portadaSeg;
+    }
+    if (clip && portadaMarca !== Boolean(x.portadaMarca)) v.portadaMarca = portadaMarca;
+    if (portadaMarca && portadaTexto.trim() !== (x.portadaTexto ?? "")) v.portadaTexto = portadaTexto.trim();
+    if (portadaMarca && claveDiseno(portadaDiseno) !== claveDiseno(x.portadaDiseno)) {
+      if (portadaDiseno) v.portadaDiseno = portadaDiseno;
+      else v.quitarPortadaDiseno = true;
     }
     return Object.keys(v).length ? v : null;
   }
@@ -803,7 +955,35 @@ function EditarAgendada({
       {videoUrl && (
         <div className="space-y-1.5">
           <span className="block text-xs text-white/45">{t("portada")}</span>
-          {duracion > 0 ? (
+          {clip && (
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={portadaMarca} onChange={(e) => setPortadaMarca(e.target.checked)} />
+              {t("portadaDeMarca")}
+            </label>
+          )}
+          {portadaMarca && clip ? (
+            <EditorPortadaMarca
+              texto={portadaTexto}
+              onTexto={setPortadaTexto}
+              textoPorDefecto={textoPorDefectoPortada(clip)}
+              cuadros={clip.cuadrosPortada ?? []}
+              seg={portadaSeg}
+              onSeg={setPortadaSeg}
+              imagen={vistaPortada.imagen}
+              cargando={vistaPortada.cargando}
+              error={vistaPortada.error}
+              marcaId={inicial.marcaId}
+              clipId={clip._id}
+              diseno={portadaDiseno}
+              onDiseno={setPortadaDiseno}
+              posterUrl={clip.urlPoster}
+              avisos={revisionPortada.avisos}
+              revisando={revisionPortada.revisando}
+              sinCuadros={
+                duracion > 0 ? <ElegirPortadaClip url={videoUrl} duracion={duracion} valor={portadaSeg} onCambiar={setPortadaSeg} /> : null
+              }
+            />
+          ) : duracion > 0 ? (
             <ElegirPortadaClip url={videoUrl} duracion={duracion} valor={portadaSeg} onCambiar={setPortadaSeg} />
           ) : (
             <video
@@ -827,10 +1007,12 @@ function EditarAgendada({
         </div>
       )}
 
+      {portadaConGraves && <p className="text-xs text-red-400">{ta("bloquea")}</p>}
+
       <div className="flex flex-wrap items-center gap-2 pt-1">
         <button
           onClick={() => void guardar()}
-          disabled={guardando || descripcionLarga || tituloVacio}
+          disabled={guardando || descripcionLarga || tituloVacio || portadaConGraves}
           className="rounded-lg bg-indigo-500 px-3 py-1.5 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
         >
           {guardando ? t("guardando") : t("guardar")}

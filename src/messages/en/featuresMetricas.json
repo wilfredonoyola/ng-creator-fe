@@ -1,0 +1,37 @@
+{
+  "seo": {
+    "titulo": "Social media analytics and reports for your clients | Clipfine",
+    "descripcion": "Metrics for every clip on TikTok, Reels, Shorts and Facebook, a summary per client and a PDF report ready to send. For agencies that want contracts renewed."
+  },
+  "titulo": "The end-of-month report",
+  "destacado": "that saves the renewal meeting",
+  "bajada": "Clipfine reads the metrics of every published clip, network by network, and builds each client's summary. Export it as a PDF and walk into the meeting with numbers.",
+  "datos": {
+    "d1": { "cifra": "4 networks", "que": "read automatically for every published clip" },
+    "d2": { "cifra": "90 days", "que": "of tracking after posting" },
+    "d3": { "cifra": "PDF · CSV · MD", "que": "the report, ready for the client" }
+  },
+  "agencia": {
+    "metricasClip": "No more collecting numbers network by network in a spreadsheet. They're all on the clip.",
+    "crecimiento": "Show the client that a clip keeps adding views weeks later.",
+    "retencion": "You learn which hooks hold attention and repeat them for every client.",
+    "iaVsRealidad": "Your team learns which kind of moment works for each client and picks the next one better.",
+    "resumenPrograma": "Each client's monthly summary, already built. Compared with last month and with the best time to post.",
+    "exportar": "The client report comes out in one click. Nobody loses an afternoon building slides.",
+    "seActualiza": "Nobody has to remember to check each network to see how the clip did."
+  },
+  "vistas": {
+    "metricasClip": { "vistas": "Views", "likes": "Likes", "compartidos": "Shares", "seguidores": "Followers" },
+    "crecimiento": { "dias": "d" },
+    "retencion": { "seVan": "Drop in 3 s:", "completo": "Watch it all:" },
+    "iaVsRealidad": { "ia": "AI score", "vistas": "Real views", "gancho": "Hook", "humor": "Humor", "opinion": "Opinion" },
+    "resumenPrograma": { "cliente": "Client A · last 30 days", "contraAnterior": "vs. previous", "mejorHora": "Best time: Thu", "mejorClip": "Top clip" },
+    "exportar": { "titulo": "Client A report · October", "pie": "For the client, for Excel or for Notion" },
+    "seActualiza": { "pie": "After 1 hour, 6 hours, a day… up to 90 days" }
+  },
+  "preguntas": {
+    "p1": { "p": "Can I send my client a report?", "r": "Yes. Each client's summary exports as a PDF to send them, as CSV for Excel or Sheets, or as Markdown for Notion, Slack or an email." },
+    "p2": { "p": "Which metrics does each network provide?", "r": "Views, likes, comments, shares, saves, reach and followers gained where the network provides them, and retention where it shares it. Facebook only shares views, likes and comments." },
+    "p3": { "p": "Do I have to enter the numbers by hand?", "r": "No. Clipfine reads the metrics on its own an hour after posting, after 6 hours, after a day and so on up to 90 days later." }
+  }
+}

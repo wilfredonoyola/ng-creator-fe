@@ -1,7 +1,7 @@
 {
   "meta": {
     "titulo": "All features",
-    "descripcion": "AI clips, editing, captions, Brand Kit and publishing to TikTok, YouTube Shorts, Instagram Reels and Facebook: everything Clipfine does for agencies and podcasts."
+    "descripcion": "AI clips, a CapCut-style editor with music and sound effects, captions, Brand Kit, review before publishing and publishing to TikTok, YouTube Shorts, Instagram Reels and Facebook: everything Clipfine does for agencies and podcasts."
   },
   "portada": {
     "etiqueta": "Features",
@@ -9,82 +9,480 @@
     "texto": "From the long episode to clips published on four networks, for every client your agency runs. This is what you can use today.",
     "cta": "Try it free"
   },
-  "indice": "On this page",
+  "indice": "Sections",
+  "ver": "See the section",
+  "migas": "Breadcrumb",
+  "otras": "More features",
+  "anterior": "Previous",
+  "siguiente": "Next",
+  "verTodas": "See all features",
+  "grupos": {
+    "producir": {
+      "titulo": "Produce more with the same team",
+      "texto": "From the long episode to finished clips, without an editor starting from scratch."
+    },
+    "entregar": {
+      "titulo": "Deliver on time, with the client's sign-off",
+      "texto": "Every client's week scheduled on four networks, with the right people tagged, and nothing goes out without approval."
+    },
+    "demostrar": {
+      "titulo": "Prove results",
+      "texto": "The numbers your client wants to see before renewing."
+    },
+    "operar": {
+      "titulo": "Many clients, never mixed up",
+      "texto": "Each client's brand, your team with their roles, and all of it on your phone too."
+    }
+  },
+  "agencia": {
+    "guias": "How to use it, step by step",
+    "etiqueta": "Your agency",
+    "funciones": "What it does, and what it saves you",
+    "funcionesTexto": "Each feature as it looks in Clipfine, with what your agency gets out of it.",
+    "datos": "What your agency gets",
+    "preguntas": "Agency questions",
+    "relacionadas": "Keep going"
+  },
   "secciones": {
-    "ia": { "titulo": "AI clips", "texto": "Upload the episode and get its best moments, each one with the reason why." },
-    "edicion": { "titulo": "Editing", "texto": "Adjust the span, cut what's extra and frame whoever is talking, no video skills needed." },
-    "textos": { "titulo": "Text and captions", "texto": "Captions that are easy to read and designed text, ready for social." },
-    "imagenes": { "titulo": "Images", "texto": "Add photos, logos or cut-out people on top of the clip." },
-    "marca": { "titulo": "Brand Kit", "texto": "Every client with its logo, colors and style, on all of its clips." },
-    "calidad": { "titulo": "Quality and preview", "texto": "Sharp clips and a preview of how they look on each network." },
-    "importar": { "titulo": "Bring in episodes", "texto": "The recorded episode or the live stream, with no extra steps." },
-    "publicar": { "titulo": "Publish and schedule", "texto": "Schedule each clip on all four networks and follow its status from a calendar." },
-    "metricas": { "titulo": "Analytics", "texto": "Which clip worked, on which platform and why, so you can decide the next one and show the client." },
-    "equipo": { "titulo": "Team and brands", "texto": "Many clients and many people working, without stepping on each other." },
-    "app": { "titulo": "App and languages", "texto": "The same as the web, on your phone, in English or Spanish." }
+    "ia": {
+      "titulo": "AI clips",
+      "texto": "Upload the episode and get its best moments, each one with the reason why."
+    },
+    "edicion": {
+      "titulo": "Editing",
+      "texto": "Adjust the span, cut what's extra and frame whoever is talking, no video skills needed."
+    },
+    "audio": {
+      "titulo": "Audio and music",
+      "texto": "Royalty-free music, sound effects and just the right volume, heard while you edit."
+    },
+    "textos": {
+      "titulo": "Text and captions",
+      "texto": "Captions that are easy to read and designed text, ready for social."
+    },
+    "imagenes": {
+      "titulo": "Images",
+      "texto": "Add photos, logos or cut-out people on top of the clip."
+    },
+    "marca": {
+      "titulo": "Brand Kit",
+      "texto": "Every client with its logo, colors and style, on all of its clips."
+    },
+    "calidad": {
+      "titulo": "Quality and preview",
+      "texto": "Sharp clips and a preview of how they look on each network."
+    },
+    "importar": {
+      "titulo": "Bring in content",
+      "texto": "The recorded episode, the live or the clip you already edited, with no extra steps."
+    },
+    "subir-clips": {
+      "titulo": "Upload clips",
+      "texto": "What you already edited in CapCut, scheduled, approved and measured like any clip."
+    },
+    "revision": {
+      "titulo": "Approval before publishing",
+      "texto": "Nothing goes out until someone approves it. Not even at 3 a.m."
+    },
+    "publicar": {
+      "titulo": "Publish and schedule",
+      "texto": "Schedule each clip on all four networks and follow its status from a calendar."
+    },
+    "metricas": {
+      "titulo": "Analytics",
+      "texto": "Which clip worked, on which platform and why, so you can decide the next one and show the client."
+    },
+    "equipo": {
+      "titulo": "Team and brands",
+      "texto": "Many clients and many people working, without stepping on each other."
+    },
+    "app": {
+      "titulo": "The Clipfine app",
+      "texto": "Coming soon to your phone, on iPhone and Android: same account, same clients, everything in sync with the web. Start on your computer and finish wherever you are."
+    },
+    "etiquetas": {
+      "titulo": "Tags",
+      "texto": "Mention whoever's in the clip with @ and each network gets their username: a real tag on Instagram, an @mention on TikTok, YouTube and Facebook."
+    }
   },
   "items": {
-    "momentos": { "titulo": "The best moments, found for you", "texto": "Clipfine transcribes the episode and AI picks the parts that stand on their own. You start with a batch of clips, not 90 minutes of video." },
-    "puntaje": { "titulo": "A score and the reason", "texto": "Every suggested clip comes with a 0–100 score and the reason: strong hook, humor, hot take, quotable line, emotion…" },
-    "sugeridos": { "titulo": "Suggested title and hook", "texto": "Every moment arrives with a title and a hook line for the first seconds, ready to use or change." },
-    "aMano": { "titulo": "Manual clips, from what's said", "texto": "Read the transcript, play the part, mark where it starts and ends, and open it in the editor." },
-    "tramo": { "titulo": "Trim with context", "texto": "Make the clip longer or shorter from its edges so you never lose the start of an idea or the punchline." },
-    "cortes": { "titulo": "Cuts inside the clip", "texto": "Remove what's extra in the middle of the clip, on the timeline or by tapping words in the transcript." },
-    "silencios": { "titulo": "Remove long silences", "texto": "One tap marks long silences as cuts, and you review them one by one." },
-    "autoEncuadre": { "titulo": "Auto-reframe", "texto": "The clip follows whoever is talking: it recognizes voices and watches who moves their lips. Every change can be adjusted." },
-    "encuadreManual": { "titulo": "Manual framing", "texto": "Move and resize the frame, and add a new framing from any second." },
-    "formatos": { "titulo": "9:16, 1:1 and 16:9", "texto": "Vertical for Reels, TikTok and Shorts, square for the feed or horizontal for YouTube." },
-    "disenos": { "titulo": "Four layouts", "texto": "Single, Split (two people, one above the other), Landscape and Centered. You can change them in each part of the clip." },
-    "fondo": { "titulo": "Blurred or black background", "texto": "When the video doesn't fill the screen, the rest is filled with the same video, softened, or with black bars for text." },
-    "subtitulos": { "titulo": "Automatic captions", "texto": "They come from the transcript, with the spoken word highlighted. Drag them up, down or bigger." },
-    "corregir": { "titulo": "Fix a word", "texto": "If a word was transcribed wrong, change it or remove it from the captions without touching the timing." },
-    "estilos": { "titulo": "Viral and professional styles", "texto": "Pop, Karaoke, Beast, Editorial, Keynote and more, painted with the brand's colors." },
-    "textosDiseno": { "titulo": "Designed text", "texto": "Several fonts, outline, shadow or box, highlighted words in another color and the exact moment they show up." },
-    "gancho": { "titulo": "Hook at the start", "texto": "A big line in the first seconds so nobody scrolls past." },
-    "cta": { "titulo": "Call to action at the end", "texto": "A closing line like “Watch the full episode”, in a box with the brand's color." },
-    "hastaTres": { "titulo": "Up to 3 images per clip", "texto": "A photo, a logo or a product: drop it on the preview, place it and choose when it shows up." },
-    "quitarFondo": { "titulo": "AI background removal", "texto": "Cut a person or an object out of its background with one tap." },
-    "contorno": { "titulo": "Sticker outline", "texto": "A white border around the cut-out so it pops off the video." },
-    "logo": { "titulo": "The logo on every clip", "texto": "Choose the corner, size and opacity. If the logo has a background, we remove it." },
-    "colores": { "titulo": "The brand's colors", "texto": "Taken from the logo with one tap or picked by hand, they paint the text and captions." },
-    "estiloMarca": { "titulo": "One style per brand", "texto": "Each client's hook and captions always come out in its style." },
-    "aplicaSolo": { "titulo": "Applied automatically", "texto": "The brand's clips come out with its Brand Kit. On each clip you can change the style or turn off the logo." },
-    "render": { "titulo": "High-quality render", "texto": "The original frame rate is kept and the video you uploaded isn't compressed again." },
-    "indicador": { "titulo": "Quality indicator", "texto": "Each clip tells you whether its quality is excellent, good or low, and what to do if zooming hurts it." },
-    "vistaPrevia": { "titulo": "How it looks on each network", "texto": "See the clip with the TikTok, Reels, Shorts or Facebook screen on top, so nothing gets covered." },
-    "versionFacebook": { "titulo": "Short version for Facebook", "texto": "If the clip runs over 90 seconds, you choose which part goes to Facebook; the other networks get the full clip." },
-    "descargar": { "titulo": "Download the MP4", "texto": "Every finished clip downloads ready to post anywhere you want." },
-    "subir": { "titulo": "Upload the episode", "texto": "Pick the podcast video from your computer and Clipfine transcribes it for you." },
-    "restream": { "titulo": "Your live stream from Restream", "texto": "Connect Restream and bring in the live recording directly, without waiting for YouTube to process it." },
-    "cuatroRedes": { "titulo": "Four networks at once", "texto": "Schedule the same clip on TikTok, YouTube Shorts, Instagram Reels and Facebook in one step." },
-    "porDefecto": { "titulo": "Default hashtags and accounts", "texto": "Each brand keeps its hashtags and accounts, and they're filled in every time you schedule." },
-    "portada": { "titulo": "Choose the cover", "texto": "A frame from the video or your own image as the clip's cover." },
-    "comoSale": { "titulo": "How it goes out on each network", "texto": "Before scheduling you see whether the caption is longer than a network allows." },
-    "calendario": { "titulo": "Weekly calendar", "texto": "What's scheduled and what's already out, with each network's status on every clip." },
-    "editarAgendada": { "titulo": "Edit what's scheduled", "texto": "Change the time or the caption, or remove a network, before it goes out." },
-    "reintentar": { "titulo": "If a network fails, you'll know", "texto": "See the reason and retry just that network, without posting again where it already went out." },
-    "metricasClip": { "titulo": "Analytics for every clip", "texto": "Views, likes, comments, shares, saves, reach and followers gained, per platform and combined." },
-    "crecimiento": { "titulo": "How it grew", "texto": "The views curve since it went out: after an hour, 6 hours, a day and up to 90 days later." },
-    "retencion": { "titulo": "Second-by-second retention", "texto": "How many leave in the first 3 seconds, how many watch to the end and how much is watched on average, where the platform shares it." },
-    "iaVsRealidad": { "titulo": "AI vs reality", "texto": "The score the AI gave each moment next to the real views, and which kind of moment performs best." },
-    "resumenPrograma": { "titulo": "A summary for every client", "texto": "Totals vs the previous period, best and worst clips, followers per platform and the best time to post." },
-    "exportar": { "titulo": "Export as PDF, CSV or Markdown", "texto": "A client-ready report, a sheet for Excel or Google Sheets, or a summary for Notion, Slack or email." },
-    "seActualiza": { "titulo": "It updates itself", "texto": "Analytics are read automatically for 90 days after publishing, and you see them in the app too." },
-    "marcas": { "titulo": "Many brands in one account", "texto": "Each client has its own space: episodes, clips, calendar, Brand Kit and networks, never mixed." },
-    "roles": { "titulo": "Roles", "texto": "Owner, editor or viewer: everyone gets in with their role on the brands they work on." },
-    "invitaciones": { "titulo": "Email invitations", "texto": "Add someone with their email and name, and they go straight into the brand." },
-    "tomar": { "titulo": "Who's editing what", "texto": "Whoever takes a clip has it under their name and everyone sees it. If a part is already in another clip, Clipfine warns you." },
-    "listos": { "titulo": "Ready to schedule", "texto": "When a clip is marked done, it shows up in the calendar for someone to schedule it." },
-    "autoria": { "titulo": "Who did what", "texto": "Every clip shows who edited it, who finished it and who scheduled it." },
-    "avisos": { "titulo": "Notifications", "texto": "Know when clips are ready, when someone takes or schedules one and when it's published." },
-    "app": { "titulo": "iPhone and Android app", "texto": "Same account, same brands: edit, schedule and check the calendar from your phone." },
-    "push": { "titulo": "Phone notifications", "texto": "Team notifications reach your phone, and you choose which ones you want." },
-    "fotos": { "titulo": "Save the clip to Photos", "texto": "Export the finished clip to your phone's gallery." },
-    "idiomas": { "titulo": "English and Spanish", "texto": "The web and the app are in English and Spanish. For now, episodes are transcribed in Spanish." }
+    "momentos": {
+      "titulo": "The best moments, found for you",
+      "texto": "Clipfine transcribes the episode and AI picks the parts that stand on their own. You start with a batch of clips, not 90 minutes of video."
+    },
+    "puntaje": {
+      "titulo": "A score and the reason",
+      "texto": "Every suggested clip comes with a 0–100 score and the reason: strong hook, humor, hot take, quotable line, emotion…"
+    },
+    "sugeridos": {
+      "titulo": "Suggested title and hook",
+      "texto": "Every moment arrives with a title and a hook line for the first seconds, ready to use or change."
+    },
+    "aMano": {
+      "titulo": "Manual clips, from what's said",
+      "texto": "Read the transcript, play the part, mark where it starts and ends, and open it in the editor."
+    },
+    "pedirMomentos": {
+      "titulo": "Ask for the moments you want",
+      "texto": "Write \"one clip per webinar topic\" or \"the audience questions\": the AI finds them across the whole video, you pick which ones and they're created at once. You can also paste a list of time ranges."
+    },
+    "desdeChatgpt": {
+      "titulo": "Clips from ChatGPT or Claude",
+      "texto": "Connect Clipfine and ask the chat to read the transcript and cut the clips: it creates them in your account, not posted, ready to finish in the editor."
+    },
+    "editor": {
+      "titulo": "A CapCut-style editor",
+      "texto": "A timeline with every track, tools on the side, and undo or redo for any change."
+    },
+    "guardado": {
+      "titulo": "Saves on its own",
+      "texto": "Every change is saved as you edit. No save button, no lost work."
+    },
+    "tramo": {
+      "titulo": "Trim with context",
+      "texto": "Make the clip longer or shorter from its edges so you never lose the start of an idea or the punchline."
+    },
+    "cortes": {
+      "titulo": "Cuts inside the clip",
+      "texto": "Remove what's extra in the middle of the clip, on the timeline or by tapping words in the transcript."
+    },
+    "silencios": {
+      "titulo": "Remove long silences",
+      "texto": "One tap marks long silences as cuts, and you review them one by one."
+    },
+    "autoEncuadre": {
+      "titulo": "Auto-reframe",
+      "texto": "The clip follows whoever is talking: it recognizes voices and watches who moves their lips. Every change can be adjusted."
+    },
+    "encuadreManual": {
+      "titulo": "Manual framing",
+      "texto": "Move and resize the frame, and add a new framing from any second."
+    },
+    "formatos": {
+      "titulo": "9:16, 1:1 and 16:9",
+      "texto": "Vertical for Reels, TikTok and Shorts, square for the feed or horizontal for YouTube."
+    },
+    "disenos": {
+      "titulo": "Four layouts",
+      "texto": "Single, Split (two people, one above the other), Landscape and Centered. You can change them in each part of the clip."
+    },
+    "fondo": {
+      "titulo": "Blurred or black background",
+      "texto": "When the video doesn't fill the screen, the rest is filled with the same video, softened, or with black bars for text."
+    },
+    "velocidad": {
+      "titulo": "Clip speed",
+      "texto": "From 0.5x to 2x without changing the pitch of the voice. You see right away how long it will run."
+    },
+    "volumenVoz": {
+      "titulo": "Voice volume",
+      "texto": "Turn it up to 400% or mute it, and hear the change in the preview, no export needed."
+    },
+    "musica": {
+      "titulo": "Royalty-free music",
+      "texto": "Pick a track from the Clipfine library or upload your own, and set its volume."
+    },
+    "bajarAlHablar": {
+      "titulo": "Music ducks under the voice",
+      "texto": "The music steps back on its own while someone talks and comes back in the pauses."
+    },
+    "efectos": {
+      "titulo": "Sound effects",
+      "texto": "A drum hit, a whoosh or applause at the exact second: one tap on the timeline."
+    },
+    "subtitulos": {
+      "titulo": "Automatic captions",
+      "texto": "They come from the transcript, with the spoken word highlighted. Drag them up, down or bigger."
+    },
+    "corregir": {
+      "titulo": "Fix a word",
+      "texto": "If a word was transcribed wrong, change it or remove it from the captions without touching the timing."
+    },
+    "estilos": {
+      "titulo": "Viral and professional styles",
+      "texto": "Pop, Karaoke, Beast, Editorial, Keynote and more, painted with the brand's colors."
+    },
+    "textosDiseno": {
+      "titulo": "Designed text",
+      "texto": "Several fonts, outline, shadow or box, highlighted words in another color and the exact moment they show up."
+    },
+    "gancho": {
+      "titulo": "Hook at the start",
+      "texto": "A big line in the first seconds so nobody scrolls past."
+    },
+    "cta": {
+      "titulo": "Call to action at the end",
+      "texto": "A closing line like “Watch the full episode”, in a box with the brand's color."
+    },
+    "hastaTres": {
+      "titulo": "Up to 3 images per clip",
+      "texto": "A photo, a logo or a product: drop it on the preview, place it and choose when it shows up."
+    },
+    "quitarFondo": {
+      "titulo": "AI background removal",
+      "texto": "Cut a person or an object out of its background with one tap."
+    },
+    "contorno": {
+      "titulo": "Sticker outline",
+      "texto": "A white border around the cut-out so it pops off the video."
+    },
+    "logo": {
+      "titulo": "The logo on every clip",
+      "texto": "Choose the corner, size and opacity. If the logo has a background, we remove it."
+    },
+    "colores": {
+      "titulo": "The brand's colors",
+      "texto": "Taken from the logo with one tap or picked by hand, they paint the text and captions."
+    },
+    "estiloMarca": {
+      "titulo": "One style per brand",
+      "texto": "Each client's hook and captions always come out in its style."
+    },
+    "aplicaSolo": {
+      "titulo": "Applied automatically",
+      "texto": "The brand's clips come out with its Brand Kit. On each clip you can change the style or turn off the logo."
+    },
+    "render": {
+      "titulo": "High-quality render",
+      "texto": "The original frame rate is kept and the video you uploaded isn't compressed again."
+    },
+    "indicador": {
+      "titulo": "Quality indicator",
+      "texto": "Each clip tells you whether its quality is excellent, good or low, and what to do if zooming hurts it."
+    },
+    "vistaPrevia": {
+      "titulo": "How it looks on each network",
+      "texto": "See the clip with the TikTok, Reels, Shorts or Facebook screen on top, so nothing gets covered."
+    },
+    "versionFacebook": {
+      "titulo": "Short version for Facebook",
+      "texto": "If the clip runs over 90 seconds, you choose which part goes to Facebook; the other networks get the full clip."
+    },
+    "descargar": {
+      "titulo": "Download the MP4",
+      "texto": "Every finished clip downloads ready to post anywhere you want."
+    },
+    "subir": {
+      "titulo": "Upload the episode",
+      "texto": "Pick the podcast video from your computer and Clipfine transcribes it for you."
+    },
+    "restream": {
+      "titulo": "Your live stream from Restream",
+      "texto": "Connect Restream and bring in the live recording directly, without waiting for YouTube to process it."
+    },
+    "clipsEditados": {
+      "titulo": "Already-edited clips",
+      "texto": "Upload what you edited in CapCut or a YouTube cut and publish it like any clip: review, four networks and analytics."
+    },
+    "cuatroRedes": {
+      "titulo": "Four networks at once",
+      "texto": "Schedule the same clip on TikTok, YouTube Shorts, Instagram Reels and Facebook in one step."
+    },
+    "sinExportar": {
+      "titulo": "Schedule without exporting",
+      "texto": "Schedule from the editor and Clipfine builds the final video before publishing it. You can also download the MP4."
+    },
+    "porDefecto": {
+      "titulo": "Default hashtags and accounts",
+      "texto": "Each brand keeps its hashtags and accounts, and they're filled in every time you schedule."
+    },
+    "portada": {
+      "titulo": "Choose the cover",
+      "texto": "A frame from the video or your own image as the clip's cover."
+    },
+    "comoSale": {
+      "titulo": "How it goes out on each network",
+      "texto": "Before scheduling you see whether the caption is longer than a network allows."
+    },
+    "calendario": {
+      "titulo": "Weekly calendar",
+      "texto": "What's scheduled and what's already out, with each network's status on every clip."
+    },
+    "editarAgendada": {
+      "titulo": "Edit what's scheduled",
+      "texto": "Change the time or the caption, or remove a network, before it goes out."
+    },
+    "porRevisar": {
+      "titulo": "To review",
+      "texto": "With review on, what an editor schedules stays “To review” and doesn't go out until it's approved, even when its time comes."
+    },
+    "aprobar": {
+      "titulo": "Approve in one tap",
+      "texto": "The reviewer watches the clip and approves it: it goes out at its scheduled time, on all its networks."
+    },
+    "pedirCambios": {
+      "titulo": "Request changes",
+      "texto": "If something's off, the reviewer says what to change and the clip goes back to whoever edited it. Once fixed, it's sent again."
+    },
+    "clienteRevisor": {
+      "titulo": "Your client approves",
+      "texto": "Invite your client with the Reviewer role: they see their clips and approve them or request changes, but can't edit anything."
+    },
+    "vencimiento": {
+      "titulo": "Nothing slips through",
+      "texto": "If the time is close and nobody has reviewed it, you get a heads-up. If it arrives unapproved, it doesn't go out; or, if the brand prefers, it goes out anyway and gets flagged."
+    },
+    "editarVuelve": {
+      "titulo": "What's approved is what goes out",
+      "texto": "If someone edits a clip after it's approved, it goes back to review. No sneaky changes."
+    },
+    "avisosRevision": {
+      "titulo": "Alerts for whoever has to act",
+      "texto": "The reviewer hears when there's something to review; the editor, when it's approved or changes are requested. In the app, by push and by email."
+    },
+    "reintentar": {
+      "titulo": "If a network fails, you'll know",
+      "texto": "See the reason and retry just that network, without posting again where it already went out."
+    },
+    "metricasClip": {
+      "titulo": "Analytics for every clip",
+      "texto": "Views, likes, comments, shares, saves, reach and followers gained, per platform and combined."
+    },
+    "crecimiento": {
+      "titulo": "How it grew",
+      "texto": "The views curve since it went out: after an hour, 6 hours, a day and up to 90 days later."
+    },
+    "retencion": {
+      "titulo": "Second-by-second retention",
+      "texto": "How many leave in the first 3 seconds, how many watch to the end and how much is watched on average, where the platform shares it."
+    },
+    "iaVsRealidad": {
+      "titulo": "AI vs reality",
+      "texto": "The score the AI gave each moment next to the real views, and which kind of moment performs best."
+    },
+    "resumenPrograma": {
+      "titulo": "A summary for every client",
+      "texto": "Totals vs the previous period, best and worst clips, followers per platform and the best time to post."
+    },
+    "exportar": {
+      "titulo": "Export as PDF, CSV or Markdown",
+      "texto": "A client-ready report, a sheet for Excel or Google Sheets, or a summary for Notion, Slack or email."
+    },
+    "seActualiza": {
+      "titulo": "It updates itself",
+      "texto": "Analytics are read automatically for 90 days after publishing, and you see them in the app too."
+    },
+    "marcas": {
+      "titulo": "Many brands in one account",
+      "texto": "Each client has its own space: episodes, clips, calendar, Brand Kit and networks, never mixed."
+    },
+    "roles": {
+      "titulo": "Roles",
+      "texto": "Owner, editor, reviewer or viewer: everyone gets in with their role on the brands they work on."
+    },
+    "invitaciones": {
+      "titulo": "Email invitations",
+      "texto": "Add someone with their email and name, and they go straight into the brand."
+    },
+    "tomar": {
+      "titulo": "Who's editing what",
+      "texto": "Whoever takes a clip has it under their name and everyone sees it. If a part is already in another clip, Clipfine warns you."
+    },
+    "listos": {
+      "titulo": "Ready to schedule",
+      "texto": "When a clip is marked done, it shows up in the calendar for someone to schedule it."
+    },
+    "notaVoz": {
+      "titulo": "Voice comments",
+      "texto": "Don't feel like typing? Record a voice note. Clipfine transcribes it, so the editor can listen or read."
+    },
+    "autoria": {
+      "titulo": "Who did what",
+      "texto": "Every clip shows who edited it, who finished it and who scheduled it."
+    },
+    "avisos": {
+      "titulo": "Notifications",
+      "texto": "Know when clips are ready, when someone takes or schedules one and when it's published."
+    },
+    "idiomas": {
+      "titulo": "English and Spanish",
+      "texto": "Everyone on the team uses Clipfine in their language, on the web and in the app. Episodes are transcribed in the language they're spoken in: English, Spanish and more."
+    },
+    "app": {
+      "titulo": "App for iPhone and Android",
+      "texto": "Sign in with your usual account and your clients, episodes and clips are already there. Nothing to set up again."
+    },
+    "sincronizado": {
+      "titulo": "Everything in sync with the web",
+      "texto": "What you edit on your computer shows up on your phone and the other way around, no exporting or moving files."
+    },
+    "editarCelular": {
+      "titulo": "The editor in your pocket",
+      "texto": "Trim, caption, add music and sound effects, and schedule on all four networks from your phone."
+    },
+    "aprobarCelular": {
+      "titulo": "Approve from anywhere",
+      "texto": "Watch the clip, approve it or ask for changes with a voice note, without opening your computer."
+    },
+    "push": {
+      "titulo": "Phone notifications",
+      "texto": "Team notifications reach your phone, and you choose which ones you want."
+    },
+    "fotos": {
+      "titulo": "Save the clip to Photos",
+      "texto": "Export the finished clip to your phone's gallery."
+    },
+    "soltarVarios": {
+      "titulo": "Several at once",
+      "texto": "Drop or pick several videos and they upload together, each with its progress."
+    },
+    "talCual": {
+      "titulo": "Goes out as is",
+      "texto": "If it's already H.264, it's posted without recompressing: what you exported is what people see."
+    },
+    "retocar": {
+      "titulo": "Or touch it up",
+      "texto": "Open it in the editor and add captions, a template, a hook or music."
+    },
+    "programarSubido": {
+      "titulo": "On the calendar",
+      "texto": "Scheduled to TikTok, Instagram, YouTube and Facebook like every other clip."
+    },
+    "revisarSubido": {
+      "titulo": "With approval",
+      "texto": "If the client reviews, uploaded clips also need their sign-off."
+    },
+    "medirSubido": {
+      "titulo": "With metrics",
+      "texto": "Views, engagement and retention per clip and per network."
+    },
+    "sinHoras": {
+      "titulo": "Doesn't use hours",
+      "texto": "Your plan's hours stay for episodes."
+    },
+    "desdeCelular": {
+      "titulo": "From your phone",
+      "texto": "In the app, pick videos from the gallery and if the connection drops, it resumes where it left off."
+    },
+    "menciones": {
+      "titulo": "@mentions that resolve themselves",
+      "texto": "Type @Ana once in the description and, when it publishes, each network gets her username there. If she has no account on it, her name goes out."
+    },
+    "tresNiveles": {
+      "titulo": "Cast, Global and by episode",
+      "texto": "The cast who's always on, a Global directory for people who show up now and then, and each show's guests, which you move to Global in one tap."
+    },
+    "verificar": {
+      "titulo": "Verified accounts",
+      "texto": "When you add a username, Clipfine looks it up on the network and shows the name and photo. If it doesn't exist, you're warned before publishing. Where the network doesn't allow checking, the profile is one click away."
+    },
+    "sugeridas": {
+      "titulo": "Suggested from what's said",
+      "texto": "If someone on your list is named in the clip, they're suggested with the second they're mentioned. The episode's guests come already selected."
+    },
+    "colaboradores": {
+      "titulo": "Instagram and Facebook collaborators",
+      "texto": "Invite up to 3 Instagram accounts and up to 10 Facebook Pages: if they accept, the Reel also shows on their profile or Page."
+    },
+    "buscar": {
+      "titulo": "A searchable directory",
+      "texto": "Search by name, nickname or username, accents optional, and see how many times you've tagged each person."
+    }
   },
   "cierre": {
     "titulo": "Try it with one client",
     "texto": "Upload an episode and see the clips you get, with the Brand Kit on and ready to schedule.",
     "cta": "Try it free"
-  }
+  },
+  "proximamenteTiendas": "Coming soon to the App Store and Google Play"
 }

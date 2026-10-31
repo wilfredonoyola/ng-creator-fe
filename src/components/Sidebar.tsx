@@ -3,8 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  AtSign,
   CalendarDays,
   ChartColumnIncreasing,
+  CircleHelp,
   Clapperboard,
   House,
   CreditCard,
@@ -16,13 +18,17 @@ import {
   PanelLeftOpen,
   Stamp,
   Mic,
-  MonitorPlay,
+  LayoutGrid,
   Scissors,
+  Settings,
   UserRound,
   Users,
   type LucideIcon,
 } from "lucide-react";
 import { cerrarSesion } from "@/lib/auth";
+import { ENLACE_AYUDA } from "@/lib/ayuda";
+import { CONTACTO } from "@/lib/legal";
+import { URL_SITIO } from "@/lib/sitio";
 import { LogoNG } from "./LogoNG";
 import { useSesion } from "@/lib/sesion";
 import { useSoySuperadmin } from "@/lib/superadmin";
@@ -30,6 +36,8 @@ import { useMarcaActiva } from "@/lib/marca-activa";
 import { SelectorDeMarca } from "./SelectorDeMarca";
 import { FotoMarca } from "./FotoMarca";
 import { Campanita } from "./Campanita";
+import { PrimerosPasos } from "./PrimerosPasos";
+import { useFuncion } from "@/lib/funciones";
 
 // Íconos de Lucide, de contorno y a un solo tamaño: la guía de marca pide una
 // sola familia de íconos, no emojis.
@@ -37,7 +45,7 @@ type ClaveNav =
   | "inicio"
   | "episodios"
   | "calendario"
-  | "publicaciones"
+  | "contenido"
   | "metricas"
   | "crearVideo"
   | "montaje"
@@ -46,6 +54,8 @@ type ClaveNav =
   | "equipo"
   | "brandKit"
   | "plan"
+  | "ajustes"
+  | "etiquetas"
   | "redesConectadas"
   | "superadmin";
 
@@ -64,9 +74,9 @@ interface ItemNav {
  */
 export const NAV_PRINCIPAL: ItemNav[] = [
   { href: "/panel", icon: House, clave: "inicio" },
-  { href: "/episodios", icon: Mic, clave: "episodios" },
+  { href: "/episodios", icon: Mic, clave: "episodios", tambien: ["/clips-subidos"] },
   { href: "/calendario", icon: CalendarDays, clave: "calendario" },
-  { href: "/publicados", icon: MonitorPlay, clave: "publicaciones", tambien: ["/analisis"] },
+  { href: "/contenido", icon: LayoutGrid, clave: "contenido", tambien: ["/analisis", "/publicados"] },
   // Cómo le fue a lo publicado, en todas las redes (ng-creator-be#119): es lo
   // que la agencia le muestra al cliente, así que va a la vista y no adentro.
   { href: "/metricas", icon: ChartColumnIncreasing, clave: "metricas" },
@@ -96,6 +106,10 @@ const navEquipo: ItemNav = { href: "/admin/equipo", icon: Users, clave: "equipo"
 const navPlantilla: ItemNav = { href: "/admin/plantilla", icon: Stamp, clave: "brandKit" };
 /** Mi plan: solo el propietario (el titular paga); quien edita no ve precios ni cobro. */
 const navPlan: ItemNav = { href: "/plan", icon: CreditCard, clave: "plan" };
+/** Las personas que se etiquetan al publicar: elenco, Global y los invitados de cada episodio. */
+/** Lo que se prende y apaga en la marca: por defecto al publicar, revisión, numeración y funciones. */
+const navAjustes: ItemNav = { href: "/admin/ajustes", icon: Settings, clave: "ajustes" };
+const navEtiquetas: ItemNav = { href: "/etiquetas", icon: AtSign, clave: "etiquetas" };
 /** El panel de quienes administran Clipfine: aparte, con su propio login. */
 const navSuperadmin: ItemNav = { href: "/superadmin", icon: ShieldCheck, clave: "superadmin" };
 const navAdmin: ItemNav[] = [
@@ -125,6 +139,7 @@ export function Sidebar({
   colapsado = false,
   onAlternarColapso,
   avisos,
+  conCuenta = false,
 }: {
   abierto?: boolean;
   onCerrar?: () => void;
@@ -137,6 +152,12 @@ export function Sidebar({
    * falta, porque la barra de arriba ya tiene la suya.
    */
   avisos?: { sinLeer: number; refrescar: () => void };
+  /**
+   * La cuenta (perfil, ayuda, salir) al pie del menú. Lo normal es que vaya
+   * arriba a la derecha (MenuUsuario, en DashboardLayout); el editor, que no
+   * tiene esa barra para ganar alto, la deja acá.
+   */
+  conCuenta?: boolean;
 }) {
   const t = useTranslations("marcoSidebar");
   const tRol = useTranslations("marcoRoles");
@@ -146,6 +167,8 @@ export function Sidebar({
   const { soy: soySuperadmin } = useSoySuperadmin();
   const { activa } = useMarcaActiva();
   const rolAqui = rolEn(activa?._id);
+  // Videos de reacción se prende en Ajustes → Funciones; apagado no ocupa el menú.
+  const [videosReaccion] = useFuncion("videosReaccion");
 
   function handleLogout() {
     cerrarSesion();
@@ -214,6 +237,9 @@ export function Sidebar({
         </div>
       )}
 
+      {/* Lo que le falta a la marca (solo el propietario, hasta terminar). */}
+      <PrimerosPasos colapsado={c} onExpandir={onAlternarColapso} ir={ir} />
+
       {/* Navegacion. Scrollea sola si no entra, sin arrastrar el resto. */}
       <nav className={`flex-1 space-y-1 overflow-y-auto px-3 pb-4 ${c ? "md:px-2" : ""}`}>
         {NAV_PRINCIPAL.filter((item) => item.clave !== "metricas" || veMetricas(activa?._id)).map((item) => (
@@ -227,7 +253,7 @@ export function Sidebar({
           </div>
         )}
 
-        {esAdmin && (
+        {esAdmin && videosReaccion && (
           <>
             <Titulo colapsado={c}>{t("videosReaccion")}</Titulo>
             {NAV_REACCION.map((item) => (
@@ -266,6 +292,24 @@ export function Sidebar({
                 onClick={() => ir(navPlan.href)}
               />
             )}
+            {rolAqui && (
+              <BotonNav
+                {...navAjustes}
+                label={t(`nav.${navAjustes.clave}`)}
+                colapsado={c}
+                activo={pathname.startsWith(navAjustes.href)}
+                onClick={() => ir(navAjustes.href)}
+              />
+            )}
+            {rolAqui && (
+              <BotonNav
+                {...navEtiquetas}
+                label={t(`nav.${navEtiquetas.clave}`)}
+                colapsado={c}
+                activo={pathname.startsWith(navEtiquetas.href)}
+                onClick={() => ir(navEtiquetas.href)}
+              />
+            )}
             {esAdmin &&
               navAdmin.map((item) => (
                 <BotonNav
@@ -292,44 +336,63 @@ export function Sidebar({
       </nav>
 
       {/* Usuario */}
-      <div
-        className={`border-t border-white/10 p-4 ${c ? "md:hidden" : ""}`}
-        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
-      >
-        {/* Lleva al perfil: ahí están los datos de la cuenta y eliminarla (be#95). */}
-        <button
-          onClick={() => ir("/perfil")}
-          className={`mb-3 flex w-full items-center gap-3 rounded-lg p-1 text-left transition hover:bg-white/5 ${
-            pathname.startsWith("/perfil") ? "bg-white/5" : ""
-          }`}
+      {conCuenta && (
+        <div
+          className={`border-t border-white/10 p-4 ${c ? "md:hidden" : ""}`}
+          style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
-            <span className="text-sm">👤</span>
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">
-              {usuario?.nombre || usuario?.email || "…"}
-            </p>
-            {/* El rol que importa es el de la página activa: el mismo usuario
-                puede ser propietario de una y lector de otra. */}
-            <p className="truncate text-xs text-white/40">
-              {rolAqui
-                ? t("rolDe", { rol: tRol(`${rolAqui}.etiqueta`), marca: activa?.nombre ?? t("laPagina") })
-                : esAdmin
-                  ? t("administrador")
-                  : t("sinAcceso")}
-            </p>
-          </div>
-          <span className="shrink-0 text-xs text-white/30">{t("perfil")}</span>
-        </button>
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
-        >
-          <span>🚪</span>
-          {t("cerrarSesion")}
-        </button>
-      </div>
+          {/* Lleva al perfil: ahí están los datos de la cuenta y eliminarla (be#95). */}
+          <button
+            onClick={() => ir("/perfil")}
+            className={`mb-3 flex w-full items-center gap-3 rounded-lg p-1 text-left transition hover:bg-white/5 ${
+              pathname.startsWith("/perfil") ? "bg-white/5" : ""
+            }`}
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10">
+              <span className="text-sm">👤</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium">
+                {usuario?.nombre || usuario?.email || "…"}
+              </p>
+              {/* El rol que importa es el de la página activa: el mismo usuario
+                  puede ser propietario de una y lector de otra. */}
+              <p className="truncate text-xs text-white/40">
+                {rolAqui
+                  ? t("rolDe", { rol: tRol(`${rolAqui}.etiqueta`), marca: activa?.nombre ?? t("laPagina") })
+                  : esAdmin
+                    ? t("administrador")
+                    : t("sinAcceso")}
+              </p>
+            </div>
+            <span className="shrink-0 text-xs text-white/30">{t("perfil")}</span>
+          </button>
+          {/* La wiki vive en el sitio público: se abre aparte para no perder lo que se está haciendo. */}
+          <a
+            href={`${URL_SITIO}${ENLACE_AYUDA}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mb-2 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:bg-white/5 hover:text-white"
+          >
+            <CircleHelp size={14} aria-hidden />
+            {t("ayuda")}
+          </a>
+          <a
+            href={`mailto:${CONTACTO}`}
+            title={t("soporte")}
+            className="mb-3 block truncate text-center text-[11px] text-white/40 transition hover:text-white"
+          >
+            {t("soporte")}: <span className="text-ng-celeste">{CONTACTO}</span>
+          </a>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 py-2.5 text-xs text-white/50 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400"
+          >
+            <span>🚪</span>
+            {t("cerrarSesion")}
+          </button>
+        </div>
+      )}
 
       {/* Colapsado: perfil y salir como íconos. */}
       {c && (
@@ -342,6 +405,16 @@ export function Sidebar({
           >
             <UserRound size={18} strokeWidth={1.8} className="text-ng-secundario" aria-hidden />
           </button>
+          <a
+            href={`${URL_SITIO}${ENLACE_AYUDA}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={t("ayuda")}
+            aria-label={t("ayuda")}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-ng-secundario transition hover:bg-white/10"
+          >
+            <CircleHelp size={18} strokeWidth={1.8} aria-hidden />
+          </a>
           <button
             onClick={handleLogout}
             title={t("cerrarSesion")}
@@ -370,7 +443,7 @@ export function Sidebar({
   );
 }
 
-function Titulo({ children, colapsado }: { children: React.ReactNode; colapsado?: boolean }) {
+export function Titulo({ children, colapsado }: { children: React.ReactNode; colapsado?: boolean }) {
   return (
     <>
       <div className={`px-4 pb-1 pt-4 text-[10px] uppercase tracking-wider text-white/25 ${colapsado ? "md:hidden" : ""}`}>{children}</div>
@@ -380,7 +453,7 @@ function Titulo({ children, colapsado }: { children: React.ReactNode; colapsado?
   );
 }
 
-function BotonNav({
+export function BotonNav({
   icon: Icono,
   label,
   activo,

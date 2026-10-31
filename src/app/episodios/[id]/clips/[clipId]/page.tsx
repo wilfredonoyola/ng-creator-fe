@@ -27,7 +27,8 @@ import {
   type Region,
 } from "@/lib/clip-encuadre";
 import { imagenNueva } from "@/components/episodios/PanelImagenes";
-import { ErrorDeSubida, uploadImagenClip } from "@/lib/upload";
+import { ErrorDeSubida, uploadImagenClip, uploadVideoClip } from "@/lib/upload";
+import { MAXIMO_VIDEOS, videoNuevo } from "@/lib/videos-clip";
 import { useRecortesImagen } from "@/lib/use-recortes-imagen";
 import { PanelAutoEncuadre, type PersonaAuto } from "@/components/episodios/PanelAutoEncuadre";
 import { AvisoCruces } from "@/components/episodios/TomarClip";
@@ -36,10 +37,11 @@ import { ESTILO_TEXTO_POR_DEFECTO, resolverEstilo, type EstiloTexto } from "@/li
 import { useEstilosTexto } from "@/lib/use-estilos-texto";
 import { calidadDePosiciones } from "@/lib/calidad";
 import { plantillaDelClip } from "@/lib/plantilla-clip";
-import { duracionEfectiva, normalizarCortes, type Corte } from "@/lib/cortes";
+import { duracionEfectiva, estaCortado, normalizarCortes, type Corte } from "@/lib/cortes";
 import { borradorDelClip, type Borrador } from "@/components/episodios/editor/borrador";
 import { escribiendo, useHistorial } from "@/components/episodios/editor/historial";
-import { useReproductor } from "@/components/episodios/editor/reproductor";
+import { CUADRO_SEG, useReproductor } from "@/components/episodios/editor/reproductor";
+import { MAXIMO_TEXTOS, disenosDeTexto, textoNuevo } from "@/components/episodios/PanelTextos";
 import { useGuardado } from "@/components/episodios/editor/useGuardado";
 import { BarraSuperior } from "@/components/episodios/editor/BarraSuperior";
 import { RielHerramientas } from "@/components/episodios/editor/RielHerramientas";
@@ -80,6 +82,8 @@ export default function EditorClipPage({
   const tr = useTranslations("editorClip");
   const tn = useTranslations("estilosNombres");
   const ti = useTranslations("editorImagenes");
+  const tv = useTranslations("editorVideos");
+  const tTextos = useTranslations("editorTextos");
   const te = useTranslations("erroresSubida");
   const th = useTranslations("editorHerramientas");
   const { activa } = useMarcaActiva();
@@ -126,6 +130,7 @@ export default function EditorClipPage({
   const [modo, setModo] = useState<ModoTranscripcion>("inicio");
   const [textoElegido, setTextoElegido] = useState<number | null>(null);
   const [imagenElegida, setImagenElegida] = useState<number | null>(null);
+  const [videoElegido, setVideoElegido] = useState<number | null>(null);
   const [efectoElegido, setEfectoElegido] = useState<string | null>(null);
   const [seleccion, setSeleccion] = useState<SeleccionCortes>(SIN_SELECCION);
 
@@ -143,6 +148,38 @@ export default function EditorClipPage({
 
   // ---- El video ----
   const reproductor = useReproductor({ desde: b?.desdeSeg ?? 0, hasta: b?.hastaSeg ?? 0, cortes: b?.cortes ?? SIN_CORTES });
+
+  // ---- El teclado sobre el video: para dividir justo donde va ----
+  // Espacio reproduce o pausa; ← → corren el cabezal un cuadro (con Shift, un
+  // segundo); S divide en el cabezal, como el botón Dividir.
+  const { alternar, correr, reloj } = reproductor;
+  const tramoB = b ? { desde: b.desdeSeg, hasta: b.hastaSeg, cortes: b.cortes } : null;
+  const tramoTeclas = useRef(tramoB);
+  tramoTeclas.current = tramoB;
+  useEffect(() => {
+    const teclas = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || escribiendo(e.target)) return;
+      const objetivo = e.target instanceof HTMLElement ? e.target : null;
+      if (e.key === " ") {
+        // Sobre un botón, el espacio es apretarlo.
+        if (objetivo?.closest("button, a, [role=button], [role=radio]")) return;
+        alternar();
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        // Un deslizador o un grupo con flechas propias se queda con ellas.
+        if (objetivo?.closest("input, [role=radiogroup], [role=tablist], [role=slider]")) return;
+        const seg = e.shiftKey ? 1 : CUADRO_SEG;
+        correr(e.key === "ArrowLeft" ? -seg : seg);
+      } else if ((e.key === "s" || e.key === "S") && opera) {
+        const tr = tramoTeclas.current;
+        const t = reloj.get();
+        if (!tr || t <= tr.desde + 0.1 || t >= tr.hasta - 0.1 || estaCortado(t, tr.cortes)) return;
+        setSeleccion((x) => ({ puntos: [...x.puntos.filter((p) => Math.abs(p - t) > 0.05), Math.round(t * 1000) / 1000], elegido: null }));
+      } else return;
+      e.preventDefault();
+    };
+    window.addEventListener("keydown", teclas);
+    return () => window.removeEventListener("keydown", teclas);
+  }, [alternar, correr, reloj, opera]);
 
   // Deshacer y rehacer con el teclado, salvo mientras se escribe en un campo.
   const { deshacer, rehacer } = historial;
@@ -194,6 +231,7 @@ export default function EditorClipPage({
     musica: b?.musica ?? null,
     efectos: b?.efectos ?? SIN_EFECTOS,
     palabras,
+    videos: b?.videos ?? SIN_VIDEOS,
   });
 
   // ---- Lo que se procesa en el servidor: render, auto-encuadre, recortes ----
@@ -251,6 +289,7 @@ export default function EditorClipPage({
   }
 
   const duracion = b.hastaSeg - b.desdeSeg;
+  const tramoVideos = { desde: b.desdeSeg, hasta: b.hastaSeg, cortes: b.cortes };
   const efectiva = duracionEfectiva(b.desdeSeg, b.hastaSeg, b.cortes);
   const redondo = (n: number) => Math.round(n * 1000) / 1000;
   const posiciones: PosicionEfectiva[] = posicionesEfectivas(
@@ -351,17 +390,70 @@ export default function EditorClipPage({
       prev.imagenes.length < MAXIMO_IMAGENES ? { ...prev, imagenes: [...prev.imagenes, imagenNueva(url, prev.imagenes, conHorizontal)] } : prev,
     );
     setTextoElegido(null);
+    setVideoElegido(null);
     setImagenElegida(b.imagenes.length);
     elegirHerramienta("superposicion");
   }
 
+  /**
+   * Sube un video y lo suma al clip, ya elegido. Uno vertical entra a
+   * pantalla completa (videoNuevo). Rechaza con el error en el idioma de la
+   * pantalla.
+   */
+  async function subirVideo(file: File, onAvance?: (porcentaje: number) => void) {
+    if (!marcaId || !b || b.videos.length >= MAXIMO_VIDEOS) return;
+    let subido: Awaited<ReturnType<typeof uploadVideoClip>>;
+    try {
+      subido = await uploadVideoClip(file, marcaId, onAvance);
+    } catch (e) {
+      throw new Error(e instanceof ErrorDeSubida ? te(e.clave, e.datos) : e instanceof Error ? e.message : tv("errorSubir"));
+    }
+    cambiarCon((prev) =>
+      prev.videos.length < MAXIMO_VIDEOS ? { ...prev, videos: [...prev.videos, videoNuevo(subido, prev.videos)] } : prev,
+    );
+    setTextoElegido(null);
+    setImagenElegida(null);
+    setVideoElegido(b.videos.length);
+    elegirHerramienta("superposicion");
+  }
+
+  /**
+   * "+ Texto" en la línea de tiempo: el texto aparece ya en el video, todo el
+   * clip, elegido para escribirlo ahí o en el panel (como en CapCut).
+   */
+  function agregarTexto() {
+    if (!b || !estilo || b.textos.length >= MAXIMO_TEXTOS) return;
+    const i = b.textos.length;
+    const centroY = [0.15, 0.3, 0.7, 0.85][i] ?? 0.5;
+    // Todo el clip y con el diseño Simple: el cuándo se cambia en el panel o con los bordes en la línea de tiempo.
+    const nuevo = textoNuevo(disenosDeTexto(estilo.colorResaltado)[0].estilo, tTextos("textoNuevo"), centroY);
+    cambiar({ textos: [...b.textos, nuevo] });
+    setImagenElegida(null);
+    setVideoElegido(null);
+    setTextoElegido(i);
+    elegirHerramienta("texto");
+  }
+
   const elegirTexto = (i: number | null) => {
     setTextoElegido(i);
-    if (i !== null) setImagenElegida(null);
+    if (i !== null) {
+      setImagenElegida(null);
+      setVideoElegido(null);
+    }
   };
   const elegirImagen = (i: number | null) => {
     setImagenElegida(i);
-    if (i !== null) setTextoElegido(null);
+    if (i !== null) {
+      setTextoElegido(null);
+      setVideoElegido(null);
+    }
+  };
+  const elegirVideo = (i: number | null) => {
+    setVideoElegido(i);
+    if (i !== null) {
+      setTextoElegido(null);
+      setImagenElegida(null);
+    }
   };
 
   // El estilo con que sale (estiloTextoEfectivo): el del clip, el de la marca o
@@ -444,6 +536,12 @@ export default function EditorClipPage({
         elegida={imagenElegida}
         onElegir={elegirImagen}
         onSubir={subirImagen}
+        videos={b.videos}
+        onCambiarVideos={(videos) => cambiar({ videos })}
+        videoElegido={videoElegido}
+        onElegirVideo={elegirVideo}
+        onSubirVideo={subirVideo}
+        tramo={tramoVideos}
         duracion={duracion}
         estilo={estilo}
         plantillaActiva={b.plantillaActiva}
@@ -527,6 +625,7 @@ export default function EditorClipPage({
             clipId={clipId}
             marcaId={marcaId ?? ""}
             hrefVolver={`/episodios/${episodioId}`}
+            hechoAMano={clip.origen === "MANUAL"}
             episodio={ep.titulo}
             titulo={b.titulo}
             onCambiarTitulo={(titulo) => cambiar({ titulo })}
@@ -547,7 +646,7 @@ export default function EditorClipPage({
                 pidiendo: pidiendoRender,
                 calidad: clip.calidad,
               },
-              onExportar: () => void exportar(),
+              onExportar: exportar,
             }}
             hrefProgramar={`/episodios/${episodioId}/clips/${clipId}/publicar`}
           />
@@ -623,6 +722,18 @@ export default function EditorClipPage({
                   ? (file) => void subirImagen(file).catch((e) => setError(e instanceof Error ? e.message : ti("errorSubir")))
                   : undefined
               }
+              videos={b.videos}
+              onCambiarVideos={(videos) => cambiar({ videos })}
+              videoElegido={videoElegido}
+              onElegirVideo={(i) => {
+                elegirVideo(i);
+                elegirHerramienta("superposicion");
+              }}
+              onSoltarVideo={
+                b.videos.length < MAXIMO_VIDEOS
+                  ? (file) => void subirVideo(file).catch((e) => setError(e instanceof Error ? e.message : tv("errorSubir")))
+                  : undefined
+              }
               estilo={estilo}
               estiloTexto={conEstilo}
               plantilla={plantilla}
@@ -652,10 +763,15 @@ export default function EditorClipPage({
             onCambiarTextos={(textos) => cambiar({ textos })}
             textoElegido={textoElegido}
             onElegirTexto={elegirTexto}
+            onAgregarTexto={b.textos.length < MAXIMO_TEXTOS ? agregarTexto : undefined}
             imagenes={b.imagenes}
             onCambiarImagenes={(imagenes) => cambiar({ imagenes })}
             imagenElegida={imagenElegida}
             onElegirImagen={elegirImagen}
+            videos={b.videos}
+            onCambiarVideos={(videos) => cambiar({ videos })}
+            videoElegido={videoElegido}
+            onElegirVideo={elegirVideo}
             subtitulosActivos={b.subtitulosActivos}
             plantilla={plantilla}
             musica={b.musica}
@@ -677,4 +793,5 @@ export default function EditorClipPage({
 const SIN_CORTES: Corte[] = [];
 const SIN_IMAGENES: never[] = [];
 const SIN_EFECTOS: never[] = [];
+const SIN_VIDEOS: never[] = [];
 const SIN_PALABRAS: Palabra[] = [];

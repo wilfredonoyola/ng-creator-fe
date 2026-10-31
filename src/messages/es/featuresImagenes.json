@@ -1,0 +1,29 @@
+{
+  "seo": {
+    "titulo": "Logos, productos y recortes con IA en clips de clientes | Clipfine",
+    "descripcion": "Sumá hasta 3 imágenes por clip: el producto del cliente, un logo o una persona recortada con IA y contorno tipo sticker. Para agencias que editan clips."
+  },
+  "titulo": "El producto del cliente,",
+  "destacado": "adentro del clip",
+  "bajada": "Una foto, un logo o una persona recortada encima del video, en el segundo que vos elegís. El fondo lo saca la IA y el contorno blanco la despega del video. Sin abrir otro programa.",
+  "datos": {
+    "d1": { "cifra": "3 imágenes", "que": "por clip, cada una con su momento" },
+    "d2": { "cifra": "1 toque", "que": "para quitarle el fondo con IA" },
+    "d3": { "cifra": "0 programas", "que": "aparte para recortar o pegar" }
+  },
+  "agencia": {
+    "hastaTres": "Mostrar el producto o el auspiciante del cliente justo cuando lo nombran, sin pasar el clip por otro editor.",
+    "quitarFondo": "Un recorte que antes era trabajo de diseñador se hace en el mismo editor, en segundos.",
+    "contorno": "El look de sticker que funciona en TikTok y Reels, sin plantillas ni programas extra."
+  },
+  "vistas": {
+    "hastaTres": { "foto": "Producto", "logo": "Logo", "libre": "1 libre", "cuando": "Aparece de 00:06 a 00:11" },
+    "quitarFondo": { "pie": "Fondo quitado con IA" },
+    "contorno": { "pie": "Borde blanco tipo sticker" }
+  },
+  "preguntas": {
+    "p1": { "p": "¿Puedo mostrar el producto de un auspiciante en el clip?", "r": "Sí. Subís la foto, la soltás en la vista previa, la acomodás y elegís en qué segundo aparece y cuándo se va. Hasta 3 imágenes por clip." },
+    "p2": { "p": "¿Necesito Photoshop para recortar a una persona?", "r": "No. Con un toque la IA le quita el fondo a la imagen y la podés usar como recorte, con o sin contorno blanco." },
+    "p3": { "p": "¿Las imágenes salen en el video final?", "r": "Sí. Se queman en el MP4 que se publica y en el que se descarga, en el lugar y el momento que elegiste." }
+  }
+}

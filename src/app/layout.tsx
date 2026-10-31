@@ -6,6 +6,7 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import "./globals.css";
 import { Providers } from "./providers";
 import { RegistrarSW } from "@/components/RegistrarSW";
+import { ChatSoporte } from "@/components/soporte/ChatSoporte";
 import { URL_SITIO } from "@/lib/sitio";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -74,6 +75,8 @@ export default async function RootLayout({
         )}
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
+          {/* El chat de soporte: en el sitio y en el panel (ver SIN_BURBUJA). */}
+          <ChatSoporte />
         </NextIntlClientProvider>
         <RegistrarSW />
         {conGTM && (

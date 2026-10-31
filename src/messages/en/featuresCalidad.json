@@ -1,0 +1,33 @@
+{
+  "seo": {
+    "titulo": "High-quality clips for your clients, no recompression | Clipfine",
+    "descripcion": "1080p clips at the original frame rate, a quality check on every clip and a preview for each network. For agencies that can't let a client down."
+  },
+  "titulo": "Clips you can send the client",
+  "destacado": "without checking them twice",
+  "bajada": "Every clip keeps the original frame rate, warns you when zoom lowers its quality and shows you how it looks under each network's interface.",
+  "datos": {
+    "d1": { "cifra": "1080 × 1920", "que": "vertical, plus 1:1 and 16:9" },
+    "d2": { "cifra": "3 levels", "que": "of quality on every clip: excellent, good or low" },
+    "d3": { "cifra": "90 s", "que": "the cut for the Facebook version, chosen by you" }
+  },
+  "agencia": {
+    "render": "No client ever gets a pixelated or choppy clip. Your agency looks good on every delivery.",
+    "indicador": "You catch a blurry clip before the client sees it, not after.",
+    "vistaPrevia": "Nothing hides behind TikTok or Reels buttons. One less revision per clip.",
+    "versionFacebook": "A long clip still works on Facebook, without building another one by hand.",
+    "descargar": "When the client wants the file for another network, you send it in a minute."
+  },
+  "vistas": {
+    "render": { "original": "Original", "clip": "Clip", "sinRecomprimir": "No recompression", "pie": "The same frame rate you recorded" },
+    "indicador": { "excelente": "Excellent", "buena": "Good", "baja": "Low", "zoom": "Zoom 1.2x.", "consejo": "Zoom in more and it drops to good." },
+    "vistaPrevia": { "subtitulo": "NOBODY TALKS ABOUT THIS" },
+    "versionFacebook": { "clip": "Clip", "pie": "You choose the Facebook part" },
+    "descargar": { "archivo": "client-b-ep142-clip3.mp4", "boton": "Download MP4" }
+  },
+  "preguntas": {
+    "p1": { "p": "Do clips lose quality when exported?", "r": "No. The video you upload is stored without recompressing it, and every clip is built from that original, in 1080p at its own frame rate. If a zoom enlarges the image too much, the quality check warns you." },
+    "p2": { "p": "What happens to clips over 90 seconds on Facebook?", "r": "Facebook Reels go up to 90 seconds. For those clips you choose which part goes to Facebook, and the other networks get the full clip." },
+    "p3": { "p": "Can I see how it looks on each network before posting?", "r": "Yes. The preview overlays the TikTok, Reels, Shorts or Facebook interface, so you see whether a caption or text gets covered." }
+  }
+}

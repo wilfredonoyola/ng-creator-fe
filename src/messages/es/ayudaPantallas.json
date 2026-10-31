@@ -1,0 +1,29 @@
+{
+  "valorNombre": "Clipfine",
+  "valorDescripcion": "Métricas, clips y publicaciones de mis clientes en Clipfine",
+  "etiqueta": "Así se ve",
+  "formulario": {
+    "titulo": "Add custom MCP server",
+    "icono": "Icon (optional)",
+    "iconoAyuda": "PNG only. Best results at 256 x 256 px or larger. Max file size: 10 KB",
+    "nombre": "Name",
+    "descripcion": "Description (optional)",
+    "conexion": "Connection",
+    "serverUrl": "Server URL",
+    "tunel": "Tunnel",
+    "autenticacion": "Authentication",
+    "avanzado": "Advanced OAuth settings",
+    "avanzadoAyuda": "Review discovered OAuth settings, or enter them manually, then choose a client setup method and configure default scopes",
+    "riesgo": "Custom MCP servers introduce risk.",
+    "entiendo": "I understand and want to continue",
+    "entiendoAyuda": "Only connect to MCP servers you trust.",
+    "cancelar": "Cancel",
+    "crear": "Create as a plugin"
+  },
+  "conectar": {
+    "titulo": "Connect Clipfine",
+    "aviso1": "ChatGPT may share relevant memories (if enabled) and chats with this app to support interactions with it.",
+    "aviso2": "Information from this app may be used to improve our models if you have Improve the model for everyone enabled.",
+    "continuar": "Continue to Clipfine"
+  }
+}

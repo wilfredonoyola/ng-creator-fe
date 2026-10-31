@@ -1,9 +1,11 @@
 {
+  "soporte": "Soporte",
+  "ayuda": "Ayuda",
   "nav": {
     "inicio": "Inicio",
     "episodios": "Episodios",
     "calendario": "Calendario",
-    "publicaciones": "Publicaciones",
+    "contenido": "Contenido",
     "metricas": "Métricas",
     "crearVideo": "Crear video",
     "montaje": "Montaje",
@@ -11,9 +13,11 @@
     "creators": "Creators",
     "equipo": "Equipo",
     "brandKit": "Brand Kit",
+    "ajustes": "Ajustes",
     "superadmin": "Superadmin",
     "redesConectadas": "Redes conectadas",
-    "plan": "Mi plan"
+    "plan": "Mi plan",
+    "etiquetas": "Etiquetas"
   },
   "cerrarMenu": "Cerrar menú",
   "trabajandoEnTitulo": "Trabajando en {marca}. Expandí el menú para cambiarla.",

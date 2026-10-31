@@ -51,6 +51,18 @@
   "programar": {
     "elegi": "Elegí redes y hora.",
     "reintentar": "Reintentar",
-    "programar": "Programar"
+    "programar": "Programar",
+    "editar": "Editar programación",
+    "programado": "Programado · {n, plural, one {# red} other {# redes}}",
+    "programadoEl": "Programado · {cuando} · {n, plural, one {# red} other {# redes}}",
+    "verProgramado": "Ver y editar lo programado"
+  },
+  "borrar": {
+    "boton": "Borrar clip",
+    "ayuda": "Se borra del episodio. No se puede deshacer.",
+    "confirmar": "¿Borrar “{titulo}”? No se puede deshacer.",
+    "seCancelan": "Tiene {n, plural, one {# publicación programada} other {# publicaciones programadas}}: se cancelan.",
+    "borrando": "Borrando…",
+    "error": "No se pudo borrar el clip"
   }
 }

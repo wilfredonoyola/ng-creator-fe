@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Brush, ImageIcon, Megaphone, Palette, Type } from "lucide-react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/DashboardLayout";
@@ -32,6 +33,9 @@ import { CapaDibujos } from "@/components/estilos/CapaDibujos";
 import { TemaDeMarca, temaCompleto } from "@/components/estilos/TemaDeMarca";
 import { InterfazPlataforma, SelectorPlataforma } from "@/components/estilos/InterfazPlataforma";
 import type { Plataforma } from "@/lib/plataformas";
+import { SeccionPortadaMarca } from "@/components/portada/SeccionPortadaMarca";
+import { MenuSecciones, useSeccionHash } from "@/components/MenuSecciones";
+import { Interruptor } from "@/components/Interruptor";
 
 /** Ancho de la vista previa en px: un clip 9:16 chico. */
 const ANCHO_VISTA = 216;
@@ -47,6 +51,21 @@ const ANCHO_VISTA = 216;
  * Como Equipo: la ve cualquiera con acceso a la marca y la cambia quien opera;
  * el tema, solo el propietario.
  */
+/**
+ * Las secciones de Brand Kit, en el menú de la izquierda. Las de `clips` van
+ * en la plantilla de clips y se guardan juntas (la barra de abajo); la portada
+ * tiene su propio botón. Cada una tiene su enlace: #logo, #portada…
+ */
+const SECCIONES = [
+  { id: "colores", grupo: "clips", icono: Palette },
+  { id: "estilo", grupo: "clips", icono: Type },
+  { id: "logo", grupo: "clips", icono: ImageIcon },
+  { id: "llamada", grupo: "clips", icono: Megaphone },
+  { id: "portada", grupo: "publicar", icono: Brush },
+] as const;
+type IdSeccion = (typeof SECCIONES)[number]["id"];
+const IDS_SECCIONES = SECCIONES.map((x) => x.id);
+
 export default function PlantillaClipsPage() {
   const t = useTranslations("brandKit");
   const tSubida = useTranslations("erroresSubida");
@@ -73,6 +92,10 @@ export default function PlantillaClipsPage() {
   const [error, setError] = useState<string | null>(null);
   const [guardadoEn, setGuardadoEn] = useState<Date | null>(null);
   const archivo = useRef<HTMLInputElement>(null);
+  const [seccion, elegirSeccion] = useSeccionHash<IdSeccion>(IDS_SECCIONES, "colores");
+  const deClips = SECCIONES.find((x) => x.id === seccion)?.grupo === "clips";
+  /** La plantilla como se guardó la última vez: para saber si hay cambios sin guardar. */
+  const plantillaGuardada = useRef<string | null>(null);
 
   // Arranca de lo guardado una vez por marca; después manda lo que se edita.
   const cargadaPara = useRef<string | null>(null);
@@ -80,11 +103,11 @@ export default function PlantillaClipsPage() {
     if (!estilo || !marcaId || cargadaPara.current === marcaId) return;
     cargadaPara.current = marcaId;
     const { __typename: _, ...guardada } = estilo.plantilla ?? { __typename: null };
-    setP(
-      estilo.plantilla
-        ? (guardada as PlantillaClip)
-        : { ...PLANTILLA_POR_DEFECTO, estiloTexto: estilo.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO },
-    );
+    const inicial = estilo.plantilla
+      ? (guardada as PlantillaClip)
+      : { ...PLANTILLA_POR_DEFECTO, estiloTexto: estilo.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO };
+    plantillaGuardada.current = JSON.stringify(inicial);
+    setP(inicial);
     setLogoUrl(estilo.logoUrl ?? null);
     setTema(temaValido(estilo.tema));
   }, [estilo, marcaId]);
@@ -112,6 +135,7 @@ export default function PlantillaClipsPage() {
   const guardado = estilo ? temaValido(estilo.tema) : null;
   const temaCambiado =
     !!tema && !!guardado && (Object.keys(tema) as (keyof Tema)[]).some((k) => tema[k] !== guardado[k]);
+  const sinGuardar = (!!p && JSON.stringify(p) !== plantillaGuardada.current) || (propietario && temaCambiado);
 
   async function enviar() {
     if (!marcaId || !p || !tema) return;
@@ -123,6 +147,7 @@ export default function PlantillaClipsPage() {
     try {
       if (propietario && temaCambiado) await guardarTema({ variables: { marcaId, tema } });
       await guardar({ variables: { marcaId, plantilla: { ...p, ctaTexto: p.ctaTexto.trim() } } });
+      plantillaGuardada.current = JSON.stringify(p);
       setGuardadoEn(new Date());
     } catch (e) {
       setError(e instanceof Error ? e.message : t("errores.guardar"));
@@ -163,178 +188,205 @@ export default function PlantillaClipsPage() {
       {!p || !tema || !marcaId ? (
         <p className="text-sm text-white/50">{t("cargando")}</p>
       ) : (
-        <div className="grid gap-8 lg:grid-cols-[1fr_auto]">
-          <div className="min-w-0 space-y-6">
-            <TemaDeMarca
-              marcaId={marcaId}
-              tema={tema}
-              onCambiar={(nuevo) => {
-                setTema(nuevo);
-                setGuardadoEn(null);
-              }}
-              editable={propietario}
-              tieneLogo={Boolean(logoUrl)}
-            />
+        <div className="grid gap-6 lg:grid-cols-[13rem_minmax(0,1fr)]">
+          <MenuSecciones
+            secciones={SECCIONES.map((x) => ({ ...x, etiqueta: t(`nav.${x.id}`), aviso: sinGuardar && x.grupo === "clips" }))}
+            grupos={[
+              { id: "clips", etiqueta: t("nav.grupos.clips") },
+              { id: "publicar", etiqueta: t("nav.grupos.publicar") },
+            ]}
+            actual={seccion}
+            onElegir={elegirSeccion}
+            titulo={t("nav.titulo")}
+            avisoTitulo={t("nav.sinGuardar")}
+          />
 
-            <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <h2 className="font-semibold">{t("estilo.titulo")}</h2>
-              <p className="mb-4 mt-0.5 text-xs text-white/45">
-                {t("estilo.ayuda")}
-              </p>
-              <GaleriaEstilos
-                tema={temaValido(tema)}
-                valor={p.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
-                onElegir={(e) => e && cambiar({ estiloTexto: e })}
-                nombreMarca={activa.nombre}
-                deshabilitado={!opera}
-              />
-            </section>
-            <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="font-semibold">{t("logo.titulo")}</h2>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={p.logoActivo}
-                    onChange={(e) => cambiar({ logoActivo: e.target.checked })}
-                    disabled={!opera}
-                  />
-                  {t("enLosClips")}
-                </label>
+          <div className={`grid min-w-0 gap-8 ${deClips ? "xl:grid-cols-[minmax(0,1fr)_auto]" : ""}`}>
+            <div className="min-w-0 space-y-6">
+              <div hidden={seccion !== "colores"}>
+                <TemaDeMarca
+                  marcaId={marcaId}
+                  tema={tema}
+                  onCambiar={(nuevo) => {
+                    setTema(nuevo);
+                    setGuardadoEn(null);
+                  }}
+                  editable={propietario}
+                  tieneLogo={Boolean(logoUrl)}
+                />
               </div>
-              <div className="mt-4 flex items-center gap-4">
-                <div className="flex h-16 w-28 items-center justify-center rounded-lg border border-white/10 bg-[repeating-conic-gradient(#ffffff10_0_25%,transparent_0_50%)] bg-[length:16px_16px] p-2">
-                  {logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca
-                    <img src={logoUrl} alt={t("logo.alt")} className="max-h-full max-w-full" />
-                  ) : (
-                    <span className="text-xs text-white/40">{t("logo.sinLogo")}</span>
-                  )}
-                </div>
-                {opera && (
-                  <div>
-                    <button
-                      onClick={() => archivo.current?.click()}
-                      disabled={subiendo}
-                      className="rounded-lg border border-white/15 px-3 py-1.5 text-sm hover:bg-white/5 disabled:opacity-60"
-                    >
-                      {subiendo ? t("logo.subiendo") : logoUrl ? t("logo.cambiar") : t("logo.subir")}
-                    </button>
-                    <p className="mt-1 text-xs text-white/40">{t("logo.ayuda")}</p>
-                    <input
-                      ref={archivo}
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      className="hidden"
-                      onChange={(e) => {
-                        const f = e.target.files?.[0];
-                        if (f) void subirLogo(f);
-                        e.target.value = "";
-                      }}
+              <div hidden={seccion !== "estilo"}>
+                <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <h2 className="font-semibold">{t("estilo.titulo")}</h2>
+                  <p className="mb-4 mt-0.5 text-xs text-white/45">
+                    {t("estilo.ayuda")}
+                  </p>
+                  <GaleriaEstilos
+                    tema={temaValido(tema)}
+                    valor={p.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
+                    onElegir={(e) => e && cambiar({ estiloTexto: e })}
+                    nombreMarca={activa.nombre}
+                    deshabilitado={!opera}
+                  />
+                </section>
+              </div>
+              <div hidden={seccion !== "logo"}>
+                <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="font-semibold">{t("logo.titulo")}</h2>
+                    <Interruptor
+                      valor={p.logoActivo}
+                      onCambio={(v) => cambiar({ logoActivo: v })}
+                      etiqueta={t("enLosClips")}
+                      deshabilitado={!opera}
                     />
                   </div>
-                )}
-              </div>
+                  <div className="mt-4 flex items-center gap-4">
+                    <div className="flex h-16 w-28 items-center justify-center rounded-lg border border-white/10 bg-[repeating-conic-gradient(#ffffff10_0_25%,transparent_0_50%)] bg-[length:16px_16px] p-2">
+                      {logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- el logo viene del CDN de la marca
+                        <img src={logoUrl} alt={t("logo.alt")} className="max-h-full max-w-full" />
+                      ) : (
+                        <span className="text-xs text-white/40">{t("logo.sinLogo")}</span>
+                      )}
+                    </div>
+                    {opera && (
+                      <div>
+                        <button
+                          onClick={() => archivo.current?.click()}
+                          disabled={subiendo}
+                          className="rounded-lg border border-white/15 px-3 py-1.5 text-sm hover:bg-white/5 disabled:opacity-60"
+                        >
+                          {subiendo ? t("logo.subiendo") : logoUrl ? t("logo.cambiar") : t("logo.subir")}
+                        </button>
+                        <p className="mt-1 text-xs text-white/40">{t("logo.ayuda")}</p>
+                        <input
+                          ref={archivo}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                          onChange={(e) => {
+                            const f = e.target.files?.[0];
+                            if (f) void subirLogo(f);
+                            e.target.value = "";
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
 
-              <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">{t("logo.dondeVa")}</p>
-              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {POSICIONES_LOGO.map((x) => (
-                  <button
-                    key={x}
-                    onClick={() => cambiar({ logoPosicion: x })}
-                    disabled={!opera}
-                    className={`rounded-lg border px-2 py-1.5 text-xs ${
-                      p.logoPosicion === x ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/15 text-white/70 hover:bg-white/5"
-                    }`}
-                  >
-                    {t(`posicionesLogo.${x}`)}
-                  </button>
-                ))}
-              </div>
+                  <p className="mt-5 text-xs font-medium uppercase tracking-wide text-white/50">{t("logo.dondeVa")}</p>
+                  <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {POSICIONES_LOGO.map((x) => (
+                      <button
+                        key={x}
+                        onClick={() => cambiar({ logoPosicion: x })}
+                        disabled={!opera}
+                        className={`rounded-lg border px-2 py-1.5 text-xs ${
+                          p.logoPosicion === x ? "border-ng-azul bg-ng-azul/15 text-white" : "border-white/15 text-white/70 hover:bg-white/5"
+                        }`}
+                      >
+                        {t(`posicionesLogo.${x}`)}
+                      </button>
+                    ))}
+                  </div>
 
-              <Deslizador
-                etiqueta={t("logo.tamano")}
-                valor={p.logoTamano}
-                min={0.08}
-                max={0.4}
-                paso={0.01}
-                mostrar={(v) => t("logo.delAncho", { n: Math.round(v * 100) })}
-                onCambio={(v) => cambiar({ logoTamano: v })}
-                deshabilitado={!opera}
-              />
-              <Deslizador
-                etiqueta={t("logo.opacidad")}
-                valor={p.logoOpacidad}
-                min={0.2}
-                max={1}
-                paso={0.05}
-                mostrar={(v) => `${Math.round(v * 100)} %`}
-                onCambio={(v) => cambiar({ logoOpacidad: v })}
-                deshabilitado={!opera}
-              />
-            </section>
-
-            <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="font-semibold">{t("cta.titulo")}</h2>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={p.ctaActivo}
-                    onChange={(e) => cambiar({ ctaActivo: e.target.checked })}
-                    disabled={!opera}
+                  <Deslizador
+                    etiqueta={t("logo.tamano")}
+                    valor={p.logoTamano}
+                    min={0.08}
+                    max={0.4}
+                    paso={0.01}
+                    mostrar={(v) => t("logo.delAncho", { n: Math.round(v * 100) })}
+                    onCambio={(v) => cambiar({ logoTamano: v })}
+                    deshabilitado={!opera}
                   />
-                  {t("enLosClips")}
-                </label>
+                  <Deslizador
+                    etiqueta={t("logo.opacidad")}
+                    valor={p.logoOpacidad}
+                    min={0.2}
+                    max={1}
+                    paso={0.05}
+                    mostrar={(v) => `${Math.round(v * 100)} %`}
+                    onCambio={(v) => cambiar({ logoOpacidad: v })}
+                    deshabilitado={!opera}
+                  />
+                </section>
               </div>
-              <input
-                value={p.ctaTexto}
-                onChange={(e) => cambiar({ ctaTexto: e.target.value.slice(0, 80) })}
-                placeholder={t("cta.ejemplo")}
-                disabled={!opera}
-                className="mt-4 w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm outline-none focus:border-ng-azul"
-              />
-              <p className="mt-1 text-right text-xs text-white/35">{p.ctaTexto.length}/80</p>
-              <Deslizador
-                etiqueta={t("cta.dura")}
-                valor={p.ctaSeg}
-                min={2}
-                max={8}
-                paso={0.5}
-                mostrar={(v) => t("cta.ultimos", { n: v.toLocaleString(locale) })}
-                onCambio={(v) => cambiar({ ctaSeg: v })}
-                deshabilitado={!opera}
-              />
-              <p className="mt-2 text-xs text-white/40">
-                {p.estiloTexto && p.estiloTexto !== "KARAOKE"
-                  ? t("cta.conEstilo")
-                  : t("cta.sinEstilo")}
-              </p>
-            </section>
+              <div hidden={seccion !== "llamada"}>
+                <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="font-semibold">{t("cta.titulo")}</h2>
+                    <Interruptor
+                      valor={p.ctaActivo}
+                      onCambio={(v) => cambiar({ ctaActivo: v })}
+                      etiqueta={t("enLosClips")}
+                      deshabilitado={!opera}
+                    />
+                  </div>
+                  <input
+                    value={p.ctaTexto}
+                    onChange={(e) => cambiar({ ctaTexto: e.target.value.slice(0, 80) })}
+                    placeholder={t("cta.ejemplo")}
+                    disabled={!opera}
+                    className="mt-4 w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm outline-none focus:border-ng-azul"
+                  />
+                  <p className="mt-1 text-right text-xs text-white/35">{p.ctaTexto.length}/80</p>
+                  <Deslizador
+                    etiqueta={t("cta.dura")}
+                    valor={p.ctaSeg}
+                    min={2}
+                    max={8}
+                    paso={0.5}
+                    mostrar={(v) => t("cta.ultimos", { n: v.toLocaleString(locale) })}
+                    onCambio={(v) => cambiar({ ctaSeg: v })}
+                    deshabilitado={!opera}
+                  />
+                  <p className="mt-2 text-xs text-white/40">
+                    {p.estiloTexto && p.estiloTexto !== "KARAOKE"
+                      ? t("cta.conEstilo")
+                      : t("cta.sinEstilo")}
+                  </p>
+                </section>
+              </div>
+              {/* Todas quedan montadas: cambiar de sección no pierde lo que se estaba editando. */}
+              <div hidden={seccion !== "portada"}>
+                <SeccionPortadaMarca marcaId={marcaId} opera={opera} tieneLogo={Boolean(logoUrl)} />
+              </div>
 
-            {opera && (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => void enviar()}
-                  disabled={guardando || guardandoTema}
-                  className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-ng-tinta hover:brightness-110 disabled:opacity-60"
-                >
-                  {guardando || guardandoTema ? t("guardando") : t("guardar")}
-                </button>
-                {guardadoEn && <span className="text-sm text-ng-teal">{t("guardado")}</span>}
-              </div>
+              {deClips && opera && (
+                <div className="sticky bottom-4 z-10 flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-ng-tinta/95 p-3 shadow-lg backdrop-blur">
+                  <button
+                    onClick={() => void enviar()}
+                    disabled={guardando || guardandoTema || !sinGuardar}
+                    className="rounded-lg bg-marca px-5 py-2 text-sm font-semibold text-ng-tinta hover:brightness-110 disabled:opacity-50"
+                  >
+                    {guardando || guardandoTema ? t("guardando") : t("guardar")}
+                  </button>
+                  {sinGuardar ? (
+                    <span className="text-sm text-amber-300">{t("nav.sinGuardar")}</span>
+                  ) : guardadoEn ? (
+                    <span className="text-sm text-ng-teal">{t("guardado")}</span>
+                  ) : (
+                    <span className="text-xs text-white/40">{t("nav.seGuardanJuntas")}</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {deClips && (
+              <VistaPrevia
+                plantilla={p}
+                logoUrl={logoUrl}
+                colorGancho={estilo?.colorGancho ?? "#FFFFFF"}
+                colorCaja={estilo?.colorContornoGancho ?? "#000000"}
+                tema={temaValido(tema)}
+                estiloTexto={p.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
+                nombreMarca={activa.nombre}
+              />
+
             )}
           </div>
-
-          <VistaPrevia
-            plantilla={p}
-            logoUrl={logoUrl}
-            colorGancho={estilo?.colorGancho ?? "#FFFFFF"}
-            colorCaja={estilo?.colorContornoGancho ?? "#000000"}
-            tema={temaValido(tema)}
-            estiloTexto={p.estiloTexto ?? ESTILO_TEXTO_POR_DEFECTO}
-            nombreMarca={activa.nombre}
-          />
         </div>
       )}
     </DashboardLayout>

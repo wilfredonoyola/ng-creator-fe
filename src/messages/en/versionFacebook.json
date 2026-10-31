@@ -30,5 +30,6 @@
   "noSePudo": "Couldn't do it. Try again.",
   "faltaVersion": "Facebook needs the short version: process it below.",
   "faltaVersionCorto": "short version missing",
-  "soloFacebook": "Facebook still needs the short version; process it or uncheck Facebook."
+  "soloFacebook": "Facebook still needs the short version; process it or uncheck Facebook.",
+  "avisoYoutube": "Over 3 min: on YouTube it goes out as a regular video, not a Short."
 }

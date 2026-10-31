@@ -1,0 +1,46 @@
+{
+  "titulo": "Several clips",
+  "cerrar": "Close",
+  "modos": {
+    "ia": "✨ Ask the AI",
+    "lista": "Paste the time ranges"
+  },
+  "ia": {
+    "pregunta": "Which clips do you want from this video? The AI finds the moments and you pick which ones to create.",
+    "ejemplo": "E.g.: one clip per webinar topic",
+    "ejemplos": {
+      "porTema": "One clip per topic",
+      "consejos": "The practical tips",
+      "preguntas": "Audience questions with their answers",
+      "frases": "The strongest quotes"
+    },
+    "buscar": "Find moments",
+    "buscarOtraVez": "Search again",
+    "buscando": "Finding moments…",
+    "tarda": "On a long video this can take up to a minute.",
+    "ninguno": "I didn't find moments that match. Try saying it another way.",
+    "elegir": "Create “{titulo}”",
+    "yaEsClip": "There's already a clip here"
+  },
+  "lista": {
+    "pregunta": "One range per line: start, end and, if you want, the title. Without a title, the AI writes one.",
+    "ejemplo": "0:05:10 - 0:06:20 How to set prices\n12:40 - 13:55\n1:02:30 to 1:03:40 Audience questions",
+    "tituloIa": "AI title",
+    "linea": "Line {n}",
+    "errores": {
+      "formato": "I can't read the times. Write it like 1:02:30 - 1:03:40.",
+      "alReves": "the end has to come after the start.",
+      "largo": "a clip can be up to 5 minutes long.",
+      "fuera": "it starts after the end of the video."
+    },
+    "corregir": "Fix the lines in red to create the clips."
+  },
+  "escuchar": "▶ Listen",
+  "formato": "Format",
+  "autoEncuadre": "✨ Auto-framing: follows whoever is speaking",
+  "demasiados": "Up to {maximo} clips at a time.",
+  "creando": "Creating…",
+  "crear": "{n, plural, one {Create # clip} other {Create # clips}}",
+  "errorCrear": "The clips couldn't be created",
+  "creados": "{n, plural, one {Done: # new clip, under your name.} other {Done: # new clips, under your name.}}"
+}

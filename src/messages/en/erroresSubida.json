@@ -42,5 +42,13 @@
   "sonidoNoAudio": "The file has to be audio (MP3, WAV or M4A)",
   "sonidoMuyPesado": "The sound must be under 60 MB",
   "errorSonido": "The sound couldn't be uploaded ({status})",
-  "seCortoSonido": "The connection dropped while uploading the sound"
+  "seCortoSonido": "The connection dropped while uploading the sound",
+  "sesionVozRevision": "Sign in again to send the voice note",
+  "vozRevisionMuyPesada": "The voice note must be under 25 MB",
+  "errorVozRevision": "Couldn't upload the voice note ({status})",
+  "sesionVideoClip": "You need to be signed in to upload videos",
+  "videoClipFormato": "The video has to be MP4, MOV or WebM",
+  "videoClipMuyPesado": "The video must be under 500 MB",
+  "errorVideoClip": "Couldn't upload the video ({status})",
+  "seCortoVideoClip": "The connection dropped while the video was uploading"
 }

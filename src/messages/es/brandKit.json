@@ -47,5 +47,19 @@
     "titulo": "Así sale (9:16)",
     "ayuda": "El gancho dura los primeros segundos y la llamada a la acción aparece solo al final; acá se ven siempre para que los ajustes.",
     "zonaSegura": "Lo que queda fuera de la línea punteada lo tapa la red."
+  },
+  "nav": {
+    "titulo": "Secciones de Brand Kit",
+    "grupos": {
+      "clips": "En cada clip",
+      "publicar": "Al publicar"
+    },
+    "colores": "Colores",
+    "estilo": "Estilo de texto",
+    "logo": "Logo",
+    "llamada": "Llamada a la acción",
+    "portada": "Portada",
+    "sinGuardar": "Cambios sin guardar",
+    "seGuardanJuntas": "Colores, estilo, logo y llamada se guardan juntos."
   }
 }

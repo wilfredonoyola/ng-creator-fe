@@ -1,4 +1,6 @@
 {
+  "yaEditado": "Already have the clip edited?",
+  "subirClips": "Upload it in Publications →",
   "titulo": "Episodes",
   "descripcion": "Long-form video podcast episodes. They upload straight to Bunny in chunks: if the connection drops, they pick up where they left off.",
   "episodiosDe": "Episodes for",

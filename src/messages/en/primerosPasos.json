@@ -1,0 +1,17 @@
+{
+  "titulo": "Getting started",
+  "progreso": "Getting started: {hechos} of {total}",
+  "opcional": "optional",
+  "pasos": {
+    "marca": "Create the brand",
+    "configurar": "Set up the brand",
+    "episodio": "Upload your first episode",
+    "redes": "Connect your accounts"
+  },
+  "siguiente": {
+    "marca": "Create the brand",
+    "configurar": "Set up the brand →",
+    "episodio": "Upload my first episode →",
+    "redes": "Connect my accounts →"
+  }
+}

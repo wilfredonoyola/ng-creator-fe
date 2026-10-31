@@ -51,6 +51,18 @@
   "programar": {
     "elegi": "Choose networks and time.",
     "reintentar": "Retry",
-    "programar": "Schedule"
+    "programar": "Schedule",
+    "editar": "Edit schedule",
+    "programado": "Scheduled · {n, plural, one {# network} other {# networks}}",
+    "programadoEl": "Scheduled · {cuando} · {n, plural, one {# network} other {# networks}}",
+    "verProgramado": "See and edit what is scheduled"
+  },
+  "borrar": {
+    "boton": "Delete clip",
+    "ayuda": "It's removed from the episode. This can't be undone.",
+    "confirmar": "Delete “{titulo}”? This can't be undone.",
+    "seCancelan": "It has {n, plural, one {# scheduled post} other {# scheduled posts}}: they'll be canceled.",
+    "borrando": "Deleting…",
+    "error": "Couldn't delete the clip"
   }
 }

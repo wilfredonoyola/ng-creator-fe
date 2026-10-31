@@ -45,6 +45,11 @@ export interface Reproductor {
   alternar: () => void;
   /** Lleva el video a un segundo del episodio; si cae en un corte, al final del corte. */
   irAlEpisodio: (t: number) => void;
+  /**
+   * Corre el cabezal `seg` segundos (negativo, para atras) y pausa: para
+   * dividir justo donde va. Un corte se salta en la direccion en que se va.
+   */
+  correr: (seg: number) => void;
   /** Para el `<video>`: lo que hace falta escuchar. */
   eventos: {
     onPlay: () => void;
@@ -52,6 +57,17 @@ export interface Reproductor {
     onLoadedMetadata: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   };
 }
+
+/** Un cuadro, para correr el cabezal de a uno (los clips salen a 30 fps, o menos). */
+export const CUADRO_SEG = 1 / 30;
+
+/**
+ * Cuanto puede avanzar el tiempo sin que salga un cuadro nuevo antes de dar
+ * la imagen por trabada. hls.js, al cambiar de calidad, a veces deja un hueco
+ * en el video del buffer: Chrome sigue con el audio y congela el ultimo
+ * cuadro hasta el proximo cuadro clave (se veia pausado, sonando y en play).
+ */
+const CONGELADO_SEG = 0.5;
 
 /**
  * Reproduce el tramo del clip: un solo bucle lee el tiempo, hace el loop del
@@ -78,10 +94,29 @@ export function useReproductor({ desde, hasta, cortes }: { desde: number; hasta:
 
   useEffect(() => {
     let id = 0;
+    // El vigia de la imagen trabada: ver `CONGELADO_SEG`.
+    const vigia = { cuadros: -1, tiempo: 0, arregladoEn: 0 };
     const paso = () => {
       const v = video.current;
       const e = tramo.current;
       if (v) {
+        if (!v.paused && !v.seeking && v.readyState >= 2 && typeof v.getVideoPlaybackQuality === "function") {
+          const cuadros = v.getVideoPlaybackQuality().totalVideoFrames;
+          const ahora = performance.now();
+          if (cuadros !== vigia.cuadros || v.currentTime < vigia.tiempo) {
+            vigia.cuadros = cuadros;
+            vigia.tiempo = v.currentTime;
+          } else if (v.currentTime - vigia.tiempo > CONGELADO_SEG && ahora - vigia.arregladoEn > 2000) {
+            // El tiempo avanza (suena) pero no sale ningun cuadro nuevo: un
+            // hueco en el video del buffer. Un salto en el lugar lo destraba.
+            vigia.arregladoEn = ahora;
+            vigia.tiempo = v.currentTime;
+            console.warn(`Vista previa: la imagen se trabo en ${v.currentTime.toFixed(2)} s; se destraba`);
+            v.currentTime = v.currentTime + 0.001;
+          }
+        } else {
+          vigia.cuadros = -1;
+        }
         // Los cortes se saltan: si el video entra en uno (o está por entrar,
         // un cuadro antes), va al final del corte. Mientras un salto no
         // termina no se pide otro, para no trabar el HLS.
@@ -128,6 +163,21 @@ export function useReproductor({ desde, hasta, cortes }: { desde: number; hasta:
     [reloj],
   );
 
+  const correr = useCallback(
+    (seg: number) => {
+      const v = video.current;
+      if (!v) return;
+      if (!v.paused) v.pause();
+      const { desde: d, hasta: h, cortes: c } = tramo.current;
+      let destino = Math.min(Math.max(v.currentTime + seg, d), h - CUADRO_SEG);
+      const corte = estaCortado(destino, c);
+      if (corte) destino = seg > 0 ? siguienteTiempoVisible(destino, c) : Math.max(d, corte.desdeSeg - CUADRO_SEG);
+      v.currentTime = destino;
+      reloj.set(destino);
+    },
+    [reloj],
+  );
+
   const eventos = useMemo(
     () => ({
       onPlay: () => setSonando(true),
@@ -141,5 +191,5 @@ export function useReproductor({ desde, hasta, cortes }: { desde: number; hasta:
     [],
   );
 
-  return { video, reloj, sonando, fuente, alternar, irAlEpisodio, eventos };
+  return { video, reloj, sonando, fuente, alternar, irAlEpisodio, correr, eventos };
 }

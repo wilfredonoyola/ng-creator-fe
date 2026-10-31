@@ -1,4 +1,8 @@
 {
+  "conectarIa": {
+    "titulo": "Connect to ChatGPT or Claude",
+    "detalle": "Ask them about your clients' metrics or how to use Clipfine."
+  },
   "titulo": "Profile",
   "subtitulo": "Your Clipfine account.",
   "marca": "Brand",
@@ -49,7 +53,7 @@
   },
   "avisos": {
     "titulo": "Notifications",
-    "detalle": "Notifications go to the brand's whole team, except whoever took the action. Choose which ones you want and where.",
+    "detalle": "Notifications go to the brand's whole team, except whoever took the action. Choose which ones you want and where. By email, anything that needs you (a review) arrives right away; the rest comes together in a digest every 30 minutes, so your inbox doesn't fill up.",
     "cargando": "Loading…",
     "errorTraer": "We couldn't load your preferences: {error}",
     "aviso": "Notification",

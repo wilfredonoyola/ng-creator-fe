@@ -1,0 +1,100 @@
+{
+  "seo": {
+    "titulo": "Subí clips editados en CapCut y publicalos | Clipfine",
+    "descripcion": "Subí los reels y clips que tu agencia ya editó en CapCut o Premiere y programalos en TikTok, Reels, Shorts y Facebook, con aprobación del cliente y métricas. No descuentan horas."
+  },
+  "titulo": "¿Ya lo editaste en CapCut?",
+  "destacado": "Subilo y publicalo",
+  "bajada": "No todo sale de un episodio largo. Reels, tips o cortes que tu equipo ya editó afuera entran a Clipfine y siguen el mismo camino que los demás clips: se programan en cuatro redes, el cliente los aprueba y se miden.",
+  "datos": {
+    "d1": {
+      "cifra": "5 min",
+      "que": "por clip, en MP4 o MOV, varios a la vez"
+    },
+    "d2": {
+      "cifra": "0 horas",
+      "que": "de tu plan: los clips subidos no descuentan"
+    },
+    "d3": {
+      "cifra": "4 redes",
+      "que": "TikTok, Instagram, YouTube y Facebook"
+    }
+  },
+  "agencia": {
+    "soltarVarios": "Tu editor exporta la tanda de la semana y la sube de una vez, sin cargar clip por clip.",
+    "talCual": "El trabajo de tu editor llega a las redes como lo entregó, sin perder calidad por el camino.",
+    "retocar": "Un clip viejo se reaprovecha con los subtítulos y la plantilla del cliente en un minuto.",
+    "programarSubido": "La semana del cliente queda completa en un solo calendario, salga el clip de donde salga.",
+    "revisarSubido": "El cliente aprueba todo en el mismo lugar, sin mails con archivos adjuntos.",
+    "medirSubido": "Comparás lo editado a mano con lo que sale de los episodios y sabés en qué invertir.",
+    "sinHoras": "Podés sumar todo el contenido editado que quieras sin pagar un plan más grande.",
+    "desdeCelular": "Si el clip está en el celular del community manager, se sube desde ahí."
+  },
+  "vistas": {
+    "soltarVarios": {
+      "soltar": "Soltá tus clips",
+      "a1": "reel-lunes.mov",
+      "a2": "tip-semana.mp4"
+    },
+    "talCual": {
+      "exportado": "Exportado",
+      "publicado": "Publicado"
+    },
+    "retocar": {
+      "subtitulos": "Subtítulos",
+      "plantilla": "Plantilla",
+      "gancho": "Gancho",
+      "pie": "Abierto en el editor"
+    },
+    "programarSubido": {
+      "lun": "Lun",
+      "mar": "Mar",
+      "mie": "Mié",
+      "jue": "Jue",
+      "vie": "Vie",
+      "pie": "Clips subidos y de episodios, juntos"
+    },
+    "revisarSubido": {
+      "clip": "reel-promo.mov",
+      "cliente": "Cliente A",
+      "porRevisar": "Por revisar",
+      "cambios": "Pedir cambios",
+      "aprobar": "Aprobar"
+    },
+    "medirSubido": {
+      "vistas": "vistas",
+      "retencion": "retención",
+      "pie": "Por clip y por red"
+    },
+    "sinHoras": {
+      "plan": "Horas del plan",
+      "subidos": "Clips subidos"
+    },
+    "desdeCelular": {
+      "galeria": "Galería",
+      "subir": "Subir 2"
+    }
+  },
+  "preguntas": {
+    "p1": {
+      "p": "¿Qué clips puedo subir?",
+      "r": "Cualquier video ya editado: lo que armaste en CapCut, Premiere o el celular, o un recorte de YouTube. MP4 o MOV de hasta 5 minutos, varios a la vez."
+    },
+    "p2": {
+      "p": "¿Pierde calidad al subirlo?",
+      "r": "No de más. Si el video ya está en H.264, se publica tal cual, sin recomprimir. Si viene en otro formato, como el HEVC del iPhone, se convierte una vez en alta calidad."
+    },
+    "p3": {
+      "p": "¿Descuenta horas de mi plan?",
+      "r": "No. Las horas son para los episodios que Clipfine transcribe y corta. Los clips que subís ya editados no descuentan."
+    },
+    "p4": {
+      "p": "¿Lo puedo editar después de subirlo?",
+      "r": "Sí. Lo abrís en el editor y le sumás subtítulos, la plantilla del cliente, un gancho o música. Si no lo tocás, sale tal cual."
+    },
+    "p5": {
+      "p": "¿Dónde lo encuentro en Clipfine?",
+      "r": "En la web, en Publicaciones → Subir clips. En la app, en Proyectos → Clips subidos."
+    }
+  }
+}

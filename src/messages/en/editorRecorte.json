@@ -18,7 +18,7 @@
   "diseno": "Layout",
   "enEsteTramo": " (in this segment)",
   "tramo": "Segment {desde}–{hasta} s",
-  "ayudaRecuadro": "Drag the box to move it; drag the corner to resize it.",
+  "ayudaRecuadro": "Drag the box to move it. It uses the full height; zoom is in the panel.",
   "ayudaRecuadroEtiqueta": "How to move the box",
   "abajo": "Bottom",
   "arriba": "Top",
@@ -51,5 +51,6 @@
     "finalAntes": "Move the end 5 s earlier (the clip gets shorter)",
     "finalDespues": "Move the end 5 s later (the clip gets longer)",
     "conCortes": "{efectiva} of {total}"
-  }
+  },
+  "avisoBeta": "Sometimes it doesn't follow whoever is speaking. Check the framing changes on the timeline and fix the ones that are off; if it fails on a clip, let us know."
 }

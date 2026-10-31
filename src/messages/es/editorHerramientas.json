@@ -29,7 +29,7 @@
     "alDia": "Ya tiene todos los cambios: solo si querés rehacerlo.",
     "equipo": "Para el equipo",
     "listoSinVideo": "Exportá el video para marcarlo listo.",
-    "seExportaSolo": "Se exporta solo antes de publicar.",
+    "seExportaSolo": "Primero se exporta: vas a poder programar cuando el video esté listo.",
     "bajaAlTerminar": "Se descarga solo cuando termine de exportarse."
   },
   "escenario": {
@@ -43,10 +43,12 @@
     "textos": "Textos",
     "subtitulos": "Subtítulos",
     "imagenes": "Imágenes",
+    "superposicion": "Superposición",
     "textoVacio": "(vacío)",
     "llamada": "Llamada a la acción",
     "logo": "Logo de la marca",
     "imagen": "Imagen {n}",
+    "videoN": "Video {n}",
     "agregarTexto": "Texto",
     "agregarImagen": "Imagen",
     "subtitulosActivos": "Palabra por palabra",
@@ -63,7 +65,7 @@
     "empiezaAca": "Empieza acá",
     "terminaAca": "Termina acá",
     "cortes": "Cortes · {n}",
-    "ayuda": "Dividir parte el video en el cabezal. Tocá un tramo (o arrastrá) en la línea de tiempo y quitalo. Lo rayado no sale; la ✕ lo devuelve.",
+    "ayuda": "Dividir parte el video en el cabezal. Para que caiga justo: ← → lo corren un cuadro (Shift: un segundo), espacio reproduce y S divide. Tocá un tramo (o arrastrá) en la línea de tiempo y quitalo. Lo rayado no sale; la ✕ lo devuelve.",
     "enElEpisodio": "En el episodio",
     "velocidad": "Velocidad",
     "duraFinal": "Dura {antes} → {despues} a {velocidad}",
@@ -82,14 +84,20 @@
     "cambiarEstilo": "Cambiar el estilo"
   },
   "superposicion": {
-    "ayuda": "Arrastrá la imagen en el video para moverla; la esquina la agranda. Sus bordes en la línea de tiempo marcan cuándo aparece."
+    "ayuda": "Arrastrá la imagen en el video para moverla; la esquina la agranda. Sus bordes en la línea de tiempo marcan cuándo aparece.",
+    "ayudaVideos": "Arrastrá el video en la vista previa para moverlo, o ponelo a pantalla completa. Va encima del video y de las imágenes, debajo de los textos y los subtítulos."
   },
   "formato": {
     "proporcion": "Proporción",
     "esteTramo": "Este tramo · {desde} → {hasta}",
     "irAuto": "Auto-encuadre",
     "fondo": "Fondo",
-    "nuevoEncuadre": "Encuadre acá"
+    "nuevoEncuadre": "Encuadre acá",
+    "zoom": "Zoom · {zoom} %",
+    "zoomEtiqueta": "Zoom del recuadro",
+    "todoElAlto": "Todo el alto",
+    "todosTodoElAlto": "Todos los tramos con todo el alto",
+    "zoomAyuda": "En 100 % el recuadro usa todo el alto del video. Subilo solo si te querés acercar."
   },
   "auto": {
     "pedir": "Auto-encuadrar",

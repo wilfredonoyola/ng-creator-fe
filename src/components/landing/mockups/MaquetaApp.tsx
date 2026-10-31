@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { BellRing, Download } from "lucide-react";
+import { ArrowLeftRight, BellRing, Download, Laptop, Smartphone } from "lucide-react";
 import { CUADRO, Maqueta, Rotulo } from "./base";
 
 const CLIPS = [
@@ -14,7 +14,7 @@ const ESTADO: Record<(typeof CLIPS)[number]["estado"], string> = {
   editando: "text-[#D9D8D2] shadow-[inset_0_0_0_1px_#4A4A45]",
 };
 
-/** App e idiomas: la lista de clips en un teléfono, un aviso y ES · EN. */
+/** La app: la lista de clips en un teléfono, un aviso, la misma cuenta que la web y en qué teléfonos está. */
 export function MaquetaApp() {
   const t = useTranslations("landingMockups.app");
   const tc = useTranslations("landingMockups.comun");
@@ -60,10 +60,18 @@ export function MaquetaApp() {
         </div>
         <div className="flex flex-col items-center gap-4 sm:items-start">
           <div className="flex flex-col items-center gap-2 sm:items-start">
-            <Rotulo>{t("idioma")}</Rotulo>
-            <span className="flex rounded-md bg-[#0A0A0A] p-1 text-[13px] font-bold shadow-[inset_0_0_0_1px_#2E2E2B]">
-              <span className="rounded bg-[#FFD400] px-3 py-1 text-[#0A0A0A]">ES</span>
-              <span className="px-3 py-1 text-[#D9D8D2]">EN</span>
+            <Rotulo>{t("sincro")}</Rotulo>
+            <span className="flex items-center gap-3 rounded-md bg-[#0A0A0A] px-3 py-2 shadow-[inset_0_0_0_1px_#2E2E2B]">
+              <Laptop size={18} color="#FFFFFF" />
+              <ArrowLeftRight size={14} color="#FFD400" />
+              <Smartphone size={16} color="#FFFFFF" />
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-2 sm:items-start">
+            <Rotulo>{t("plataformas")}</Rotulo>
+            <span className="flex gap-2 text-[12px] font-bold">
+              <span className="rounded bg-[#FFD400] px-3 py-1 text-[#0A0A0A]">iPhone</span>
+              <span className="rounded bg-[#FFD400] px-3 py-1 text-[#0A0A0A]">Android</span>
             </span>
           </div>
           <span className="flex items-center gap-1.5 rounded bg-white px-2.5 py-1.5 text-[10px] font-bold text-[#0A0A0A]">

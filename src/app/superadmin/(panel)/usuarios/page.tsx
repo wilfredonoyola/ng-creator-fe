@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useMutation, useQuery } from "@apollo/client";
 import { useLocale, useTranslations } from "next-intl";
 import { SET_USUARIO_ACTIVO_SUPERADMIN, USUARIOS_SUPERADMIN } from "@/graphql/operations";
-import { tiempoRelativo } from "@/lib/time";
+import { fechaCompleta, tiempoRelativo } from "@/lib/time";
+import { entrarComo } from "@/lib/suplantar";
 
 type Origen = "CHATGPT" | "GOOGLE" | "FACEBOOK" | "INSTAGRAM" | "TIKTOK" | "YOUTUBE" | "LINKEDIN" | "RECOMENDACION" | "OTRO";
 
@@ -20,12 +22,53 @@ type Fila = {
     comoNosConocio?: Origen | null;
     comoNosConocioDetalle?: string | null;
   };
-  accesos: { marcaId: string; marcaNombre: string; rol: "PROPIETARIO" | "EDITOR" | "LECTOR" | "PROVEEDOR" }[];
+  accesos: { marcaId: string; marcaNombre: string; rol: "PROPIETARIO" | "EDITOR" | "REVISOR" | "LECTOR" | "PROVEEDOR" }[];
 };
 
 /**
+ * Para entender rápido quién es cada persona: dueños (tienen su marca),
+ * equipo (entran solo a marcas de otros), sin marca (se registraron y no
+ * siguieron) y sin acceso (cortados).
+ */
+const FILTROS = ["todos", "duenos", "equipo", "sinMarca", "sinAcceso"] as const;
+type Filtro = (typeof FILTROS)[number];
+
+const ORDENES = ["ultimoAcceso", "registro", "nombre"] as const;
+type Orden = (typeof ORDENES)[number];
+
+function pasaFiltro(f: Fila, filtro: Filtro): boolean {
+  const esDueno = f.accesos.some((a) => a.rol === "PROPIETARIO");
+  switch (filtro) {
+    case "duenos":
+      return esDueno;
+    case "equipo":
+      return f.accesos.length > 0 && !esDueno;
+    case "sinMarca":
+      return f.accesos.length === 0 && !f.esSuperadmin;
+    case "sinAcceso":
+      return !f.usuario.activo;
+    default:
+      return true;
+  }
+}
+
+const tiempo = (iso?: string | null) => (iso ? new Date(iso).getTime() : 0);
+
+function comparar(a: Fila, b: Fila, orden: Orden): number {
+  switch (orden) {
+    case "registro":
+      return tiempo(b.usuario.createdAt) - tiempo(a.usuario.createdAt);
+    case "nombre":
+      return (a.usuario.nombre || a.usuario.email).localeCompare(b.usuario.nombre || b.usuario.email);
+    default:
+      return tiempo(b.usuario.ultimoAccesoEn) - tiempo(a.usuario.ultimoAccesoEn);
+  }
+}
+
+/**
  * Todas las personas con cuenta: a qué marcas entran y con qué rol, cuándo
- * entraron por última vez, y desde acá se les corta o devuelve el acceso.
+ * entraron por última vez, y desde acá se les corta o devuelve el acceso, o
+ * se entra como ellas para ver y operar sus marcas (lib/suplantar.ts).
  */
 export default function UsuariosSuperadmin() {
   const t = useTranslations("superadmin.usuarios");
@@ -39,19 +82,24 @@ export default function UsuariosSuperadmin() {
     refetchQueries: [{ query: USUARIOS_SUPERADMIN }],
   });
   const [busqueda, setBusqueda] = useState("");
+  const [filtro, setFiltro] = useState<Filtro>("todos");
+  const [orden, setOrden] = useState<Orden>("ultimoAcceso");
   const [fallo, setFallo] = useState<string | null>(null);
 
+  const todas = useMemo(() => data?.usuariosSuperadmin ?? [], [data]);
   const filas = useMemo(() => {
     const q = busqueda.trim().toLowerCase();
-    const todas = data?.usuariosSuperadmin ?? [];
-    if (!q) return todas;
-    return todas.filter(
-      (f) =>
-        f.usuario.email.toLowerCase().includes(q) ||
-        (f.usuario.nombre ?? "").toLowerCase().includes(q) ||
-        f.accesos.some((a) => a.marcaNombre.toLowerCase().includes(q)),
-    );
-  }, [data, busqueda]);
+    return todas
+      .filter((f) => pasaFiltro(f, filtro))
+      .filter(
+        (f) =>
+          !q ||
+          f.usuario.email.toLowerCase().includes(q) ||
+          (f.usuario.nombre ?? "").toLowerCase().includes(q) ||
+          f.accesos.some((a) => a.marcaNombre.toLowerCase().includes(q)),
+      )
+      .sort((a, b) => comparar(a, b, orden));
+  }, [todas, busqueda, filtro, orden]);
 
   async function alternar(f: Fila) {
     const activo = !f.usuario.activo;
@@ -71,13 +119,44 @@ export default function UsuariosSuperadmin() {
         <p className="mt-1 max-w-2xl text-white/50">{t("subtitulo", { n: data?.usuariosSuperadmin.length ?? 0 })}</p>
       </div>
 
-      <input
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-        placeholder={t("buscar")}
-        aria-label={t("buscar")}
-        className="mb-4 w-full max-w-sm rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2 text-sm outline-none transition focus:border-ng-azul"
-      />
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <input
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder={t("buscar")}
+          aria-label={t("buscar")}
+          className="w-full max-w-sm rounded-ng-md border border-white/10 bg-ng-hondo/70 px-3 py-2 text-sm outline-none transition focus:border-ng-azul"
+        />
+        <div className="flex flex-wrap gap-1.5">
+          {FILTROS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setFiltro(f)}
+              aria-pressed={filtro === f}
+              title={t(`filtros.${f}.ayuda`)}
+              className={`rounded-full border px-3 py-1 text-xs transition ${
+                filtro === f ? "border-marca bg-marca/15 text-white" : "border-white/10 text-white/60 hover:text-white"
+              }`}
+            >
+              {t(`filtros.${f}.nombre`)} · {todas.filter((x) => pasaFiltro(x, f)).length}
+            </button>
+          ))}
+        </div>
+        <label className="ml-auto flex items-center gap-2 text-xs text-white/50">
+          {t("ordenar")}
+          <select
+            value={orden}
+            onChange={(e) => setOrden(e.target.value as Orden)}
+            className="rounded-lg border border-white/10 bg-ng-hondo/70 px-2 py-1.5 text-xs text-white outline-none focus:border-ng-azul"
+          >
+            {ORDENES.map((o) => (
+              <option key={o} value={o}>
+                {t(`ordenes.${o}`)}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       {(error || fallo) && (
         <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
@@ -103,9 +182,14 @@ export default function UsuariosSuperadmin() {
                     <span className="text-xs text-white/35">{t("sinMarcas")}</span>
                   ) : (
                     f.accesos.map((a) => (
-                      <span key={a.marcaId} className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70">
+                      <Link
+                        key={a.marcaId}
+                        href={`/superadmin/clientes?marca=${a.marcaId}`}
+                        title={t("verCliente")}
+                        className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-white/70 transition hover:border-marca/50 hover:text-white"
+                      >
                         {a.marcaNombre} · {tRol(`${a.rol}.etiqueta`)}
-                      </span>
+                      </Link>
                     ))
                   )}
                 </div>
@@ -117,9 +201,24 @@ export default function UsuariosSuperadmin() {
                     {f.usuario.comoNosConocioDetalle ? ` (${f.usuario.comoNosConocioDetalle})` : ""}
                   </span>
                 )}
+                <span title={fechaCompleta(f.usuario.createdAt, locale)}>
+                  {t("registro", { cuando: tiempoRelativo(f.usuario.createdAt, Date.now(), locale) })}
+                </span>
                 <span>
                   {f.usuario.ultimoAccesoEn ? t("entro", { cuando: tiempoRelativo(f.usuario.ultimoAccesoEn, Date.now(), locale) }) : t("nuncaEntro")}
                 </span>
+                {!f.esSuperadmin && f.usuario.activo && (
+                  <button
+                    onClick={() => {
+                      if (window.confirm(t("confirmarEntrar", { email: f.usuario.email }))) {
+                        entrarComo({ id: f.usuario._id, email: f.usuario.email });
+                      }
+                    }}
+                    className="rounded-lg border border-marca/50 px-3 py-1.5 text-marca transition hover:bg-marca/10"
+                  >
+                    {t("entrarComo")}
+                  </button>
+                )}
                 {!f.esSuperadmin && (
                   <button
                     onClick={() => alternar(f)}

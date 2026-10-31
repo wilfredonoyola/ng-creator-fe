@@ -1,13 +1,21 @@
 // Generado por scripts/mensajes.mjs: no se edita a mano.
 import adminSuscripciones_es from "./es/adminSuscripciones.json";
+import ajustesMarca_es from "./es/ajustesMarca.json";
 import ajustesPublicacion_es from "./es/ajustesPublicacion.json";
 import analisis_es from "./es/analisis.json";
 import analisisBarras_es from "./es/analisisBarras.json";
 import avisoFuente_es from "./es/avisoFuente.json";
+import avisosPortada_es from "./es/avisosPortada.json";
+import ayuda_es from "./es/ayuda.json";
+import ayudaPantallas_es from "./es/ayudaPantallas.json";
 import bibliotecaSonidos_es from "./es/bibliotecaSonidos.json";
 import brandKit_es from "./es/brandKit.json";
 import calendario_es from "./es/calendario.json";
 import calidadClip_es from "./es/calidadClip.json";
+import chatSoporte_es from "./es/chatSoporte.json";
+import clipsSubidos_es from "./es/clipsSubidos.json";
+import conectar_es from "./es/conectar.json";
+import contenido_es from "./es/contenido.json";
 import creators_es from "./es/creators.json";
 import editorAudio_es from "./es/editorAudio.json";
 import editorAutoEncuadre_es from "./es/editorAutoEncuadre.json";
@@ -20,9 +28,11 @@ import editorHerramientas_es from "./es/editorHerramientas.json";
 import editorImagenes_es from "./es/editorImagenes.json";
 import editorInspector_es from "./es/editorInspector.json";
 import editorListo_es from "./es/editorListo.json";
+import editorPortada_es from "./es/editorPortada.json";
 import editorRecorte_es from "./es/editorRecorte.json";
 import editorTextos_es from "./es/editorTextos.json";
 import editorTomar_es from "./es/editorTomar.json";
+import editorVideos_es from "./es/editorVideos.json";
 import episodioDetalle_es from "./es/episodioDetalle.json";
 import episodioReimportar_es from "./es/episodioReimportar.json";
 import episodios_es from "./es/episodios.json";
@@ -34,11 +44,26 @@ import estilosGaleria_es from "./es/estilosGaleria.json";
 import estilosInterfaz_es from "./es/estilosInterfaz.json";
 import estilosNombres_es from "./es/estilosNombres.json";
 import estilosTema_es from "./es/estilosTema.json";
+import etiquetas_es from "./es/etiquetas.json";
+import featuresApp_es from "./es/featuresApp.json";
+import featuresAudio_es from "./es/featuresAudio.json";
+import featuresCalidad_es from "./es/featuresCalidad.json";
+import featuresEdicion_es from "./es/featuresEdicion.json";
+import featuresEquipo_es from "./es/featuresEquipo.json";
+import featuresEtiquetas_es from "./es/featuresEtiquetas.json";
+import featuresIa_es from "./es/featuresIa.json";
+import featuresImagenes_es from "./es/featuresImagenes.json";
+import featuresImportar_es from "./es/featuresImportar.json";
+import featuresMarca_es from "./es/featuresMarca.json";
+import featuresMetricas_es from "./es/featuresMetricas.json";
+import featuresPublicar_es from "./es/featuresPublicar.json";
+import featuresRevision_es from "./es/featuresRevision.json";
+import featuresSubirClips_es from "./es/featuresSubirClips.json";
+import featuresTextos_es from "./es/featuresTextos.json";
 import grabar_es from "./es/grabar.json";
 import hashtagsChips_es from "./es/hashtagsChips.json";
 import idioma_es from "./es/idioma.json";
 import landing_es from "./es/landing.json";
-import landingApp_es from "./es/landingApp.json";
 import landingFunciones_es from "./es/landingFunciones.json";
 import landingImagen_es from "./es/landingImagen.json";
 import landingMaquetaTelefono_es from "./es/landingMaquetaTelefono.json";
@@ -74,11 +99,15 @@ import montajeTelefono_es from "./es/montajeTelefono.json";
 import montajeTexto_es from "./es/montajeTexto.json";
 import montajeVoz_es from "./es/montajeVoz.json";
 import montajeWizard_es from "./es/montajeWizard.json";
+import numeracion_es from "./es/numeracion.json";
 import onboarding_es from "./es/onboarding.json";
 import panel_es from "./es/panel.json";
 import panelSubirClip_es from "./es/panelSubirClip.json";
 import perfil_es from "./es/perfil.json";
+import pestanasEpisodios_es from "./es/pestanasEpisodios.json";
 import plan_es from "./es/plan.json";
+import portadaMarca_es from "./es/portadaMarca.json";
+import primerosPasos_es from "./es/primerosPasos.json";
 import proveedorPublicacion_es from "./es/proveedorPublicacion.json";
 import prueba_es from "./es/prueba.json";
 import publicados_es from "./es/publicados.json";
@@ -98,19 +127,29 @@ import registro_es from "./es/registro.json";
 import renombrarMarca_es from "./es/renombrarMarca.json";
 import requisitosPassword_es from "./es/requisitosPassword.json";
 import revision_es from "./es/revision.json";
+import revisionClip_es from "./es/revisionClip.json";
 import revisionTarjeta_es from "./es/revisionTarjeta.json";
 import revisionVideoCard_es from "./es/revisionVideoCard.json";
 import superadmin_es from "./es/superadmin.json";
+import variosClips_es from "./es/variosClips.json";
 import versionFacebook_es from "./es/versionFacebook.json";
 import adminSuscripciones_en from "./en/adminSuscripciones.json";
+import ajustesMarca_en from "./en/ajustesMarca.json";
 import ajustesPublicacion_en from "./en/ajustesPublicacion.json";
 import analisis_en from "./en/analisis.json";
 import analisisBarras_en from "./en/analisisBarras.json";
 import avisoFuente_en from "./en/avisoFuente.json";
+import avisosPortada_en from "./en/avisosPortada.json";
+import ayuda_en from "./en/ayuda.json";
+import ayudaPantallas_en from "./en/ayudaPantallas.json";
 import bibliotecaSonidos_en from "./en/bibliotecaSonidos.json";
 import brandKit_en from "./en/brandKit.json";
 import calendario_en from "./en/calendario.json";
 import calidadClip_en from "./en/calidadClip.json";
+import chatSoporte_en from "./en/chatSoporte.json";
+import clipsSubidos_en from "./en/clipsSubidos.json";
+import conectar_en from "./en/conectar.json";
+import contenido_en from "./en/contenido.json";
 import creators_en from "./en/creators.json";
 import editorAudio_en from "./en/editorAudio.json";
 import editorAutoEncuadre_en from "./en/editorAutoEncuadre.json";
@@ -123,9 +162,11 @@ import editorHerramientas_en from "./en/editorHerramientas.json";
 import editorImagenes_en from "./en/editorImagenes.json";
 import editorInspector_en from "./en/editorInspector.json";
 import editorListo_en from "./en/editorListo.json";
+import editorPortada_en from "./en/editorPortada.json";
 import editorRecorte_en from "./en/editorRecorte.json";
 import editorTextos_en from "./en/editorTextos.json";
 import editorTomar_en from "./en/editorTomar.json";
+import editorVideos_en from "./en/editorVideos.json";
 import episodioDetalle_en from "./en/episodioDetalle.json";
 import episodioReimportar_en from "./en/episodioReimportar.json";
 import episodios_en from "./en/episodios.json";
@@ -137,11 +178,26 @@ import estilosGaleria_en from "./en/estilosGaleria.json";
 import estilosInterfaz_en from "./en/estilosInterfaz.json";
 import estilosNombres_en from "./en/estilosNombres.json";
 import estilosTema_en from "./en/estilosTema.json";
+import etiquetas_en from "./en/etiquetas.json";
+import featuresApp_en from "./en/featuresApp.json";
+import featuresAudio_en from "./en/featuresAudio.json";
+import featuresCalidad_en from "./en/featuresCalidad.json";
+import featuresEdicion_en from "./en/featuresEdicion.json";
+import featuresEquipo_en from "./en/featuresEquipo.json";
+import featuresEtiquetas_en from "./en/featuresEtiquetas.json";
+import featuresIa_en from "./en/featuresIa.json";
+import featuresImagenes_en from "./en/featuresImagenes.json";
+import featuresImportar_en from "./en/featuresImportar.json";
+import featuresMarca_en from "./en/featuresMarca.json";
+import featuresMetricas_en from "./en/featuresMetricas.json";
+import featuresPublicar_en from "./en/featuresPublicar.json";
+import featuresRevision_en from "./en/featuresRevision.json";
+import featuresSubirClips_en from "./en/featuresSubirClips.json";
+import featuresTextos_en from "./en/featuresTextos.json";
 import grabar_en from "./en/grabar.json";
 import hashtagsChips_en from "./en/hashtagsChips.json";
 import idioma_en from "./en/idioma.json";
 import landing_en from "./en/landing.json";
-import landingApp_en from "./en/landingApp.json";
 import landingFunciones_en from "./en/landingFunciones.json";
 import landingImagen_en from "./en/landingImagen.json";
 import landingMaquetaTelefono_en from "./en/landingMaquetaTelefono.json";
@@ -177,11 +233,15 @@ import montajeTelefono_en from "./en/montajeTelefono.json";
 import montajeTexto_en from "./en/montajeTexto.json";
 import montajeVoz_en from "./en/montajeVoz.json";
 import montajeWizard_en from "./en/montajeWizard.json";
+import numeracion_en from "./en/numeracion.json";
 import onboarding_en from "./en/onboarding.json";
 import panel_en from "./en/panel.json";
 import panelSubirClip_en from "./en/panelSubirClip.json";
 import perfil_en from "./en/perfil.json";
+import pestanasEpisodios_en from "./en/pestanasEpisodios.json";
 import plan_en from "./en/plan.json";
+import portadaMarca_en from "./en/portadaMarca.json";
+import primerosPasos_en from "./en/primerosPasos.json";
 import proveedorPublicacion_en from "./en/proveedorPublicacion.json";
 import prueba_en from "./en/prueba.json";
 import publicados_en from "./en/publicados.json";
@@ -201,22 +261,32 @@ import registro_en from "./en/registro.json";
 import renombrarMarca_en from "./en/renombrarMarca.json";
 import requisitosPassword_en from "./en/requisitosPassword.json";
 import revision_en from "./en/revision.json";
+import revisionClip_en from "./en/revisionClip.json";
 import revisionTarjeta_en from "./en/revisionTarjeta.json";
 import revisionVideoCard_en from "./en/revisionVideoCard.json";
 import superadmin_en from "./en/superadmin.json";
+import variosClips_en from "./en/variosClips.json";
 import versionFacebook_en from "./en/versionFacebook.json";
 
 export const mensajes = {
   es: {
     "adminSuscripciones": adminSuscripciones_es,
+    "ajustesMarca": ajustesMarca_es,
     "ajustesPublicacion": ajustesPublicacion_es,
     "analisis": analisis_es,
     "analisisBarras": analisisBarras_es,
     "avisoFuente": avisoFuente_es,
+    "avisosPortada": avisosPortada_es,
+    "ayuda": ayuda_es,
+    "ayudaPantallas": ayudaPantallas_es,
     "bibliotecaSonidos": bibliotecaSonidos_es,
     "brandKit": brandKit_es,
     "calendario": calendario_es,
     "calidadClip": calidadClip_es,
+    "chatSoporte": chatSoporte_es,
+    "clipsSubidos": clipsSubidos_es,
+    "conectar": conectar_es,
+    "contenido": contenido_es,
     "creators": creators_es,
     "editorAudio": editorAudio_es,
     "editorAutoEncuadre": editorAutoEncuadre_es,
@@ -229,9 +299,11 @@ export const mensajes = {
     "editorImagenes": editorImagenes_es,
     "editorInspector": editorInspector_es,
     "editorListo": editorListo_es,
+    "editorPortada": editorPortada_es,
     "editorRecorte": editorRecorte_es,
     "editorTextos": editorTextos_es,
     "editorTomar": editorTomar_es,
+    "editorVideos": editorVideos_es,
     "episodioDetalle": episodioDetalle_es,
     "episodioReimportar": episodioReimportar_es,
     "episodios": episodios_es,
@@ -243,11 +315,26 @@ export const mensajes = {
     "estilosInterfaz": estilosInterfaz_es,
     "estilosNombres": estilosNombres_es,
     "estilosTema": estilosTema_es,
+    "etiquetas": etiquetas_es,
+    "featuresApp": featuresApp_es,
+    "featuresAudio": featuresAudio_es,
+    "featuresCalidad": featuresCalidad_es,
+    "featuresEdicion": featuresEdicion_es,
+    "featuresEquipo": featuresEquipo_es,
+    "featuresEtiquetas": featuresEtiquetas_es,
+    "featuresIa": featuresIa_es,
+    "featuresImagenes": featuresImagenes_es,
+    "featuresImportar": featuresImportar_es,
+    "featuresMarca": featuresMarca_es,
+    "featuresMetricas": featuresMetricas_es,
+    "featuresPublicar": featuresPublicar_es,
+    "featuresRevision": featuresRevision_es,
+    "featuresSubirClips": featuresSubirClips_es,
+    "featuresTextos": featuresTextos_es,
     "grabar": grabar_es,
     "hashtagsChips": hashtagsChips_es,
     "idioma": idioma_es,
     "landing": landing_es,
-    "landingApp": landingApp_es,
     "landingFunciones": landingFunciones_es,
     "landingImagen": landingImagen_es,
     "landingMaquetaTelefono": landingMaquetaTelefono_es,
@@ -283,11 +370,15 @@ export const mensajes = {
     "montajeTexto": montajeTexto_es,
     "montajeVoz": montajeVoz_es,
     "montajeWizard": montajeWizard_es,
+    "numeracion": numeracion_es,
     "onboarding": onboarding_es,
     "panel": panel_es,
     "panelSubirClip": panelSubirClip_es,
     "perfil": perfil_es,
+    "pestanasEpisodios": pestanasEpisodios_es,
     "plan": plan_es,
+    "portadaMarca": portadaMarca_es,
+    "primerosPasos": primerosPasos_es,
     "proveedorPublicacion": proveedorPublicacion_es,
     "prueba": prueba_es,
     "publicados": publicados_es,
@@ -307,21 +398,31 @@ export const mensajes = {
     "renombrarMarca": renombrarMarca_es,
     "requisitosPassword": requisitosPassword_es,
     "revision": revision_es,
+    "revisionClip": revisionClip_es,
     "revisionTarjeta": revisionTarjeta_es,
     "revisionVideoCard": revisionVideoCard_es,
     "superadmin": superadmin_es,
+    "variosClips": variosClips_es,
     "versionFacebook": versionFacebook_es,
   },
   en: {
     "adminSuscripciones": adminSuscripciones_en,
+    "ajustesMarca": ajustesMarca_en,
     "ajustesPublicacion": ajustesPublicacion_en,
     "analisis": analisis_en,
     "analisisBarras": analisisBarras_en,
     "avisoFuente": avisoFuente_en,
+    "avisosPortada": avisosPortada_en,
+    "ayuda": ayuda_en,
+    "ayudaPantallas": ayudaPantallas_en,
     "bibliotecaSonidos": bibliotecaSonidos_en,
     "brandKit": brandKit_en,
     "calendario": calendario_en,
     "calidadClip": calidadClip_en,
+    "chatSoporte": chatSoporte_en,
+    "clipsSubidos": clipsSubidos_en,
+    "conectar": conectar_en,
+    "contenido": contenido_en,
     "creators": creators_en,
     "editorAudio": editorAudio_en,
     "editorAutoEncuadre": editorAutoEncuadre_en,
@@ -334,9 +435,11 @@ export const mensajes = {
     "editorImagenes": editorImagenes_en,
     "editorInspector": editorInspector_en,
     "editorListo": editorListo_en,
+    "editorPortada": editorPortada_en,
     "editorRecorte": editorRecorte_en,
     "editorTextos": editorTextos_en,
     "editorTomar": editorTomar_en,
+    "editorVideos": editorVideos_en,
     "episodioDetalle": episodioDetalle_en,
     "episodioReimportar": episodioReimportar_en,
     "episodios": episodios_en,
@@ -348,11 +451,26 @@ export const mensajes = {
     "estilosInterfaz": estilosInterfaz_en,
     "estilosNombres": estilosNombres_en,
     "estilosTema": estilosTema_en,
+    "etiquetas": etiquetas_en,
+    "featuresApp": featuresApp_en,
+    "featuresAudio": featuresAudio_en,
+    "featuresCalidad": featuresCalidad_en,
+    "featuresEdicion": featuresEdicion_en,
+    "featuresEquipo": featuresEquipo_en,
+    "featuresEtiquetas": featuresEtiquetas_en,
+    "featuresIa": featuresIa_en,
+    "featuresImagenes": featuresImagenes_en,
+    "featuresImportar": featuresImportar_en,
+    "featuresMarca": featuresMarca_en,
+    "featuresMetricas": featuresMetricas_en,
+    "featuresPublicar": featuresPublicar_en,
+    "featuresRevision": featuresRevision_en,
+    "featuresSubirClips": featuresSubirClips_en,
+    "featuresTextos": featuresTextos_en,
     "grabar": grabar_en,
     "hashtagsChips": hashtagsChips_en,
     "idioma": idioma_en,
     "landing": landing_en,
-    "landingApp": landingApp_en,
     "landingFunciones": landingFunciones_en,
     "landingImagen": landingImagen_en,
     "landingMaquetaTelefono": landingMaquetaTelefono_en,
@@ -388,11 +506,15 @@ export const mensajes = {
     "montajeTexto": montajeTexto_en,
     "montajeVoz": montajeVoz_en,
     "montajeWizard": montajeWizard_en,
+    "numeracion": numeracion_en,
     "onboarding": onboarding_en,
     "panel": panel_en,
     "panelSubirClip": panelSubirClip_en,
     "perfil": perfil_en,
+    "pestanasEpisodios": pestanasEpisodios_en,
     "plan": plan_en,
+    "portadaMarca": portadaMarca_en,
+    "primerosPasos": primerosPasos_en,
     "proveedorPublicacion": proveedorPublicacion_en,
     "prueba": prueba_en,
     "publicados": publicados_en,
@@ -412,9 +534,11 @@ export const mensajes = {
     "renombrarMarca": renombrarMarca_en,
     "requisitosPassword": requisitosPassword_en,
     "revision": revision_en,
+    "revisionClip": revisionClip_en,
     "revisionTarjeta": revisionTarjeta_en,
     "revisionVideoCard": revisionVideoCard_en,
     "superadmin": superadmin_en,
+    "variosClips": variosClips_en,
     "versionFacebook": versionFacebook_en,
   },
 };

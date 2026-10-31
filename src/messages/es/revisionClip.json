@@ -1,0 +1,102 @@
+{
+  "etiquetas": {
+    "porRevisar": "Por revisar",
+    "cambiosPedidos": "Cambios pedidos",
+    "vencida": "Vencido, sin revisar",
+    "salioSinRevisar": "Salió sin revisar"
+  },
+  "ajustes": {
+    "titulo": "Revisión antes de publicar",
+    "descripcion": "Con la revisión activa, lo que programa un editor no sale hasta que un revisor de {marca} lo apruebe. Lo que programa un revisor queda aprobado solo.",
+    "activa": "Revisar los clips antes de que salgan",
+    "alVencer": "Si llega la hora y nadie lo revisó",
+    "noPublicar": "No publicar",
+    "noPublicarAyuda": "Queda «Vencido, sin revisar» hasta que alguien lo apruebe.",
+    "publicarIgual": "Publicar igual",
+    "publicarIgualAyuda": "Sale a su hora y queda marcado «Salió sin revisar». Lo que tiene cambios pedidos no sale.",
+    "guardar": "Guardar",
+    "guardando": "Guardando…",
+    "guardado": "Guardado",
+    "errorGuardar": "No se pudo guardar",
+    "soloPropietario": "Esto lo cambia el propietario de la marca.",
+    "revisores": "Quiénes revisan",
+    "revisoresAyuda": "El propietario y quien tiene el rol Revisor revisan siempre. Para el cliente que solo aprueba, invitalo como Revisor. Si un editor también aprueba, marcalo con «Revisa».",
+    "chequeo": {
+      "revisan": "{n, plural, one {Revisa: {nombres}} other {Revisan ({n}): {nombres}}}",
+      "soloPropietario": "Por ahora solo revisa el propietario: todo lo que programe el equipo le va a llegar a esa persona, y si no lo aprueba a tiempo no sale. Para repartirlo, invitá a alguien como Revisor o marcá a un editor con «Revisa».",
+      "sinEditores": "Todos los que programan clips son revisores, y lo que programa un revisor queda aprobado solo: la revisión no va a frenar nada hasta que haya un editor que no revise.",
+      "marcarRevisores": "Marcar revisores en el equipo ↓"
+    }
+  },
+  "equipo": {
+    "revisa": "Revisa",
+    "revisaSiempre": "Revisa siempre",
+    "revisorDe": "Revisor: {nombre}"
+  },
+  "programar": {
+    "aviso": "La marca revisa los clips antes de publicarlos: esto va a quedar «Por revisar» hasta que un revisor lo apruebe.",
+    "avisoRevisor": "Sos revisor: lo que programes queda aprobado."
+  },
+  "panel": {
+    "titulo": "Revisión",
+    "estado": {
+      "PENDIENTE": "Esperando revisión",
+      "APROBADA": "Aprobado",
+      "CAMBIOS_PEDIDOS": "Cambios pedidos"
+    },
+    "sinRevision": "Este clip todavía no se mandó a revisar. Se manda solo al programarlo.",
+    "mandarARevisar": "Mandar a revisar",
+    "mandarDeNuevo": "Mandar de nuevo a revisar",
+    "aprobar": "Aprobar",
+    "aprobando": "Aprobando…",
+    "pedirCambios": "Pedir cambios",
+    "pidiendo": "Mandando…",
+    "comentar": "Comentar",
+    "comentando": "Mandando…",
+    "placeholder": "Qué hay que cambiar, o un comentario",
+    "faltaComentario": "Escribí o grabá qué hay que cambiar.",
+    "vencidas": "{n, plural, one {Una publicación se venció} other {# publicaciones se vencieron}} esperando la revisión. Al aprobar:",
+    "publicarYa": "Publicar ya",
+    "otraHora": "Elegir otra hora",
+    "horaPasada": "Elegí una hora que no haya pasado.",
+    "aprobado": "Aprobado: sale a su hora.",
+    "cambiosMandados": "Listo: le avisamos a {nombre}.",
+    "mandadoARevisar": "Listo: les avisamos a los revisores.",
+    "error": "No se pudo",
+    "noSoyRevisor": "Solo los revisores de la marca aprueban o piden cambios.",
+    "verVideo": "Ver el video",
+    "acciones": {
+      "PEDIDA": "lo mandó a revisar",
+      "APROBADA": "lo aprobó",
+      "CAMBIOS_PEDIDOS": "pidió cambios",
+      "COMENTARIO": "comentó"
+    },
+    "transcripcion": "Transcripción",
+    "transcripcionAyuda": "Corregila si hace falta: es lo que lee quien no puede escuchar el audio.",
+    "sinRevisionCorto": "Todavía no se mandó a revisar: se manda solo al programarlo.",
+    "vencidasCorto": "{n, plural, one {Una publicación se venció} other {# publicaciones se vencieron}} esperando la revisión",
+    "notaDeVoz": "nota de voz",
+    "revisar": "Revisar",
+    "verCambios": "Ver los cambios",
+    "abrir": "Abrir",
+    "abrirN": "{n, plural, one {Ver # comentario} other {Ver # comentarios}}",
+    "cerrar": "Cerrar"
+  },
+  "voz": {
+    "grabar": "Grabar voz",
+    "parar": "Parar",
+    "grabando": "Grabando {seg}",
+    "subiendo": "Subiendo…",
+    "quitar": "Quitar",
+    "sinMicrofono": "No se pudo usar el micrófono",
+    "sinTranscripcion": "No se pudo transcribir: se manda el audio igual."
+  },
+  "lista": {
+    "titulo": "Por revisar",
+    "vacia": "Nada para revisar.",
+    "pidio": "{nombre} · {cuando}",
+    "abrir": "Revisar",
+    "cargando": "…"
+  },
+  "filtro": "Por revisar"
+}

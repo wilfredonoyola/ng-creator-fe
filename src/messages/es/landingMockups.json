@@ -1,14 +1,32 @@
 {
-  "comun": { "cliente": "Cliente {letra}", "dias": { "lun": "Lun", "mar": "Mar", "mie": "Mié", "jue": "Jue", "vie": "Vie" } },
+  "comun": {
+    "cliente": "Cliente {letra}",
+    "dias": {
+      "lun": "Lun",
+      "mar": "Mar",
+      "mie": "Mié",
+      "jue": "Jue",
+      "vie": "Vie"
+    }
+  },
   "ia": {
     "alt": "Vista de Clipfine: un episodio horizontal con los momentos marcados en su línea de tiempo y, debajo, la lista de clips sugeridos con su puntaje de 0 a 100, su título y el motivo por el que funciona.",
     "episodio": "episodio 16:9",
     "sugeridos": "12 clips sugeridos",
     "puntaje": "puntaje",
     "clips": {
-      "c1": { "titulo": "El error que casi nos cuesta el negocio", "porque": "Gancho fuerte" },
-      "c2": { "titulo": "Nadie habla de esta parte", "porque": "Opinión polémica" },
-      "c3": { "titulo": "La frase que repetimos en cada reunión", "porque": "Frase citable" }
+      "c1": {
+        "titulo": "El error que casi nos cuesta el negocio",
+        "porque": "Gancho fuerte"
+      },
+      "c2": {
+        "titulo": "Nadie habla de esta parte",
+        "porque": "Opinión polémica"
+      },
+      "c3": {
+        "titulo": "La frase que repetimos en cada reunión",
+        "porque": "Frase citable"
+      }
     }
   },
   "edicion": {
@@ -17,7 +35,12 @@
     "habla": "habla",
     "formato": "Formato",
     "diseno": "Diseño",
-    "disenos": { "uno": "Uno", "dividido": "Dividido", "horizontal": "Horizontal", "centrado": "Centrado" },
+    "disenos": {
+      "uno": "Uno",
+      "dividido": "Dividido",
+      "horizontal": "Horizontal",
+      "centrado": "Centrado"
+    },
     "tramo": "Tramo",
     "corte": "corte",
     "silencios": "Quitar silencios"
@@ -29,7 +52,13 @@
     "sub2": "entendí",
     "sub3": "todo",
     "estilo": "Estilo de subtítulos",
-    "estilos": { "pop": "Pop", "karaoke": "Karaoke", "bestia": "Bestia", "editorial": "Editorial", "keynote": "Keynote" },
+    "estilos": {
+      "pop": "Pop",
+      "karaoke": "Karaoke",
+      "bestia": "Bestia",
+      "editorial": "Editorial",
+      "keynote": "Keynote"
+    },
     "corregir": "Corregir palabra",
     "cta": "Llamada a la acción",
     "ctaTexto": "Mirá el episodio completo"
@@ -65,6 +94,18 @@
     "corta": "versión corta",
     "descargar": "Descargar MP4"
   },
+  "audio": {
+    "alt": "El panel de audio del editor: la voz al 175 %, una pista de música libre de derechos al 25 % con la opción de bajarla cuando hablan, y la línea de tiempo con la voz, la música y tres efectos de sonido.",
+    "voz": "Voz",
+    "musica": "Música",
+    "pista": "Alegre 03",
+    "libre": "Libre de derechos",
+    "bajar": "Bajar cuando hablan",
+    "pistaVoz": "Voz",
+    "pistaMusica": "Música",
+    "pistaEfectos": "Efectos",
+    "vista": "Se escucha en la vista previa, sin exportar"
+  },
   "importar": {
     "alt": "Las dos formas de traer un episodio: una zona para soltar el video desde la computadora y la grabación de un live trayéndose desde Restream con su barra de progreso.",
     "soltar": "Soltá el video del episodio",
@@ -75,6 +116,23 @@
     "live": "Live del martes",
     "trayendo": "Trayendo… 64%",
     "siguiente": "Después: transcripción y momentos"
+  },
+  "clipsSubidos": {
+    "alt": "Subir clips: una zona para soltar videos de CapCut y tres clips verticales listos, programados y publicados.",
+    "soltar": "Soltá tus clips de CapCut acá",
+    "acepta": "MP4 o MOV · hasta 5 min · varios a la vez",
+    "etapas": {
+      "listo": "Listo",
+      "programado": "Programado",
+      "publicado": "Publicado"
+    },
+    "clips": {
+      "c1": "reel-promo.mov",
+      "c2": "tip-semana.mp4",
+      "c3": "detras-escena.mp4"
+    },
+    "sale": "Sale en",
+    "programar": "Programar"
   },
   "publicar": {
     "alt": "Programar un clip: TikTok, YouTube Shorts, Instagram Reels y Facebook encendidos, la descripción con sus hashtags y un calendario de la semana con clips programados y publicados.",
@@ -87,10 +145,28 @@
     "publicada": "publicada",
     "programar": "Programar"
   },
+  "revision": {
+    "alt": "Un clip marcado «Por revisar», con la nota de voz del cliente y su transcripción, y los botones para pedir cambios o aprobar.",
+    "clip": "Clip 07 · Ahí nos cayó la ficha",
+    "sale": "Vie 20:00 · TikTok, Instagram",
+    "porRevisar": "Por revisar",
+    "revision": "Revisión",
+    "revisor": "Cliente A · Revisor",
+    "quien": "Cami pidió cambios",
+    "transcripcion": "El gancho va antes: arrancá en la risa.",
+    "grabar": "Mantener para grabar",
+    "pedirCambios": "Pedir cambios",
+    "aprobar": "Aprobar"
+  },
   "equipo": {
-    "alt": "El equipo de una marca: el selector de marcas, las personas con su rol de propietario, editor o lector, una invitación por correo y un clip que muestra quién lo editó y quién lo terminó.",
+    "alt": "El equipo de una marca: el selector de marcas, las personas con su rol de propietario, editor, revisor o lector, una invitación por correo y un clip que muestra quién lo editó y quién lo terminó.",
     "equipo": "Equipo",
-    "roles": { "propietario": "Propietario", "editor": "Editor", "lector": "Lector" },
+    "roles": {
+      "propietario": "Propietario",
+      "editor": "Editor",
+      "revisor": "Revisor",
+      "lector": "Lector"
+    },
     "invitada": "invitada",
     "invitar": "+ Invitar",
     "clip": "Clip 03 · Nadie habla de esta parte",
@@ -98,13 +174,34 @@
     "autoria": "Editado por Ana · terminado por Leo"
   },
   "app": {
-    "alt": "La app de Clipfine en un teléfono, con la lista de clips de una marca y su estado, un aviso del equipo y el selector de idioma en español e inglés.",
+    "alt": "La app de Clipfine en un teléfono, con la lista de clips de una marca y su estado y un aviso del equipo; al lado, la misma cuenta sincronizada con la web, disponible en iPhone y Android.",
     "clips": "Clips",
-    "estados": { "listo": "Listo", "programado": "Programado", "editando": "Editando" },
-    "titulos": { "c1": "El error que casi nos cuesta…", "c2": "Nadie habla de esta parte", "c3": "La frase de cada reunión" },
-    "nav": { "inicio": "Inicio", "clips": "Clips", "calendario": "Calendario" },
+    "estados": {
+      "listo": "Listo",
+      "programado": "Programado",
+      "editando": "Editando"
+    },
+    "titulos": {
+      "c1": "El error que casi nos cuesta…",
+      "c2": "Nadie habla de esta parte",
+      "c3": "La frase de cada reunión"
+    },
+    "nav": {
+      "inicio": "Inicio",
+      "clips": "Clips",
+      "calendario": "Calendario"
+    },
     "aviso": "Leo programó un clip para el jueves",
-    "idioma": "Idioma",
-    "fotos": "Guardar en Fotos"
+    "fotos": "Guardar en Fotos",
+    "sincro": "Sincronizado con la web",
+    "plataformas": "Próximamente en"
+  },
+  "etiquetas": {
+    "alt": "La descripción de un clip con la mención @Ana Radio resaltada, la lista para elegir a quién mencionar y cómo sale en cada red: etiqueta en Instagram y su usuario en TikTok, YouTube y Facebook.",
+    "descripcion": "Descripción",
+    "texto": "Hoy con",
+    "textoFin": "hablamos de radio",
+    "etiqueta": "etiqueta",
+    "verificada": "Cuentas verificadas"
   }
 }

@@ -16,9 +16,11 @@ import {
   type ControlReproductor,
 } from "@/components/ReproductorEpisodio";
 import { useMarcaActiva } from "@/lib/marca-activa";
+import { InvitadosEpisodio } from "@/components/etiquetas/InvitadosEpisodio";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ReimportarDeRestream, reimportando } from "@/components/episodios/ReimportarDeRestream";
 import { CrearClipGuiado } from "@/components/episodios/CrearClipGuiado";
+import { VariosClips } from "@/components/episodios/VariosClips";
 import { TomarClip, type Autoria } from "@/components/episodios/TomarClip";
 import {
   EstadoPublicacionClip,
@@ -26,6 +28,9 @@ import {
   type ResumenPublicacionClip,
 } from "@/components/episodios/ListoClip";
 import { useSesion } from "@/lib/sesion";
+import { sePuedeBorrar, useBorrarClip } from "@/components/episodios/useBorrarClip";
+import { EtiquetaRevision } from "@/components/revision/EtiquetaRevision";
+import { etiquetaDeClip, type EstadoRevision } from "@/lib/revision";
 
 type EstadoMomentos = "EN_COLA" | "ANALIZANDO" | "LISTO" | "FALLIDO";
 
@@ -51,6 +56,8 @@ interface Clip {
   /** Quién lo dio por terminado (#70); null = en trabajo. */
   listoPor?: Autoria | null;
   publicacion?: ResumenPublicacionClip | null;
+  /** La revisión antes de publicar (ng-creator-be#175); null = nunca se mandó. */
+  estadoRevision?: EstadoRevision | null;
 }
 
 
@@ -69,6 +76,7 @@ export default function DetalleEpisodioPage({
   params: { id: string };
 }) {
   const t = useTranslations("episodioDetalle");
+  const tv = useTranslations("variosClips");
   const locale = useLocale();
   const { id } = params;
   const { activa } = useMarcaActiva();
@@ -79,6 +87,8 @@ export default function DetalleEpisodioPage({
   const [sonando, setSonando] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [creandoClip, setCreandoClip] = useState(false);
+  const [variosClips, setVariosClips] = useState(false);
+  const [creados, setCreados] = useState<number | null>(null);
 
   const variables = { id, marcaId: marcaId ?? "" };
   const episodioQ = useQuery(EPISODIO, { variables, skip: !marcaId, errorPolicy: "all" });
@@ -87,6 +97,30 @@ export default function DetalleEpisodioPage({
 
   const ep = episodioQ.data?.episodio;
   const clips: Clip[] = clipsQ.data?.clipsDeEpisodio ?? [];
+  const deIa = clips.filter((c) => c.origen !== "MANUAL");
+  const manuales = clips.filter((c) => c.origen === "MANUAL");
+  // La pestaña elegida se recuerda por episodio: al volver del editor de un
+  // clip hecho a mano, se vuelve a "Manuales" y no a la lista de la IA.
+  const clavePestana = `clips-pestana:${id}`;
+  const [pestanaElegida, setPestanaElegida] = useState<"ia" | "manuales" | null>(() => {
+    try {
+      const v = sessionStorage.getItem(clavePestana);
+      return v === "ia" || v === "manuales" ? v : null;
+    } catch {
+      return null;
+    }
+  });
+  // Sin elegir: la de la IA, salvo que no tenga clips y haya manuales.
+  const pestana = pestanaElegida ?? (deIa.length === 0 && manuales.length > 0 ? "manuales" : "ia");
+  const elegirPestana = (p: "ia" | "manuales") => {
+    setPestanaElegida(p);
+    try {
+      sessionStorage.setItem(clavePestana, p);
+    } catch {
+      // Sin almacenamiento (privado): la pestaña vale mientras esté abierta la página.
+    }
+  };
+  const visibles = pestana === "manuales" ? manuales : deIa;
   const estado: EstadoMomentos | null = ep?.estadoMomentos ?? null;
   const trabajando =
     estado === "EN_COLA" ||
@@ -215,21 +249,56 @@ export default function DetalleEpisodioPage({
               onLanzada={() => void episodioQ.refetch()}
             />
           )}
+          {marcaId && <InvitadosEpisodio episodioId={id} marcaId={marcaId} opera={opera} />}
         </div>
 
         <div>
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 id="clips" className="scroll-mt-6 text-sm font-semibold uppercase tracking-wide text-white/50">{t("clips")}</h2>
-            {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && (
-              <button
-                onClick={() => setCreandoClip(true)}
-                title={t("crearClipAyuda")}
-                className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
-              >
-                {t("crearClip")}
-              </button>
+            {opera && ep.estadoTranscripcion === "LISTA" && !creandoClip && !variosClips && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setVariosClips(true);
+                    setCreados(null);
+                  }}
+                  title={t("variosClipsAyuda")}
+                  className="rounded-lg border border-ng-violeta/60 px-3 py-1 text-xs font-medium text-white hover:bg-ng-violeta/10"
+                >
+                  {t("variosClips")}
+                </button>
+                <button
+                  onClick={() => setCreandoClip(true)}
+                  title={t("crearClipAyuda")}
+                  className="rounded-lg bg-ng-violeta px-3 py-1 text-xs font-medium text-ng-tinta hover:brightness-110"
+                >
+                  {t("crearClip")}
+                </button>
+              </div>
             )}
           </div>
+          {variosClips && marcaId && (
+            <div className="mb-4">
+              <VariosClips
+                episodioId={id}
+                marcaId={marcaId}
+                duracionEpisodio={ep.duracionSeg ?? 0}
+                reproductor={reproductor}
+                onCerrar={() => setVariosClips(false)}
+                onCreados={(n) => {
+                  setVariosClips(false);
+                  setCreados(n);
+                  elegirPestana("manuales");
+                  void clipsQ.refetch();
+                }}
+              />
+            </div>
+          )}
+          {creados !== null && (
+            <p className="mb-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-200">
+              {tv("creados", { n: creados })}
+            </p>
+          )}
           {creandoClip && marcaId && (
             <div className="mb-4">
               <CrearClipGuiado
@@ -241,10 +310,39 @@ export default function DetalleEpisodioPage({
               />
             </div>
           )}
-          <EstadoDelAnalisis ep={ep} />
           {clips.length > 0 && (
+            <div role="tablist" aria-label={t("pestanas.etiqueta")} className="mb-3 flex gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-1">
+              {(
+                [
+                  ["ia", t("pestanas.ia"), deIa.length],
+                  ["manuales", t("pestanas.manuales"), manuales.length],
+                ] as const
+              ).map(([clave, nombre, n]) => (
+                <button
+                  key={clave}
+                  type="button"
+                  role="tab"
+                  aria-selected={pestana === clave}
+                  onClick={() => elegirPestana(clave)}
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition ${
+                    pestana === clave ? "bg-white/10 font-semibold text-white" : "text-white/55 hover:text-white/80"
+                  }`}
+                >
+                  {nombre}
+                  <span className={`rounded-full px-1.5 text-[11px] ${pestana === clave ? "bg-white/15" : "bg-white/5"}`}>{n}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          {pestana === "ia" && <EstadoDelAnalisis ep={ep} />}
+          {pestana === "manuales" && manuales.length === 0 && (
+            <p className="mb-3 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm text-white/50">
+              {t(opera ? "pestanas.sinManuales" : "pestanas.sinManualesSoloVer")}
+            </p>
+          )}
+          {visibles.length > 0 && (
             <ol className="space-y-3">
-              {clips.map((c, i) => (
+              {visibles.map((c, i) => (
                 <TarjetaClip
                   key={c._id}
                   editar={`/episodios/${id}/clips/${c._id}`}
@@ -336,6 +434,9 @@ function TarjetaClip({
   const [verTexto, setVerTexto] = useState(false);
   const [viendoFinal, setViendoFinal] = useState(false);
   const tieneVideo = clip.estadoRender === "LISTO" && Boolean(clip.urlVideo);
+  // Solo uno hecho a mano y sin publicar (be#223); lo programado se cancela con él.
+  const tb = useTranslations("editorBarra.borrar");
+  const borrador = useBorrarClip(marcaId);
   return (
     <li
       className={`rounded-xl border p-3 transition ${
@@ -359,6 +460,7 @@ function TarjetaClip({
               <span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] text-sky-300">{t("tarjeta.renderizando")}</span>
             )}
             <EstadoPublicacionClip publicacion={clip.publicacion} />
+            <EtiquetaRevision etiqueta={etiquetaDeClip(clip.estadoRevision)} />
           </div>
           <p className="mt-0.5 text-xs tabular-nums text-white/45">
             {t("tarjeta.tramo", {
@@ -394,6 +496,7 @@ function TarjetaClip({
             {verTexto ? t("tarjeta.ocultarTexto") : t("tarjeta.verTexto")}
           </button>
           {verTexto && <p className="mt-1 text-sm leading-relaxed text-white/60">{clip.texto}</p>}
+          {borrador.error && <p className="mt-2 text-xs text-red-400">{borrador.error}</p>}
         </div>
         <div className="flex shrink-0 flex-col gap-1.5">
         <Link
@@ -427,6 +530,15 @@ function TarjetaClip({
             {t("tarjeta.programar")}
           </Link>
         )}
+        {/* Un revisor que no opera (el cliente de la agencia) llega a la revisión por acá. */}
+        {!opera && clip.estadoRevision && (
+          <Link
+            href={`${editar}/publicar#revision`}
+            className="rounded-lg border border-amber-400/40 px-3 py-1.5 text-center text-xs text-amber-200 hover:bg-amber-400/10"
+          >
+            {t("tarjeta.revisar")}
+          </Link>
+        )}
         {puedeReproducir && (
           <button
             onClick={onReproducir}
@@ -434,6 +546,17 @@ function TarjetaClip({
             className="shrink-0 rounded-lg bg-marca px-3 py-1.5 text-xs font-medium text-ng-tinta"
           >
             {t("tarjeta.escuchar")}
+          </button>
+        )}
+        {sePuedeBorrar(clip, opera) && (
+          <button
+            type="button"
+            onClick={() => void borrador.borrar(clip)}
+            disabled={borrador.borrando}
+            title={tb("ayuda")}
+            className="rounded-lg border border-red-400/30 px-3 py-1.5 text-center text-xs text-red-300 hover:bg-red-400/10 disabled:opacity-50"
+          >
+            {borrador.borrando ? tb("borrando") : tb("boton")}
           </button>
         )}
         </div>

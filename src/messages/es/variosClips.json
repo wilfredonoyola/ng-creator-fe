@@ -1,0 +1,46 @@
+{
+  "titulo": "Varios clips",
+  "cerrar": "Cerrar",
+  "modos": {
+    "ia": "✨ Pedírselo a la IA",
+    "lista": "Pegar los tramos"
+  },
+  "ia": {
+    "pregunta": "¿Qué clips querés sacar de este video? La IA busca los momentos y elegís cuáles crear.",
+    "ejemplo": "Ej.: un clip por cada tema del webinar",
+    "ejemplos": {
+      "porTema": "Un clip por cada tema",
+      "consejos": "Los consejos prácticos",
+      "preguntas": "Las preguntas del público con su respuesta",
+      "frases": "Las frases más fuertes"
+    },
+    "buscar": "Buscar momentos",
+    "buscarOtraVez": "Buscar de nuevo",
+    "buscando": "Buscando momentos…",
+    "tarda": "En un video largo puede tardar hasta un minuto.",
+    "ninguno": "No encontré momentos que cumplan eso. Probá decirlo de otra forma.",
+    "elegir": "Crear «{titulo}»",
+    "yaEsClip": "Ya hay un clip acá"
+  },
+  "lista": {
+    "pregunta": "Un tramo por línea: desde, hasta y, si querés, el título. Sin título, lo pone la IA.",
+    "ejemplo": "0:05:10 - 0:06:20 Cómo fijar precios\n12:40 - 13:55\n1:02:30 a 1:03:40 Preguntas del público",
+    "tituloIa": "título de la IA",
+    "linea": "Línea {n}",
+    "errores": {
+      "formato": "no entiendo los tiempos. Escribilo como 1:02:30 - 1:03:40.",
+      "alReves": "el final tiene que ser después del inicio.",
+      "largo": "un clip puede durar hasta 5 minutos.",
+      "fuera": "empieza después del final del video."
+    },
+    "corregir": "Corregí las líneas en rojo para crear los clips."
+  },
+  "escuchar": "▶ Escuchar",
+  "formato": "Formato",
+  "autoEncuadre": "✨ Auto-encuadre: sigue al que habla",
+  "demasiados": "Hasta {maximo} clips por vez.",
+  "creando": "Creando…",
+  "crear": "{n, plural, one {Crear # clip} other {Crear # clips}}",
+  "errorCrear": "No se pudieron crear los clips",
+  "creados": "{n, plural, one {Listo: # clip nuevo, a tu nombre.} other {Listo: # clips nuevos, a tu nombre.}}"
+}

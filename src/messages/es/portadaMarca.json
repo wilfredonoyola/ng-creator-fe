@@ -1,0 +1,78 @@
+{
+  "titulo": "Portada de marca",
+  "activa": "En las publicaciones nuevas",
+  "ayuda": "Todas las portadas con el mismo diseño: un cuadro limpio del clip, el título y tu logo. Así tu perfil se ve parejo en TikTok, Instagram, YouTube y Facebook.",
+  "estilo": "Estilo del título",
+  "estilos": {
+    "DOS_COLORES": {
+      "nombre": "Dos colores",
+      "detalle": "El primer renglón en blanco y el resto en tu color, con contorno."
+    },
+    "CAJA": {
+      "nombre": "Caja",
+      "detalle": "Cada renglón sobre una caja de tu color."
+    },
+    "LIMPIO": {
+      "nombre": "Limpio",
+      "detalle": "Todo en blanco, sin contorno, con una sombra suave."
+    }
+  },
+  "fuente": "Letra",
+  "mayusculas": "En mayúsculas",
+  "posicion": "Altura del título",
+  "arriba": "Arriba",
+  "centro": "Al centro",
+  "abajo": "Abajo",
+  "tamano": "Tamaño del título",
+  "logo": "Logo",
+  "conLogo": "En la portada",
+  "sinLogo": "Sube el logo de la marca más arriba para que salga en la portada.",
+  "guardar": "Guardar portada",
+  "errorGuardar": "No se pudo guardar la portada.",
+  "vista": {
+    "alt": "Vista previa de la portada",
+    "cargando": "Armando la vista previa",
+    "error": "No se pudo armar la vista previa.",
+    "ayuda": "Así sale, sobre el último clip listo de la marca. El título de cada publicación es el gancho del clip, y se puede cambiar al programar."
+  },
+  "editor": {
+    "texto": "Título de la portada",
+    "textoAyuda": "Vacío: el primer título sugerido (o el gancho). Enter para otro renglón.",
+    "cuadro": "Cuadro",
+    "cuadroEn": "Cuadro en {seg} s",
+    "sinCuadros": "Este clip se exportó antes de la portada de marca: el cuadro trae los textos del clip. Vuelve a exportarlo para elegir entre cuadros limpios.",
+    "sugeridos": "Títulos sugeridos",
+    "otros": "Otros",
+    "otrosAyuda": "Pedir otros títulos a la IA",
+    "mejorCuadro": "Mejor cuadro"
+  },
+  "personalizar": {
+    "boton": "Personalizar esta portada",
+    "editar": "Editar esta portada",
+    "quitar": "Volver al diseño de la marca",
+    "ayuda": "Abre el editor con el diseño de la marca y cambia lo que quieras solo para esta publicación.",
+    "propia": "Esta publicación tiene una portada propia: no cambia si después cambias el diseño de la marca.",
+    "tituloEditor": "Portada de esta publicación",
+    "usar": "Usar esta portada"
+  },
+  "disenoPropio": {
+    "titulo": "Diseño propio",
+    "tituloSimple": "Diseño simple",
+    "ayuda": "La portada estándar de la marca, armada en el editor: el título de cada clip y su cuadro van solos.",
+    "ayudaSimple": "El cuadro, el título y el logo. Con el editor puedes armar uno propio: textos, imágenes, la persona sin fondo, formas.",
+    "editar": "Editar diseño",
+    "volverSimple": "Volver al diseño simple",
+    "confirmarSimple": "¿Volver al diseño simple? Se borra el diseño propio de la marca (las publicaciones con portada propia no cambian).",
+    "tituloEditor": "Portada estándar de la marca",
+    "tituloEjemplo": "Así se ve el título de cada clip",
+    "guardar": "Guardar como estándar"
+  },
+  "perfil": {
+    "titulo": "Así se ve tu perfil",
+    "ayuda": "El diseño sobre tus últimos clips listos, como la cuadrícula de la red.",
+    "ver": "Ver la grilla",
+    "actualizar": "Actualizar",
+    "vacio": "Todavía no hay clips listos para mostrar.",
+    "error": "No se pudo armar la grilla."
+  }
+}

@@ -14,6 +14,7 @@ import {
   IMPORTAR_DE_RESTREAM,
 } from "@/graphql/operations";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { PestanasEpisodios } from "@/components/PestanasEpisodios";
 import { AvisoFuente } from "@/components/episodios/AvisoFuente";
 import { ImportarDeRestream } from "@/components/episodios/ImportarDeRestream";
 import { AvisoPlan, usePlanDeMarca } from "@/components/prueba/AvisoPlan";
@@ -345,6 +346,7 @@ export default function EpisodiosPage() {
 
   return (
     <DashboardLayout>
+      <PestanasEpisodios />
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{t("titulo")}</h1>

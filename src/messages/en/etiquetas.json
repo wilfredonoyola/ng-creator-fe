@@ -1,0 +1,144 @@
+{
+  "pagina": {
+    "titulo": "Tags",
+    "bajada": "The people you tag in {marca}'s clips: add them once, with their username on each network, and mention them with @ when you publish.",
+    "buscar": "Search by name or username…",
+    "tabs": {
+      "ELENCO": "Cast",
+      "GLOBAL": "Global",
+      "EPISODIO": "By episode"
+    },
+    "tabAyuda": {
+      "ELENCO": "The people who are always on: hosts, regulars. They show up first when tagging.",
+      "GLOBAL": "The brand's directory: people who show up now and then and you want at hand.",
+      "EPISODIO": "Each show's guests. One who comes back can be moved to Global and stays in both places."
+    },
+    "vacio": {
+      "ELENCO": "No cast yet. Add the people who are on every show.",
+      "GLOBAL": "Nobody in Global yet. Add people who show up now and then, or move a guest here from their episode."
+    },
+    "sinResultados": "Nobody matches “{buscar}”.",
+    "agregar": "Add person",
+    "soloLectura": "People who operate the brand can change this.",
+    "episodios": {
+      "vacio": "No episodes yet.",
+      "invitados": "{n, plural, =0 {No guests} one {# guest} other {# guests}}",
+      "abrir": "Open episode"
+    },
+    "resumen": "{elenco} in the cast · {global} in Global"
+  },
+  "nivel": {
+    "ELENCO": "Cast",
+    "GLOBAL": "Global",
+    "EPISODIO": "This episode only"
+  },
+  "tarjeta": {
+    "usos": "{n, plural, =0 {Not used yet} one {Tagged in # post} other {Tagged in # posts}}",
+    "acciones": "Actions for {nombre}",
+    "editar": "Edit",
+    "hacerGlobal": "Move to Global",
+    "pasarAElenco": "Move to the cast",
+    "pasarAGlobal": "Remove from the cast (stays in Global)",
+    "reverificar": "Verify again",
+    "borrar": "Delete",
+    "confirmarBorrar": "Delete {nombre}? They'll disappear from Tags and from episodes. What's already published doesn't change.",
+    "sinUsuarios": "No usernames: they won't be tagged anywhere",
+    "verificada": "Verified on {red}",
+    "noEncontrada": "We couldn't find them on {red}: check the username",
+    "sinVerificar": "{red} doesn't let us confirm it: check the profile",
+    "fbSinId": "To invite them as a Facebook collaborator, paste the link with the page number (profile.php?id=…).",
+    "deEpisodio": "Guest of one episode",
+    "noEtiquetable": "{red} won't let us tag them (private, doesn't exist, or doesn't accept tags): they go as an @mention. Fix the username to try again."
+  },
+  "form": {
+    "tituloNueva": "New person",
+    "tituloEditar": "Edit {nombre}",
+    "nombre": "Name",
+    "nombrePlaceholder": "As they're called on the show",
+    "enlace": "Paste a profile link",
+    "enlacePlaceholder": "instagram.com/…, tiktok.com/@…, youtube.com/@…, facebook.com/…",
+    "enlaceDetectado": "Done: {red} @{usuario}",
+    "enlaceNoReconocido": "We don't recognize that link. Type the username for their network below.",
+    "usuarios": "Their usernames",
+    "usuario": {
+      "instagram": "Instagram username",
+      "tiktok": "TikTok username",
+      "youtube": "YouTube channel",
+      "facebook": "Facebook page or profile"
+    },
+    "ayudaUsuarios": "One network is enough. Where they have no username, they're named without @.",
+    "alias": "Also known as",
+    "aliasPlaceholder": "Nicknames or how they're called, comma separated",
+    "aliasAyuda": "Used to suggest them when they're named in a clip.",
+    "nivel": "Where it goes",
+    "tambienGlobal": "Also save to Global",
+    "tambienGlobalAyuda": "To tag them in other episodes without adding them again.",
+    "guardar": "Save",
+    "guardando": "Saving…",
+    "cancelar": "Cancel",
+    "errorGuardar": "Couldn't save."
+  },
+  "verificar": {
+    "verificando": "Looking it up on {red}…",
+    "existe": "Exists: {nombre}",
+    "noExiste": "We couldn't find that account on {red}: check the spelling.",
+    "noExisteOPrivada": "We couldn't find that account on {red} (or it's private): check the spelling.",
+    "instagramPersonal": "Instagram only lets us confirm professional accounts: make sure it exists on the profile.",
+    "facebookSinId": "Facebook doesn't let us confirm it: make sure it exists on the profile.",
+    "sinVerificar": "{red} doesn't let us confirm it from here: make sure it exists on the profile.",
+    "verPerfil": "View profile"
+  },
+  "invitados": {
+    "titulo": "Guests on this episode",
+    "descripcion": "Who came on this show: they're suggested when you publish its clips.",
+    "vacio": "No guests yet.",
+    "nuevo": "New guest",
+    "sumar": "Add from the cast or Global",
+    "quitar": "Remove {nombre} from this episode",
+    "verTodas": "Tags"
+  },
+  "buscador": {
+    "placeholder": "Search person…",
+    "sinResultados": "Nobody matches.",
+    "crear": "Create “{nombre}”"
+  },
+  "menciones": {
+    "ayuda": "Type @ to mention someone: each network gets their username.",
+    "sinResultados": "Nobody matches. Add them in Tags.",
+    "sinRedes": "no usernames",
+    "teclas": "↑↓ to choose · Enter to mention · Esc to close",
+    "lista": "People to mention"
+  },
+  "publicar": {
+    "titulo": "Tag",
+    "sugeridas": "Suggested for this clip",
+    "motivo": {
+      "invitado": "Episode guest",
+      "elenco": "Cast",
+      "mencionado": "Named at {segundo}",
+      "mencionadoSinSegundo": "Named in the clip"
+    },
+    "etiquetadas": "Tagged",
+    "ninguna": "You haven't tagged anyone yet. Tap a suggestion, search, or type @ in the description.",
+    "enTexto": "in the text",
+    "quitar": "Remove {nombre}",
+    "nuevoInvitado": "New guest",
+    "colaboradorIg": "Instagram collaborator",
+    "colaboradorIgAyuda": "The Reel also shows on their profile if they accept the invitation. Up to {max}.",
+    "maximoColaboradores": "Instagram allows up to {max} collaborators.",
+    "colaboradorFb": "Facebook collaborator",
+    "colaboradorFbAyuda": "Pages only, not personal profiles. The page gets the invitation and, if it accepts, the Reel also shows on it. Up to {max}.",
+    "maximoColaboradoresFb": "Facebook allows up to {max} collaborating pages.",
+    "maximoEtiquetas": "Instagram allows up to {max} tags: the rest aren't tagged there.",
+    "comoSale": "Instagram: tagged on the Reel and @username in the text. TikTok, YouTube and Facebook: @username (or their name, if they have no username there).",
+    "verTodas": "Manage in Tags",
+    "verPerfil": "View profile",
+    "verPerfilEn": "View @{usuario} on {red}",
+    "noEtiquetableIg": "Instagram won't let us tag them: they go as an @mention in the text. Check the username in Tags."
+  },
+  "enRedes": {
+    "titulo": "People to tag",
+    "texto": "The cast, the Global directory and each episode's guests now live in Tags.",
+    "ir": "Go to Tags"
+  }
+}

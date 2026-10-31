@@ -1,0 +1,16 @@
+{
+  "titulo": "Revisión de la portada",
+  "revisando": "Revisando…",
+  "todoBien": "Se ve bien en la grilla del perfil.",
+  "bloquea": "Arregla lo marcado en rojo para programar con la portada de marca.",
+  "verCapa": "Tocar para elegir esa capa",
+  "codigos": {
+    "TITULO_VACIO": "El título quedó vacío: escribe uno o elige uno sugerido.",
+    "TITULO_FUERA_GRILLA": "El título sale de la zona que se ve en la grilla del perfil: acércalo al centro.",
+    "TEXTO_FUERA_GRILLA": "Un texto sale de la zona que se ve en la grilla del perfil.",
+    "LOGO_FUERA_GRILLA": "El logo queda fuera de la zona de la grilla: en el perfil no se ve.",
+    "TITULO_LARGO": "El título es largo: más de dos renglones u 8 palabras no se leen en una miniatura.",
+    "CARA_CHICA": "La cara queda chica: prueba otro cuadro o «Centrar en la cara» en el diseño.",
+    "SIN_CARA": "No se ve ninguna cara en este cuadro: prueba otro."
+  }
+}

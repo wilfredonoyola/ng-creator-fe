@@ -1,0 +1,100 @@
+{
+  "seo": {
+    "titulo": "Upload clips edited in CapCut and post them | Clipfine",
+    "descripcion": "Upload the reels and clips your agency already edited in CapCut or Premiere and schedule them to TikTok, Reels, Shorts and Facebook, with client approval and metrics. They don't use hours."
+  },
+  "titulo": "Already edited in CapCut?",
+  "destacado": "Upload it and post it",
+  "bajada": "Not everything comes from a long episode. Reels, tips or cuts your team already edited elsewhere come into Clipfine and follow the same path as every other clip: scheduled across four networks, approved by the client and measured.",
+  "datos": {
+    "d1": {
+      "cifra": "5 min",
+      "que": "per clip, MP4 or MOV, several at once"
+    },
+    "d2": {
+      "cifra": "0 hours",
+      "que": "from your plan: uploaded clips don't count"
+    },
+    "d3": {
+      "cifra": "4 networks",
+      "que": "TikTok, Instagram, YouTube and Facebook"
+    }
+  },
+  "agencia": {
+    "soltarVarios": "Your editor exports the week's batch and uploads it at once, without loading clip by clip.",
+    "talCual": "Your editor's work reaches the networks as delivered, with no quality lost along the way.",
+    "retocar": "An old clip gets reused with the client's captions and template in a minute.",
+    "programarSubido": "The client's week is complete in one calendar, wherever the clip came from.",
+    "revisarSubido": "The client approves everything in one place, without emails with attachments.",
+    "medirSubido": "Compare hand-edited content with clips from episodes and know where to invest.",
+    "sinHoras": "Add all the edited content you want without paying for a bigger plan.",
+    "desdeCelular": "If the clip is on the community manager's phone, upload it from there."
+  },
+  "vistas": {
+    "soltarVarios": {
+      "soltar": "Drop your clips",
+      "a1": "monday-reel.mov",
+      "a2": "weekly-tip.mp4"
+    },
+    "talCual": {
+      "exportado": "Exported",
+      "publicado": "Published"
+    },
+    "retocar": {
+      "subtitulos": "Captions",
+      "plantilla": "Template",
+      "gancho": "Hook",
+      "pie": "Open in the editor"
+    },
+    "programarSubido": {
+      "lun": "Mon",
+      "mar": "Tue",
+      "mie": "Wed",
+      "jue": "Thu",
+      "vie": "Fri",
+      "pie": "Uploaded and episode clips, together"
+    },
+    "revisarSubido": {
+      "clip": "promo-reel.mov",
+      "cliente": "Client A",
+      "porRevisar": "To review",
+      "cambios": "Request changes",
+      "aprobar": "Approve"
+    },
+    "medirSubido": {
+      "vistas": "views",
+      "retencion": "retention",
+      "pie": "Per clip and per network"
+    },
+    "sinHoras": {
+      "plan": "Plan hours",
+      "subidos": "Uploaded clips"
+    },
+    "desdeCelular": {
+      "galeria": "Gallery",
+      "subir": "Upload 2"
+    }
+  },
+  "preguntas": {
+    "p1": {
+      "p": "Which clips can I upload?",
+      "r": "Any edited video: what you made in CapCut, Premiere or on your phone, or a YouTube cut. MP4 or MOV up to 5 minutes, several at once."
+    },
+    "p2": {
+      "p": "Does it lose quality?",
+      "r": "Not beyond what's needed. If the video is already H.264, it's posted as is, without recompressing. If it comes in another format, like iPhone HEVC, it's converted once at high quality."
+    },
+    "p3": {
+      "p": "Does it use my plan's hours?",
+      "r": "No. Hours are for episodes Clipfine transcribes and cuts. Clips you upload already edited don't count."
+    },
+    "p4": {
+      "p": "Can I edit it after uploading?",
+      "r": "Yes. Open it in the editor and add captions, the client's template, a hook or music. If you don't touch it, it goes out as is."
+    },
+    "p5": {
+      "p": "Where do I find it in Clipfine?",
+      "r": "On the web, in Posts → Upload clips. In the app, in Projects → Uploaded clips."
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "titulo": "Primeros pasos",
+  "progreso": "Primeros pasos: {hechos} de {total}",
+  "opcional": "opcional",
+  "pasos": {
+    "marca": "Crear la marca",
+    "configurar": "Configurar la marca",
+    "episodio": "Subir tu primer episodio",
+    "redes": "Conectar tus redes"
+  },
+  "siguiente": {
+    "marca": "Crear la marca",
+    "configurar": "Configurar la marca →",
+    "episodio": "Subir mi primer episodio →",
+    "redes": "Conectar mis redes →"
+  }
+}

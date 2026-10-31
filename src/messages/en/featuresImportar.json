@@ -1,0 +1,30 @@
+{
+  "seo": {
+    "titulo": "Upload your clients' podcasts, lives and clips | Clipfine",
+    "descripcion": "Upload the episode, bring in the Restream live or upload clips already edited in CapCut. Everything joins the same review and publishing flow. For agencies."
+  },
+  "titulo": "The client's episode goes in",
+  "destacado": "and you move on to something else",
+  "bajada": "Upload the podcast video or bring in the live recording from Restream. Clipfine transcribes it on its own and lets you know when the clips are ready. And if the clip is already edited, you upload it as it is and it goes straight to publishing.",
+  "datos": {
+    "d1": { "cifra": "3 ways in", "que": "upload the episode, bring in the live or upload edited clips" },
+    "d2": { "cifra": "MP4 · MOV · MKV", "que": "the video as the client recorded it" },
+    "d3": { "cifra": "1 Restream", "que": "connected per client, no shared accounts" }
+  },
+  "agencia": {
+    "subir": "Nobody on your team transcribes or hunts for moments by hand. The episode goes in and the work starts on its own.",
+    "restream": "The client's live turns into clips the same day, without downloading hours-long files.",
+    "clipsEditados": "The content your team already edits elsewhere gets scheduled, approved and measured in the same place as the rest."
+  },
+  "vistas": {
+    "subir": { "soltar": "Drop the episode video", "formatos": "MP4, MOV or MKV", "archivo": "ep142-client-a.mov", "pie": "Next: transcript and moments" },
+    "restream": { "live1": "Tuesday live", "live2": "Live interview", "traer": "Import", "traido": "Imported" },
+    "clipsEditados": { "soltar": "Drop your clips", "archivo": "reel-capcut.mov", "listo": "Ready to schedule" }
+  },
+  "preguntas": {
+    "p1": { "p": "Do I have to transcribe the episode?", "r": "No. Clipfine transcribes the episode on its own when you upload it, and uses that transcript to pick the moments and build the captions." },
+    "p2": { "p": "How do I bring in a client's live?", "r": "Connect the client's Restream to their brand in Clipfine and pick the live recording. No need to download it or wait for YouTube to process it." },
+    "p3": { "p": "Does each client have its own Restream?", "r": "Yes. The Restream connection belongs to each brand, so one client's lives never mix with another's." },
+    "p4": { "p": "Can I upload clips I already edited in CapCut?", "r": "Yes. In Publications, Upload clips. Each one goes out as it is or you open it in the editor, and it follows the same path as the rest: review, scheduling on all four networks and analytics. Up to 5 minutes per clip, and they don't use up hours." }
+  }
+}

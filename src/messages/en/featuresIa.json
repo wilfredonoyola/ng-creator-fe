@@ -1,0 +1,84 @@
+{
+  "seo": {
+    "titulo": "AI clips from podcasts and long videos for agencies | Clipfine",
+    "descripcion": "Clipfine's AI finds the best moments in every client episode, with a score, a reason, a title and a hook. Fewer hours watching video, more clips out the door."
+  },
+  "titulo": "From a 90-minute episode to",
+  "destacado": "a batch of clips to pick from",
+  "bajada": "Clipfine transcribes your client's episode and the AI suggests the moments that stand on their own, each with a score and a reason. Your editor starts by choosing, not searching.",
+  "datos": {
+    "d1": {
+      "cifra": "15 clips",
+      "que": "suggested per episode, at most"
+    },
+    "d2": {
+      "cifra": "15 to 90 s",
+      "que": "the length of each suggested moment"
+    },
+    "d3": {
+      "cifra": "0 to 100",
+      "que": "each moment's score, with its reason"
+    }
+  },
+  "agencia": {
+    "momentos": "The hour your editor spent watching the whole episode is gone. They start with the best parts.",
+    "puntaje": "You decide fast which clips go out first, and you can tell the client why those were picked.",
+    "sugeridos": "A starter title and hook on every clip: less time staring at a blank screen.",
+    "aMano": "When the client asks for a specific moment, you find it by reading, not scrubbing the video.",
+    "pedirMomentos": "When the client sends the list of webinar timestamps, you paste it and every clip comes out in one step.",
+    "desdeChatgpt": "Your team asks for clips from the chat they already use, with their usual permissions on each brand."
+  },
+  "vistas": {
+    "momentos": {
+      "episodio": "EP-142 · 1:28:40",
+      "listos": "6 moments",
+      "pie": "ready to edit"
+    },
+    "puntaje": {
+      "escala": "score from 0 to 100",
+      "motivo": "Strong hook",
+      "otro": "Quotable line"
+    },
+    "sugeridos": {
+      "tituloEtiqueta": "Title:",
+      "titulo": "The mistake that almost cost us the show",
+      "ganchoEtiqueta": "Hook:",
+      "gancho": "Nobody tells you this before you start"
+    },
+    "aMano": {
+      "antes": "…and that's when we got it:",
+      "elegido": "the problem was never the price, it was who we were selling to",
+      "despues": "and from…",
+      "crear": "Create clip"
+    },
+    "pedirMomentos": {
+      "pedido": "One clip per webinar topic",
+      "t1": "How to set prices",
+      "t2": "Hiring mistakes",
+      "t3": "Audience questions",
+      "crear": "Create 3 clips"
+    },
+    "desdeChatgpt": {
+      "pregunta": "From the latest webinar, make one clip per topic",
+      "respuesta": "Done: I created 5 clips in Café Luna, not posted."
+    }
+  },
+  "preguntas": {
+    "p1": {
+      "p": "How many clips does the AI pull from an episode?",
+      "r": "Up to 15 moments per episode, 15 to 90 seconds each, sorted by score. You choose which ones to edit and can add clips by hand from the transcript."
+    },
+    "p2": {
+      "p": "What does the AI look for in a moment?",
+      "r": "That it stands on its own and has something that hooks: a strong hook, a controversial opinion, a complete story, a quotable line, humor, emotion or a surprising fact. Each moment says which one it is."
+    },
+    "p3": {
+      "p": "Can my editor change what the AI suggests?",
+      "r": "Yes. The span, the title and the hook are suggestions: they're adjusted in the editor before the clip is scheduled."
+    },
+    "p4": {
+      "p": "Can I ask the AI for specific moments, for example from a webinar?",
+      "r": "Yes. On the episode, click ✨ Several clips and write what you want (\"one clip per topic\", \"the practical tips\"). The AI finds those moments across the whole video, you pick which ones and they're created together, up to 20 at a time. If you already have the timestamps, paste the list. You can also ask from ChatGPT or Claude with the Clipfine connector."
+    }
+  }
+}

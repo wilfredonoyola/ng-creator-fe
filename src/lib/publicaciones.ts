@@ -1,3 +1,5 @@
+import type { DisenoPortada } from "@/lib/diseno-portada";
+
 /**
  * Una publicación de la cola (ng-creator-be#59), o una de antes que el backend
  * lee con la misma forma.
@@ -33,7 +35,35 @@ export interface Publicacion {
    * espera a que termine (ng-creator-be#172). Si el render falla, queda FALLIDA.
    */
   esperaVideo?: boolean | null;
+  /**
+   * Frenada por la revisión de la marca (ng-creator-be#175): no sale hasta que
+   * un revisor apruebe el clip, aunque pase la hora.
+   */
+  esperaAprobacion?: boolean | null;
+  /** Salió sin revisar: la marca eligió publicar igual al vencer. */
+  sinRevisar?: boolean | null;
   createdAt: string;
+  /** El texto como se escribió, con las @menciones sin resolver: para editar lo programado. */
+  textoBase?: string | null;
+  /** A quiénes se etiquetó (Etiquetas). */
+  personaIds?: string[] | null;
+  /** Lo propio de la red: título de YouTube, etiquetas y colaboradores. */
+  ajustes?: Record<string, unknown> | null;
+  portadaSeg?: number | null;
+  /** Sale con la portada de marca (ng-creator-be#239). */
+  portadaMarca?: boolean | null;
+  /** El título de la portada de marca; vacío, el del clip. */
+  portadaTexto?: string | null;
+  /** Un diseño propio armado en el editor para esta publicación (be#244); null = el de la marca. */
+  portadaDiseno?: DisenoPortada | null;
+  /** Salió, pero con algo menos de lo pedido (p. ej. sin etiquetas que Instagram rechazó). */
+  aviso?: string | null;
+  /** Falló y se puede volver a mandar la misma ("Editar y reintentar"). */
+  puedeReintentar?: boolean | null;
+  /** Falló después de pedir que publique: puede que haya salido igual. */
+  quizasPublicada?: boolean | null;
+  /** Las etiquetas que Instagram rechazó y se sacaron para que saliera igual. */
+  etiquetasDescartadas?: { etiquetados: string[]; colaboradores: string[]; motivo?: string | null } | null;
   creadoPor?: { nombre: string } | null;
   canceladoPor?: { nombre: string } | null;
 }
@@ -49,6 +79,65 @@ export type EstadoPublicacion =
 
 /** Lo que un proceso tiene entre manos ahora mismo. */
 export const EN_CURSO: EstadoPublicacion[] = ["SUBIENDO", "PROCESANDO"];
+
+/** Ya salió en la red o está saliendo: otra publicación ahí sería un duplicado. */
+export const SALIO_O_SALE: EstadoPublicacion[] = ["PUBLICADA", "SUBIENDO", "PROCESANDO", "AGENDADA_EN_RED"];
+
+/** Mismo destino: la misma cuenta en la misma red. */
+export const mismoDestino = (a: { red: string; cuentaId: string }, b: { red: string; cuentaId: string }) =>
+  a.red === b.red && a.cuentaId === b.cuentaId;
+
+/**
+ * Lo que ya salió (o está saliendo) en ese destino, la más reciente. Sirve
+ * para no programar dos veces lo mismo sin querer.
+ */
+export function salidaEn<P extends Pick<Publicacion, "red" | "cuentaId" | "estado" | "publicarEn" | "publicadaEn">>(
+  destino: { red: string; cuentaId: string },
+  publicaciones: P[],
+): P | null {
+  const salidas = publicaciones.filter((p) => mismoDestino(p, destino) && SALIO_O_SALE.includes(p.estado));
+  const fecha = (p: P) => new Date(p.publicadaEn ?? p.publicarEn).getTime();
+  return salidas.sort((a, b) => fecha(b) - fecha(a))[0] ?? null;
+}
+
+/**
+ * Un intento fallido que ya no importa: en el mismo destino hay otra
+ * publicación que salió o está saliendo. No se ofrece reintentarlo (sería
+ * publicar dos veces).
+ */
+export function fallaReemplazada<P extends Pick<Publicacion, "_id" | "red" | "cuentaId" | "estado">>(p: P, todas: P[]): boolean {
+  return p.estado === "FALLIDA" && todas.some((o) => o._id !== p._id && mismoDestino(o, p) && SALIO_O_SALE.includes(o.estado));
+}
+
+/**
+ * Las publicaciones de un clip en el orden en que se leen: por destino, en el
+ * orden en que aparece cada uno, y dentro de cada destino primero lo que salió
+ * (o sale), después lo pendiente y al final los intentos fallidos.
+ */
+export function ordenarPorDestino<P extends Pick<Publicacion, "red" | "cuentaId" | "estado">>(publicaciones: P[]): P[] {
+  const destinos: string[] = [];
+  for (const p of publicaciones) {
+    const k = `${p.red}:${p.cuentaId}`;
+    if (!destinos.includes(k)) destinos.push(k);
+  }
+  const peso = (p: P) => (SALIO_O_SALE.includes(p.estado) ? 0 : p.estado === "FALLIDA" ? 2 : p.estado === "CANCELADA" ? 3 : 1);
+  return publicaciones
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => {
+      const d = destinos.indexOf(`${a.p.red}:${a.p.cuentaId}`) - destinos.indexOf(`${b.p.red}:${b.p.cuentaId}`);
+      return d || peso(a.p) - peso(b.p) || a.i - b.i;
+    })
+    .map((x) => x.p);
+}
+
+/**
+ * Si un error es la red rechazando a una cuenta etiquetada o colaboradora
+ * (privada, inexistente, sin invitaciones de colaboración o que no se ve).
+ * El texto de Upload-Post es largo y en inglés: se resume y el detalle queda a mano.
+ */
+export function esRechazoDeEtiquetas(error?: string | null): boolean {
+  return /not eligible to be tagged|user[_ ]?tags?\b|collaborat|user not visible/i.test(error ?? "");
+}
 
 /**
  * Una fecha como la pide `<input type="datetime-local">`: hora LOCAL, sin zona.

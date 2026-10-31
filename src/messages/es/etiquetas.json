@@ -1,0 +1,144 @@
+{
+  "pagina": {
+    "titulo": "Etiquetas",
+    "bajada": "Las personas que etiquetás en los clips de {marca}: las cargás una vez, con su usuario en cada red, y al publicar las mencionás con @.",
+    "buscar": "Buscar por nombre o usuario…",
+    "tabs": {
+      "ELENCO": "Elenco",
+      "GLOBAL": "Global",
+      "EPISODIO": "Por episodio"
+    },
+    "tabAyuda": {
+      "ELENCO": "Quienes salen siempre: conductores, columnistas. Aparecen primero al etiquetar.",
+      "GLOBAL": "El directorio de la marca: gente que aparece cada tanto y querés tener a mano.",
+      "EPISODIO": "Los invitados de cada programa. Uno que vuelve se pasa a Global y queda en los dos lados."
+    },
+    "vacio": {
+      "ELENCO": "Todavía no hay elenco. Agregá a quienes salen en todos los programas.",
+      "GLOBAL": "Todavía no hay nadie en Global. Sumá a quienes aparecen cada tanto, o pasá a un invitado desde su episodio."
+    },
+    "sinResultados": "Nadie coincide con “{buscar}”.",
+    "agregar": "Agregar persona",
+    "soloLectura": "Lo cambian quienes operan la marca.",
+    "episodios": {
+      "vacio": "Todavía no hay episodios.",
+      "invitados": "{n, plural, =0 {Sin invitados} one {# invitado} other {# invitados}}",
+      "abrir": "Ver episodio"
+    },
+    "resumen": "{elenco} en el elenco · {global} en Global"
+  },
+  "nivel": {
+    "ELENCO": "Elenco",
+    "GLOBAL": "Global",
+    "EPISODIO": "Solo este episodio"
+  },
+  "tarjeta": {
+    "usos": "{n, plural, =0 {Sin usar todavía} one {Etiquetada en # publicación} other {Etiquetada en # publicaciones}}",
+    "acciones": "Acciones para {nombre}",
+    "editar": "Editar",
+    "hacerGlobal": "Pasar a Global",
+    "pasarAElenco": "Pasar al elenco",
+    "pasarAGlobal": "Sacar del elenco (queda en Global)",
+    "reverificar": "Verificar de nuevo",
+    "borrar": "Borrar",
+    "confirmarBorrar": "¿Borrar a {nombre}? Deja de aparecer en Etiquetas y en los episodios. Lo ya publicado no cambia.",
+    "sinUsuarios": "Sin usuarios: no se la etiqueta en ninguna red",
+    "verificada": "Verificada en {red}",
+    "noEncontrada": "No la encontramos en {red}: revisá el usuario",
+    "sinVerificar": "{red} no deja confirmarlo: miralo en el perfil",
+    "fbSinId": "Para invitarla como colaboradora en Facebook, pegá el enlace con el número de la página (profile.php?id=…).",
+    "deEpisodio": "Invitado de un episodio",
+    "noEtiquetable": "{red} no deja etiquetarla (privada, no existe o no acepta etiquetas): va como @mención. Si corregís el usuario, se vuelve a probar."
+  },
+  "form": {
+    "tituloNueva": "Nueva persona",
+    "tituloEditar": "Editar a {nombre}",
+    "nombre": "Nombre",
+    "nombrePlaceholder": "Como la nombran en el programa",
+    "enlace": "Pegá el enlace de un perfil",
+    "enlacePlaceholder": "instagram.com/…, tiktok.com/@…, youtube.com/@…, facebook.com/…",
+    "enlaceDetectado": "Listo: {red} @{usuario}",
+    "enlaceNoReconocido": "No reconocemos ese enlace. Escribí el usuario en su red, abajo.",
+    "usuarios": "Sus usuarios",
+    "usuario": {
+      "instagram": "usuario de Instagram",
+      "tiktok": "usuario de TikTok",
+      "youtube": "canal de YouTube",
+      "facebook": "página o perfil de Facebook"
+    },
+    "ayudaUsuarios": "Alcanza con una red. Donde no tiene usuario, ahí se la nombra sin @.",
+    "alias": "También la llaman",
+    "aliasPlaceholder": "Apodos o cómo la nombran, separados por coma",
+    "aliasAyuda": "Sirve para sugerirla cuando la nombran en un clip.",
+    "nivel": "Dónde va",
+    "tambienGlobal": "Guardar también en Global",
+    "tambienGlobalAyuda": "Para etiquetarla en otros episodios sin cargarla de nuevo.",
+    "guardar": "Guardar",
+    "guardando": "Guardando…",
+    "cancelar": "Cancelar",
+    "errorGuardar": "No se pudo guardar."
+  },
+  "verificar": {
+    "verificando": "Buscando en {red}…",
+    "existe": "Existe: {nombre}",
+    "noExiste": "No encontramos esa cuenta en {red}: revisá que esté bien escrita.",
+    "noExisteOPrivada": "No encontramos esa cuenta en {red} (o es privada): revisá que esté bien escrita.",
+    "instagramPersonal": "Instagram solo deja confirmar cuentas profesionales: asegurate en el perfil de que existe.",
+    "facebookSinId": "Facebook no deja confirmarlo: asegurate en el perfil de que existe.",
+    "sinVerificar": "{red} no deja confirmarlo desde acá: asegurate en el perfil de que existe.",
+    "verPerfil": "Ver perfil"
+  },
+  "invitados": {
+    "titulo": "Invitados de este episodio",
+    "descripcion": "Quienes vinieron a este programa: salen sugeridos al publicar sus clips.",
+    "vacio": "Sin invitados todavía.",
+    "nuevo": "Nuevo invitado",
+    "sumar": "Sumar del elenco o de Global",
+    "quitar": "Quitar a {nombre} de este episodio",
+    "verTodas": "Etiquetas"
+  },
+  "buscador": {
+    "placeholder": "Buscar persona…",
+    "sinResultados": "Nadie coincide.",
+    "crear": "Crear a “{nombre}”"
+  },
+  "menciones": {
+    "ayuda": "Escribí @ para mencionar a alguien: en cada red sale su usuario.",
+    "sinResultados": "Nadie coincide. Cargala en Etiquetas.",
+    "sinRedes": "sin usuarios",
+    "teclas": "↑↓ para elegir · Enter para mencionar · Esc para cerrar",
+    "lista": "Personas para mencionar"
+  },
+  "publicar": {
+    "titulo": "Etiquetar",
+    "sugeridas": "Sugeridas para este clip",
+    "motivo": {
+      "invitado": "Invitado del episodio",
+      "elenco": "Elenco",
+      "mencionado": "La nombran en el {segundo}",
+      "mencionadoSinSegundo": "La nombran en el clip"
+    },
+    "etiquetadas": "Etiquetadas",
+    "ninguna": "Todavía no etiquetaste a nadie. Tocá una sugerida, buscá, o escribí @ en la descripción.",
+    "enTexto": "en el texto",
+    "quitar": "Quitar a {nombre}",
+    "nuevoInvitado": "Nuevo invitado",
+    "colaboradorIg": "Colaborador en Instagram",
+    "colaboradorIgAyuda": "El Reel sale también en su perfil si acepta la invitación. Hasta {max}.",
+    "maximoColaboradores": "Instagram acepta hasta {max} colaboradores.",
+    "colaboradorFb": "Colaboradora en Facebook",
+    "colaboradorFbAyuda": "Solo páginas, no perfiles personales. La página recibe la invitación y, si la acepta, el Reel sale también en ella. Hasta {max}.",
+    "maximoColaboradoresFb": "Facebook acepta hasta {max} páginas colaboradoras.",
+    "maximoEtiquetas": "Instagram acepta hasta {max} etiquetas: las demás no se etiquetan ahí.",
+    "comoSale": "Instagram: etiqueta en el Reel y @usuario en el texto. TikTok, YouTube y Facebook: @usuario (o su nombre, si no tiene usuario en esa red).",
+    "verTodas": "Administrar en Etiquetas",
+    "verPerfil": "Ver perfil",
+    "verPerfilEn": "Ver @{usuario} en {red}",
+    "noEtiquetableIg": "Instagram no deja etiquetarla: va como @mención en el texto. Revisá el usuario en Etiquetas."
+  },
+  "enRedes": {
+    "titulo": "Personas para etiquetar",
+    "texto": "El elenco, el directorio Global y los invitados de cada episodio ahora están en Etiquetas.",
+    "ir": "Ir a Etiquetas"
+  }
+}

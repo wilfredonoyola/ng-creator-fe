@@ -1,0 +1,62 @@
+{
+  "sinMarca": "Elegí una marca para subir sus clips.",
+  "subiendo": "Subiendo {nombre}",
+  "enCola": "{n, plural, one {# más en espera} other {# más en espera}}",
+  "muyLargo": "{nombre} dura {dura} s y el máximo es {maximo} s.",
+  "errorSubir": "No se pudo subir. Probá de nuevo.",
+  "vacio": "Todavía no subiste clips.",
+  "confirmarBorrar": "¿Borrar «{titulo}»? Se borra el video. No se puede deshacer.",
+  "subidoPor": "subido por {nombre}",
+  "editado": "editado en Clipfine",
+  "programar": "Programar",
+  "editar": "Editar",
+  "borrar": "Borrar",
+  "estados": {
+    "subiendo": "Subiendo…",
+    "preparando": "Preparando el video…",
+    "listo": "Listo para programar",
+    "programado": "Programado",
+    "publicado": "Publicado",
+    "fallo": "No se pudo procesar. Subilo de nuevo.",
+    "falloCopia": "No se pudo preparar el video. Abrilo en el editor y exportalo."
+  },
+  "etiqueta": "Clips ya editados",
+  "titulo": "Subí tus clips y publicalos como los demás",
+  "descripcion": "Lo que editaste en CapCut, un recorte de YouTube o cualquier video corto entra al flujo de Clipfine: revisión del cliente, programar en las cuatro redes y métricas. Sale tal cual, o lo abrís en el editor.",
+  "pasos": {
+    "subi": {
+      "titulo": "Subí",
+      "texto": "Soltá uno o varios videos."
+    },
+    "programa": {
+      "titulo": "Programá",
+      "texto": "En TikTok, Reels, Shorts y Facebook."
+    },
+    "medi": {
+      "titulo": "Medí",
+      "texto": "Las métricas de cada clip, solas."
+    }
+  },
+  "soltar": "Soltá tus videos acá",
+  "elegir": "Elegir videos",
+  "chips": {
+    "formatos": "MP4 o MOV",
+    "duracion": "Hasta {maximo} min",
+    "horas": "No descuenta horas"
+  },
+  "soloVer": "Solo quien edita o es dueño de la marca puede subir clips.",
+  "tusClips": "Tus clips",
+  "filtros": {
+    "todos": "Todos",
+    "preparando": "Preparando",
+    "listo": "Listos",
+    "programado": "Programados",
+    "publicado": "Publicados"
+  },
+  "sinEnFiltro": "No hay clips en este estado.",
+  "vacioDetalle": "Soltá un video arriba y en unos segundos queda listo para programar.",
+  "noEsVideo": "{n, plural, one {Un archivo no es un video y se saltó.} other {# archivos no son videos y se saltaron.}}",
+  "seCancelan": "Tiene {n, plural, one {# publicación programada} other {# publicaciones programadas}}: se cancelan.",
+  "noSeBorraPublicado": "Ya se publicó: no se puede borrar.",
+  "errorBorrar": "No se pudo borrar."
+}

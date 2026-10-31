@@ -18,7 +18,7 @@
   "diseno": "Diseño",
   "enEsteTramo": " (en este tramo)",
   "tramo": "Tramo {desde}–{hasta} s",
-  "ayudaRecuadro": "Arrastrá el recuadro para moverlo; la esquina, para agrandarlo.",
+  "ayudaRecuadro": "Arrastrá el recuadro para moverlo. Va con todo el alto; el zoom está en el panel.",
   "ayudaRecuadroEtiqueta": "Cómo mover el recuadro",
   "abajo": "Abajo",
   "arriba": "Arriba",
@@ -51,5 +51,6 @@
     "finalAntes": "Mover el final 5 s antes (el clip se acorta)",
     "finalDespues": "Mover el final 5 s después (el clip se alarga)",
     "conCortes": "{efectiva} de {total}"
-  }
+  },
+  "avisoBeta": "A veces no sigue a quien habla. Revisá los cambios de encuadre en la línea de tiempo y corregí los que no van; si falla en un clip, avisanos."
 }

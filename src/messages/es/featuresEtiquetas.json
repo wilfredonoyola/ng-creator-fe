@@ -1,0 +1,75 @@
+{
+  "seo": {
+    "titulo": "Etiquetar personas en Instagram, TikTok, YouTube y Facebook | Clipfine",
+    "descripcion": "Mencioná con @ al elenco y a los invitados una sola vez y cada red recibe su usuario. Cuentas verificadas, sugerencias por lo que se dice en el clip y colaboradores en Instagram y Facebook."
+  },
+  "titulo": "Etiquetá a quien sale,",
+  "destacado": "una vez, en las cuatro redes",
+  "bajada": "Cargás al elenco y a los invitados con su usuario en cada red. Al publicar escribís @Ana y Clipfine pone el usuario correcto en Instagram, TikTok, YouTube y Facebook, y te avisa si una cuenta no existe.",
+  "datos": {
+    "d1": {
+      "cifra": "1 @mención",
+      "que": "que sale bien en las cuatro redes"
+    },
+    "d2": {
+      "cifra": "3 niveles",
+      "que": "elenco, Global e invitados de cada episodio"
+    },
+    "d3": {
+      "cifra": "0 cuentas",
+      "que": "mal escritas: se verifican al cargarlas"
+    }
+  },
+  "agencia": {
+    "menciones": "Nadie tiene que acordarse del usuario de cada invitado en cada red.",
+    "tresNiveles": "El invitado que vuelve no se carga dos veces, y el elenco está siempre a mano.",
+    "verificar": "Un usuario mal escrito no llega a publicarse: lo ves antes.",
+    "sugeridas": "No se te pasa etiquetar a quien nombran en el clip.",
+    "colaboradores": "El invitado o el sponsor comparte el Reel en su perfil sin pedírselo por mensaje.",
+    "buscar": "Encontrás a cualquiera de cualquier cliente en segundos."
+  },
+  "vistas": {
+    "menciones": {
+      "texto": "Hoy en el programa"
+    },
+    "tresNiveles": {
+      "elenco": "Elenco",
+      "global": "Global",
+      "episodio": "Episodio"
+    },
+    "verificar": {
+      "existe": "existe · Ana Radio",
+      "noExiste": "no existe: revisalo"
+    },
+    "sugeridas": {
+      "frase": "…como explicaba el doctor Pérez…",
+      "sumar": "Etiquetar",
+      "motivo": "La nombran en el 0:12"
+    },
+    "colaboradores": {
+      "pie": "Si aceptan, el Reel sale también en su perfil"
+    },
+    "buscar": {
+      "busqueda": "jose",
+      "usada": "12 publicaciones"
+    }
+  },
+  "preguntas": {
+    "p1": {
+      "p": "¿Las etiquetas son reales en todas las redes?",
+      "r": "En Instagram sí: la persona queda etiquetada en el Reel y además se la menciona en el texto. TikTok, YouTube y Facebook no dejan etiquetar personas desde afuera, así que ahí sale como @mención en la descripción, con su usuario de esa red."
+    },
+    "p2": {
+      "p": "¿Cómo sé que el usuario está bien escrito?",
+      "r": "Clipfine lo busca en la red al cargarlo. TikTok y YouTube confirman si existe; Instagram, si es una cuenta profesional; Facebook, si es una página que Meta deja ver. Cuando la red no deja confirmarlo, te muestra el enlace al perfil para que lo mires."
+    },
+    "p3": {
+      "p": "¿Qué pasa con un invitado que viene una sola vez?",
+      "r": "Lo cargás en el episodio y queda solo ahí. Si vuelve, lo pasás a Global con un toque y lo tenés para cualquier clip, sin cargarlo de nuevo."
+    },
+    "p4": {
+      "p": "¿Puedo invitarlo como colaborador?",
+      "r": "Sí. En Instagram, hasta 3 cuentas por Reel; en Facebook, hasta 10 páginas (no perfiles personales). Reciben la invitación y, si la aceptan, el Reel sale también en su perfil o su página."
+    }
+  }
+}

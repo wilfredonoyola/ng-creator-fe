@@ -24,7 +24,7 @@
   "tocaInicio": "Tap the word where it starts",
   "tocaFin": "Tap the word where it ends",
   "cargandoTranscripcion": "Loading the transcript…",
-  "maximo": "A clip can be up to 3 minutes long.",
+  "maximo": "A clip can be up to 5 minutes long.",
   "siguiente": "Next",
   "tituloCampo": "Title",
   "formato": "Format",
@@ -33,5 +33,21 @@
   "creando": "Creating…",
   "crearIgual": "Create anyway",
   "revisando": "Checking…",
-  "crearYAbrir": "Create and open the editor"
+  "crearYAbrir": "Create and open the editor",
+  "porTiempo": {
+    "desde": "From",
+    "hasta": "To",
+    "formatoHora": "h:mm:ss",
+    "usarVideo": "Where the video is",
+    "invalido": "Write it like 1:02:30, 62:30 or 3750.",
+    "alReves": "The end has to come after the start.",
+    "dura": "Lasts {dura}",
+    "ajustado": "Snapped to the words: {desde} → {hasta}",
+    "pensando": "Thinking of a title…",
+    "tituloIa": "✨ Title suggested by AI: change it if you want.",
+    "gancho": "Suggested hook (turn it on in the editor): {gancho}",
+    "sinPalabras": "Nothing is said in that stretch.",
+    "buscarFrase": "Don't know the minute? Search for a phrase in the transcript",
+    "volver": "← Type the time instead"
+  }
 }

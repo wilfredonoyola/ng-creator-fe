@@ -37,7 +37,8 @@
     "confirmarQuitar": "Remove {red} from this clip?",
     "quitarRed": "Remove {red} from this clip",
     "apagada": "Not going out on {red}",
-    "verEn": "View on {red}"
+    "verEn": "View on {red}",
+    "editarProgramacion": "Edit the schedule"
   },
   "cambiarHora": {
     "titulo": "Change time",
@@ -78,6 +79,17 @@
     "guardado": "Saved",
     "sinCambios": "There are no changes to save.",
     "errorRed": "{red}: {mensaje}",
-    "noSePudo": "couldn't save"
-  }
+    "noSePudo": "couldn't save",
+    "editarYReintentar": "Edit and retry",
+    "intentoAnterior": "An earlier attempt failed; it was published on {red} afterwards.",
+    "intentoAnteriorChip": "Earlier attempt",
+    "errorEtiquetas": "{red} rejected one of the tagged or collaborator accounts. Open \"Edit and retry\" for details.",
+    "cancelarPublicacion": "Cancel post",
+    "cancelando": "Canceling…",
+    "cancelarAyuda": "It won't go out on any network. The clip stays, and you can schedule it again.",
+    "confirmarCancelar": "Cancel the post on {redes}? It won't go out.",
+    "errorCancelar": "Couldn't cancel",
+    "portadaDeMarca": "Brand cover"
+  },
+  "porRevisar": "To review"
 }

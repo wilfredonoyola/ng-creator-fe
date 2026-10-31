@@ -1,14 +1,32 @@
 {
-  "comun": { "cliente": "Client {letra}", "dias": { "lun": "Mon", "mar": "Tue", "mie": "Wed", "jue": "Thu", "vie": "Fri" } },
+  "comun": {
+    "cliente": "Client {letra}",
+    "dias": {
+      "lun": "Mon",
+      "mar": "Tue",
+      "mie": "Wed",
+      "jue": "Thu",
+      "vie": "Fri"
+    }
+  },
   "ia": {
     "alt": "Clipfine view: a landscape episode with its moments marked on the timeline and, below, the list of suggested clips with their 0–100 score, title and the reason they work.",
     "episodio": "16:9 episode",
     "sugeridos": "12 suggested clips",
     "puntaje": "score",
     "clips": {
-      "c1": { "titulo": "The mistake that almost cost us the business", "porque": "Strong hook" },
-      "c2": { "titulo": "Nobody talks about this part", "porque": "Hot take" },
-      "c3": { "titulo": "The line we repeat in every meeting", "porque": "Quotable line" }
+      "c1": {
+        "titulo": "The mistake that almost cost us the business",
+        "porque": "Strong hook"
+      },
+      "c2": {
+        "titulo": "Nobody talks about this part",
+        "porque": "Hot take"
+      },
+      "c3": {
+        "titulo": "The line we repeat in every meeting",
+        "porque": "Quotable line"
+      }
     }
   },
   "edicion": {
@@ -17,7 +35,12 @@
     "habla": "talking",
     "formato": "Format",
     "diseno": "Layout",
-    "disenos": { "uno": "Single", "dividido": "Split", "horizontal": "Landscape", "centrado": "Centered" },
+    "disenos": {
+      "uno": "Single",
+      "dividido": "Split",
+      "horizontal": "Landscape",
+      "centrado": "Centered"
+    },
     "tramo": "Span",
     "corte": "cut",
     "silencios": "Remove silences"
@@ -29,7 +52,13 @@
     "sub2": "when",
     "sub3": "it clicked",
     "estilo": "Caption style",
-    "estilos": { "pop": "Pop", "karaoke": "Karaoke", "bestia": "Beast", "editorial": "Editorial", "keynote": "Keynote" },
+    "estilos": {
+      "pop": "Pop",
+      "karaoke": "Karaoke",
+      "bestia": "Beast",
+      "editorial": "Editorial",
+      "keynote": "Keynote"
+    },
     "corregir": "Fix word",
     "cta": "Call to action",
     "ctaTexto": "Watch the full episode"
@@ -65,6 +94,18 @@
     "corta": "short version",
     "descargar": "Download MP4"
   },
+  "audio": {
+    "alt": "The editor's audio panel: the voice at 175%, a royalty-free music track at 25% with the option to duck it under the voice, and the timeline with the voice, the music and three sound effects.",
+    "voz": "Voice",
+    "musica": "Music",
+    "pista": "Upbeat 03",
+    "libre": "Royalty-free",
+    "bajar": "Duck under voice",
+    "pistaVoz": "Voice",
+    "pistaMusica": "Music",
+    "pistaEfectos": "Effects",
+    "vista": "You hear it in the preview, no export"
+  },
   "importar": {
     "alt": "The two ways to bring in an episode: an area to drop the video from your computer and a live recording coming in from Restream with its progress bar.",
     "soltar": "Drop the episode video",
@@ -75,6 +116,23 @@
     "live": "Tuesday's live",
     "trayendo": "Importing… 64%",
     "siguiente": "Next: transcript and moments"
+  },
+  "clipsSubidos": {
+    "alt": "Upload clips: a drop zone for CapCut videos and three vertical clips, ready, scheduled and published.",
+    "soltar": "Drop your CapCut clips here",
+    "acepta": "MP4 or MOV · up to 5 min · several at once",
+    "etapas": {
+      "listo": "Ready",
+      "programado": "Scheduled",
+      "publicado": "Published"
+    },
+    "clips": {
+      "c1": "promo-reel.mov",
+      "c2": "weekly-tip.mp4",
+      "c3": "behind-scenes.mp4"
+    },
+    "sale": "Goes out on",
+    "programar": "Schedule"
   },
   "publicar": {
     "alt": "Scheduling a clip: TikTok, YouTube Shorts, Instagram Reels and Facebook switched on, the description with its hashtags and a weekly calendar with scheduled and published clips.",
@@ -87,10 +145,28 @@
     "publicada": "published",
     "programar": "Schedule"
   },
+  "revision": {
+    "alt": "A clip marked “To review”, with the client's voice note and its transcript, and the buttons to request changes or approve.",
+    "clip": "Clip 07 · That's when it clicked",
+    "sale": "Fri 20:00 · TikTok, Instagram",
+    "porRevisar": "To review",
+    "revision": "Review",
+    "revisor": "Client A · Reviewer",
+    "quien": "Cami requested changes",
+    "transcripcion": "Move the hook up: start on the laugh.",
+    "grabar": "Hold to record",
+    "pedirCambios": "Request changes",
+    "aprobar": "Approve"
+  },
   "equipo": {
-    "alt": "A brand's team: the brand selector, people with their owner, editor or viewer role, an email invitation and a clip showing who edited it and who finished it.",
+    "alt": "A brand's team: the brand selector, people with their owner, editor, reviewer or viewer role, an email invitation and a clip showing who edited it and who finished it.",
     "equipo": "Team",
-    "roles": { "propietario": "Owner", "editor": "Editor", "lector": "Viewer" },
+    "roles": {
+      "propietario": "Owner",
+      "editor": "Editor",
+      "revisor": "Reviewer",
+      "lector": "Viewer"
+    },
     "invitada": "invited",
     "invitar": "+ Invite",
     "clip": "Clip 03 · Nobody talks about this part",
@@ -98,13 +174,34 @@
     "autoria": "Edited by Ana · finished by Leo"
   },
   "app": {
-    "alt": "The Clipfine app on a phone, with a brand's list of clips and their status, a team notification and the English and Spanish language selector.",
+    "alt": "The Clipfine app on a phone, with a brand's clip list and their status and a team notification; next to it, the same account in sync with the web, available on iPhone and Android.",
     "clips": "Clips",
-    "estados": { "listo": "Ready", "programado": "Scheduled", "editando": "Editing" },
-    "titulos": { "c1": "The mistake that almost cost…", "c2": "Nobody talks about this part", "c3": "The line from every meeting" },
-    "nav": { "inicio": "Home", "clips": "Clips", "calendario": "Calendar" },
+    "estados": {
+      "listo": "Ready",
+      "programado": "Scheduled",
+      "editando": "Editing"
+    },
+    "titulos": {
+      "c1": "The mistake that almost cost…",
+      "c2": "Nobody talks about this part",
+      "c3": "The line from every meeting"
+    },
+    "nav": {
+      "inicio": "Home",
+      "clips": "Clips",
+      "calendario": "Calendar"
+    },
     "aviso": "Leo scheduled a clip for Thursday",
-    "idioma": "Language",
-    "fotos": "Save to Photos"
+    "fotos": "Save to Photos",
+    "sincro": "In sync with the web",
+    "plataformas": "Coming soon on"
+  },
+  "etiquetas": {
+    "alt": "A clip description with the mention @Ana Radio highlighted, the list to choose who to mention, and how it comes out on each network: a tag on Instagram and the username on TikTok, YouTube and Facebook.",
+    "descripcion": "Description",
+    "texto": "Today with",
+    "textoFin": "we talk radio",
+    "etiqueta": "tag",
+    "verificada": "Verified accounts"
   }
 }

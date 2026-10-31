@@ -227,14 +227,34 @@ async function guardarSesion(result: AuthResult): Promise<void> {
 }
 
 /**
- * Refresca los tokens usando el refresh token.
+ * Cómo terminó un refresh. `sin-red` (sin conexión, o el servidor no
+ * respondió bien) no cierra la sesión: al despertar la compu la red tarda
+ * unos segundos en volver, y antes eso sacaba a la persona al login.
+ * Solo `rechazado` (Cognito dice que el refresh token ya no sirve) la cierra.
  */
-export async function refrescarTokens(): Promise<boolean> {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) {
-    return false;
-  }
+type ResultadoRefresh = "ok" | "rechazado" | "sin-red";
 
+/** El refresh en curso: los pedidos que llegan a la vez esperan el mismo. */
+let refrescando: Promise<ResultadoRefresh> | null = null;
+
+/**
+ * Refresca los tokens usando el refresh token. Si ya hay uno en curso,
+ * devuelve ese.
+ */
+function refrescar(): Promise<ResultadoRefresh> {
+  if (!refrescando) {
+    refrescando = pedirRefresh().finally(() => {
+      refrescando = null;
+    });
+  }
+  return refrescando;
+}
+
+async function pedirRefresh(): Promise<ResultadoRefresh> {
+  const refreshToken = localStorage.getItem("refreshToken");
+  if (!refreshToken) return "rechazado";
+
+  let json: { data?: { refreshToken?: RefreshResult }; errors?: { message?: string }[] };
   try {
     const response = await fetch(GRAPHQL_URL, {
       method: "POST",
@@ -252,25 +272,35 @@ export async function refrescarTokens(): Promise<boolean> {
         variables: { refreshToken },
       }),
     });
-
-    const json = await response.json();
-
-    if (json.errors) {
-      console.warn("Error refrescando tokens:", json.errors[0]?.message);
-      return false;
-    }
-
-    const result: RefreshResult = json.data.refreshToken;
-    // Mantener el refresh token existente
-    guardarTokens(result.idToken, result.accessToken, refreshToken, result.expiresIn);
-    programarRefresh(result.expiresIn);
-
-    console.log("Tokens refrescados exitosamente");
-    return true;
+    if (!response.ok && response.status >= 500) return "sin-red";
+    json = await response.json();
   } catch (err) {
-    console.warn("Error refrescando tokens:", err);
-    return false;
+    console.warn("Sin conexión para refrescar la sesión:", err);
+    return "sin-red";
   }
+
+  const result = json.data?.refreshToken;
+  if (json.errors || !result) {
+    console.warn("Error refrescando tokens:", json.errors?.[0]?.message);
+    return "rechazado";
+  }
+  // Mantener el refresh token existente
+  guardarTokens(result.idToken, result.accessToken, refreshToken, result.expiresIn);
+  programarRefresh(result.expiresIn);
+  return "ok";
+}
+
+/** El refresh token ya no sirve: se cierra la sesión y se va al login. */
+function sesionVencida() {
+  void cerrarSesion();
+  if (!window.location.pathname.startsWith("/login")) window.location.href = "/login";
+}
+
+/** Refresca y resuelve lo que pasó; true si quedó un token que sirve. */
+export async function refrescarTokens(): Promise<boolean> {
+  const r = await refrescar();
+  if (r === "rechazado") sesionVencida();
+  return r === "ok";
 }
 
 /**
@@ -299,22 +329,22 @@ function programarRefresh(expiresIn: number) {
   const refreshIn = Math.max((expiresIn * 1000) - REFRESH_MARGIN_MS, 60000);
 
   refreshTimeout = setTimeout(async () => {
-    const success = await refrescarTokens();
-    if (!success) {
-      // Si falla el refresh, limpiar todo y redirigir al login
-      cerrarSesion();
-      window.location.href = "/login";
-    }
+    const r = await refrescar();
+    if (r === "rechazado") sesionVencida();
+    // Sin red: se vuelve a probar en un rato (o al volver a la pestaña).
+    else if (r === "sin-red") programarRefresh(REFRESH_MARGIN_MS / 1000 + 30);
   }, refreshIn);
 }
 
 /**
- * Verifica si el token esta por expirar y lo refresca si es necesario.
- * Llamar antes de hacer requests importantes.
+ * Un idToken que sirva para el próximo pedido: si vence en menos de un minuto
+ * (o ya venció, como al abrir la web al día siguiente), se refresca antes.
+ * Lo usa el link de Apollo en cada operación, así nada sale con un token
+ * vencido. False = no hay sesión, o no se pudo refrescar.
  */
 export async function asegurarTokenValido(): Promise<boolean> {
   const expiresAt = localStorage.getItem("tokenExpiresAt");
-  if (!expiresAt) return false;
+  if (!expiresAt || !localStorage.getItem("refreshToken")) return false;
 
   const expiresAtMs = parseInt(expiresAt, 10);
   const ahora = Date.now();
@@ -328,7 +358,12 @@ export async function asegurarTokenValido(): Promise<boolean> {
 }
 
 /**
- * Cierra sesion llamando al backend y limpiando localStorage.
+ * Cierra sesion: limpia localStorage y avisa al backend.
+ *
+ * Lo local se borra ANTES de llamar al backend, sin esperar nada: quien llama
+ * suele ir a /login en seguida, y /login manda al panel a quien todavia tiene
+ * tokens guardados (useRedirigirSiHaySesion). Si se borraban despues de la
+ * respuesta, el primer "Cerrar sesion" volvia al panel y habia que darle dos veces.
  */
 export async function cerrarSesion(): Promise<void> {
   if (refreshTimeout) {
@@ -337,6 +372,18 @@ export async function cerrarSesion(): Promise<void> {
   }
 
   const accessToken = localStorage.getItem("accessToken");
+
+  localStorage.removeItem("idToken");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("tokenExpiresAt");
+  // Quien entre después no puede heredar una suplantación: el backend la rechaza.
+  localStorage.removeItem("suplantando");
+  desmarcarSesion();
+
+  // Que quien entre después en este navegador no vea, ni por un instante, las
+  // marcas y datos de la cuenta anterior.
+  const limpiarCache = apolloClient.clearStore().catch(() => {});
 
   if (accessToken) {
     try {
@@ -353,31 +400,26 @@ export async function cerrarSesion(): Promise<void> {
         }),
       });
     } catch {
-      // Ignoramos errores de logout, igual limpiamos local
+      // Ignoramos errores de logout: lo local ya se limpió.
     }
   }
-
-  localStorage.removeItem("idToken");
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("tokenExpiresAt");
-  desmarcarSesion();
-  // Que quien entre después en este navegador no vea, ni por un instante, las
-  // marcas y datos de la cuenta anterior.
-  await apolloClient.clearStore().catch(() => {});
+  await limpiarCache;
 }
 
+/**
+ * Si este navegador tiene una sesión: un refresh token guardado. El idToken
+ * puede estar vencido (dura una hora): eso se arregla con un refresh, no
+ * mandando al login. Antes esto miraba el vencimiento del idToken, y al abrir
+ * el panel al día siguiente rebotaba: panel → login (sin sesión) → panel
+ * (useRedirigirSiHaySesion veía el refresh token).
+ */
 export function haySesion(): boolean {
   if (typeof window === "undefined") return false;
-
-  const token = localStorage.getItem("idToken");
-  const expiresAt = localStorage.getItem("tokenExpiresAt");
-
-  if (!token || !expiresAt) return false;
-
-  // Verificar que no haya expirado
-  const expiresAtMs = parseInt(expiresAt, 10);
-  return Date.now() < expiresAtMs;
+  try {
+    return Boolean(localStorage.getItem("refreshToken") && localStorage.getItem("tokenExpiresAt"));
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -392,20 +434,29 @@ export function inicializarAutoRefresh() {
   // Las sesiones de antes de la marca la reciben al abrir el panel.
   marcarSesion();
 
-  const expiresAtMs = parseInt(expiresAt, 10);
-  const ahora = Date.now();
-  const tiempoRestante = expiresAtMs - ahora;
+  revisarVencimiento();
 
-  if (tiempoRestante <= 0) {
-    // Token expirado, intentar refrescar
-    refrescarTokens().then((success) => {
-      if (!success) {
-        cerrarSesion();
-      }
+  // Con la compu dormida o la pestaña de fondo, el timer no corre (o corre
+  // tarde): al volver se mira de nuevo, y también al volver la red.
+  if (!escuchando) {
+    escuchando = true;
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") revisarVencimiento();
     });
+    window.addEventListener("online", revisarVencimiento);
+  }
+}
+
+let escuchando = false;
+
+/** Refresca ya si el token venció o está por vencer; si no, programa el próximo. */
+function revisarVencimiento() {
+  const expiresAt = localStorage.getItem("tokenExpiresAt");
+  if (!expiresAt || !localStorage.getItem("refreshToken")) return;
+  const tiempoRestante = parseInt(expiresAt, 10) - Date.now();
+  if (tiempoRestante < REFRESH_MARGIN_MS) {
+    void refrescarTokens();
   } else {
-    // Programar refresh
-    const expiresIn = Math.floor(tiempoRestante / 1000);
-    programarRefresh(expiresIn);
+    programarRefresh(Math.floor(tiempoRestante / 1000));
   }
 }

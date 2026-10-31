@@ -51,6 +51,14 @@
     "subtitulo": "Review and publish your clips from your phone. Scan the code with your camera.",
     "qrAlt": "QR code to get the app",
     "desdeElTelefono": "On your phone? <link>Get it here</link>.",
-    "irAlPanel": "Go to dashboard"
+    "irAlPanel": "Go to dashboard",
+    "pronto": "Coming soon",
+    "subtituloPronto": "The iPhone and Android app is on its way. With the same account you'll be able to:",
+    "puntos": {
+      "revisar": "Review each client's clips from your phone.",
+      "aprobar": "Approve or request changes with a voice note.",
+      "subir": "Upload already edited clips from your gallery."
+    },
+    "mientras": "Meanwhile, everything works on the web, in any browser."
   }
 }

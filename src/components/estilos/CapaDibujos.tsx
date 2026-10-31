@@ -2,7 +2,8 @@
 
 import { useId } from "react";
 import type { Lienzo } from "@/lib/clip-encuadre";
-import { FUENTES_ESTILO, type Dibujo, type Giro, type Trozo } from "@/lib/estilos-texto";
+import { anchoTexto, FUENTES_ESTILO, type Dibujo, type Giro, type Trozo } from "@/lib/estilos-texto";
+import { emDe, grafemas, LADO_EMOJI, mitadMayusculaEm, tieneEmoji, urlEmoji } from "@/lib/emojis";
 
 /**
  * Lo que arman `dibujarTexto` y `dibujarSubtitulos`, en un SVG con las
@@ -68,6 +69,7 @@ export function CapaDibujos({
             {d.trozos.map((t, i) => (
               <TextoSvg key={`t${i}`} t={t} />
             ))}
+            {d.trozos.map((t, i) => (tieneEmoji(t.texto) && t.opacidad > 0 ? <EmojisSvg key={`e${i}`} t={t} /> : null))}
           </g>
         ),
       )}
@@ -77,15 +79,36 @@ export function CapaDibujos({
 
 const girar = (g?: Giro) => (g ? `rotate(${-g.grados} ${g.x} ${g.y})` : undefined);
 
-function TextoSvg({ t, filtro }: { t: Trozo; filtro?: string }) {
-  if (t.opacidad <= 0 && t.opacidadContorno <= 0) return null;
-  const f = FUENTES_ESTILO[t.fuente] ?? FUENTES_ESTILO.NUNITO;
+function transformDe(t: Trozo) {
   const escala =
     t.escalaX !== 1 || t.escalaY !== 1
       ? `translate(${t.x} ${t.base}) scale(${t.escalaX} ${t.escalaY}) translate(${-t.x} ${-t.base})`
       : "";
   // Con \frz libass gira en sentido contrario a las agujas del reloj; SVG, a favor.
-  const transform = [girar(t.giro), escala].filter(Boolean).join(" ") || undefined;
+  return [girar(t.giro), escala].filter(Boolean).join(" ") || undefined;
+}
+
+/**
+ * Un trozo con emojis: cada pedazo de letra va en su lugar, y cada emoji queda
+ * como hueco (sin contorno ni sombra, como el `\h` del render). Los emojis los
+ * pone EmojisSvg encima, después de todo el texto.
+ */
+function TextoSvg({ t, filtro }: { t: Trozo; filtro?: string }) {
+  if (t.opacidad <= 0 && t.opacidadContorno <= 0) return null;
+  if (tieneEmoji(t.texto)) {
+    let x = t.x;
+    return (
+      <g transform={transformDe(t)}>
+        {grafemas(t.texto).map(({ g, emoji }, i) => {
+          const desde = x;
+          x += anchoTexto(g, t.fuente, t.cuerpo, t.interletra);
+          return emoji ? null : <TextoSvg key={i} t={{ ...t, texto: g, x: desde, escalaX: 1, escalaY: 1, giro: undefined }} filtro={filtro} />;
+        })}
+      </g>
+    );
+  }
+  const f = FUENTES_ESTILO[t.fuente] ?? FUENTES_ESTILO.NUNITO;
+  const transform = transformDe(t);
   return (
     <text
       x={t.x}
@@ -109,5 +132,23 @@ function TextoSvg({ t, filtro }: { t: Trozo; filtro?: string }) {
     >
       {t.texto}
     </text>
+  );
+}
+
+/** Los emojis de un trozo: el PNG de Noto que pone el render, centrado en la mitad de la mayúscula. */
+function EmojisSvg({ t }: { t: Trozo }) {
+  const em = emDe(t.fuente, t.cuerpo);
+  const lado = Math.max(8, Math.round(em * LADO_EMOJI));
+  const cy = t.base - em * mitadMayusculaEm(t.fuente);
+  let x = t.x;
+  return (
+    <g transform={transformDe(t)} opacity={t.opacidad}>
+      {grafemas(t.texto).map(({ g, emoji }, i) => {
+        const ancho = anchoTexto(g, t.fuente, t.cuerpo, t.interletra);
+        const cx = x + ancho / 2;
+        x += ancho;
+        return emoji ? <image key={i} href={urlEmoji(g)} x={cx - lado / 2} y={cy - lado / 2} width={lado} height={lado} /> : null;
+      })}
+    </g>
   );
 }
