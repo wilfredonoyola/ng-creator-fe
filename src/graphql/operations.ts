@@ -550,6 +550,7 @@ export const USUARIOS_SUPERADMIN = gql`
         comoNosConocio
         comoNosConocioDetalle
       }
+      comunicaciones { marketing telefono whatsapp }
       accesos {
         marcaId
         marcaNombre
@@ -3822,5 +3823,21 @@ export const AUDIENCIAS_MAILCHIMP = gql`
 export const GUARDAR_MAILCHIMP = gql`
   mutation GuardarMailchimp($input: GuardarMailchimpInput!) {
     guardarMailchimp(input: $input) { ${CAMPOS_MAILCHIMP} }
+  }
+`;
+
+// --- Consentimientos de comunicaciones (ng-creator-be#289): onboarding y Perfil ---
+
+const CAMPOS_COMUNICACIONES = `marketing marketingEn telefono whatsapp whatsappEn`;
+
+export const MIS_COMUNICACIONES = gql`
+  query MisComunicaciones {
+    misComunicaciones { ${CAMPOS_COMUNICACIONES} }
+  }
+`;
+
+export const GUARDAR_COMUNICACIONES = gql`
+  mutation GuardarComunicaciones($input: ComunicacionesInput!) {
+    guardarComunicaciones(input: $input) { ${CAMPOS_COMUNICACIONES} }
   }
 `;

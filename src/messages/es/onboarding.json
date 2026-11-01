@@ -25,6 +25,14 @@
       },
       "otroDetalle": "¿Dónde?",
       "otroEjemplo": "Un podcast, un evento, otra IA…"
+    },
+    "comunicaciones": {
+      "titulo": "Cómo te contactamos",
+      "marketing": "Quiero recibir novedades, consejos y ofertas de Clipfine por correo.",
+      "whatsapp": "Quiero recibir avisos de Clipfine por WhatsApp.",
+      "telefono": "Tu teléfono (con código de país)",
+      "telefonoEjemplo": "+503 7000 0000",
+      "baja": "Las dos son opcionales y podés darte de baja cuando quieras desde Perfil (o con el enlace de cada correo)."
     }
   },
   "kit": {

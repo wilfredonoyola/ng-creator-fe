@@ -66,5 +66,21 @@
     "telefono": "En el teléfono llegan si tenés la app instalada y le diste permiso para avisarte.",
     "errorGuardar": "No se pudo guardar",
     "errorGuardarDetalle": "No se pudo guardar: {error}"
+  },
+  "comunicaciones": {
+    "titulo": "Comunicaciones",
+    "detalle": "Lo que aceptaste recibir de Clipfine. Podés cambiarlo cuando quieras.",
+    "marketing": "Correos de marketing",
+    "marketingDetalle": "Novedades, consejos y ofertas. También podés darte de baja con el enlace de cada correo.",
+    "whatsapp": "Avisos por WhatsApp",
+    "whatsappDetalle": "Necesitamos tu teléfono con código de país.",
+    "telefono": "Teléfono",
+    "telefonoEjemplo": "+503 7000 0000",
+    "guardar": "Guardar",
+    "guardando": "Guardando…",
+    "guardado": "Guardado.",
+    "cargando": "Cargando…",
+    "errorTraer": "No pudimos traer tus preferencias: {error}",
+    "faltaTelefono": "Primero escribí tu teléfono y tocá Guardar."
   }
 }

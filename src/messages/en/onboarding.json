@@ -25,6 +25,14 @@
       },
       "otroDetalle": "Where?",
       "otroEjemplo": "A podcast, an event, another AI…"
+    },
+    "comunicaciones": {
+      "titulo": "How we contact you",
+      "marketing": "I want to receive Clipfine news, tips and offers by email.",
+      "whatsapp": "I want to receive Clipfine notifications on WhatsApp.",
+      "telefono": "Your phone (with country code)",
+      "telefonoEjemplo": "+1 555 000 0000",
+      "baja": "Both are optional and you can unsubscribe anytime from Profile (or with the link in every email)."
     }
   },
   "kit": {

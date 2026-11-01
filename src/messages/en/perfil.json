@@ -66,5 +66,21 @@
     "telefono": "Phone notifications arrive if you have the app installed and allowed it to notify you.",
     "errorGuardar": "Couldn't save",
     "errorGuardarDetalle": "Couldn't save: {error}"
+  },
+  "comunicaciones": {
+    "titulo": "Communications",
+    "detalle": "What you agreed to receive from Clipfine. You can change it anytime.",
+    "marketing": "Marketing emails",
+    "marketingDetalle": "News, tips and offers. You can also unsubscribe with the link in every email.",
+    "whatsapp": "WhatsApp notifications",
+    "whatsappDetalle": "We need your phone number with the country code.",
+    "telefono": "Phone",
+    "telefonoEjemplo": "+1 555 000 0000",
+    "guardar": "Save",
+    "guardando": "Saving…",
+    "guardado": "Saved.",
+    "cargando": "Loading…",
+    "errorTraer": "We couldn't load your preferences: {error}",
+    "faltaTelefono": "Enter your phone number and click Save first."
   }
 }
