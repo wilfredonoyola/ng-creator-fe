@@ -51,8 +51,19 @@
     "sin": "No webhook: Lemon wouldn't tell Clipfine about payments.",
     "crear": "Create webhook",
     "rehacer": "Redo webhook",
-    "ok": "Webhook created in Lemon Squeezy.",
-    "confirmarRehacer": "Redo the webhook? A new one is created with another secret and the old one is deleted."
+    "ok": "Webhook ready in Lemon Squeezy. If there was one at this address already, that one was used.",
+    "confirmarRehacer": "Redo the webhook? A new one is created with another secret and the old one is deleted.",
+    "probar": "Test webhook",
+    "probando": "Testing…",
+    "pruebaOk": "The webhook answers and accepts the signature: Lemon's notices will arrive.",
+    "pruebaFallo": "The server answered {estado} to the test notice: check the URL or redo the webhook.",
+    "pruebaSinRespuesta": "Couldn't reach the webhook URL.",
+    "enLemon": "This store's webhooks in Lemon:",
+    "propio": "Clipfine's",
+    "ajeno": "Created by hand (Clipfine doesn't know its secret)",
+    "dePrueba": "test",
+    "deVerdad": "live",
+    "eventos": "{n, plural, one {# event} other {# events}}"
   },
   "guia": {
     "titulo": "How to set up billing with Lemon Squeezy",
