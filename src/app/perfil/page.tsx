@@ -8,6 +8,7 @@ import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { NOMBRE_MAX, nombreValido, useGuardarMiNombre } from "@/lib/nombre";
 import { SelectorIdioma } from "@/components/SelectorIdioma";
+import { CampoTelefono, type ValorTelefono } from "@/components/CampoTelefono";
 import { cerrarSesion } from "@/lib/auth";
 import { ESTILO_ROL, useSesion } from "@/lib/sesion";
 import { useMarcaActiva } from "@/lib/marca-activa";
@@ -556,9 +557,10 @@ function Comunicaciones() {
     },
   });
   const c = data?.misComunicaciones;
-  const [telefono, setTelefono] = useState("");
+  const [telefono, setTelefono] = useState<ValorTelefono>({ numero: null, escrito: false, problema: null });
   const [mensaje, setMensaje] = useState<{ ok: boolean; texto: string } | null>(null);
-  useEffect(() => setTelefono(c?.telefono ?? ""), [c?.telefono]);
+  // Un número nuevo y válido, distinto del guardado.
+  const telefonoNuevo = telefono.numero && telefono.numero !== c?.telefono ? telefono.numero : null;
 
   async function cambiar(input: { marketing?: boolean; whatsapp?: boolean; telefono?: string }) {
     setMensaje(null);
@@ -601,29 +603,26 @@ function Comunicaciones() {
                 encendido={!!c.whatsapp}
                 etiqueta={t("whatsapp")}
                 onCambiar={(v) => {
-                  if (v && !c.telefono && !telefono.trim()) {
+                  if (v && !c.telefono && !telefonoNuevo) {
                     setMensaje({ ok: false, texto: t("faltaTelefono") });
                     return;
                   }
-                  void cambiar(v && telefono.trim() !== (c.telefono ?? "") ? { whatsapp: v, telefono: telefono.trim() } : { whatsapp: v });
+                  void cambiar(v && telefonoNuevo ? { whatsapp: v, telefono: telefonoNuevo } : { whatsapp: v });
                 }}
               />
             </div>
-            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-              <input
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value.slice(0, 30))}
-                placeholder={t("telefonoEjemplo")}
-                aria-label={t("telefono")}
-                className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none transition focus:border-marca/60"
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-start">
+              <CampoTelefono
+                key={c.telefono ?? ""}
+                inicial={c.telefono}
+                onCambio={setTelefono}
+                className="min-w-0 flex-1"
+                claseCampo="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none transition focus:border-marca/60"
               />
               <button
                 type="button"
-                disabled={guardando || telefono.trim() === (c.telefono ?? "")}
-                onClick={() => void cambiar({ telefono: telefono.trim() })}
+                disabled={guardando || !telefonoNuevo}
+                onClick={() => telefonoNuevo && void cambiar({ telefono: telefonoNuevo })}
                 className="shrink-0 rounded-xl border border-white/15 px-4 py-2 text-sm transition hover:bg-white/5 disabled:opacity-40"
               >
                 {guardando ? t("guardando") : t("guardar")}

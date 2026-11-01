@@ -12,6 +12,7 @@ import bibliotecaSonidos_es from "./es/bibliotecaSonidos.json";
 import brandKit_es from "./es/brandKit.json";
 import calendario_es from "./es/calendario.json";
 import calidadClip_es from "./es/calidadClip.json";
+import campoTelefono_es from "./es/campoTelefono.json";
 import chatSoporte_es from "./es/chatSoporte.json";
 import clipsSubidos_es from "./es/clipsSubidos.json";
 import cobroSuperadmin_es from "./es/cobroSuperadmin.json";
@@ -148,6 +149,7 @@ import bibliotecaSonidos_en from "./en/bibliotecaSonidos.json";
 import brandKit_en from "./en/brandKit.json";
 import calendario_en from "./en/calendario.json";
 import calidadClip_en from "./en/calidadClip.json";
+import campoTelefono_en from "./en/campoTelefono.json";
 import chatSoporte_en from "./en/chatSoporte.json";
 import clipsSubidos_en from "./en/clipsSubidos.json";
 import cobroSuperadmin_en from "./en/cobroSuperadmin.json";
@@ -287,6 +289,7 @@ export const mensajes = {
     "brandKit": brandKit_es,
     "calendario": calendario_es,
     "calidadClip": calidadClip_es,
+    "campoTelefono": campoTelefono_es,
     "chatSoporte": chatSoporte_es,
     "clipsSubidos": clipsSubidos_es,
     "cobroSuperadmin": cobroSuperadmin_es,
@@ -425,6 +428,7 @@ export const mensajes = {
     "brandKit": brandKit_en,
     "calendario": calendario_en,
     "calidadClip": calidadClip_en,
+    "campoTelefono": campoTelefono_en,
     "chatSoporte": chatSoporte_en,
     "clipsSubidos": clipsSubidos_en,
     "cobroSuperadmin": cobroSuperadmin_en,

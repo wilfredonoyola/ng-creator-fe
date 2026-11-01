@@ -1,0 +1,6 @@
+{
+  "pais": "País",
+  "numero": "Número de celular",
+  "invalido": "Ese número no es válido para el país elegido.",
+  "fijo": "Ese número es fijo: necesitamos un celular, que pueda recibir WhatsApp o SMS."
+}
