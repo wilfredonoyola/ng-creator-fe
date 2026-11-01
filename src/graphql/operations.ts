@@ -3599,30 +3599,28 @@ export const PRIMEROS_PASOS = gql`
 
 // ---- Plan y cobro (ng-creator-be#94, Lemon Squeezy) ----
 
-const CAMPOS_PLAN = gql`
-  fragment CamposPlan on MiPlan {
-    plan
-    periodo
-    estado
-    pruebaHasta
-    topeHoras
-    horasUsadas
-    cicloHasta
-    renuevaEn
-    terminaEn
-    puedeSubir
-    motivo
-    pagaConLemon
-    cobroDePrueba
-  }
+// Campos del plan, en texto (no fragmento): los comparten MiPlan y SuscripcionAdmin, que son tipos distintos.
+const CAMPOS_PLAN = `
+  plan
+  periodo
+  estado
+  pruebaHasta
+  topeHoras
+  horasUsadas
+  cicloHasta
+  renuevaEn
+  terminaEn
+  puedeSubir
+  motivo
+  pagaConLemon
+  cobroDePrueba
 `;
 
 /** El plan de la cuenta, solo para su titular. Null si no paga ninguna marca. */
 export const MI_PLAN = gql`
-  ${CAMPOS_PLAN}
   query MiPlan {
     miPlan {
-      ...CamposPlan
+      ${CAMPOS_PLAN}
     }
     cobroConfigurado
   }
@@ -3630,10 +3628,9 @@ export const MI_PLAN = gql`
 
 /** Si se puede subir en esta marca (para quien opera, sin datos de cobro). Null: sin límites. */
 export const PLAN_DE_MARCA = gql`
-  ${CAMPOS_PLAN}
   query PlanDeMarca($marcaId: ID!) {
     planDeMarca(marcaId: $marcaId) {
-      ...CamposPlan
+      ${CAMPOS_PLAN}
     }
   }
 `;
@@ -3654,10 +3651,9 @@ export const PORTAL_SUSCRIPCION = gql`
 `;
 
 export const SUSCRIPCIONES_ADMIN = gql`
-  ${CAMPOS_PLAN}
   query SuscripcionesAdmin {
     suscripcionesAdmin {
-      ...CamposPlan
+      ${CAMPOS_PLAN}
       titularId
       email
       nombre
@@ -3676,10 +3672,9 @@ export const SUSCRIPCIONES_ADMIN = gql`
 `;
 
 export const AJUSTAR_SUSCRIPCION = gql`
-  ${CAMPOS_PLAN}
   mutation AjustarSuscripcion($input: AjusteSuscripcionInput!) {
     ajustarSuscripcion(input: $input) {
-      ...CamposPlan
+      ${CAMPOS_PLAN}
       titularId
     }
   }

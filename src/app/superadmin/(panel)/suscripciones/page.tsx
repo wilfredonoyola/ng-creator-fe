@@ -58,7 +58,7 @@ export default function SuscripcionesAdminPage() {
   const tp = useTranslations("plan");
   const locale = useLocale();
   const formato = useFormatter();
-  const { data, loading, refetch } = useQuery<{ suscripcionesAdmin: Fila[] }>(SUSCRIPCIONES_ADMIN, {
+  const { data, loading, error: errorLista, refetch } = useQuery<{ suscripcionesAdmin: Fila[] }>(SUSCRIPCIONES_ADMIN, {
     fetchPolicy: "cache-and-network",
     errorPolicy: "all",
   });
@@ -89,6 +89,7 @@ export default function SuscripcionesAdminPage() {
         ))}
       </div>
 
+      {errorLista && <p className="mb-4 text-sm text-red-400">{errorLista.message}</p>}
       {loading && !data ? (
         <p className="text-sm text-white/50">{t("cargando")}</p>
       ) : filas.length === 0 ? (
