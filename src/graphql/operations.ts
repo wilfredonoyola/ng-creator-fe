@@ -3848,3 +3848,11 @@ export const GUARDAR_COMUNICACIONES = gql`
     guardarComunicaciones(input: $input) { ${CAMPOS_COMUNICACIONES} }
   }
 `;
+
+/** Lo que el onboarding precarga del registro (ng-creator-be#289): la empresa y el teléfono. */
+export const DATOS_ONBOARDING = gql`
+  query DatosOnboarding {
+    yo { _id empresa }
+    misComunicaciones { marketing telefono whatsapp }
+  }
+`;

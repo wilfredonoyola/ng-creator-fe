@@ -142,10 +142,15 @@ export async function confirmarPasswordNueva(
  * Registro abierto, paso 1: crea la cuenta (sin confirmar) y Cognito manda un
  * código de 6 dígitos al correo. No da sesión todavía.
  */
-export async function registrarse(email: string, password: string, nombre: string | null = null): Promise<void> {
+export async function registrarse(
+  email: string,
+  password: string,
+  nombre: string | null = null,
+  extras: { telefono?: string | null; empresa?: string | null } = {},
+): Promise<void> {
   await pedir<boolean>(
-    `mutation Registrarse($email: String!, $password: String!, $nombre: String) { registrarse(email: $email, password: $password, nombre: $nombre) }`,
-    { email, password, nombre },
+    `mutation Registrarse($email: String!, $password: String!, $nombre: String, $telefono: String, $empresa: String) { registrarse(email: $email, password: $password, nombre: $nombre, telefono: $telefono, empresa: $empresa) }`,
+    { email, password, nombre, telefono: extras.telefono ?? null, empresa: extras.empresa ?? null },
     "registrarse"
   );
 }

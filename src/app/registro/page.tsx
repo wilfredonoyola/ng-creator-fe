@@ -19,7 +19,8 @@ import { empujarEvento } from "@/lib/data-layer";
 /**
  * Registro abierto con prueba gratis.
  *
- * Dos pasos en la misma tarjeta: correo y contraseña, y después el código que
+ * Dos pasos en la misma tarjeta: nombre, empresa (opcional), correo, teléfono
+ * (obligatorio, para WhatsApp; ng-creator-be#289) y contraseña, y después el código que
  * Cognito manda al correo. Al confirmar entra solo, con la contraseña que
  * acaba de escribir, y sigue al onboarding a crear su marca: pedirle que vuelva
  * a escribir todo en /login es donde se pierde gente.
@@ -29,7 +30,9 @@ export default function RegistroPage() {
   const router = useRouter();
   const [paso, setPaso] = useState<"datos" | "codigo">("datos");
   const [nombre, setNombre] = useState("");
+  const [empresa, setEmpresa] = useState("");
   const [correo, setCorreo] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
   const [codigo, setCodigo] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -42,14 +45,20 @@ export default function RegistroPage() {
   const nombreLimpio = nombre.trim();
   const nombreValido =
     nombreLimpio.length === 0 || (nombreLimpio.length >= NOMBRE_MIN && nombreLimpio.length <= NOMBRE_MAX);
-  const puedeCrear = passwordValida(password) && email.length > 0 && nombreValido;
+  // Con código de país, como lo pide el backend: + y de 8 a 15 dígitos.
+  const telefonoLimpio = telefono.replace(/[\s\-().]/g, "").replace(/^00/, "+");
+  const telefonoValido = /^\+[1-9]\d{7,14}$/.test(telefonoLimpio);
+  const puedeCrear = passwordValida(password) && email.length > 0 && nombreValido && telefonoValido;
 
   async function crear(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setCargando(true);
     try {
-      await registrarse(email, password, nombreLimpio || null);
+      await registrarse(email, password, nombreLimpio || null, {
+        telefono: telefonoLimpio,
+        empresa: empresa.trim() || null,
+      });
       // Para GTM: la cuenta quedó creada en Cognito (si falla, no llega acá).
       empujarEvento({ event: "signup_form_submit", method: "email" });
       setPaso("codigo");
@@ -120,6 +129,14 @@ export default function RegistroPage() {
             maxLength={NOMBRE_MAX}
             autoFocus
           />
+          <label className="mb-1 block text-xs text-white/50">{t("empresa")}</label>
+          <input
+            value={empresa}
+            onChange={(e) => setEmpresa(e.target.value.slice(0, 80))}
+            className={`mb-4 ${campo}`}
+            placeholder={t("empresaEjemplo")}
+            autoComplete="organization"
+          />
           <label className="mb-1 block text-xs text-white/50">{t("correo")}</label>
           <input
             type="email"
@@ -130,6 +147,20 @@ export default function RegistroPage() {
             autoComplete="email"
             required
           />
+          <label className="mb-1 block text-xs text-white/50">{t("telefono")}</label>
+          <input
+            type="tel"
+            inputMode="tel"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value.slice(0, 30))}
+            className={`${campo}`}
+            placeholder={t("telefonoEjemplo")}
+            autoComplete="tel"
+            required
+          />
+          <p className={`mb-4 mt-1 text-xs ${telefono.trim() && !telefonoValido ? "text-amber-300" : "text-white/40"}`}>
+            {t("telefonoAyuda")}
+          </p>
           <label className="mb-1 block text-xs text-white/50">{t("password")}</label>
           <CampoPassword
             value={password}
