@@ -32,7 +32,8 @@
       "whatsapp": "I want to receive Clipfine notifications on WhatsApp.",
       "telefono": "Your phone (with country code)",
       "telefonoEjemplo": "+1 555 000 0000",
-      "baja": "Both are optional and you can unsubscribe anytime from Profile (or with the link in every email)."
+      "baja": "Both are optional and you can unsubscribe anytime from Profile (or with the link in every email).",
+      "alTelefono": "We'll message {telefono}. You can change it in Profile."
     }
   },
   "kit": {

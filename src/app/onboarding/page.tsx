@@ -19,6 +19,7 @@ import { ESTILO_TEXTO_POR_DEFECTO, temaValido, type EstiloTexto, type Tema } fro
 import { PLANTILLA_POR_DEFECTO, type PlantillaClip } from "@/lib/plantilla-clip";
 import {
   CREAR_MARCA,
+  DATOS_ONBOARDING,
   GUARDAR_COMUNICACIONES,
   GUARDAR_PLANTILLA_CLIP,
   GUARDAR_TEMA_MARCA,
@@ -119,10 +120,21 @@ type Origen = (typeof ORIGENES)[number];
  * WhatsApp con el teléfono. Opcionales y sin marcar: se guardan primero (con
  * el "no" también, y la fecha), así un teléfono mal escrito frena antes de
  * crear la marca. Se cambian después desde Perfil.
+ *
+ * El teléfono y la empresa vienen del registro: la empresa precarga el nombre
+ * de la marca y WhatsApp usa ese teléfono. Solo quien no lo tiene (cuentas de
+ * antes del registro con teléfono) lo escribe acá.
  */
 function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }) => void }) {
   const t = useTranslations("onboarding");
-  const [nombre, setNombre] = useState("");
+  const { data: datos } = useQuery<{
+    yo: { empresa: string | null } | null;
+    misComunicaciones: { telefono: string | null } | null;
+  }>(DATOS_ONBOARDING, { errorPolicy: "all" });
+  const telefonoGuardado = datos?.misComunicaciones?.telefono ?? null;
+  // Sin tocar el campo, la empresa del registro.
+  const [nombreEscrito, setNombre] = useState<string | null>(null);
+  const nombre = nombreEscrito ?? datos?.yo?.empresa ?? "";
   const [origen, setOrigen] = useState<Origen | null>(null);
   const [detalle, setDetalle] = useState("");
   const [marketing, setMarketing] = useState(false);
@@ -142,7 +154,9 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
     setError(null);
     try {
       await guardarComunicaciones({
-        variables: { input: { marketing, whatsapp, ...(whatsapp ? { telefono: telefono.trim() } : {}) } },
+        variables: {
+          input: { marketing, whatsapp, ...(whatsapp && !telefonoGuardado ? { telefono: telefono.trim() } : {}) },
+        },
       });
       const r = await crear({
         variables: {
@@ -222,7 +236,10 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
           />
           <span>{t("marca.comunicaciones.whatsapp")}</span>
         </label>
-        {whatsapp && (
+        {whatsapp && telefonoGuardado && (
+          <p className="ml-7 mt-1 text-xs text-white/50">{t("marca.comunicaciones.alTelefono", { telefono: telefonoGuardado })}</p>
+        )}
+        {whatsapp && !telefonoGuardado && (
           <input
             type="tel"
             inputMode="tel"
@@ -241,7 +258,7 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
       <div className="mt-6 flex justify-end">
         <button
           type="submit"
-          disabled={loading || guardandoComunicaciones || !nombre.trim() || !origen || (whatsapp && !telefono.trim())}
+          disabled={loading || guardandoComunicaciones || !nombre.trim() || !origen || (whatsapp && !telefonoGuardado && !telefono.trim())}
           className={botonPrincipal}
         >
           {loading || guardandoComunicaciones ? t("marca.creando") : t("marca.crear")}
