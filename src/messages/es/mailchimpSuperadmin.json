@@ -68,5 +68,29 @@
       "Lo que cargues acá gana sobre las variables del servidor (.env). Quitar un dato vuelve a usar el del servidor, si hay.",
       "Los avisos del producto (códigos, invitaciones, resúmenes) no salen por Mailchimp: siguen saliendo desde Clipfine."
     ]
+  },
+  "hitos": {
+    "titulo": "Hitos",
+    "ayuda": "Cada hito arranca su propio journey (punto de partida \"API trigger\"), una sola vez por persona. Pegá la URL del trigger o escribí journey/paso. Lo que la persona ya había logrado antes de cargar el hito no se manda.",
+    "sin": "Sin journey: este hito no manda nada.",
+    "conteo": "Enviados: {enviados} · por reintentar: {pendientes} · fallidos: {fallidos}",
+    "desde": "cuenta desde {fecha}",
+    "ok": "Hito guardado.",
+    "quitado": "Hito quitado.",
+    "confirmarQuitar": "¿Quitar este hito? Deja de mandarse. Si lo volvés a cargar, cuenta desde ese día.",
+    "nombres": {
+      "video_1": "Primer video",
+      "video_3": "Tercer video",
+      "video_5": "Quinto video",
+      "horas_3": "Usó las 3 horas de la prueba",
+      "trial_vencido": "Terminó la prueba sin plan"
+    },
+    "cuando": {
+      "video_1": "Al terminar de subir su primer video.",
+      "video_3": "Al llegar a 3 videos subidos (o más, si sube varios a la vez).",
+      "video_5": "Al llegar a 5 videos subidos.",
+      "horas_3": "A quien paga la cuenta, cuando la prueba gasta sus 3 horas.",
+      "trial_vencido": "A quien paga la cuenta, cuando pasan los 15 días de prueba sin plan pago. Se revisa cada 5 minutos."
+    }
   }
 }

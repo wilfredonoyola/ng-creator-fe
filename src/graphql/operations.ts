@@ -3803,6 +3803,7 @@ const CAMPOS_MAILCHIMP = `
   journeyNombre
   journeyEstado
   problema
+  hitos { hito trigger origen journeyNombre journeyEstado desde enviados pendientes fallidos }
   cambios { detalle porEmail en }
 `;
 
