@@ -3805,6 +3805,7 @@ const CAMPOS_MAILCHIMP = `
   journeyEstado
   problema
   hitos { hito trigger origen journeyNombre journeyEstado desde enviados pendientes fallidos }
+  webhookUrl
   cambios { detalle porEmail en }
 `;
 
@@ -3817,6 +3818,12 @@ export const CONFIGURACION_MAILCHIMP = gql`
 export const AUDIENCIAS_MAILCHIMP = gql`
   query AudienciasMailchimp {
     audienciasMailchimp { id nombre contactos }
+  }
+`;
+
+export const CREAR_WEBHOOK_MAILCHIMP = gql`
+  mutation CrearWebhookMailchimp {
+    crearWebhookMailchimp { ${CAMPOS_MAILCHIMP} }
   }
 `;
 
