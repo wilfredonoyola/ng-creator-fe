@@ -68,5 +68,29 @@
       "What you set here wins over the server variables (.env). Removing a value goes back to the server's, if any.",
       "Product notices (codes, invitations, summaries) don't go through Mailchimp: Clipfine still sends them."
     ]
+  },
+  "hitos": {
+    "titulo": "Milestones",
+    "ayuda": "Each milestone starts its own journey (\"API trigger\" starting point), once per person. Paste the trigger URL or type journey/step. What someone had already reached before the milestone was added isn't sent.",
+    "sin": "No journey: this milestone sends nothing.",
+    "conteo": "Sent: {enviados} · retrying: {pendientes} · failed: {fallidos}",
+    "desde": "counting since {fecha}",
+    "ok": "Milestone saved.",
+    "quitado": "Milestone removed.",
+    "confirmarQuitar": "Remove this milestone? It stops being sent. If you add it again, it counts from that day.",
+    "nombres": {
+      "video_1": "First video",
+      "video_3": "Third video",
+      "video_5": "Fifth video",
+      "horas_3": "Used the 3 trial hours",
+      "trial_vencido": "Trial ended without a plan"
+    },
+    "cuando": {
+      "video_1": "When their first video finishes uploading.",
+      "video_3": "When they reach 3 uploaded videos (or more, if they upload several at once).",
+      "video_5": "When they reach 5 uploaded videos.",
+      "horas_3": "To the account owner, when the trial uses its 3 hours.",
+      "trial_vencido": "To the account owner, when the 15 trial days pass without a paid plan. Checked every 5 minutes."
+    }
   }
 }

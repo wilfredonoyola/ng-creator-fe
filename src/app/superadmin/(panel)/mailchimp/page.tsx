@@ -25,7 +25,24 @@ interface Configuracion {
   journeyNombre: string | null;
   journeyEstado: string | null;
   problema: string | null;
+  hitos: Hito[];
   cambios: { detalle: string; porEmail: string; en: string }[];
+}
+
+const HITOS = ["video_1", "video_3", "video_5", "horas_3", "trial_vencido"] as const;
+type NombreHito = (typeof HITOS)[number];
+
+/** Un hito (video_1, horas_3...): su trigger en Mailchimp y cuántos salieron. */
+interface Hito {
+  hito: NombreHito;
+  trigger: string | null;
+  origen: Origen;
+  journeyNombre: string | null;
+  journeyEstado: string | null;
+  desde: string | null;
+  enviados: number;
+  pendientes: number;
+  fallidos: number;
 }
 
 interface Audiencia {
@@ -38,6 +55,7 @@ interface Cambios {
   apiKey?: string;
   audiencia?: string;
   journeyRegistro?: string;
+  triggers?: { hito: NombreHito; valor: string }[];
 }
 
 /**
@@ -237,6 +255,26 @@ export default function MailchimpSuperadmin() {
             )}
           </div>
 
+          {/* 4. Los hitos: un journey por cada uno */}
+          <h3 className={subtitulo}>{t("hitos.titulo")}</h3>
+          <p className="mt-1 text-xs text-white/50">{t("hitos.ayuda")}</p>
+          <ul className="mt-3 space-y-3">
+            {c.hitos
+              .filter((h) => (HITOS as readonly string[]).includes(h.hito))
+              .map((h) => (
+                <FilaHito
+                  key={h.hito}
+                  h={h}
+                  hayClave={hayClave}
+                  guardando={guardando}
+                  campo={campo}
+                  principal={principal}
+                  secundario={secundario}
+                  guardar={(valor, ok, despues) => hacer({ triggers: [{ hito: h.hito, valor }] }, ok, despues)}
+                />
+              ))}
+          </ul>
+
           {mensaje && <p className={`mt-4 text-sm ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}
 
           {c.cambios.length > 0 && (
@@ -257,5 +295,87 @@ export default function MailchimpSuperadmin() {
         </section>
       ) : null}
     </>
+  );
+}
+
+function FilaHito({
+  h,
+  hayClave,
+  guardando,
+  campo,
+  principal,
+  secundario,
+  guardar,
+}: {
+  h: Hito;
+  hayClave: boolean;
+  guardando: boolean;
+  campo: string;
+  principal: string;
+  secundario: string;
+  guardar: (valor: string, ok: string, despues?: () => void) => Promise<void>;
+}) {
+  const t = useTranslations("mailchimpSuperadmin");
+  const formato = useFormatter();
+  const [valor, setValor] = useState("");
+  return (
+    <li className="rounded-lg border border-white/10 p-3">
+      <p className="text-sm font-medium">{t(`hitos.nombres.${h.hito}`)}</p>
+      <p className="text-xs text-white/45">{t(`hitos.cuando.${h.hito}`)}</p>
+      <p className="mt-2 text-sm">
+        {h.trigger ? (
+          <>
+            {t("journey.actual", { nombre: h.journeyNombre ?? "—", id: h.trigger })}
+            {h.origen === "entorno" && ` · ${t("deEntorno")}`}
+            {h.journeyEstado && (
+              <span
+                className={`ml-2 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                  h.journeyEstado === "sending" ? "bg-emerald-400/15 text-emerald-300" : "bg-amber-400/15 text-amber-300"
+                }`}
+              >
+                {estadoConocido(h.journeyEstado) ? t(`journey.estados.${h.journeyEstado}`) : h.journeyEstado}
+              </span>
+            )}
+          </>
+        ) : (
+          <span className="text-white/50">{t("hitos.sin")}</span>
+        )}
+      </p>
+      {h.trigger && (
+        <p className="mt-1 text-xs text-white/45">
+          {t("hitos.conteo", { enviados: h.enviados, pendientes: h.pendientes, fallidos: h.fallidos })}
+          {h.desde && ` · ${t("hitos.desde", { fecha: formato.dateTime(new Date(h.desde), { dateStyle: "medium" }) })}`}
+        </p>
+      )}
+      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+        <input
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          placeholder={t("journey.pegar")}
+          aria-label={t(`hitos.nombres.${h.hito}`)}
+          className={campo}
+        />
+        <button
+          type="button"
+          disabled={guardando || !hayClave || !valor.trim()}
+          onClick={() => void guardar(valor.trim(), t("hitos.ok"), () => setValor(""))}
+          className={principal}
+        >
+          {guardando ? t("guardando") : t("guardar")}
+        </button>
+        {h.origen === "superadmin" && (
+          <button
+            type="button"
+            disabled={guardando}
+            onClick={() => {
+              if (window.confirm(t("hitos.confirmarQuitar"))) void guardar("", t("hitos.quitado"));
+            }}
+            className={secundario}
+          >
+            {t("quitar")}
+          </button>
+        )}
+      </div>
+    </li>
   );
 }
