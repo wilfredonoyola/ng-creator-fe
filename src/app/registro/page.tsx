@@ -15,6 +15,7 @@ import { CampoPassword, passwordValida, RequisitosPassword } from "@/components/
 import { conVolverA, MarcoAcceso } from "@/components/acceso/MarcoAcceso";
 import { NOMBRE_MAX, NOMBRE_MIN } from "@/lib/nombre";
 import { empujarEvento } from "@/lib/data-layer";
+import { CampoTelefono, type ValorTelefono } from "@/components/CampoTelefono";
 
 /**
  * Registro abierto con prueba gratis.
@@ -32,7 +33,7 @@ export default function RegistroPage() {
   const [nombre, setNombre] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [correo, setCorreo] = useState("");
-  const [telefono, setTelefono] = useState("");
+  const [telefono, setTelefono] = useState<ValorTelefono>({ numero: null, escrito: false, problema: null });
   const [password, setPassword] = useState("");
   const [codigo, setCodigo] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -45,10 +46,8 @@ export default function RegistroPage() {
   const nombreLimpio = nombre.trim();
   const nombreValido =
     nombreLimpio.length === 0 || (nombreLimpio.length >= NOMBRE_MIN && nombreLimpio.length <= NOMBRE_MAX);
-  // Con código de país, como lo pide el backend: + y de 8 a 15 dígitos.
-  const telefonoLimpio = telefono.replace(/[\s\-().]/g, "").replace(/^00/, "+");
-  const telefonoValido = /^\+[1-9]\d{7,14}$/.test(telefonoLimpio);
-  const puedeCrear = passwordValida(password) && email.length > 0 && nombreValido && telefonoValido;
+  // Celular válido para su país (libphonenumber, como el backend).
+  const puedeCrear = passwordValida(password) && email.length > 0 && nombreValido && !!telefono.numero;
 
   async function crear(e: React.FormEvent) {
     e.preventDefault();
@@ -56,7 +55,7 @@ export default function RegistroPage() {
     setCargando(true);
     try {
       await registrarse(email, password, nombreLimpio || null, {
-        telefono: telefonoLimpio,
+        telefono: telefono.numero,
         empresa: empresa.trim() || null,
       });
       // Para GTM: la cuenta quedó creada en Cognito (si falla, no llega acá).
@@ -148,19 +147,9 @@ export default function RegistroPage() {
             required
           />
           <label className="mb-1 block text-xs text-white/50">{t("telefono")}</label>
-          <input
-            type="tel"
-            inputMode="tel"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value.slice(0, 30))}
-            className={`${campo}`}
-            placeholder={t("telefonoEjemplo")}
-            autoComplete="tel"
-            required
-          />
-          <p className={`mb-4 mt-1 text-xs ${telefono.trim() && !telefonoValido ? "text-amber-300" : "text-white/40"}`}>
-            {t("telefonoAyuda")}
-          </p>
+          <CampoTelefono onCambio={setTelefono} claseCampo={campo} />
+          {!telefono.problema && <p className="mb-4 mt-1 text-xs text-white/40">{t("telefonoAyuda")}</p>}
+          {telefono.problema && <div className="mb-4" />}
           <label className="mb-1 block text-xs text-white/50">{t("password")}</label>
           <CampoPassword
             value={password}

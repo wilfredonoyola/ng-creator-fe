@@ -17,6 +17,7 @@ import { URL_SITIO } from "@/lib/sitio";
 import { APP_EN_TIENDAS } from "@/lib/app-movil";
 import { ESTILO_TEXTO_POR_DEFECTO, temaValido, type EstiloTexto, type Tema } from "@/lib/estilos-texto";
 import { PLANTILLA_POR_DEFECTO, type PlantillaClip } from "@/lib/plantilla-clip";
+import { CampoTelefono, type ValorTelefono } from "@/components/CampoTelefono";
 import {
   CREAR_MARCA,
   DATOS_ONBOARDING,
@@ -139,7 +140,7 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
   const [detalle, setDetalle] = useState("");
   const [marketing, setMarketing] = useState(false);
   const [whatsapp, setWhatsapp] = useState(false);
-  const [telefono, setTelefono] = useState("");
+  const [telefono, setTelefono] = useState<ValorTelefono>({ numero: null, escrito: false, problema: null });
   const [error, setError] = useState<string | null>(null);
   const [guardarComunicaciones, { loading: guardandoComunicaciones }] = useMutation(GUARDAR_COMUNICACIONES);
   // Se esperan las marcas y los accesos nuevos antes de seguir: con la lista
@@ -155,7 +156,7 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
     try {
       await guardarComunicaciones({
         variables: {
-          input: { marketing, whatsapp, ...(whatsapp && !telefonoGuardado ? { telefono: telefono.trim() } : {}) },
+          input: { marketing, whatsapp, ...(whatsapp && !telefonoGuardado && telefono.numero ? { telefono: telefono.numero } : {}) },
         },
       });
       const r = await crear({
@@ -239,26 +240,14 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
         {whatsapp && telefonoGuardado && (
           <p className="ml-7 mt-1 text-xs text-white/50">{t("marca.comunicaciones.alTelefono", { telefono: telefonoGuardado })}</p>
         )}
-        {whatsapp && !telefonoGuardado && (
-          <input
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value.slice(0, 30))}
-            placeholder={t("marca.comunicaciones.telefonoEjemplo")}
-            aria-label={t("marca.comunicaciones.telefono")}
-            required
-            className={`${campo} mt-3`}
-          />
-        )}
+        {whatsapp && !telefonoGuardado && <CampoTelefono onCambio={setTelefono} claseCampo={campo} className="mt-3" />}
         <p className="mt-3 text-xs text-white/40">{t("marca.comunicaciones.baja")}</p>
       </fieldset>
       {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
       <div className="mt-6 flex justify-end">
         <button
           type="submit"
-          disabled={loading || guardandoComunicaciones || !nombre.trim() || !origen || (whatsapp && !telefonoGuardado && !telefono.trim())}
+          disabled={loading || guardandoComunicaciones || !nombre.trim() || !origen || (whatsapp && !telefonoGuardado && !telefono.numero)}
           className={botonPrincipal}
         >
           {loading || guardandoComunicaciones ? t("marca.creando") : t("marca.crear")}

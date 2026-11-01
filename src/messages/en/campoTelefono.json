@@ -1,0 +1,6 @@
+{
+  "pais": "Country",
+  "numero": "Mobile number",
+  "invalido": "That number isn't valid for the selected country.",
+  "fijo": "That is a landline: we need a mobile number that can receive WhatsApp or SMS."
+}

@@ -17,6 +17,7 @@
     "@apollo/client": "^3.9.5",
     "graphql": "^16.8.1",
     "hls.js": "^1.7.3",
+    "libphonenumber-js": "1.13.15",
     "lucide-react": "^1.48.0",
     "marked": "^12.0.2",
     "next": "^14.2.35",
