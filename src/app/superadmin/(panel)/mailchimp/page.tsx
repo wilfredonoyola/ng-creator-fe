@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useFormatter, useTranslations } from "next-intl";
-import { AUDIENCIAS_MAILCHIMP, CONFIGURACION_MAILCHIMP, GUARDAR_MAILCHIMP } from "@/graphql/operations";
+import { AUDIENCIAS_MAILCHIMP, CONFIGURACION_MAILCHIMP, CREAR_WEBHOOK_MAILCHIMP, GUARDAR_MAILCHIMP } from "@/graphql/operations";
 import { mensajeDeError } from "@/lib/nombre";
 import { GuiaConfiguracion } from "@/components/superadmin/GuiaConfiguracion";
 
@@ -26,6 +26,7 @@ interface Configuracion {
   journeyEstado: string | null;
   problema: string | null;
   hitos: Hito[];
+  webhookUrl: string | null;
   cambios: { detalle: string; porEmail: string; en: string }[];
 }
 
@@ -72,6 +73,9 @@ export default function MailchimpSuperadmin() {
     fetchPolicy: "cache-and-network",
   });
   const [guardar, { loading: guardando }] = useMutation(GUARDAR_MAILCHIMP, {
+    refetchQueries: [{ query: CONFIGURACION_MAILCHIMP }],
+  });
+  const [crearWebhook, { loading: creandoWebhook }] = useMutation(CREAR_WEBHOOK_MAILCHIMP, {
     refetchQueries: [{ query: CONFIGURACION_MAILCHIMP }],
   });
   const [pedirAudiencias, audiencias] = useLazyQuery<{ audienciasMailchimp: Audiencia[] }>(AUDIENCIAS_MAILCHIMP, {
@@ -274,6 +278,36 @@ export default function MailchimpSuperadmin() {
                 />
               ))}
           </ul>
+
+          {/* 5. El webhook de bajas: Mailchimp avisa quién se dio de baja desde un correo (be#289). */}
+          <h3 className={subtitulo}>{t("webhook.titulo")}</h3>
+          <p className="mt-1 text-xs text-white/50">{t("webhook.ayuda")}</p>
+          <p className="mt-2 text-sm">
+            {c.webhookUrl ? (
+              <>
+                <span className="mr-2 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">
+                  {t("webhook.activo")}
+                </span>
+                <span className="break-all text-white/60">{c.webhookUrl}</span>
+              </>
+            ) : (
+              t("webhook.sin")
+            )}
+          </p>
+          <button
+            type="button"
+            disabled={creandoWebhook || !c.activo}
+            onClick={() => {
+              if (c.webhookUrl && !window.confirm(t("webhook.confirmarRehacer"))) return;
+              setMensaje(null);
+              crearWebhook()
+                .then(() => setMensaje({ ok: true, texto: t("webhook.ok") }))
+                .catch((e: unknown) => setMensaje({ ok: false, texto: mensajeDeError(e) }));
+            }}
+            className={`${c.webhookUrl ? secundario : principal} mt-2`}
+          >
+            {creandoWebhook ? t("webhook.creando") : c.webhookUrl ? t("webhook.rehacer") : t("webhook.crear")}
+          </button>
 
           {mensaje && <p className={`mt-4 text-sm ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}
 
