@@ -19,6 +19,7 @@ import { ESTILO_TEXTO_POR_DEFECTO, temaValido, type EstiloTexto, type Tema } fro
 import { PLANTILLA_POR_DEFECTO, type PlantillaClip } from "@/lib/plantilla-clip";
 import {
   CREAR_MARCA,
+  GUARDAR_COMUNICACIONES,
   GUARDAR_PLANTILLA_CLIP,
   GUARDAR_TEMA_MARCA,
   MARCAS_ACTIVAS,
@@ -113,13 +114,22 @@ type Origen = (typeof ORIGENES)[number];
 /**
  * Paso 1: el nombre de la marca, obligatorio porque es el espacio de trabajo,
  * y dónde escuchó de nosotros. Las dos cosas viajan juntas en crearMarca.
+ *
+ * Y los dos consentimientos (ng-creator-be#289): correos de marketing y
+ * WhatsApp con el teléfono. Opcionales y sin marcar: se guardan primero (con
+ * el "no" también, y la fecha), así un teléfono mal escrito frena antes de
+ * crear la marca. Se cambian después desde Perfil.
  */
 function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }) => void }) {
   const t = useTranslations("onboarding");
   const [nombre, setNombre] = useState("");
   const [origen, setOrigen] = useState<Origen | null>(null);
   const [detalle, setDetalle] = useState("");
+  const [marketing, setMarketing] = useState(false);
+  const [whatsapp, setWhatsapp] = useState(false);
+  const [telefono, setTelefono] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [guardarComunicaciones, { loading: guardandoComunicaciones }] = useMutation(GUARDAR_COMUNICACIONES);
   // Se esperan las marcas y los accesos nuevos antes de seguir: con la lista
   // vieja, el panel creería que sigue sin marca y volvería a mandar acá.
   const [crear, { loading }] = useMutation(CREAR_MARCA, {
@@ -131,6 +141,9 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
     e.preventDefault();
     setError(null);
     try {
+      await guardarComunicaciones({
+        variables: { input: { marketing, whatsapp, ...(whatsapp ? { telefono: telefono.trim() } : {}) } },
+      });
       const r = await crear({
         variables: {
           nombre: nombre.trim(),
@@ -189,10 +202,49 @@ function PasoMarca({ onCreada }: { onCreada: (m: { _id: string; nombre: string }
           />
         )}
       </fieldset>
+      <fieldset className="mt-6">
+        <legend className="mb-2 block text-xs text-white/50">{t("marca.comunicaciones.titulo")}</legend>
+        <label className="flex cursor-pointer items-start gap-3 text-sm text-ng-secundario">
+          <input
+            type="checkbox"
+            checked={marketing}
+            onChange={(e) => setMarketing(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-[#FFD400]"
+          />
+          <span>{t("marca.comunicaciones.marketing")}</span>
+        </label>
+        <label className="mt-3 flex cursor-pointer items-start gap-3 text-sm text-ng-secundario">
+          <input
+            type="checkbox"
+            checked={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-[#FFD400]"
+          />
+          <span>{t("marca.comunicaciones.whatsapp")}</span>
+        </label>
+        {whatsapp && (
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value.slice(0, 30))}
+            placeholder={t("marca.comunicaciones.telefonoEjemplo")}
+            aria-label={t("marca.comunicaciones.telefono")}
+            required
+            className={`${campo} mt-3`}
+          />
+        )}
+        <p className="mt-3 text-xs text-white/40">{t("marca.comunicaciones.baja")}</p>
+      </fieldset>
       {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
       <div className="mt-6 flex justify-end">
-        <button type="submit" disabled={loading || !nombre.trim() || !origen} className={botonPrincipal}>
-          {loading ? t("marca.creando") : t("marca.crear")}
+        <button
+          type="submit"
+          disabled={loading || guardandoComunicaciones || !nombre.trim() || !origen || (whatsapp && !telefono.trim())}
+          className={botonPrincipal}
+        >
+          {loading || guardandoComunicaciones ? t("marca.creando") : t("marca.crear")}
         </button>
       </div>
     </form>

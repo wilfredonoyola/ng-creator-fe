@@ -14,7 +14,9 @@ import { useMarcaActiva } from "@/lib/marca-activa";
 import { CONTACTO } from "@/lib/legal";
 import {
   ELIMINAR_MI_CUENTA,
+  GUARDAR_COMUNICACIONES,
   GUARDAR_PREFERENCIA_NOTIFICACION,
+  MIS_COMUNICACIONES,
   PREFERENCIAS_NOTIFICACION,
   RESUMEN_ELIMINAR_CUENTA,
 } from "@/graphql/operations";
@@ -117,6 +119,8 @@ export default function PerfilPage() {
         </section>
 
         <PreferenciasDeAvisos />
+
+        <Comunicaciones />
 
         {/* El conector MCP: ChatGPT o Claude con los datos de la cuenta (ng-creator-be#182). */}
         <Link
@@ -524,6 +528,111 @@ function PreferenciasDeAvisos() {
           <p className="text-sm text-red-400">{t("errorGuardarDetalle", { error: errorAlGuardar })}</p>
         </div>
       )}
+    </section>
+  );
+}
+
+interface ComunicacionesPersona {
+  marketing: boolean | null;
+  telefono: string | null;
+  whatsapp: boolean | null;
+}
+
+/**
+ * Lo que aceptó recibir (ng-creator-be#289): correos de marketing y avisos
+ * por WhatsApp con su teléfono. Se contesta en el onboarding y acá se cambia
+ * cuando quiera. Apagar los correos la da de baja en Mailchimp.
+ */
+function Comunicaciones() {
+  const t = useTranslations("perfil.comunicaciones");
+  const { data, loading, error } = useQuery<{ misComunicaciones: ComunicacionesPersona }>(MIS_COMUNICACIONES, {
+    errorPolicy: "all",
+  });
+  const [guardar, { loading: guardando }] = useMutation(GUARDAR_COMUNICACIONES, {
+    update(cache, { data: respuesta }) {
+      if (respuesta?.guardarComunicaciones) {
+        cache.writeQuery({ query: MIS_COMUNICACIONES, data: { misComunicaciones: respuesta.guardarComunicaciones } });
+      }
+    },
+  });
+  const c = data?.misComunicaciones;
+  const [telefono, setTelefono] = useState("");
+  const [mensaje, setMensaje] = useState<{ ok: boolean; texto: string } | null>(null);
+  useEffect(() => setTelefono(c?.telefono ?? ""), [c?.telefono]);
+
+  async function cambiar(input: { marketing?: boolean; whatsapp?: boolean; telefono?: string }) {
+    setMensaje(null);
+    try {
+      await guardar({ variables: { input } });
+      setMensaje({ ok: true, texto: t("guardado") });
+    } catch (err) {
+      setMensaje({ ok: false, texto: err instanceof Error ? err.message : String(err) });
+    }
+  }
+
+  return (
+    <section id="comunicaciones" className="mt-8 scroll-mt-20 rounded-2xl border border-white/10 bg-white/5 p-5">
+      <h2 className="font-semibold">{t("titulo")}</h2>
+      <p className="mt-1 text-sm text-white/50">{t("detalle")}</p>
+      {loading && !c ? (
+        <p className="mt-4 text-sm text-white/50">{t("cargando")}</p>
+      ) : error && !c ? (
+        <p className="mt-4 text-sm text-red-400">{t("errorTraer", { error: error.message })}</p>
+      ) : c ? (
+        <div className="mt-4 divide-y divide-white/5">
+          <div className="flex items-start justify-between gap-4 py-3">
+            <div>
+              <p className="text-sm">{t("marketing")}</p>
+              <p className="mt-0.5 text-xs text-white/45">{t("marketingDetalle")}</p>
+            </div>
+            <Interruptor
+              encendido={!!c.marketing}
+              etiqueta={t("marketing")}
+              onCambiar={(v) => void cambiar({ marketing: v })}
+            />
+          </div>
+          <div className="py-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm">{t("whatsapp")}</p>
+                <p className="mt-0.5 text-xs text-white/45">{t("whatsappDetalle")}</p>
+              </div>
+              <Interruptor
+                encendido={!!c.whatsapp}
+                etiqueta={t("whatsapp")}
+                onCambiar={(v) => {
+                  if (v && !c.telefono && !telefono.trim()) {
+                    setMensaje({ ok: false, texto: t("faltaTelefono") });
+                    return;
+                  }
+                  void cambiar(v && telefono.trim() !== (c.telefono ?? "") ? { whatsapp: v, telefono: telefono.trim() } : { whatsapp: v });
+                }}
+              />
+            </div>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <input
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value.slice(0, 30))}
+                placeholder={t("telefonoEjemplo")}
+                aria-label={t("telefono")}
+                className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm outline-none transition focus:border-marca/60"
+              />
+              <button
+                type="button"
+                disabled={guardando || telefono.trim() === (c.telefono ?? "")}
+                onClick={() => void cambiar({ telefono: telefono.trim() })}
+                className="shrink-0 rounded-xl border border-white/15 px-4 py-2 text-sm transition hover:bg-white/5 disabled:opacity-40"
+              >
+                {guardando ? t("guardando") : t("guardar")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {mensaje && <p className={`mt-3 text-sm ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}
     </section>
   );
 }

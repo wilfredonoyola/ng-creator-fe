@@ -145,6 +145,11 @@
         "nombre": "Sin acceso",
         "ayuda": "Personas a las que se les cortó el acceso"
       }
+    },
+    "comunicaciones": {
+      "marketing": "Acepta correos",
+      "whatsapp": "WhatsApp",
+      "sinMarketing": "No quiere correos"
     }
   },
   "origenes": {

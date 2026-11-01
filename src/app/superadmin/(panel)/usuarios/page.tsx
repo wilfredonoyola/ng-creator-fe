@@ -22,6 +22,7 @@ type Fila = {
     comoNosConocio?: Origen | null;
     comoNosConocioDetalle?: string | null;
   };
+  comunicaciones: { marketing: boolean | null; telefono: string | null; whatsapp: boolean | null };
   accesos: { marcaId: string; marcaNombre: string; rol: "PROPIETARIO" | "EDITOR" | "REVISOR" | "LECTOR" | "PROVEEDOR" }[];
 };
 
@@ -195,6 +196,24 @@ export default function UsuariosSuperadmin() {
                 </div>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-3 text-xs text-white/45 sm:justify-end">
+                {f.comunicaciones.marketing === true && (
+                  <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-emerald-300">{t("comunicaciones.marketing")}</span>
+                )}
+                {f.comunicaciones.marketing === false && <span>{t("comunicaciones.sinMarketing")}</span>}
+                {/* El enlace a WhatsApp solo con su consentimiento; sin él, el número a secas. */}
+                {f.comunicaciones.telefono &&
+                  (f.comunicaciones.whatsapp ? (
+                    <a
+                      href={`https://wa.me/${f.comunicaciones.telefono.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-emerald-300"
+                    >
+                      {t("comunicaciones.whatsapp")} · {f.comunicaciones.telefono}
+                    </a>
+                  ) : (
+                    <span>{f.comunicaciones.telefono}</span>
+                  ))}
                 {f.usuario.comoNosConocio && (
                   <span>
                     {t("conocio")} {tOrigen(f.usuario.comoNosConocio)}
