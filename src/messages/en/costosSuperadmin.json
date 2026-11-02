@@ -1,0 +1,48 @@
+{
+  "titulo": "AI costs",
+  "subtitulo": "How much each account spent on transcription, moment analysis, titles, searches and the support chat, and who triggered it.",
+  "periodo": "Period",
+  "dias": "{n} days",
+  "cargando": "Loading…",
+  "vacio": "No AI spend in this period.",
+  "totales": {
+    "usd": "Total spend",
+    "tokens": "Tokens",
+    "minutos": "Minutes transcribed",
+    "llamadas": "Calls"
+  },
+  "notaHistorico": "{usd} of this total comes from episodes before detailed tracking: it shows as transcription and moments, without who or how many calls.",
+  "notaSinPrecio": "{n, plural, one {# call used} other {# calls used}} a model with no price loaded: tokens count, dollars don't.",
+  "porConcepto": "By concept",
+  "cuentas": {
+    "titulo": "By account",
+    "cuenta": "Account",
+    "marcas": "{n, plural, one {# brand} other {# brands}}",
+    "usd": "US$",
+    "tokens": "Tokens",
+    "parte": "Share",
+    "visitantes": "Visitors without an account",
+    "sinTitular": "Brand without an owner: {marca}",
+    "ver": "Show detail",
+    "ocultar": "Hide detail"
+  },
+  "detalle": {
+    "conceptos": "What for",
+    "marcas": "By brand",
+    "personas": "Who triggered it",
+    "episodios": "Most expensive episodes",
+    "sinPersona": "No person (automatic or old episode)",
+    "llamadas": "{n, plural, one {# call} other {# calls}}",
+    "historico": "Includes {usd} from before tracking"
+  },
+  "conceptos": {
+    "TRANSCRIPCION": "Transcription",
+    "MOMENTOS": "Viral moments",
+    "RESUMEN": "Episode summary",
+    "REVISION_BORDES": "Edge review",
+    "TITULO_CLIP": "Clip title",
+    "TITULOS_PORTADA": "Cover titles",
+    "BUSQUEDA_MOMENTOS": "Search with instruction",
+    "CHAT_SOPORTE": "Support chat"
+  }
+}

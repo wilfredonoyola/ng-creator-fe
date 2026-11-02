@@ -3856,3 +3856,35 @@ export const DATOS_ONBOARDING = gql`
     misComunicaciones { marketing telefono whatsapp }
   }
 `;
+
+/** /superadmin/costos (ng-creator-be#264): el gasto en IA de cada cuenta, con desglose. */
+export const COSTOS_SUPERADMIN = gql`
+  query CostosSuperadmin($dias: Int!) {
+    costosSuperadmin(dias: $dias) {
+      dias
+      desde
+      usd
+      tokens
+      minutos
+      llamadas
+      sinPrecio
+      historicoUsd
+      porConcepto { concepto usd tokens minutos llamadas }
+      cuentas {
+        cuentaId
+        email
+        nombre
+        usd
+        tokens
+        minutos
+        llamadas
+        sinPrecio
+        historicoUsd
+        porConcepto { concepto usd tokens minutos llamadas }
+        porMarca { marcaId nombre usd tokens }
+        porUsuario { usuarioId email nombre usd llamadas }
+        episodios { episodioId titulo marca usd }
+      }
+    }
+  }
+`;

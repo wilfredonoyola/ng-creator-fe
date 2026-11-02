@@ -1,0 +1,48 @@
+{
+  "titulo": "Costos de IA",
+  "subtitulo": "Cuánto gastó cada cuenta en transcripción, análisis de momentos, títulos, búsquedas y el chat de soporte, y quién lo disparó.",
+  "periodo": "Período",
+  "dias": "{n} días",
+  "cargando": "Cargando…",
+  "vacio": "No hubo gasto de IA en este período.",
+  "totales": {
+    "usd": "Gasto total",
+    "tokens": "Tokens",
+    "minutos": "Minutos transcritos",
+    "llamadas": "Llamadas"
+  },
+  "notaHistorico": "{usd} de este total viene de episodios anteriores al registro detallado: se ve como transcripción y momentos, sin quién ni cuántas llamadas.",
+  "notaSinPrecio": "{n, plural, one {# llamada usó} other {# llamadas usaron}} un modelo sin precio cargado: cuentan tokens, no dólares.",
+  "porConcepto": "Por concepto",
+  "cuentas": {
+    "titulo": "Por cuenta",
+    "cuenta": "Cuenta",
+    "marcas": "{n, plural, one {# marca} other {# marcas}}",
+    "usd": "US$",
+    "tokens": "Tokens",
+    "parte": "Parte",
+    "visitantes": "Visitantes sin cuenta",
+    "sinTitular": "Marca sin titular: {marca}",
+    "ver": "Ver detalle",
+    "ocultar": "Ocultar detalle"
+  },
+  "detalle": {
+    "conceptos": "En qué",
+    "marcas": "Por marca",
+    "personas": "Quién lo disparó",
+    "episodios": "Episodios más caros",
+    "sinPersona": "Sin persona (automático o episodio viejo)",
+    "llamadas": "{n, plural, one {# llamada} other {# llamadas}}",
+    "historico": "Incluye {usd} de antes del registro"
+  },
+  "conceptos": {
+    "TRANSCRIPCION": "Transcripción",
+    "MOMENTOS": "Momentos virales",
+    "RESUMEN": "Resumen del episodio",
+    "REVISION_BORDES": "Revisión de bordes",
+    "TITULO_CLIP": "Título de clip",
+    "TITULOS_PORTADA": "Títulos de portada",
+    "BUSQUEDA_MOMENTOS": "Búsqueda con instrucción",
+    "CHAT_SOPORTE": "Chat de soporte"
+  }
+}
