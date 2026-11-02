@@ -10,7 +10,7 @@ Con el conector de Clipfine, ChatGPT o Claude pueden consultar tus marcas, sus m
 ## Qué necesitás
 
 - Tu cuenta de Clipfine.
-- La URL del conector: **{{mcp}}**. También la encontrás en **Perfil → Conectar con ChatGPT o Claude**, con un botón para copiarla.
+- La URL del conector: **{{mcp}}**. También la encontrás en **ChatGPT y Claude**, en el menú, con un botón para copiarla.
 - Una cuenta de ChatGPT o Claude que permita agregar conectores personalizados. Depende de tu plan con ellos.
 
 ## En Claude
@@ -65,11 +65,11 @@ Pedile los momentos que querés de un episodio: la IA de Clipfine los busca (o C
 
 ## Qué no puede hacer
 
-Fuera de crear clips, solo consulta: no programa, no publica, no aprueba, no edita ni borra nada. Para desconectarlo, entrá a **Perfil → Conectar con ChatGPT o Claude** y tocá **Desconectar**.
+Fuera de crear clips, solo consulta: no programa, no publica, no aprueba, no edita ni borra nada. Para desconectarlo, entrá a **ChatGPT y Claude**, en el menú, y tocá **Desconectar**.
 
 ## Ver qué está conectado
 
-En **Perfil → Conectar con ChatGPT o Claude** ves cada app conectada con su estado:
+En **ChatGPT y Claude**, en el menú, ves cada app conectada con su estado:
 
 - **Activa**: se usó (o se conectó) en la última semana.
 - **Sin uso**: hace más de una semana que nadie le pregunta. Si la quitaste en ChatGPT o Claude, desconectala acá también: ellos no nos avisan.

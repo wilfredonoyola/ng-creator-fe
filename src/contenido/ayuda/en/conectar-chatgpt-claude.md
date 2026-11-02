@@ -10,7 +10,7 @@ With the Clipfine connector, ChatGPT or Claude can look up your brands, their me
 ## What you need
 
 - Your Clipfine account.
-- The connector URL: **{{mcp}}**. You'll also find it in **Profile → Connect to ChatGPT or Claude**, with a button to copy it.
+- The connector URL: **{{mcp}}**. You'll also find it in **ChatGPT & Claude**, in the menu, with a button to copy it.
 - A ChatGPT or Claude account that allows custom connectors. It depends on your plan with them.
 
 ## In Claude
@@ -65,11 +65,11 @@ Ask for the moments you want from an episode: Clipfine's AI finds them (or ChatG
 
 ## What it can't do
 
-Apart from creating clips, it only looks things up: it doesn't schedule, post, approve, edit or delete anything. To disconnect it, go to **Profile → Connect to ChatGPT or Claude** and click **Disconnect**.
+Apart from creating clips, it only looks things up: it doesn't schedule, post, approve, edit or delete anything. To disconnect it, go to **ChatGPT & Claude** in the menu and click **Disconnect**.
 
 ## See what's connected
 
-In **Profile → Connect to ChatGPT or Claude** you see each connected app with its status:
+In **ChatGPT & Claude**, in the menu, you see each connected app with its status:
 
 - **Active**: used (or connected) in the last week.
 - **Not in use**: nobody has asked it anything in over a week. If you removed it in ChatGPT or Claude, disconnect it here too: they don't let us know.
