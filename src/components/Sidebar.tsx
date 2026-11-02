@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   AtSign,
+  Bot,
   CalendarDays,
   ChartColumnIncreasing,
   CircleHelp,
@@ -47,6 +48,7 @@ type ClaveNav =
   | "calendario"
   | "contenido"
   | "metricas"
+  | "conectarIa"
   | "crearVideo"
   | "montaje"
   | "revision"
@@ -80,6 +82,9 @@ export const NAV_PRINCIPAL: ItemNav[] = [
   // Cómo le fue a lo publicado, en todas las redes (ng-creator-be#119): es lo
   // que la agencia le muestra al cliente, así que va a la vista y no adentro.
   { href: "/metricas", icon: ChartColumnIncreasing, clave: "metricas" },
+  // ChatGPT o Claude con los datos de la cuenta (MCP, be#182). Estaba escondido
+  // en Perfil; va a la vista porque es parte de lo que se vende (be#233, be#276).
+  { href: "/conectar", icon: Bot, clave: "conectarIa" },
 ];
 
 /**

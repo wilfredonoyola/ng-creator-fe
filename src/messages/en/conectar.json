@@ -39,7 +39,7 @@
     "cancelando": "Cancelling…",
     "permitir": "Allow",
     "permitiendo": "Connecting…",
-    "revocar": "You can disconnect it anytime from Profile → Connect to ChatGPT or Claude."
+    "revocar": "You can disconnect it anytime from ChatGPT & Claude in the Clipfine menu."
   },
   "estado": {
     "ACTIVA": "Active",
