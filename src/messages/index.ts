@@ -18,6 +18,7 @@ import clipsSubidos_es from "./es/clipsSubidos.json";
 import cobroSuperadmin_es from "./es/cobroSuperadmin.json";
 import conectar_es from "./es/conectar.json";
 import contenido_es from "./es/contenido.json";
+import costosSuperadmin_es from "./es/costosSuperadmin.json";
 import creators_es from "./es/creators.json";
 import editorAudio_es from "./es/editorAudio.json";
 import editorAutoEncuadre_es from "./es/editorAutoEncuadre.json";
@@ -155,6 +156,7 @@ import clipsSubidos_en from "./en/clipsSubidos.json";
 import cobroSuperadmin_en from "./en/cobroSuperadmin.json";
 import conectar_en from "./en/conectar.json";
 import contenido_en from "./en/contenido.json";
+import costosSuperadmin_en from "./en/costosSuperadmin.json";
 import creators_en from "./en/creators.json";
 import editorAudio_en from "./en/editorAudio.json";
 import editorAutoEncuadre_en from "./en/editorAutoEncuadre.json";
@@ -295,6 +297,7 @@ export const mensajes = {
     "cobroSuperadmin": cobroSuperadmin_es,
     "conectar": conectar_es,
     "contenido": contenido_es,
+    "costosSuperadmin": costosSuperadmin_es,
     "creators": creators_es,
     "editorAudio": editorAudio_es,
     "editorAutoEncuadre": editorAutoEncuadre_es,
@@ -434,6 +437,7 @@ export const mensajes = {
     "cobroSuperadmin": cobroSuperadmin_en,
     "conectar": conectar_en,
     "contenido": contenido_en,
+    "costosSuperadmin": costosSuperadmin_en,
     "creators": creators_en,
     "editorAudio": editorAudio_en,
     "editorAutoEncuadre": editorAutoEncuadre_en,
