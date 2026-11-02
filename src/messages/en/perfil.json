@@ -33,6 +33,7 @@
     "consecuencias": {
       "acceso": "your user and your access to every brand are deleted;",
       "archivan": "brands where you're the only member are archived: their networks are disconnected and their scheduled posts are canceled;",
+      "suscripcion": "if you pay for a plan, your subscription is cancelled and you won't be charged again;",
       "historial": "in the brands' history, your name becomes “Deleted account”."
     },
     "recuperar": "The content of archived brands is kept and can be recovered for 30 days by asking <link>{contacto}</link>.",

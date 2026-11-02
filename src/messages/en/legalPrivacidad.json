@@ -88,6 +88,7 @@
     "li1": "we delete your user from the service and from AWS Cognito, along with your access to all brands;",
     "li2": "brands where you are the only member are archived: their networks are disconnected (deleting their tokens) and their scheduled posts are canceled. Their content remains stored and can be recovered by requesting it at <correo></correo> for 30 days;",
     "li3": "in the history of the brands you worked on, your name becomes “Deleted account”;",
+    "li3b": "if you pay for a plan, we cancel your Lemon Squeezy subscription: you won't be charged again;",
     "li4": "if you are the only owner of a brand that has other people, you first have to make someone else the owner under <em>Team</em>: the brand and its content still belong to its team.",
     "p3": "You can also request deletion by writing to <correo></correo> from the email associated with your account; we carry it out within 30 days.",
     "p4": "We keep only what the law requires us to keep, such as payment records. Content already posted on a social network is not deleted from here: it has to be deleted on that network, because once posted it is under the control of the network and of whoever manages the account."

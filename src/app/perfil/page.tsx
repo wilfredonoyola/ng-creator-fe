@@ -306,6 +306,7 @@ function EliminarCuenta({ onCerrar }: { onCerrar: () => void }) {
               <ul className="ml-5 list-disc space-y-1.5">
                 <li>{t("consecuencias.acceso")}</li>
                 <li>{t("consecuencias.archivan")}</li>
+                <li>{t("consecuencias.suscripcion")}</li>
                 <li>{t("consecuencias.historial")}</li>
               </ul>
               <p className="text-white/50">
