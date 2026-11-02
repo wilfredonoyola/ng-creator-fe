@@ -33,6 +33,7 @@
     "consecuencias": {
       "acceso": "se borran tu usuario y tu acceso a todas las marcas;",
       "archivan": "las marcas de las que sos el único miembro se archivan: se desconectan sus redes y se cancelan sus publicaciones programadas;",
+      "suscripcion": "si pagás un plan, se cancela tu suscripción y no se te cobra más;",
       "historial": "en el historial de las marcas, tu nombre pasa a «Cuenta eliminada»."
     },
     "recuperar": "El contenido de las marcas archivadas queda guardado y se puede recuperar pidiéndolo a <link>{contacto}</link> por 30 días.",

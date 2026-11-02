@@ -167,6 +167,7 @@ export default function PrivacidadPage() {
           <li>{t("s10.li1")}</li>
           <li>{t.rich("s10.li2", { correo })}</li>
           <li>{t("s10.li3")}</li>
+          <li>{t("s10.li3b")}</li>
           <li>{t.rich("s10.li4", { em })}</li>
         </ul>
         <p>{t.rich("s10.p3", { correo })}</p>

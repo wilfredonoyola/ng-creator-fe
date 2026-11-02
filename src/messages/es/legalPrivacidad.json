@@ -88,6 +88,7 @@
     "li1": "eliminamos tu usuario del servicio y de AWS Cognito, junto con tu acceso a todas las marcas;",
     "li2": "las marcas de las que sos el único miembro se archivan: se desconectan sus redes (borrando sus tokens) y se cancelan sus publicaciones programadas. Su contenido queda guardado y se puede recuperar pidiéndolo a <correo></correo> por 30 días;",
     "li3": "en el historial de las marcas en las que trabajaste, tu nombre pasa a «Cuenta eliminada»;",
+    "li3b": "si pagás un plan, cancelamos tu suscripción en Lemon Squeezy: no se te cobra más;",
     "li4": "si sos el único propietario de una marca en la que hay más personas, primero tenés que hacer propietaria a otra persona en <em>Equipo</em>: la marca y su contenido siguen siendo de su equipo.",
     "p3": "También podés pedir la eliminación escribiendo a <correo></correo> desde el correo asociado a tu cuenta; la hacemos en un plazo de 30 días.",
     "p4": "Conservamos solo lo que la ley nos obligue a guardar, como los registros de pago. El contenido ya publicado en una red social no se elimina desde acá: hay que borrarlo en esa red, porque desde la publicación queda bajo su control y el de quien administra la cuenta."
