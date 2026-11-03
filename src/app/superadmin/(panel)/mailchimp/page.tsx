@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { useFormatter, useTranslations } from "next-intl";
-import { AUDIENCIAS_MAILCHIMP, CONFIGURACION_MAILCHIMP, CREAR_WEBHOOK_MAILCHIMP, GUARDAR_MAILCHIMP } from "@/graphql/operations";
+import {
+  AUDIENCIAS_MAILCHIMP,
+  CONFIGURACION_MAILCHIMP,
+  CREAR_WEBHOOK_MAILCHIMP,
+  GUARDAR_MAILCHIMP,
+  SINCRONIZAR_CONTACTOS_MAILCHIMP,
+} from "@/graphql/operations";
 import { mensajeDeError } from "@/lib/nombre";
 import { GuiaConfiguracion } from "@/components/superadmin/GuiaConfiguracion";
 
@@ -78,6 +84,9 @@ export default function MailchimpSuperadmin() {
   const [crearWebhook, { loading: creandoWebhook }] = useMutation(CREAR_WEBHOOK_MAILCHIMP, {
     refetchQueries: [{ query: CONFIGURACION_MAILCHIMP }],
   });
+  const [sincronizar, { loading: sincronizando }] = useMutation<{
+    sincronizarContactosMailchimp: { revisados: number; actualizados: number; noEstan: number; fallidos: number };
+  }>(SINCRONIZAR_CONTACTOS_MAILCHIMP, { refetchQueries: [{ query: CONFIGURACION_MAILCHIMP }] });
   const [pedirAudiencias, audiencias] = useLazyQuery<{ audienciasMailchimp: Audiencia[] }>(AUDIENCIAS_MAILCHIMP, {
     fetchPolicy: "network-only",
   });
@@ -307,6 +316,26 @@ export default function MailchimpSuperadmin() {
             className={`${c.webhookUrl ? secundario : principal} mt-2`}
           >
             {creandoWebhook ? t("webhook.creando") : c.webhookUrl ? t("webhook.rehacer") : t("webhook.crear")}
+          </button>
+
+          {/* 6. Nombre y teléfono en los contactos que ya estaban (be#296). */}
+          <h3 className={subtitulo}>{t("contactos.titulo")}</h3>
+          <p className="mt-1 text-xs text-white/50">{t("contactos.ayuda")}</p>
+          <button
+            type="button"
+            disabled={sincronizando || !c.activo}
+            onClick={() => {
+              setMensaje(null);
+              sincronizar()
+                .then(({ data: r }) => {
+                  const x = r?.sincronizarContactosMailchimp;
+                  if (x) setMensaje({ ok: x.fallidos === 0, texto: t("contactos.ok", x) });
+                })
+                .catch((e: unknown) => setMensaje({ ok: false, texto: mensajeDeError(e) }));
+            }}
+            className={`${secundario} mt-2`}
+          >
+            {sincronizando ? t("contactos.sincronizando") : t("contactos.sincronizar")}
           </button>
 
           {mensaje && <p className={`mt-4 text-sm ${mensaje.ok ? "text-emerald-400" : "text-red-400"}`}>{mensaje.texto}</p>}

@@ -105,5 +105,12 @@
     "creando": "Creating…",
     "ok": "Webhook created in Mailchimp.",
     "confirmarRehacer": "Redo the webhook? A new one is created with another secret and the old one is deleted."
+  },
+  "contactos": {
+    "titulo": "Contact name and phone",
+    "ayuda": "Clipfine sends Mailchimp the name (First and Last name) and phone of everyone who accepts the emails, and updates them when they change. This copies today's data to the contacts that were already there. Safe to repeat.",
+    "sincronizar": "Sync contacts",
+    "sincronizando": "Syncing…",
+    "ok": "Done: {actualizados} of {revisados} contacts updated. {noEstan} aren't in the audience and {fallidos} failed."
   }
 }

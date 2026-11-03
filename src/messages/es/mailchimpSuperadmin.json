@@ -105,5 +105,12 @@
     "creando": "Creando…",
     "ok": "Webhook creado en Mailchimp.",
     "confirmarRehacer": "¿Rehacer el webhook? Se crea uno nuevo con otro secreto y se borra el anterior."
+  },
+  "contactos": {
+    "titulo": "Nombre y teléfono de los contactos",
+    "ayuda": "Clipfine manda a Mailchimp el nombre (Nombre y Apellidos) y el teléfono de cada persona que acepta los correos, y los actualiza si los cambia. Esto copia los datos de hoy a los contactos que ya estaban. Se puede repetir.",
+    "sincronizar": "Sincronizar contactos",
+    "sincronizando": "Sincronizando…",
+    "ok": "Listo: {actualizados} de {revisados} contactos actualizados. {noEstan} no están en la audiencia y {fallidos} fallaron."
   }
 }
