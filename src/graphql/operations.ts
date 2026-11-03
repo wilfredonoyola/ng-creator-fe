@@ -3827,6 +3827,13 @@ export const CREAR_WEBHOOK_MAILCHIMP = gql`
   }
 `;
 
+// ng-creator-be#296: copia nombre y teléfono a los contactos que ya están en la audiencia.
+export const SINCRONIZAR_CONTACTOS_MAILCHIMP = gql`
+  mutation SincronizarContactosMailchimp {
+    sincronizarContactosMailchimp { revisados actualizados noEstan fallidos }
+  }
+`;
+
 export const GUARDAR_MAILCHIMP = gql`
   mutation GuardarMailchimp($input: GuardarMailchimpInput!) {
     guardarMailchimp(input: $input) { ${CAMPOS_MAILCHIMP} }
